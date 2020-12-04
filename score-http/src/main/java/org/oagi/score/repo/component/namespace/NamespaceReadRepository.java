@@ -1,7 +1,6 @@
 package org.oagi.score.repo.component.namespace;
 
 import org.jooq.*;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
@@ -10,6 +9,7 @@ import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -50,13 +50,13 @@ public class NamespaceReadRepository {
                 LocalDateTime, Byte, String>> selectOnConditionStep = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getUri())) {
+        if (StringUtils.hasLength(request.getUri())) {
             conditions.add(NAMESPACE.URI.containsIgnoreCase(request.getUri()));
         }
-        if (!StringUtils.isEmpty(request.getPrefix())) {
+        if (StringUtils.hasLength(request.getPrefix())) {
             conditions.add(NAMESPACE.PREFIX.containsIgnoreCase(request.getPrefix()));
         }
-        if (!StringUtils.isEmpty(request.getDescription())) {
+        if (StringUtils.hasLength(request.getDescription())) {
             conditions.add(NAMESPACE.DESCRIPTION.containsIgnoreCase(request.getDescription()));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
@@ -83,7 +83,7 @@ public class NamespaceReadRepository {
         int length = dslContext.fetchCount(conditionStep);
 
         SortField sortField = null;
-        if (!StringUtils.isEmpty(pageRequest.getSortActive())) {
+        if (StringUtils.hasLength(pageRequest.getSortActive())) {
             Field field = null;
             switch (pageRequest.getSortActive()) {
                 case "uri":

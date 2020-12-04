@@ -25,7 +25,7 @@ public interface BieGenerateExpression {
     default String toName(String propertyTerm, String representationTerm,
                           Function<String, String> representationTermMapper,
                           boolean includedAbbr) {
-        if (StringUtils.isEmpty(propertyTerm) || StringUtils.isEmpty(representationTerm)) {
+        if (!StringUtils.hasLength(propertyTerm) || !StringUtils.hasLength(representationTerm)) {
             throw new IllegalArgumentException();
         }
 

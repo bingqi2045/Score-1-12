@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.api.cc_management.data;
 
 import lombok.Data;
-import org.jooq.tools.StringUtils;
 import org.oagi.score.data.OagisComponentType;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -19,7 +19,7 @@ public class CcList {
     private String name;
 
     public String getModule() {
-        return StringUtils.isEmpty(module) ? "" : module;
+        return !StringUtils.hasLength(module) ? "" : module;
     }
 
     private String definitionSource;

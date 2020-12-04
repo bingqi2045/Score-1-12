@@ -53,19 +53,19 @@ public class AccountListService {
                 .leftJoin(APP_OAUTH2_USER).on(APP_USER.APP_USER_ID.eq(APP_OAUTH2_USER.APP_USER_ID));
 
         List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getLoginId())) {
+        if (StringUtils.hasLength(request.getLoginId())) {
             conditions.add(APP_USER.LOGIN_ID.containsIgnoreCase(request.getLoginId().trim()));
         }
-        if (!StringUtils.isEmpty(request.getName())) {
+        if (StringUtils.hasLength(request.getName())) {
             conditions.add(APP_USER.NAME.containsIgnoreCase(request.getName().trim()));
         }
-        if (!StringUtils.isEmpty(request.getOrganization())) {
+        if (StringUtils.hasLength(request.getOrganization())) {
             conditions.add(APP_USER.ORGANIZATION.containsIgnoreCase(request.getOrganization().trim()));
         }
         if (request.getEnabled() != null) {
             conditions.add(APP_USER.IS_ENABLED.eq((byte) (request.getEnabled() ? 1 : 0)));
         }
-        if (!StringUtils.isEmpty(request.getRole())) {
+        if (StringUtils.hasLength(request.getRole())) {
             switch (request.getRole()) {
                 case "developer":
                     conditions.add(APP_USER.IS_DEVELOPER.eq((byte) 1));

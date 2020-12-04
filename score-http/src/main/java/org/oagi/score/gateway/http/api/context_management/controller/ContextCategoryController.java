@@ -50,12 +50,12 @@ public class ContextCategoryController {
                 authenticationService.asScoreUser(requester));
         request.setName(name);
         request.setDescription(description);
-        request.setUpdaterUsernameList(StringUtils.isEmpty(updaterUsernameList) ? Collections.emptyList() :
-                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        if (!StringUtils.isEmpty(updateStart)) {
+        request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
+                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

@@ -89,10 +89,10 @@ public class BbieScWriteRepository {
             bbieScRecord.setExample(bbieSc.getExample());
             bbieScRecord.setRemark(bbieSc.getRemark());
 
-            if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
+            if (StringUtils.hasLength(bbieSc.getDefaultValue())) {
                 bbieScRecord.setDefaultValue(bbieSc.getDefaultValue());
                 bbieScRecord.setFixedValue(null);
-            } else if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
+            } else if (StringUtils.hasLength(bbieSc.getFixedValue())) {
                 bbieScRecord.setDefaultValue(null);
                 bbieScRecord.setFixedValue(bbieSc.getFixedValue());
             }
@@ -162,10 +162,10 @@ public class BbieScWriteRepository {
                 bbieScRecord.setRemark(emptyToNull(bbieSc.getRemark()));
             }
 
-            if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
+            if (StringUtils.hasLength(bbieSc.getDefaultValue())) {
                 bbieScRecord.setDefaultValue(bbieSc.getDefaultValue());
                 bbieScRecord.setFixedValue(null);
-            } else if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
+            } else if (StringUtils.hasLength(bbieSc.getFixedValue())) {
                 bbieScRecord.setDefaultValue(null);
                 bbieScRecord.setFixedValue(bbieSc.getFixedValue());
             }

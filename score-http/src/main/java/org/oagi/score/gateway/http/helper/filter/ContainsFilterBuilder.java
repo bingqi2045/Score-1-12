@@ -18,7 +18,7 @@ public class ContainsFilterBuilder {
     }
 
     public static <T> Predicate<T> contains(String query, Function<T, String> mapper, boolean ignoreCase) {
-        if (StringUtils.isEmpty(query)) {
+        if (!StringUtils.hasLength(query)) {
             return e -> true;
         }
         query = query.trim();
@@ -29,7 +29,7 @@ public class ContainsFilterBuilder {
     }
 
     public static boolean isQuoted(String s) {
-        if (StringUtils.isEmpty(s)) {
+        if (!StringUtils.hasLength(s)) {
             return false;
         }
         return s.length() > 2 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"';

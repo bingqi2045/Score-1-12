@@ -1,6 +1,5 @@
 package org.oagi.score.gateway.http.api.code_list_management.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
@@ -23,6 +22,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -95,13 +95,13 @@ public class CodeListService extends EventHandler {
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
 
-        if (!StringUtils.isEmpty(request.getName())) {
+        if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(contains(request.getDefinition(), CODE_LIST.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (!request.getStates().isEmpty()) {
@@ -135,7 +135,7 @@ public class CodeListService extends EventHandler {
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
-        if (!StringUtils.isEmpty(pageRequest.getSortActive())) {
+        if (StringUtils.hasLength(pageRequest.getSortActive())) {
             switch (pageRequest.getSortActive()) {
                 case "codeListName":
                     if ("asc".equals(sortDirection)) {
@@ -276,7 +276,7 @@ public class CodeListService extends EventHandler {
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_VALUE.VALUE,
-                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
@@ -325,7 +325,7 @@ public class CodeListService extends EventHandler {
         ULong codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
                 CODE_LIST_VALUE.CODE_LIST_ID,
                 CODE_LIST_VALUE.VALUE,
-                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
                 CODE_LIST_VALUE.USED_INDICATOR,
@@ -338,7 +338,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP).values(
                 manifestRecord.getCodeListId(),
                 codeListValue.getValue(),
-                codeListValue.getName(),
+                codeListValue.getMeaning(),
                 codeListValue.getDefinition(),
                 codeListValue.getDefinitionSource(),
                 (byte) ((used) ? 1 : 0),
@@ -361,7 +361,7 @@ public class CodeListService extends EventHandler {
     @Transactional
     public void update(AuthenticatedPrincipal user, CodeList codeList) {
         LocalDateTime timestamp = LocalDateTime.now();
-        if (!StringUtils.isEmpty(codeList.getState())) {
+        if (StringUtils.hasLength(codeList.getState())) {
             updateCodeListState(user, timestamp, codeList.getCodeListManifestId(), CcState.valueOf(codeList.getState()));
         } else {
             updateCodeListValues(user, timestamp, codeList);
@@ -439,7 +439,7 @@ public class CodeListService extends EventHandler {
 
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE.VALUE,
-                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
@@ -496,7 +496,7 @@ public class CodeListService extends EventHandler {
                     ModifyCodeListValuesRepositoryRequest.CodeListValue codeListValue =
                             new ModifyCodeListValuesRepositoryRequest.CodeListValue();
 
-                    codeListValue.setName(e.getName());
+                    codeListValue.setMeaning(e.getMeaning());
                     codeListValue.setValue(e.getValue());
                     codeListValue.setDefinition(e.getDefinition());
                     codeListValue.setDefinitionSource(e.getDefinitionSource());
@@ -611,7 +611,7 @@ public class CodeListService extends EventHandler {
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
             codeListValueRecord.setValue(codeListValue.getValue());
-            codeListValueRecord.setName(codeListValue.getName());
+            codeListValueRecord.setMeaning(codeListValue.getMeaning());
 
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());

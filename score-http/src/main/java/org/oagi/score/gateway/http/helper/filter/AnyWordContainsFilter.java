@@ -1,6 +1,7 @@
 package org.oagi.score.gateway.http.helper.filter;
 
-import org.jooq.tools.StringUtils;
+
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public class AnyWordContainsFilter<T> implements Predicate<T> {
     }
 
     private List<String> split(String s) {
-        if (StringUtils.isEmpty(s)) {
+        if (!StringUtils.hasLength(s)) {
             return Collections.emptyList();
         }
         String q = ((ignoreCase) ? s.toLowerCase() : s);
@@ -40,7 +41,7 @@ public class AnyWordContainsFilter<T> implements Predicate<T> {
             return true;
         }
         String s = mapper.apply(t);
-        if (StringUtils.isEmpty(s)) {
+        if (!StringUtils.hasLength(s)) {
             return false;
         }
         s = (ignoreCase) ? s.toLowerCase() : s;

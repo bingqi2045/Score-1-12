@@ -2,23 +2,20 @@ package org.oagi.score.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
-import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = ScoreHttpApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.MOCK

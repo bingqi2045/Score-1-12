@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcAccNode;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,8 +23,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigInteger;
 
-import static junit.framework.TestCase.fail;
 import static org.jooq.impl.DSL.and;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -37,7 +34,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = ScoreHttpApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.MOCK
@@ -47,7 +43,6 @@ public class CcNodeControllerTest {
     private final String METHOD_POST = "post";
     private final String METHOD_GET = "get";
 
-    @Rule
     public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
     @Autowired
@@ -58,7 +53,7 @@ public class CcNodeControllerTest {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeAll
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
                 .apply(documentationConfiguration(this.restDocumentation))

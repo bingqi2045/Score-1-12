@@ -53,54 +53,54 @@ public class CcListController {
 
         request.setReleaseId(releaseId);
         request.setTypes(CcListTypes.fromString(types));
-        if (!StringUtils.isEmpty(states)) {
+        if (StringUtils.hasLength(states)) {
             List<String> stateStrings = new ArrayList<>(Arrays.asList(states.split(",")));
             request.setStates(stateStrings.stream()
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
         }
-        if (!StringUtils.isEmpty(deprecated)) {
+        if (StringUtils.hasLength(deprecated)) {
             if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
                 request.setDeprecated(true);
             } else if ("false".equalsIgnoreCase(deprecated.toLowerCase())) {
                 request.setDeprecated(false);
             }
         }
-        if (!StringUtils.isEmpty(isBIEUsable)) {
+        if (StringUtils.hasLength(isBIEUsable)) {
             if ("true".equalsIgnoreCase(isBIEUsable.toLowerCase())) {
                 request.setIsBIEUsable(true);
             } else if ("false".equalsIgnoreCase(isBIEUsable.toLowerCase())) {
                 request.setIsBIEUsable(false);
             }
         }
-        if (!StringUtils.isEmpty(commonlyUsed)) {
+        if (StringUtils.hasLength(commonlyUsed)) {
             if ("true".equalsIgnoreCase(commonlyUsed.toLowerCase())) {
                 request.setCommonlyUsed(true);
             } else if ("false".equalsIgnoreCase(commonlyUsed.toLowerCase())) {
                 request.setCommonlyUsed(false);
             }
         }
-        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
-                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setOwnerLoginIds(!StringUtils.hasLength(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setDen(den);
         request.setDefinition(definition);
         request.setModule(module);
         request.setComponentTypes(componentTypes);
-        request.setDtTypes(StringUtils.isEmpty(dtTypes) ? Collections.emptyList() :
-                Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setAsccpTypes(StringUtils.isEmpty(asccpTypes) ? Collections.emptyList() :
-                Arrays.asList(asccpTypes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
-                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        if (!StringUtils.isEmpty(findUsagesType) && findUsagesManifestId != null && findUsagesManifestId.compareTo(BigInteger.ZERO) > 0) {
+        request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
+                Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setAsccpTypes(!StringUtils.hasLength(asccpTypes) ? Collections.emptyList() :
+                Arrays.asList(asccpTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setExcludes(!StringUtils.hasLength(excludes) ? Collections.emptyList() :
+                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        if (StringUtils.hasLength(findUsagesType) && findUsagesManifestId != null && findUsagesManifestId.compareTo(BigInteger.ZERO) > 0) {
             request.setFindUsages(new CcId(findUsagesType, findUsagesManifestId));
         }
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

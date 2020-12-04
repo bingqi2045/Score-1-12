@@ -4,10 +4,10 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.comment.data.Comment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CommentRecord;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -235,7 +235,7 @@ public class CommentRepository {
 
         String text = arguments.getText();
         if (text != null) {
-            if (StringUtils.isEmpty(text)) {
+            if (!StringUtils.hasLength(text)) {
                 step = step.setNull(COMMENT.COMMENT_);
             } else {
                 step = step.set(COMMENT.COMMENT_, text);

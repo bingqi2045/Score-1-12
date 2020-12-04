@@ -86,16 +86,16 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     /**
-     * Setter for <code>oagi.code_list_value.name</code>. Pretty print name of the code list value, e.g., 'Each' for EA, 'English' for EN.
+     * Setter for <code>oagi.code_list_value.meaning</code>. The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.
      */
-    public void setName(String value) {
+    public void setMeaning(String value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value.name</code>. Pretty print name of the code list value, e.g., 'Each' for EA, 'English' for EN.
+     * Getter for <code>oagi.code_list_value.meaning</code>. The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.
      */
-    public String getName() {
+    public String getMeaning() {
         return (String) get(4);
     }
 
@@ -344,7 +344,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public Field<String> field5() {
-        return CodeListValue.CODE_LIST_VALUE.NAME;
+        return CodeListValue.CODE_LIST_VALUE.MEANING;
     }
 
     @Override
@@ -439,7 +439,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public String component5() {
-        return getName();
+        return getMeaning();
     }
 
     @Override
@@ -534,7 +534,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public String value5() {
-        return getName();
+        return getMeaning();
     }
 
     @Override
@@ -633,7 +633,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public CodeListValueRecord value5(String value) {
-        setName(value);
+        setMeaning(value);
         return this;
     }
 
@@ -759,14 +759,14 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, String value, String meaning, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         setCodeListValueId(codeListValueId);
         setGuid(guid);
         setCodeListId(codeListId);
         setValue(value);
-        setName(name);
+        setMeaning(meaning);
         setDefinition(definition);
         setDefinitionSource(definitionSource);
         setUsedIndicator(usedIndicator);

@@ -1,6 +1,6 @@
 package org.oagi.score.gateway.http.api.graph;
 
-import org.jooq.tools.StringUtils;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -56,7 +56,7 @@ public class GraphController {
 
         Map<String, Object> response = new HashMap();
 
-        if (!StringUtils.isEmpty(query)) {
+        if (StringUtils.hasLength(query)) {
             Collection<List<String>> paths = graph.findPaths(type + id, query);
             response.put("query", query);
             response.put("paths", paths.stream()

@@ -27,7 +27,7 @@ public class ReleaseController {
                                                  @RequestParam(name = "states", required = false) String states) {
         SimpleReleasesRequest request = new SimpleReleasesRequest(user);
 
-        request.setStates(!StringUtils.isEmpty(states) ?
+        request.setStates(StringUtils.hasLength(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> ReleaseState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
 
@@ -67,30 +67,30 @@ public class ReleaseController {
         ReleaseListRequest request = new ReleaseListRequest();
 
         request.setReleaseNum(releaseNum);
-        request.setStates(!StringUtils.isEmpty(states) ?
+        request.setStates(StringUtils.hasLength(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> ReleaseState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
-        request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
-                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setCreatorLoginIds(StringUtils.isEmpty(creatorLoginIds) ? Collections.emptyList() :
-                Arrays.asList(creatorLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setExcludes(!StringUtils.hasLength(excludes) ? Collections.emptyList() :
+                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setCreatorLoginIds(!StringUtils.hasLength(creatorLoginIds) ? Collections.emptyList() :
+                Arrays.asList(creatorLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
-        if (!StringUtils.isEmpty(createStart)) {
+        if (StringUtils.hasLength(createStart)) {
             request.setCreateStartDate(new Date(Long.valueOf(createStart)));
         }
-        if (!StringUtils.isEmpty(createEnd)) {
+        if (StringUtils.hasLength(createEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(createEnd));
             calendar.add(Calendar.DATE, 1);
             request.setCreateEndDate(calendar.getTime());
         }
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

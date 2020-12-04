@@ -114,7 +114,7 @@ public class Utility {
     }
 
     public static String camelCase(String s, boolean includedAbbr) {
-        if (StringUtils.isEmpty(s)) {
+        if (!StringUtils.hasLength(s)) {
             return s;
         }
         if (!includedAbbr && isUpperCase(s)) {

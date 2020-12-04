@@ -19,7 +19,7 @@ public class CcListTypes {
         }
 
         CcListTypes types = new CcListTypes();
-        if (StringUtils.isEmpty(str)) {
+        if (!StringUtils.hasLength(str)) {
             types.setAcc(true);
             types.setAsccp(true);
             types.setBccp(true);

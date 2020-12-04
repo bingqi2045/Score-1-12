@@ -93,7 +93,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         this.option = option;
 
         OpenAPIExpressionFormat openAPIExpressionFormat;
-        if (StringUtils.isEmpty(this.option.getOpenAPIExpressionFormat())) {
+        if (!StringUtils.hasLength(this.option.getOpenAPIExpressionFormat())) {
             openAPIExpressionFormat = OpenAPIExpressionFormat.YAML;
         } else {
             openAPIExpressionFormat = OpenAPIExpressionFormat.valueOf(this.option.getOpenAPIExpressionFormat());
@@ -271,7 +271,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String _camelCase(String term) {
-        return Arrays.stream(term.split(" ")).filter(e -> !StringUtils.isEmpty(e))
+        return Arrays.stream(term.split(" ")).filter(e -> StringUtils.hasLength(e))
                 .map(e -> {
                     if (e.length() > 1) {
                         return Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase();
@@ -289,7 +289,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
         }
 
-        if (StringUtils.isEmpty(term)) {
+        if (!StringUtils.hasLength(term)) {
             throw new IllegalArgumentException();
         }
 
@@ -339,7 +339,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         if (option.isBieDefinition()) {
             String definition = asbie.getDefinition();
-            if (!StringUtils.isEmpty(definition)) {
+            if (StringUtils.hasLength(definition)) {
                 properties.put("description", definition);
             }
         }
@@ -364,7 +364,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             properties = new LinkedHashMap();
 
             String description = (String) items.remove("description");
-            if (!StringUtils.isEmpty(description)) {
+            if (StringUtils.hasLength(description)) {
                 properties.put("description", description);
             }
             properties.put("type", "array");
@@ -399,7 +399,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         if (option.isBieDefinition()) {
             String definition = abie.getDefinition();
-            if (!StringUtils.isEmpty(definition)) {
+            if (StringUtils.hasLength(definition)) {
                 properties.put("description", definition);
             }
         }
@@ -427,7 +427,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             properties = new LinkedHashMap();
 
             String description = (String) items.remove("description");
-            if (!StringUtils.isEmpty(description)) {
+            if (StringUtils.hasLength(description)) {
                 properties.put("description", description);
             }
             properties.put("type", "array");
@@ -604,7 +604,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         if (option.isBieDefinition()) {
             String definition = bbie.getDefinition();
-            if (!StringUtils.isEmpty(definition)) {
+            if (StringUtils.hasLength(definition)) {
                 properties.put("description", definition);
             }
         }
@@ -618,15 +618,15 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #700
-        if (!StringUtils.isEmpty(bbie.getFixedValue())) {
+        if (StringUtils.hasLength(bbie.getFixedValue())) {
             properties.put("enum", Arrays.asList(bbie.getFixedValue()));
-        } else if (!StringUtils.isEmpty(bbie.getDefaultValue())) {
+        } else if (StringUtils.hasLength(bbie.getDefaultValue())) {
             properties.put("default", bbie.getDefaultValue());
         }
 
         // Issue #692
         String exampleText = bbie.getExample();
-        if (!StringUtils.isEmpty(exampleText)) {
+        if (StringUtils.hasLength(exampleText)) {
             properties.put("example", exampleText);
         }
 
@@ -664,7 +664,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             String description = (String) properties.remove("description");
             Map<String, Object> items = new LinkedHashMap(properties);
             properties = new LinkedHashMap();
-            if (!StringUtils.isEmpty(description)) {
+            if (StringUtils.hasLength(description)) {
                 properties.put("description", description);
             }
             properties.put("type", "array");
@@ -761,7 +761,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         if (option.isBieDefinition()) {
             String definition = bbieSc.getDefinition();
-            if (!StringUtils.isEmpty(definition)) {
+            if (StringUtils.hasLength(definition)) {
                 properties.put("description", definition);
             }
         }
@@ -771,15 +771,15 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #596
-        if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
+        if (StringUtils.hasLength(bbieSc.getFixedValue())) {
             properties.put("enum", Arrays.asList(bbieSc.getFixedValue()));
-        } else if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
+        } else if (StringUtils.hasLength(bbieSc.getDefaultValue())) {
             properties.put("default", bbieSc.getDefaultValue());
         }
 
         // Issue #692
         String exampleText = bbieSc.getExample();
-        if (!StringUtils.isEmpty(exampleText)) {
+        if (StringUtils.hasLength(exampleText)) {
             properties.put("example", exampleText);
         }
 

@@ -42,7 +42,7 @@ public class CodeListGraphContext implements GraphContext {
     public class CodeListValueManifest {
         private ULong codeListValueManifestId;
         private ULong codeListManifestId;
-        private String name;
+        private String meaning;
         private String value;
         private String state;
         private boolean used;
@@ -78,7 +78,7 @@ public class CodeListGraphContext implements GraphContext {
         codeListValueManifestMap = dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID,
-                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST.STATE,
                 CODE_LIST_VALUE.USED_INDICATOR,
@@ -95,7 +95,7 @@ public class CodeListGraphContext implements GraphContext {
                 .fetch(record -> new CodeListValueManifest(
                         record.get(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID),
                         record.get(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID),
-                        record.get(CODE_LIST_VALUE.NAME),
+                        record.get(CODE_LIST_VALUE.MEANING),
                         record.get(CODE_LIST_VALUE.VALUE),
                         record.get(CODE_LIST.STATE),
                         record.get(CODE_LIST_VALUE.USED_INDICATOR) == (byte) 1,
@@ -158,7 +158,7 @@ public class CodeListGraphContext implements GraphContext {
                 CcState.valueOf(codeListValueManifest.getState()));
         node.setLinkedManifestId(codeListValueManifest.getCodeListManifestId());
         node.put("state", codeListValueManifest.getState());
-        node.put("name", codeListValueManifest.getName());
+        node.put("meaning", codeListValueManifest.getMeaning());
         node.put("value", codeListValueManifest.getValue());
         node.put("used", codeListValueManifest.isUsed());
         node.put("locked", codeListValueManifest.isLocked());

@@ -1,11 +1,11 @@
 package org.oagi.score.gateway.http.api.log_management.controller;
 
-import org.jooq.tools.StringUtils;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.log_management.data.Log;
 import org.oagi.score.gateway.http.api.log_management.data.LogListRequest;
 import org.oagi.score.gateway.http.api.log_management.service.LogService;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -28,7 +28,7 @@ public class LogController {
                                      @RequestParam(name = "sortDirection") String sortDirection,
                                      @RequestParam(name = "pageIndex") int pageIndex,
                                      @RequestParam(name = "pageSize") int pageSize) {
-        if (StringUtils.isEmpty(reference)) {
+        if (!StringUtils.hasLength(reference)) {
             throw new IllegalArgumentException("Unknown reference");
         }
 

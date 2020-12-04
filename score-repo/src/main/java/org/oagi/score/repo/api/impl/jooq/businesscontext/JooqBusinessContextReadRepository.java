@@ -6,6 +6,7 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.BusinessContextReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
@@ -18,7 +19,6 @@ import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
-import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -163,13 +163,13 @@ public class JooqBusinessContextReadRepository
                 ));
             }
         }
-        if (!isEmpty(request.getName())) {
+        if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), BIZ_CTX.NAME));
         }
         if (!request.getUpdaterUsernameList().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(
                     new HashSet<>(request.getUpdaterUsernameList()).stream()
-                            .filter(e -> !isEmpty(e)).map(e -> trim(e)).collect(Collectors.toList())
+                            .filter(e -> StringUtils.hasLength(e)).map(e -> trim(e)).collect(Collectors.toList())
             ));
         }
         if (request.getUpdateStartDate() != null) {
@@ -183,7 +183,7 @@ public class JooqBusinessContextReadRepository
     }
 
     private SortField getSortField(GetBusinessContextListRequest request) {
-        if (isEmpty(request.getSortActive())) {
+        if (!StringUtils.hasLength(request.getSortActive())) {
             return null;
         }
 

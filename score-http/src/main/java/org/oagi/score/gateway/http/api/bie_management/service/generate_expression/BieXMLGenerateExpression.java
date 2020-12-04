@@ -188,7 +188,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         String definition = contextDefinition;
-        if (StringUtils.isEmpty(definition)) {
+        if (!StringUtils.hasLength(definition)) {
             return;
         }
 
@@ -366,7 +366,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             ccts_BIEEntityTypeCode.setText(entityTypeCode);
 
             String dictionaryEntryName = bieDocumentation.getDictionaryEntryName();
-            if (!StringUtils.isEmpty(dictionaryEntryName)) {
+            if (StringUtils.hasLength(dictionaryEntryName)) {
                 Element ccts_DictionaryEntryName = new Element("ccts_DictionaryEntryName", OAGI_NS);
                 documentation.addContent(ccts_DictionaryEntryName);
                 ccts_DictionaryEntryName.setText(dictionaryEntryName);
@@ -374,12 +374,12 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
             if (option.isIncludeCctsDefinitionTag()) {
                 for (Definition definition : bieDocumentation.getDefinitions()) {
-                    if (!StringUtils.isEmpty(definition.getDefinition())) {
+                    if (StringUtils.hasLength(definition.getDefinition())) {
                         Element ccts_Definition = new Element("ccts_Definition", OAGI_NS);
                         documentation.addContent(ccts_Definition);
                         ccts_Definition.setText(definition.getDefinition());
 
-                        if (!StringUtils.isEmpty(definition.getDefinitionSource())) {
+                        if (StringUtils.hasLength(definition.getDefinitionSource())) {
                             ccts_Definition.setAttribute("source", definition.getDefinitionSource());
                         }
                     }
@@ -387,35 +387,35 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             }
 
             String objectClassTermName = bieDocumentation.getObjectClassTermName();
-            if (!StringUtils.isEmpty(objectClassTermName)) {
+            if (StringUtils.hasLength(objectClassTermName)) {
                 Element ccts_ObjectClassTermName = new Element("ccts_ObjectClassTermName", OAGI_NS);
                 documentation.addContent(ccts_ObjectClassTermName);
                 ccts_ObjectClassTermName.setText(objectClassTermName);
             }
 
             String propertyTermName = bieDocumentation.getPropertyTermName();
-            if (!StringUtils.isEmpty(propertyTermName)) {
+            if (StringUtils.hasLength(propertyTermName)) {
                 Element ccts_PropertyTermName = new Element("ccts_PropertyTermName", OAGI_NS);
                 documentation.addContent(ccts_PropertyTermName);
                 ccts_PropertyTermName.setText(propertyTermName);
             }
 
             String representationTermName = bieDocumentation.getRepresentationTermName();
-            if (!StringUtils.isEmpty(representationTermName)) {
+            if (StringUtils.hasLength(representationTermName)) {
                 Element ccts_RepresentationTermName = new Element("ccts_RepresentationTermName", OAGI_NS);
                 documentation.addContent(ccts_RepresentationTermName);
                 ccts_RepresentationTermName.setText(representationTermName);
             }
 
             String dataTypeTermName = bieDocumentation.getDataTypeTermName();
-            if (!StringUtils.isEmpty(dataTypeTermName)) {
+            if (StringUtils.hasLength(dataTypeTermName)) {
                 Element ccts_DataTypeTermName = new Element("ccts_DataTypeTermName", OAGI_NS);
                 documentation.addContent(ccts_DataTypeTermName);
                 ccts_DataTypeTermName.setText(dataTypeTermName);
             }
 
             String businessTerm = bieDocumentation.getBusinessTerm();
-            if (!StringUtils.isEmpty(businessTerm)) {
+            if (StringUtils.hasLength(businessTerm)) {
                 Element ccts_BusinessTerm = new Element("ccts_BusinessTerm", OAGI_NS);
                 documentation.addContent(ccts_BusinessTerm);
                 ccts_BusinessTerm.setText(businessTerm);
@@ -424,35 +424,35 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         if (bieOagiScoreMetaData) {
             String releaseNumber = bieDocumentation.getReleaseNumber();
-            if (!StringUtils.isEmpty(releaseNumber)) {
+            if (StringUtils.hasLength(releaseNumber)) {
                 Element srt_BasedStandardReleaseNumber = new Element("srt_BasedStandardReleaseNumber", OAGI_NS);
                 documentation.addContent(srt_BasedStandardReleaseNumber);
                 srt_BasedStandardReleaseNumber.setText(releaseNumber);
             }
 
             String version = bieDocumentation.getVersion();
-            if (!StringUtils.isEmpty(version)) {
+            if (StringUtils.hasLength(version)) {
                 Element srt_Version = new Element("srt_Version", OAGI_NS);
                 documentation.addContent(srt_Version);
                 srt_Version.setText(version);
             }
 
             String stateCode = bieDocumentation.getStateCode();
-            if (!StringUtils.isEmpty(stateCode)) {
+            if (StringUtils.hasLength(stateCode)) {
                 Element srt_StateCode = new Element("srt_StateCode", OAGI_NS);
                 documentation.addContent(srt_StateCode);
                 srt_StateCode.setText(stateCode);
             }
 
             String status = bieDocumentation.getStatus();
-            if (!StringUtils.isEmpty(status)) {
+            if (StringUtils.hasLength(status)) {
                 Element srt_Status = new Element("srt_Status", OAGI_NS);
                 documentation.addContent(srt_Status);
                 srt_Status.setText(status);
             }
 
             String remark = bieDocumentation.getRemark();
-            if (!StringUtils.isEmpty(remark)) {
+            if (StringUtils.hasLength(remark)) {
                 Element srt_Remark = new Element("srt_Remark", OAGI_NS);
                 documentation.addContent(srt_Remark);
                 srt_Remark.setText(remark);
@@ -460,21 +460,21 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
             if (option.isIncludeWhoColumns()) {
                 String ownerUserName = bieDocumentation.getOwnerUserName();
-                if (!StringUtils.isEmpty(ownerUserName)) {
+                if (StringUtils.hasLength(ownerUserName)) {
                     Element srt_OwnerUserName = new Element("srt_OwnerUserName", OAGI_NS);
                     documentation.addContent(srt_OwnerUserName);
                     srt_OwnerUserName.setText(ownerUserName);
                 }
 
                 String createdUserName = bieDocumentation.getCreatedUserName();
-                if (!StringUtils.isEmpty(createdUserName)) {
+                if (StringUtils.hasLength(createdUserName)) {
                     Element srt_CreatedByUserName = new Element("srt_CreatedByUserName", OAGI_NS);
                     documentation.addContent(srt_CreatedByUserName);
                     srt_CreatedByUserName.setText(createdUserName);
                 }
 
                 String lastUpdatedUserName = bieDocumentation.getLastUpdatedUserName();
-                if (!StringUtils.isEmpty(lastUpdatedUserName)) {
+                if (StringUtils.hasLength(lastUpdatedUserName)) {
                     Element srt_LastUpdatedByUserName = new Element("srt_LastUpdatedByUserName", OAGI_NS);
                     documentation.addContent(srt_LastUpdatedByUserName);
                     srt_LastUpdatedByUserName.setText(lastUpdatedUserName);
@@ -510,12 +510,12 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             ccts_BasedRevisionNumber.setText(Integer.toString(revisionNumber));
 
             for (Definition definition : bieDocumentation.getCoreComponentDefinitions()) {
-                if (!StringUtils.isEmpty(definition.getDefinition())) {
+                if (StringUtils.hasLength(definition.getDefinition())) {
                     Element ccts_BasedDefinition = new Element("ccts_Based" + ccType + "Definition", OAGI_NS);
                     documentation.addContent(ccts_BasedDefinition);
                     ccts_BasedDefinition.setText(definition.getDefinition());
 
-                    if (!StringUtils.isEmpty(definition.getDefinitionSource())) {
+                    if (StringUtils.hasLength(definition.getDefinitionSource())) {
                         ccts_BasedDefinition.setAttribute("source", definition.getDefinitionSource());
                     }
                 }
@@ -852,7 +852,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
          * If XBT has a value of schema definition, it is not XML Schema Built-in Type.
          * It should generated as the XML Schema simple type at the global level.
          */
-        if (xbt == null || StringUtils.isEmpty(xbt.getSchemaDefinition())) {
+        if (xbt == null || !StringUtils.hasLength(xbt.getSchemaDefinition())) {
             return;
         }
         if (rootElementNode == null) {
@@ -919,7 +919,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     String agencyListTypeName = Helper.getAgencyListTypeName(agencyIdList, agencyIdListValue);
 
                     generateAgencyList(agencyIdList, agencyListTypeName);
-                    if (!StringUtils.isEmpty(agencyListTypeName)) {
+                    if (StringUtils.hasLength(agencyListTypeName)) {
                         eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
@@ -969,7 +969,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     String agencyListTypeName = Helper.getAgencyListTypeName(agencyIdList, agencyIdListValue);
 
                     generateAgencyList(agencyIdList, agencyListTypeName);
-                    if (!StringUtils.isEmpty(agencyListTypeName)) {
+                    if (StringUtils.hasLength(agencyListTypeName)) {
                         eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
@@ -1217,7 +1217,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     String agencyListTypeName = Helper.getAgencyListTypeName(agencyIdList, agencyIdListValue);
 
                     generateAgencyList(agencyIdList, agencyListTypeName);
-                    if (!StringUtils.isEmpty(agencyListTypeName)) {
+                    if (StringUtils.hasLength(agencyListTypeName)) {
                         aNode.setAttribute("type", agencyListTypeName);
                     }
                 }

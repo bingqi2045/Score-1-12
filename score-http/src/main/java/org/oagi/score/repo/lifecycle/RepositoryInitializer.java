@@ -293,7 +293,7 @@ public class RepositoryInitializer implements InitializingBean {
 
             for (int i = 0, len = paths.size(); i < len - 1; ++i) {
                 String path = paths.get(i);
-                String fullpath = StringUtils.isEmpty(parent.getName()) ? path :
+                String fullpath = !StringUtils.hasLength(parent.getName()) ? path :
                         String.join(MODULE_SEPARATOR, Arrays.asList(parent.getPath(), path));
 
                 ModuleDirRecord moduleDirRecord = dslContext.selectFrom(MODULE_DIR)

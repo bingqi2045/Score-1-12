@@ -55,18 +55,18 @@ public class BieListController {
         request.setPropertyTerm(propertyTerm);
         request.setBusinessContext(businessContext);
         request.setAccManifestId(accManifestId);
-        request.setAccess(!StringUtils.isEmpty(access) ? AccessPrivilege.valueOf(access) : null);
-        request.setStates(!StringUtils.isEmpty(states) ?
+        request.setAccess(StringUtils.hasLength(access) ? AccessPrivilege.valueOf(access) : null);
+        request.setStates(StringUtils.hasLength(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
-        request.setExcludePropertyTerms(StringUtils.isEmpty(excludePropertyTerms) ? Collections.emptyList() :
-                Arrays.asList(excludePropertyTerms.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setExcludeTopLevelAsbiepIds(StringUtils.isEmpty(excludeTopLevelAsbiepIds) ? Collections.emptyList() :
-                Arrays.asList(excludeTopLevelAsbiepIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
-        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
-                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setExcludePropertyTerms(!StringUtils.hasLength(excludePropertyTerms) ? Collections.emptyList() :
+                Arrays.asList(excludePropertyTerms.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setExcludeTopLevelAsbiepIds(!StringUtils.hasLength(excludeTopLevelAsbiepIds) ? Collections.emptyList() :
+                Arrays.asList(excludeTopLevelAsbiepIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+        request.setOwnerLoginIds(!StringUtils.hasLength(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
         request.setOwnedByDeveloper(ownedByDeveloper);
 
@@ -74,10 +74,10 @@ public class BieListController {
             request.setReleaseId(releaseId);
         }
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

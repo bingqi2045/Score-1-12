@@ -1,11 +1,11 @@
 package org.oagi.score.gateway.http.api.comment.controller;
 
-import org.jooq.tools.StringUtils;
 import org.oagi.score.gateway.http.api.comment.data.Comment;
 import org.oagi.score.gateway.http.api.comment.data.GetCommentRequest;
 import org.oagi.score.gateway.http.api.comment.data.PostCommentRequest;
 import org.oagi.score.gateway.http.api.comment.data.UpdateCommentRequest;
 import org.oagi.score.gateway.http.api.comment.service.CommentService;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -24,7 +24,7 @@ public class CommentController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Comment> getComments(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @PathVariable("reference") String reference) {
-        if (StringUtils.isEmpty(reference)) {
+        if (!StringUtils.hasLength(reference)) {
             throw new IllegalArgumentException("'reference' parameter must not be empty.");
         }
 
@@ -38,7 +38,7 @@ public class CommentController {
     public void postComment(@AuthenticationPrincipal AuthenticatedPrincipal user,
                             @PathVariable("reference") String reference,
                             @RequestBody PostCommentRequest request) {
-        if (StringUtils.isEmpty(reference)) {
+        if (!StringUtils.hasLength(reference)) {
             throw new IllegalArgumentException("'reference' parameter must not be empty.");
         }
 

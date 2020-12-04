@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.util.ClassUtils;
 
@@ -20,8 +21,6 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.List;
 import java.util.Properties;
-
-import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractJooqScoreRepositoryTest {
@@ -44,19 +43,19 @@ public abstract class AbstractJooqScoreRepositoryTest {
         }
 
         String jdbcDriverClass = (String) properties.get("jdbc.driver");
-        if (isEmpty(jdbcDriverClass)) {
+        if (!StringUtils.hasLength(jdbcDriverClass)) {
             throw new IllegalStateException("'jdbc.driver' property does not define.");
         }
         String jdbcUrl = (String) properties.get("jdbc.url");
-        if (isEmpty(jdbcUrl)) {
+        if (!StringUtils.hasLength(jdbcUrl)) {
             throw new IllegalStateException("'jdbc.url' property does not define.");
         }
         String jdbcUser = (String) properties.get("jdbc.user");
-        if (isEmpty(jdbcUser)) {
+        if (!StringUtils.hasLength(jdbcUser)) {
             throw new IllegalStateException("'jdbc.user' property does not define.");
         }
         String jdbcPassword = (String) properties.get("jdbc.password");
-        if (isEmpty(jdbcPassword)) {
+        if (!StringUtils.hasLength(jdbcPassword)) {
             throw new IllegalStateException("'jdbc.password' property does not define.");
         }
 

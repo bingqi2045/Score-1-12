@@ -203,13 +203,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), ACC.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ACC.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
@@ -397,13 +397,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ASCC_MANIFEST.ASCC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), ASCC.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCC.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
@@ -518,13 +518,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(BCC_MANIFEST.BCC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), BCC.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCC.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
@@ -639,13 +639,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), ASCCP.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCCP.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
@@ -762,13 +762,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(BCCP_MANIFEST.BCCP_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), BCCP.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCCP.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
@@ -864,13 +864,13 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(DT.DT_ID.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getDen())) {
+        if (StringUtils.hasLength(request.getDen())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDen(), DT.DEN));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (StringUtils.hasLength(request.getDefinition())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), DT.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getModule())) {
+        if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (!request.getDtTypes().isEmpty()) {

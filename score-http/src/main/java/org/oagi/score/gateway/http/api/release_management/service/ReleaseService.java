@@ -164,7 +164,7 @@ public class ReleaseService implements InitializingBean {
                 String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getReleaseNum())) {
+        if (StringUtils.hasLength(request.getReleaseNum())) {
             conditions.add(RELEASE.RELEASE_NUM.containsIgnoreCase(request.getReleaseNum().trim()));
         }
         if (!request.getExcludes().isEmpty()) {

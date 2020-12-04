@@ -44,10 +44,10 @@ public class PendingListController {
         request.setEmail(email);
         request.setProviderName(providerName);
 
-        if (!StringUtils.isEmpty(createStart)) {
+        if (StringUtils.hasLength(createStart)) {
             request.setCreateStartDate(new Date(Long.valueOf(createStart)));
         }
-        if (!StringUtils.isEmpty(createEnd)) {
+        if (StringUtils.hasLength(createEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(createEnd));
             calendar.add(Calendar.DATE, 1);

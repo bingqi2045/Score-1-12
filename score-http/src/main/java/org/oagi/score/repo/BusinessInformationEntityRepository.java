@@ -417,14 +417,14 @@ public class BusinessInformationEntityRepository {
         private int numberOfRows = -1;
 
         public SelectBieListArguments setPropertyTerm(String propertyTerm) {
-            if (!StringUtils.isEmpty(propertyTerm)) {
+            if (StringUtils.hasLength(propertyTerm)) {
                 conditions.addAll(contains(propertyTerm, ASCCP.PROPERTY_TERM));
             }
             return this;
         }
 
         public SelectBieListArguments setBusinessContext(String businessContext) {
-            if (!StringUtils.isEmpty(businessContext)) {
+            if (StringUtils.hasLength(businessContext)) {
                 conditions.addAll(contains(businessContext, BIZ_CTX.NAME));
             }
             return this;
@@ -520,7 +520,7 @@ public class BusinessInformationEntityRepository {
         }
 
         public SelectBieListArguments setSort(String field, String direction) {
-            if (!StringUtils.isEmpty(field)) {
+            if (StringUtils.hasLength(field)) {
                 switch (field) {
                     case "state":
                         if ("asc".equals(direction)) {

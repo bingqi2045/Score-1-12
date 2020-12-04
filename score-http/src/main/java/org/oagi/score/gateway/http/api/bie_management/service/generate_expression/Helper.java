@@ -69,7 +69,7 @@ class Helper {
         sb.append(codeList.getAgencyId()).append('_');
         sb.append(codeList.getVersionId()).append('_');
         String name = codeList.getName();
-        if (!StringUtils.isEmpty(name)) {
+        if (StringUtils.hasLength(name)) {
             sb.append(Utility.toCamelCase(name)).append("ContentType").append('_');
         }
         sb.append(codeList.getListId());
@@ -87,7 +87,7 @@ class Helper {
         sb.append(agencyIdListValue.getValue()).append('_');
         sb.append(agencyIdList.getVersionId()).append('_');
         String name = agencyIdList.getName();
-        if (!StringUtils.isEmpty(name)) {
+        if (StringUtils.hasLength(name)) {
             sb.append(Utility.toCamelCase(name)).append("ContentType").append('_');
         }
         sb.append(agencyIdList.getListId());

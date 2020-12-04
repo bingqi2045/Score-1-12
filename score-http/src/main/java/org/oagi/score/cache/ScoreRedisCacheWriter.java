@@ -1,6 +1,8 @@
 package org.oagi.score.cache;
 
 import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.data.redis.cache.CacheStatistics;
+import org.springframework.data.redis.cache.CacheStatisticsCollector;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,6 +23,7 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
 
     private final RedisConnectionFactory connectionFactory;
     private final Duration sleepTime;
+    private final CacheStatisticsCollector statistics;
 
     /**
      * @param connectionFactory must not be {@literal null}.
@@ -31,24 +34,29 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
 
     /**
      * @param connectionFactory must not be {@literal null}.
-     * @param sleepTime         sleep time between lock request attempts. Must not be {@literal null}. Use {@link Duration#ZERO}
-     *                          to disable locking.
+     * @param sleepTime sleep time between lock request attempts. Must not be {@literal null}. Use {@link Duration#ZERO}
+     *          to disable locking.
      */
     ScoreRedisCacheWriter(RedisConnectionFactory connectionFactory, Duration sleepTime) {
+        this(connectionFactory, sleepTime, CacheStatisticsCollector.none());
+    }
+
+    /**
+     * @param connectionFactory must not be {@literal null}.
+     * @param sleepTime sleep time between lock request attempts. Must not be {@literal null}. Use {@link Duration#ZERO}
+     *          to disable locking.
+     * @param cacheStatisticsCollector must not be {@literal null}.
+     */
+    ScoreRedisCacheWriter(RedisConnectionFactory connectionFactory, Duration sleepTime,
+                          CacheStatisticsCollector cacheStatisticsCollector) {
 
         Assert.notNull(connectionFactory, "ConnectionFactory must not be null!");
         Assert.notNull(sleepTime, "SleepTime must not be null!");
+        Assert.notNull(cacheStatisticsCollector, "CacheStatisticsCollector must not be null!");
 
         this.connectionFactory = connectionFactory;
         this.sleepTime = sleepTime;
-    }
-
-    static boolean shouldExpireWithin(@Nullable Duration ttl) {
-        return ttl != null && !ttl.isZero() && !ttl.isNegative();
-    }
-
-    private static byte[] createCacheLockKey(String name) {
-        return (name + "~lock").getBytes(StandardCharsets.UTF_8);
+        this.statistics = cacheStatisticsCollector;
     }
 
     /*
@@ -72,6 +80,8 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
 
             return "OK";
         });
+
+        statistics.incPuts(name);
     }
 
     /*
@@ -84,7 +94,17 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
 
-        return execute(name, connection -> connection.get(key));
+        byte[] result = execute(name, connection -> connection.get(key));
+
+        statistics.incGets(name);
+
+        if (result != null) {
+            statistics.incHits(name);
+        } else {
+            statistics.incMisses(name);
+        }
+
+        return result;
     }
 
     /*
@@ -105,11 +125,17 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
             }
 
             try {
-                if (connection.setNX(key, value)) {
 
-                    if (shouldExpireWithin(ttl)) {
-                        connection.pExpire(key, ttl.toMillis());
-                    }
+                boolean put;
+
+                if (shouldExpireWithin(ttl)) {
+                    put = connection.set(key, value, Expiration.from(ttl), RedisStringCommands.SetOption.ifAbsent());
+                } else {
+                    put = connection.setNX(key, value);
+                }
+
+                if (put) {
+                    statistics.incPuts(name);
                     return null;
                 }
 
@@ -134,6 +160,7 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
         Assert.notNull(key, "Key must not be null!");
 
         execute(name, connection -> connection.del(key));
+        statistics.incDeletes(name);
     }
 
     /*
@@ -161,6 +188,7 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
                         .toArray(new byte[0][]);
 
                 if (keys.length > 0) {
+                    statistics.incDeletesBy(name, keys.length);
                     connection.del(keys);
                 }
             } finally {
@@ -172,6 +200,33 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
 
             return "OK";
         });
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.CacheStatisticsProvider#getCacheStatistics(java.lang.String)
+     */
+    @Override
+    public CacheStatistics getCacheStatistics(String cacheName) {
+        return statistics.getCacheStatistics(cacheName);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#clearStatistics(java.lang.String)
+     */
+    @Override
+    public void clearStatistics(String name) {
+        statistics.reset(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#with(CacheStatisticsCollector)
+     */
+    @Override
+    public RedisCacheWriter withStatisticsCollector(CacheStatisticsCollector cacheStatisticsCollector) {
+        return new ScoreRedisCacheWriter(connectionFactory, sleepTime, cacheStatisticsCollector);
     }
 
     /**
@@ -240,6 +295,7 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
             return;
         }
 
+        long lockWaitTimeNs = System.nanoTime();
         try {
 
             while (doCheckLock(name, connection)) {
@@ -252,6 +308,16 @@ public class ScoreRedisCacheWriter implements RedisCacheWriter {
 
             throw new PessimisticLockingFailureException(String.format("Interrupted while waiting to unlock cache %s", name),
                     ex);
+        } finally {
+            statistics.incLockTime(name, System.nanoTime() - lockWaitTimeNs);
         }
+    }
+
+    static boolean shouldExpireWithin(@Nullable Duration ttl) {
+        return ttl != null && !ttl.isZero() && !ttl.isNegative();
+    }
+
+    private static byte[] createCacheLockKey(String name) {
+        return (name + "~lock").getBytes(StandardCharsets.UTF_8);
     }
 }

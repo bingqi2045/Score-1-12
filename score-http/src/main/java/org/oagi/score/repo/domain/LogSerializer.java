@@ -464,7 +464,7 @@ public class LogSerializer {
         properties.put("component", "codeListValue");
         properties.put("guid", codeListValueRecord.getGuid());
         properties.put("value", codeListValueRecord.getValue());
-        properties.put("name", codeListValueRecord.getName());
+        properties.put("meaning", codeListValueRecord.getMeaning());
         properties.put("definition", codeListValueRecord.getDefinition());
         properties.put("definitionSource", codeListValueRecord.getDefinitionSource());
         properties.put("deprecated", (byte) 1 == codeListValueRecord.getIsDeprecated());
@@ -584,13 +584,13 @@ public class LogSerializer {
 
     @SneakyThrows()
     public JsonObject deserialize(String snapshot) {
-        if (StringUtils.isEmpty(snapshot)) {
+        if (!StringUtils.hasLength(snapshot)) {
             return null;
         }
 
         JsonObject properties = this.gson.fromJson(snapshot, JsonObject.class);
         String component = properties.get("component").getAsString();
-        if (StringUtils.isEmpty(component)) {
+        if (!StringUtils.hasLength(component)) {
             return properties;
         }
 

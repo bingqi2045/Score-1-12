@@ -236,7 +236,7 @@ public class BccpWriteRepository {
                     .set(BCCP.PROPERTY_TERM, request.getPropertyTerm())
                     .set(BCCP.DEN, request.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
         }
-        if (StringUtils.isEmpty(request.getDefaultValue()) && StringUtils.isEmpty(request.getFixedValue())) {
+        if (!StringUtils.hasLength(request.getDefaultValue()) && !StringUtils.hasLength(request.getFixedValue())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .setNull(BCCP.DEFAULT_VALUE)
                     .setNull(BCCP.FIXED_VALUE);

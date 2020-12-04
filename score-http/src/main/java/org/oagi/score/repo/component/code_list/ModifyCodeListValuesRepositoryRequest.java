@@ -16,7 +16,7 @@ public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
 
     public static class CodeListValue {
         private String value;
-        private String name;
+        private String meaning;
         private String definition;
         private String definitionSource;
 
@@ -33,12 +33,12 @@ public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
             this.value = value;
         }
 
-        public String getName() {
-            return name;
+        public String getMeaning() {
+            return meaning;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setMeaning(String meaning) {
+            this.meaning = meaning;
         }
 
         public String getDefinition() {

@@ -76,9 +76,9 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     public final TableField<CodeListValueRecord, String> VALUE = createField(DSL.name("value"), SQLDataType.CLOB.nullable(false), this, "The code list value used in the instance data, e.g., EA, US-EN.");
 
     /**
-     * The column <code>oagi.code_list_value.name</code>. Pretty print name of the code list value, e.g., 'Each' for EA, 'English' for EN.
+     * The column <code>oagi.code_list_value.meaning</code>. The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.
      */
-    public final TableField<CodeListValueRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100), this, "Pretty print name of the code list value, e.g., 'Each' for EA, 'English' for EN.");
+    public final TableField<CodeListValueRecord, String> MEANING = createField(DSL.name("meaning"), SQLDataType.VARCHAR(100), this, "The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.");
 
     /**
      * The column <code>oagi.code_list_value.definition</code>. Long description or explannation of the code list value, e.g., 'EA is a discrete quantity for counting each unit of an item, such as, 2 shampoo bottles, 3 box of cereals'.

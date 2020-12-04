@@ -48,7 +48,7 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     }
 
     public String getInitialPropertyTerm() {
-        if (StringUtils.isEmpty(initialPropertyTerm)) {
+        if (!StringUtils.hasLength(initialPropertyTerm)) {
             if (Verb == this.getInitialType()) {
                 return "Do";
             } else {

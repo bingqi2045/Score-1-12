@@ -5,16 +5,16 @@ import lombok.Data;
 @Data
 public class CodeListValue {
 
-    Long codeListValueManifestId;
-    String guid;
-    String value;
-    String name;
-    String definition;
-    String definitionSource;
+    private Long codeListValueManifestId;
+    private String guid;
+    private String value;
+    private String meaning;
+    private String definition;
+    private String definitionSource;
 
-    boolean used;
-    boolean locked;
-    boolean extension;
-    boolean deprecated;
+    private boolean used;
+    private boolean locked;
+    private boolean extension;
+    private boolean deprecated;
 
 }

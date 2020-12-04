@@ -40,13 +40,13 @@ public class ModuleSetController {
 
         request.setName(name);
         request.setDescription(description);
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);
@@ -108,13 +108,13 @@ public class ModuleSetController {
 
         request.setModuleSetId(moduleSetId);
         request.setPath(path);
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

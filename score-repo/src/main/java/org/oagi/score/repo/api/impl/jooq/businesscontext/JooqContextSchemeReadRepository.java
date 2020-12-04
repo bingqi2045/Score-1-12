@@ -22,7 +22,6 @@ import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
-import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -184,16 +183,16 @@ public class JooqContextSchemeReadRepository
                 ));
             }
         }
-        if (!isEmpty(request.getSchemeName())) {
+        if (StringUtils.hasLength(request.getSchemeName())) {
             conditions.addAll(contains(request.getSchemeName(), CTX_SCHEME.SCHEME_NAME));
         }
-        if (!isEmpty(request.getDescription())) {
+        if (StringUtils.hasLength(request.getDescription())) {
             conditions.addAll(contains(request.getDescription(), CTX_SCHEME.DESCRIPTION));
         }
         if (!request.getUpdaterUsernameList().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(
                     new HashSet<>(request.getUpdaterUsernameList()).stream()
-                            .filter(e -> !isEmpty(e)).map(e -> trim(e)).collect(Collectors.toList())
+                            .filter(e -> StringUtils.hasLength(e)).map(e -> trim(e)).collect(Collectors.toList())
             ));
         }
         if (request.getUpdateStartDate() != null) {
@@ -207,7 +206,7 @@ public class JooqContextSchemeReadRepository
     }
 
     private SortField getSortField(GetContextSchemeListRequest request) {
-        if (isEmpty(request.getSortActive())) {
+        if (!StringUtils.hasLength(request.getSortActive())) {
             return null;
         }
 
@@ -288,7 +287,7 @@ public class JooqContextSchemeReadRepository
     }
 
     private SortField getSortField(GetContextSchemeValueListRequest request) {
-        if (isEmpty(request.getSortActive())) {
+        if (!StringUtils.hasLength(request.getSortActive())) {
             return null;
         }
 
@@ -311,7 +310,7 @@ public class JooqContextSchemeReadRepository
 
         List<Condition> conditions = new ArrayList();
 
-        if (!StringUtils.isEmpty(request.getValue())) {
+        if (StringUtils.hasLength(request.getValue())) {
             conditions.addAll(contains(request.getValue(), CTX_SCHEME_VALUE.VALUE));
         }
 

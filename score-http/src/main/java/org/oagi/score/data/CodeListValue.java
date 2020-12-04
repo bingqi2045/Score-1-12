@@ -10,7 +10,7 @@ public class CodeListValue {
     private BigInteger codeListValueId = BigInteger.ZERO;
     private BigInteger codeListId = BigInteger.ZERO;
     private String value;
-    private String name;
+    private String meaning;
     private String definition;
     private String definitionSource;
     private boolean usedIndicator;

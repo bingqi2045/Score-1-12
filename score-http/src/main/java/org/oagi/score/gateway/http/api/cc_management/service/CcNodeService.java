@@ -1,6 +1,5 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -181,7 +181,7 @@ public class CcNodeService extends EventHandler {
                 new CreateAsccpRepositoryRequest(user,
                         request.getRoleOfAccManifestId(), request.getReleaseId());
 
-        if (!StringUtils.isEmpty(repositoryRequest.getInitialPropertyTerm())) {
+        if (StringUtils.hasLength(repositoryRequest.getInitialPropertyTerm())) {
             repositoryRequest.setInitialPropertyTerm(request.getInitialPropertyTerm());
         }
 
@@ -219,7 +219,7 @@ public class CcNodeService extends EventHandler {
         BigInteger releaseId = accManifestRecord.getReleaseId().toBigInteger();
         AccRecord accRecord = accReadRepository.getAccByManifestId(request.getAccManifestId());
 
-        if (StringUtils.isEmpty(accRecord.getObjectClassTerm())) {
+        if (!StringUtils.hasLength(accRecord.getObjectClassTerm())) {
             throw new IllegalArgumentException("Object Class Term is required.");
         }
 

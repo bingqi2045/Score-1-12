@@ -1,7 +1,6 @@
 package org.oagi.score.repo.component.module;
 
 import org.jooq.*;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
@@ -12,6 +11,7 @@ import org.oagi.score.gateway.http.api.module_management.data.ModuleSetModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleSetModuleListRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -49,10 +49,10 @@ public class ModuleSetReadRepository {
                 String>> selectOnConditionStep = getSelectOnConditionStepForModuleSetList();
 
         List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getName())) {
+        if (StringUtils.hasLength(request.getName())) {
             conditions.add(MODULE_SET.NAME.containsIgnoreCase(request.getName()));
         }
-        if (!StringUtils.isEmpty(request.getDescription())) {
+        if (StringUtils.hasLength(request.getDescription())) {
             conditions.add(MODULE_SET.DESCRIPTION.containsIgnoreCase(request.getDescription()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
@@ -74,7 +74,7 @@ public class ModuleSetReadRepository {
         int length = dslContext.fetchCount(conditionStep);
 
         SortField sortField = null;
-        if (!StringUtils.isEmpty(pageRequest.getSortActive())) {
+        if (StringUtils.hasLength(pageRequest.getSortActive())) {
             Field field = null;
             switch (pageRequest.getSortActive()) {
                 case "name":
@@ -181,10 +181,10 @@ public class ModuleSetReadRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
-        if (!StringUtils.isEmpty(request.getPath())) {
+        if (StringUtils.hasLength(request.getPath())) {
             conditions.add(field("path").containsIgnoreCase(request.getPath()));
         }
-        if (!StringUtils.isEmpty(request.getNamespaceUri())) {
+        if (StringUtils.hasLength(request.getNamespaceUri())) {
             conditions.add(NAMESPACE.URI.containsIgnoreCase(request.getNamespaceUri()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
@@ -206,7 +206,7 @@ public class ModuleSetReadRepository {
         int length = dslContext.fetchCount(conditionStep);
 
         SortField sortField = null;
-        if (!StringUtils.isEmpty(pageRequest.getSortActive())) {
+        if (StringUtils.hasLength(pageRequest.getSortActive())) {
             Field field = null;
             switch (pageRequest.getSortActive()) {
                 case "path":

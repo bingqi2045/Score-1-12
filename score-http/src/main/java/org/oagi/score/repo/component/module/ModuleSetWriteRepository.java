@@ -3,7 +3,6 @@ package org.oagi.score.repo.component.module;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.UpdateSetStep;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -11,6 +10,8 @@ import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -35,7 +36,7 @@ public class ModuleSetWriteRepository {
         }
 
         LocalDateTime timestamp = request.getLocalDateTime();
-        if (StringUtils.isEmpty(request.getName())) {
+        if (!StringUtils.hasLength(request.getName())) {
             throw new IllegalArgumentException("The 'name' property of the module set is not allowed an empty value.");
         }
 
@@ -70,16 +71,16 @@ public class ModuleSetWriteRepository {
         }
 
         LocalDateTime timestamp = request.getLocalDateTime();
-        if (StringUtils.isEmpty(request.getName())) {
+        if (!StringUtils.hasLength(request.getName())) {
             throw new IllegalArgumentException("The 'name' property of the module set is not allowed an empty value.");
         }
 
         UpdateSetStep step = dslContext.update(MODULE_SET);
-        if (!StringUtils.equals(moduleSetRecord.getName(), request.getName())) {
+        if (!ObjectUtils.nullSafeEquals(moduleSetRecord.getName(), request.getName())) {
             step = step.set(MODULE_SET.NAME, request.getName());
         }
-        if (!StringUtils.equals(moduleSetRecord.getDescription(), request.getDescription())) {
-            if (StringUtils.isEmpty(request.getDescription())) {
+        if (!ObjectUtils.nullSafeEquals(moduleSetRecord.getDescription(), request.getDescription())) {
+            if (!StringUtils.hasLength(request.getDescription())) {
                 step = step.setNull(MODULE_SET.DESCRIPTION);
             } else {
                 step = step.set(MODULE_SET.DESCRIPTION, request.getDescription());

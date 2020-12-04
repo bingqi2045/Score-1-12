@@ -18,14 +18,14 @@
 
         <lombok.version>1.18.16</lombok.version>
         <mysql-connector-java.version>8.0.22</mysql-connector-java.version>
-        <jOOQ.version>3.14.1</jOOQ.version>
+        <jOOQ.version>3.14.4</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
 
         <junit.version>4.13</junit.version>
         <junit.platform.version>1.6.2</junit.platform.version>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
         <org.apache.commons.lang3.version>3.11</org.apache.commons.lang3.version>
-        <org.springframework.version>5.2.10.RELEASE</org.springframework.version>
+        <org.springframework.version>5.3.1</org.springframework.version>
     </properties>
 
     <dependencies>

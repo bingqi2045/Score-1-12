@@ -389,7 +389,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditAsccp asccp = repository.getAsccpByAsccpManifestId(ascc.getToAsccpManifestId());
         asbiepNode.setAsccpManifestId(asccp.getAsccpManifestId());
 
-        if (StringUtils.isEmpty(asbiepNode.getName())) {
+        if (!StringUtils.hasLength(asbiepNode.getName())) {
             asbiepNode.setName(asccp.getPropertyTerm());
         }
 
@@ -463,7 +463,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         bbiepNode.setBccpManifestId(bccp.getBccpManifestId());
         bbiepNode.setBdtManifestId(bccp.getBdtManifestId());
 
-        if (StringUtils.isEmpty(bbiepNode.getName())) {
+        if (!StringUtils.hasLength(bbiepNode.getName())) {
             bbiepNode.setName(bccp.getPropertyTerm());
         }
 
@@ -1274,7 +1274,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         if (str != null) {
             str = str.trim();
         }
-        if (StringUtils.isEmpty(str)) {
+        if (!StringUtils.hasLength(str)) {
             return null;
         }
         return str;

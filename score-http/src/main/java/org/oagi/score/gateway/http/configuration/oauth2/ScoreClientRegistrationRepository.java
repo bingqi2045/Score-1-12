@@ -67,7 +67,7 @@ public class ScoreClientRegistrationRepository
 
                     String issuerUri = oauth2AppRecord.getIssuerUri();
                     ClientRegistration.Builder builder;
-                    if (!StringUtils.isEmpty(issuerUri)) {
+                    if (StringUtils.hasLength(issuerUri)) {
                         builder = ClientRegistrations.fromIssuerLocation(issuerUri)
                                 .registrationId(oauth2AppRecord.getProviderName());
                     } else {
@@ -79,7 +79,7 @@ public class ScoreClientRegistrationRepository
                     }
 
                     String prompt = oauth2AppRecord.getPrompt();
-                    if (!StringUtils.isEmpty(prompt)) {
+                    if (StringUtils.hasLength(prompt)) {
                         String providerName = oauth2AppRecord.getProviderName();
                         if (!this.additionalParameters.containsKey(providerName)) {
                             this.additionalParameters.put(providerName, new HashMap());
@@ -114,7 +114,7 @@ public class ScoreClientRegistrationRepository
         Map<String, Object> additionalParameters =
                 new LinkedHashMap<>(authorizationRequest.getAdditionalParameters());
         String registrationId = authorizationRequest.getAttribute("registration_id");
-        if (!StringUtils.isEmpty(registrationId)) {
+        if (StringUtils.hasLength(registrationId)) {
             additionalParameters.putAll(
                     this.additionalParameters.getOrDefault(registrationId, Collections.emptyMap())
             );

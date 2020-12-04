@@ -47,13 +47,13 @@ public class PendingListService {
         List<Condition> conditions = new ArrayList();
         conditions.add(APP_OAUTH2_USER.APP_USER_ID.isNull());
 
-        if (!StringUtils.isEmpty(request.getPreferredUsername())) {
+        if (StringUtils.hasLength(request.getPreferredUsername())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getPreferredUsername(), APP_OAUTH2_USER.PREFERRED_USERNAME));
         }
-        if (!StringUtils.isEmpty(request.getEmail())) {
+        if (StringUtils.hasLength(request.getEmail())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getEmail(), APP_OAUTH2_USER.EMAIL));
         }
-        if (!StringUtils.isEmpty(request.getProviderName())) {
+        if (StringUtils.hasLength(request.getProviderName())) {
             conditions.addAll(ContainsFilterBuilder.contains(request.getProviderName(), OAUTH2_APP.PROVIDER_NAME));
         }
         if (request.getCreateStartDate() != null) {

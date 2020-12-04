@@ -4,6 +4,7 @@ import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
 import org.oagi.score.repo.api.user.model.GetScoreUserRequest;
@@ -18,7 +19,6 @@ import java.util.List;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
-import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 
@@ -60,11 +60,11 @@ public class JooqScoreUserReadRepository
             conds.add(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)));
         }
         String username = request.getUsername();
-        if (!isEmpty(username)) {
+        if (StringUtils.hasLength(username)) {
             conds.add(APP_USER.LOGIN_ID.eq(username));
         }
         String oidcSub = request.getOidcSub();
-        if (!isEmpty(oidcSub)) {
+        if (StringUtils.hasLength(oidcSub)) {
             conds.add(APP_OAUTH2_USER.SUB.eq(oidcSub));
         }
 

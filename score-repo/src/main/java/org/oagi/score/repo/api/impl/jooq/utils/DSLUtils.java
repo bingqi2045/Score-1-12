@@ -2,14 +2,13 @@ package org.oagi.score.repo.api.impl.jooq.utils;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 
 public class DSLUtils {
 
@@ -18,7 +17,7 @@ public class DSLUtils {
     }
 
     public static boolean isQuoted(String s) {
-        if (isEmpty(s)) {
+        if (!StringUtils.hasLength(s)) {
             return false;
         }
         if (s.length() > 2 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"') {

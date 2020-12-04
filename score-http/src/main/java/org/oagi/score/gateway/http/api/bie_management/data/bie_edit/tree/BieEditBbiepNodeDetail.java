@@ -72,7 +72,7 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     }
 
     public void setBdtDen(String bdtDen) {
-        if (!StringUtils.isEmpty(bdtDen)) {
+        if (StringUtils.hasLength(bdtDen)) {
             this.bdtDen = bdtDen.replaceAll("_ ", " ");
         }
 

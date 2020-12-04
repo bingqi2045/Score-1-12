@@ -3,9 +3,8 @@ package org.oagi.score.gateway.http.api.bie_management.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
@@ -22,14 +21,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.jooq.impl.DSL.and;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = ScoreHttpApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.MOCK
@@ -48,7 +45,7 @@ public class BieCreateControllerTest {
     private ULong testAsccpManifestId;
     private ULong testBizCtxId = ULong.valueOf(1L);
 
-    @Before
+    @BeforeAll
     public void prepareRequirements() {
         testAsccpManifestId = dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                 .from(ASCCP_MANIFEST)

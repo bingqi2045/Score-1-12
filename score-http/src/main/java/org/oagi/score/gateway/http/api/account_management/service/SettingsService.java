@@ -54,7 +54,7 @@ public class SettingsService {
     }
 
     private String validate(String password) {
-        if (StringUtils.isEmpty(password) || password.length() < 5) {
+        if (!StringUtils.hasLength(password) || password.length() < 5) {
             throw new IllegalArgumentException("Password must be at least 5 characters.");
         }
         return password;

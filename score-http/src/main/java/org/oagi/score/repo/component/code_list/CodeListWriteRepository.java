@@ -340,7 +340,7 @@ public class CodeListWriteRepository {
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
             codeListValueRecord.setGuid(ScoreGuid.randomGuid());
-            codeListValueRecord.setName(codeListValue.getName());
+            codeListValueRecord.setMeaning(codeListValue.getMeaning());
             codeListValueRecord.setValue(codeListValue.getValue());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
@@ -394,7 +394,7 @@ public class CodeListWriteRepository {
 
             CodeListValueRecord codeListValueRecord = codeListValueRecordMapByValue.get(codeListValue.getValue());
 
-            codeListValueRecord.setName(codeListValue.getName());
+            codeListValueRecord.setMeaning(codeListValue.getMeaning());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
             codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
@@ -405,7 +405,7 @@ public class CodeListWriteRepository {
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
             codeListValueRecord.update(
-                    CODE_LIST_VALUE.NAME,
+                    CODE_LIST_VALUE.MEANING,
                     CODE_LIST_VALUE.DEFINITION, CODE_LIST_VALUE.DEFINITION_SOURCE,
                     CODE_LIST_VALUE.LOCKED_INDICATOR, CODE_LIST_VALUE.USED_INDICATOR,
                     CODE_LIST_VALUE.EXTENSION_INDICATOR, CODE_LIST_VALUE.IS_DEPRECATED,

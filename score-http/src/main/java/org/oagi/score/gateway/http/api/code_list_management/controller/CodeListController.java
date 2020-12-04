@@ -50,12 +50,12 @@ public class CodeListController {
         request.setName(name);
         request.setDefinition(definition);
         request.setModule(module);
-        if (!StringUtils.isEmpty(states)) {
+        if (StringUtils.hasLength(states)) {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
             request.setStates(stateStrings.stream()
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
         }
-        if (!StringUtils.isEmpty(deprecated)) {
+        if (StringUtils.hasLength(deprecated)) {
             if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
                 request.setDeprecated(true);
             } else if ("false".equalsIgnoreCase(deprecated.toLowerCase())) {
@@ -64,15 +64,15 @@ public class CodeListController {
         }
         request.setExtensible(extensible);
 
-        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
-                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setOwnerLoginIds(!StringUtils.hasLength(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
 
-        if (!StringUtils.isEmpty(updateStart)) {
+        if (StringUtils.hasLength(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
         }
-        if (!StringUtils.isEmpty(updateEnd)) {
+        if (StringUtils.hasLength(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);

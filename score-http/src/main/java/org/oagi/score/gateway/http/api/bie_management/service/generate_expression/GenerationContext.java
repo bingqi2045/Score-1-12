@@ -736,7 +736,7 @@ public class GenerationContext implements InitializingBean {
 
     public AgencyIdList findAgencyIdList(ContextScheme contextScheme) {
         String schemeAgencyId = contextScheme.getSchemeAgencyId();
-        if (StringUtils.isEmpty(schemeAgencyId)) {
+        if (!StringUtils.hasLength(schemeAgencyId)) {
             return null;
         }
 

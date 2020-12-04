@@ -103,7 +103,7 @@ public class ScoreOAuth2AuthorizationRequestRepository
         }
 
         String requestObjString = (String) sessionRedisOperations.opsForValue().get(getKey(stateParameter));
-        return (StringUtils.isEmpty(requestObjString)) ? null :
+        return (!StringUtils.hasLength(requestObjString)) ? null :
                 mapper.readValue(requestObjString, OAuth2AuthorizationRequest.class);
     }
 }

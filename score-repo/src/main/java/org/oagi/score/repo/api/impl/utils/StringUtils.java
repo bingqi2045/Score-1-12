@@ -2,14 +2,8 @@ package org.oagi.score.repo.api.impl.utils;
 
 public abstract class StringUtils {
 
-    public static boolean isEmpty(Object str) {
-        if (str == null) {
-            return true;
-        }
-        if (str instanceof String) {
-            str = trim((String) str);
-        }
-        return "".equals(str);
+    public static boolean hasLength(String str) {
+        return (str != null && !str.isEmpty());
     }
 
     public static String trim(String str) {

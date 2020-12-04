@@ -3,8 +3,8 @@ package org.oagi.score.gateway.http.api.graph;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.jooq.DSLContext;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.math.BigInteger;
@@ -73,7 +73,7 @@ public class Graph {
     }
 
     public Collection<List<String>> findPaths(String from, String query) {
-        if (StringUtils.isEmpty(query)) {
+        if (!StringUtils.hasLength(query)) {
             return Collections.emptyList();
         }
 
