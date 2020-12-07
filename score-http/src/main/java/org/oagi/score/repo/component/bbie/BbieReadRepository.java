@@ -1,19 +1,20 @@
 package org.oagi.score.repo.component.bbie;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
 import org.oagi.score.repo.component.bccp.BccpReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,10 @@ public class BbieReadRepository {
         if (bccRecord == null) {
             return null;
         }
-        BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(bccManifestRecord.getToBccpManifestId().toBigInteger());
+        BccpManifestRecord bccpManifestRecord = bccpReadRepository.getBccpManifestByManifestId(
+                bccManifestRecord.getToBccpManifestId().toBigInteger());
+        BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(
+                bccpManifestRecord.getBccpManifestId().toBigInteger());
 
         BbieNode bbieNode = new BbieNode();
 
@@ -74,9 +78,46 @@ public class BbieReadRepository {
             bbie.setDefaultValue(bccRecord.getDefaultValue());
             bbie.setFixedValue(bccRecord.getFixedValue());
             bbie.setNillable(bccpRecord.getIsNillable() == 1);
+            BigInteger defaultBdtPriRestriId = getDefaultBdtPriRestriIdByBdtId(
+                    bccpManifestRecord.getBdtManifestId().toBigInteger());
+            bbie.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
         return bbieNode;
+    }
+
+    public BigInteger getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
+        ULong dtManifestId = ULong.valueOf(bdtManifestId);
+        String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
+                .from(DT)
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId));
+        if ("Date Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("date"));
+        } else if ("Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+                BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
+                .from(BDT_PRI_RESTRI)
+                .join(DT).on(BDT_PRI_RESTRI.BDT_ID.eq(DT.DT_ID))
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
+                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
     public BbieNode.Bbie getBbie(BigInteger topLevelAsbiepId, String hashPath) {

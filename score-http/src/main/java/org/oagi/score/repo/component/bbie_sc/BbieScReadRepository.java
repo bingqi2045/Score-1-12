@@ -1,6 +1,9 @@
 package org.oagi.score.repo.component.bbie_sc;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,9 +72,44 @@ public class BbieScReadRepository {
             bbieSc.setCardinalityMax(dtScRecord.getCardinalityMax());
             bbieSc.setDefaultValue(dtScRecord.getDefaultValue());
             bbieSc.setFixedValue(dtScRecord.getFixedValue());
+            bbieSc.setBdtScPriRestriId(getDefaultDtScPriRestriIdByDtScId(dtScManifestId));
         }
 
         return bbieScNode;
+    }
+
+    public BigInteger getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
+        ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
+        String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
+                .from(DT_SC)
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId));
+        if ("Date Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("date"));
+        } else if ("Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+                BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
+                .from(BDT_SC_PRI_RESTRI)
+                .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
+                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
     public BbieScNode.BbieSc getBbieSc(BigInteger topLevelAsbiepId, String hashPath) {
