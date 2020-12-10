@@ -644,8 +644,10 @@ public class AccWriteRepository {
 
         // update acc state.
         accRecord.setState(nextState.name());
-        accRecord.setLastUpdatedBy(userId);
-        accRecord.setLastUpdateTimestamp(timestamp);
+        if(!prevState.canForceMove(request.getToState())) {
+            accRecord.setLastUpdatedBy(userId);
+            accRecord.setLastUpdateTimestamp(timestamp);
+        }
         accRecord.update(ACC.STATE,
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP, ACC.OWNER_USER_ID);
 

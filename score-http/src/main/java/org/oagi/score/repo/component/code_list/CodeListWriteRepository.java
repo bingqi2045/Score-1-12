@@ -252,8 +252,10 @@ public class CodeListWriteRepository {
 
         // update codeList state.
         codeListRecord.setState(nextState.name());
-        codeListRecord.setLastUpdatedBy(userId);
-        codeListRecord.setLastUpdateTimestamp(timestamp);
+        if(!prevState.canForceMove(nextState)) {
+            codeListRecord.setLastUpdatedBy(userId);
+            codeListRecord.setLastUpdateTimestamp(timestamp);
+        }
         codeListRecord.update(CODE_LIST.STATE,
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
 

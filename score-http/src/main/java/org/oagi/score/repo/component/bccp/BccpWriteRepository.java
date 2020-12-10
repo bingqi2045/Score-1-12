@@ -407,8 +407,10 @@ public class BccpWriteRepository {
 
         // update bccp state.
         bccpRecord.setState(nextState.name());
-        bccpRecord.setLastUpdatedBy(userId);
-        bccpRecord.setLastUpdateTimestamp(timestamp);
+        if(!prevState.canForceMove(request.getToState())) {
+            bccpRecord.setLastUpdatedBy(userId);
+            bccpRecord.setLastUpdateTimestamp(timestamp);
+        }
         bccpRecord.update(BCCP.STATE,
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP, BCCP.OWNER_USER_ID);
 

@@ -451,8 +451,10 @@ public class AsccpWriteRepository {
 
         // update asccp state.
         asccpRecord.setState(nextState.name());
-        asccpRecord.setLastUpdatedBy(userId);
-        asccpRecord.setLastUpdateTimestamp(timestamp);
+        if(!prevState.canForceMove(request.getToState())) {
+            asccpRecord.setLastUpdatedBy(userId);
+            asccpRecord.setLastUpdateTimestamp(timestamp);
+        }
         asccpRecord.update(ASCCP.STATE,
                 ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP, ASCCP.OWNER_USER_ID);
 
