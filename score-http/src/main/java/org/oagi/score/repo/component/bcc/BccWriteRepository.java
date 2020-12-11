@@ -185,7 +185,7 @@ public class BccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+        if (!request.isPropagation() && !CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
             throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
