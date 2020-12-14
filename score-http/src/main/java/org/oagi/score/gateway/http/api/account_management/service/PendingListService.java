@@ -2,14 +2,20 @@ package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.score.data.AppUser;
 import org.oagi.score.gateway.http.api.account_management.data.AppOauth2User;
 import org.oagi.score.gateway.http.api.account_management.data.PendingListRequest;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +33,23 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Transactional(readOnly = true)
 public class PendingListService {
 
+    private final MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+
     @Autowired
     private DSLContext dslContext;
 
-    public PageResponse<AppOauth2User> getPendingList(User requester, PendingListRequest request) {
+    @Autowired
+    private SessionService sessionService;
+
+    public PageResponse<AppOauth2User> getPendingList(AuthenticatedPrincipal user, PendingListRequest request) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (!requester.isDeveloper()) {
+            throw new InsufficientAuthenticationException(
+                    messages.getMessage(
+                            "ExceptionTranslationFilter.insufficientAuthentication",
+                            "Full authentication is required to access this resource"));
+        }
+
         SelectOnConditionStep step = dslContext.select(
                 APP_OAUTH2_USER.APP_OAUTH2_USER_ID,
                 APP_OAUTH2_USER.SUB,

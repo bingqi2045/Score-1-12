@@ -8,6 +8,7 @@ import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
@@ -27,7 +28,7 @@ public class PendingListController {
     @RequestMapping(value = "/pending_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<AppOauth2User> getPendingList(
-            @AuthenticationPrincipal User requester,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "preferredUsername", required = false) String preferredUsername,
             @RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "providerName", required = false) String providerName,
