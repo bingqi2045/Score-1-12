@@ -252,7 +252,7 @@ public class CodeListWriteRepository {
 
         // update codeList state.
         codeListRecord.setState(nextState.name());
-        if(!prevState.canForceMove(nextState)) {
+        if (!prevState.canForceMove(nextState)) {
             codeListRecord.setLastUpdatedBy(userId);
             codeListRecord.setLastUpdateTimestamp(timestamp);
         }
@@ -508,7 +508,7 @@ public class CodeListWriteRepository {
 
         AppUserRecord owner = dslContext.selectFrom(APP_USER)
                 .where(APP_USER.APP_USER_ID.eq(codeListRecord.getOwnerUserId())).fetchOneInto(AppUserRecord.class);
-        if (!owner.getIsDeveloper().equals(user.isDeveloper() ? (byte)1 : 0)) {
+        if (!owner.getIsDeveloper().equals(user.isDeveloper() ? (byte) 1 : 0)) {
             String role = user.isDeveloper() ? "'End'" : "'Developer";
             throw new IllegalArgumentException("Only '" + role + " user' can restore the code list.");
         }

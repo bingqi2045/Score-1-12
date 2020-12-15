@@ -644,7 +644,7 @@ public class AccWriteRepository {
 
         // update acc state.
         accRecord.setState(nextState.name());
-        if(!prevState.canForceMove(request.getToState())) {
+        if (!prevState.canForceMove(request.getToState())) {
             accRecord.setLastUpdatedBy(userId);
             accRecord.setLastUpdateTimestamp(timestamp);
         }
@@ -1000,7 +1000,7 @@ public class AccWriteRepository {
                 )
                 .fetchOneInto(AsccManifestRecord.class);
 
-        
+
         if (!asccManifestRecord.getFromAccManifestId().equals(accManifestRecord.getAccManifestId())) {
             throw new IllegalArgumentException("It only allows to modify the core component for the corresponding component.");
         }
@@ -1182,7 +1182,7 @@ public class AccWriteRepository {
                 .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId)).fetch()
                 .forEach(e -> {
-                    associationMap.put(e.get(ASCC.GUID), 
+                    associationMap.put(e.get(ASCC.GUID),
                             new Association(SeqKeyType.ASCC, e.get(ASCC_MANIFEST.ASCC_MANIFEST_ID)));
                 });
 
@@ -1205,7 +1205,7 @@ public class AccWriteRepository {
         JsonObject snapshot = serializer.deserialize(log.getSnapshot().toString());
         JsonArray associations = snapshot.get("associations").getAsJsonArray();
         SeqKey prev = null;
-        for (JsonElement obj: associations) {
+        for (JsonElement obj : associations) {
             String guid = obj.getAsJsonObject().get("guid").getAsString();
             Association association = associationMap.get(guid);
             if (association == null) {

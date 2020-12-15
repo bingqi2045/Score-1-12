@@ -5,7 +5,6 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -24,10 +23,10 @@ import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.data.BCCEntityType.Attribute;
 import static org.oagi.score.data.BCCEntityType.Element;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BCCP;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BCCP_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
@@ -49,8 +48,8 @@ public class BccWriteRepository {
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
     private boolean accAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, String propertyTerm) {
-        while(fromAccManifestRecord != null) {
-            if(dslContext.selectCount()
+        while (fromAccManifestRecord != null) {
+            if (dslContext.selectCount()
                     .from(BCC_MANIFEST)
                     .join(BCCP_MANIFEST).on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                     .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
@@ -91,7 +90,7 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("Target BCCP does not exist.");
         }
 
-        if(accAlreadyContainAssociation(accManifestRecord, bccpRecord.getPropertyTerm())) {
+        if (accAlreadyContainAssociation(accManifestRecord, bccpRecord.getPropertyTerm())) {
             throw new IllegalArgumentException("Target BCCP has already included.");
         }
 

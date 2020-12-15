@@ -13,7 +13,6 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
-import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccWriteRepository;
 import org.oagi.score.repo.component.bcc.UpdateBccPropertiesRepositoryRequest;
@@ -407,7 +406,7 @@ public class BccpWriteRepository {
 
         // update bccp state.
         bccpRecord.setState(nextState.name());
-        if(!prevState.canForceMove(request.getToState())) {
+        if (!prevState.canForceMove(request.getToState())) {
             bccpRecord.setLastUpdatedBy(userId);
             bccpRecord.setLastUpdateTimestamp(timestamp);
         }
