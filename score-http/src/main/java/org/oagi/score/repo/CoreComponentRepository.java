@@ -223,17 +223,30 @@ public class CoreComponentRepository {
                 .fetchOneInto(CcBccpNode.class);
     }
 
-    public List<SummaryCcExt> getSummaryCcExtList() {
-        List<ULong> uegAccIds =
-                dslContext.select(max(ACC.ACC_ID).as("id"))
-                        .from(ACC)
-                        .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                        .where(and(
-                                ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                                ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(0))
-                        ))
-                        .groupBy(ACC.GUID)
-                        .fetchInto(ULong.class);
+    public List<SummaryCcExt> getSummaryCcExtList(BigInteger releaseId) {
+        List<ULong> uegAccIds;
+        if (releaseId.longValue() > 0) {
+            uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
+                            .from(ACC)
+                            .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                            .where(and(
+                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
+                                    ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                            ))
+                            .groupBy(ACC.GUID)
+                            .fetchInto(ULong.class);
+
+        } else {
+            uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
+                            .from(ACC)
+                            .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                            .where(and(
+                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
+                                    ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(0))
+                            ))
+                            .groupBy(ACC.GUID)
+                            .fetchInto(ULong.class);
+        }
 
         return dslContext.select(ACC.ACC_ID,
                 ACC.OBJECT_CLASS_TERM,

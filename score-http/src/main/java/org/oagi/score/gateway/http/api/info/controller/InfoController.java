@@ -16,8 +16,10 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,15 +53,17 @@ public class InfoController {
     @RequestMapping(value = "/info/bie_summary",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public SummaryBieInfo getSummaryBieInfo(@AuthenticationPrincipal AuthenticatedPrincipal user) {
-        return bieInfoService.getSummaryBieInfo(user);
+    public SummaryBieInfo getSummaryBieInfo(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @RequestParam(name="releaseId", required=false, defaultValue="-1") BigInteger releaseId) {
+        return bieInfoService.getSummaryBieInfo(user, releaseId);
     }
 
     @RequestMapping(value = "/info/cc_ext_summary",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public SummaryCcExtInfo getSummaryCcExtInfo(@AuthenticationPrincipal AuthenticatedPrincipal user) {
-        return ccInfoService.getSummaryCcExtInfo(user);
+    public SummaryCcExtInfo getSummaryCcExtInfo(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                @RequestParam(name = "releaseId", required=false, defaultValue="-1") BigInteger releaseId) {
+        return ccInfoService.getSummaryCcExtInfo(user, releaseId);
     }
 
     @RequestMapping(value = "/info/oauth2_providers", method = RequestMethod.GET,

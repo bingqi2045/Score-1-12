@@ -35,30 +35,30 @@ public class BieRepository {
     @Autowired
     private SessionService sessionService;
 
-    public List<SummaryBie> getSummaryBieList() {
-        return dslContext.select(
+    public List<SummaryBie> getSummaryBieList(BigInteger releaseId) {
+
+        SelectOnConditionStep step = dslContext.select(
                 TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
                 TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP,
                 TOP_LEVEL_ASBIEP.STATE,
                 TOP_LEVEL_ASBIEP.OWNER_USER_ID,
-                APP_USER.LOGIN_ID,
+                APP_USER.LOGIN_ID.as("ownerUsername"),
                 ASCCP.PROPERTY_TERM)
                 .from(TOP_LEVEL_ASBIEP)
                 .join(APP_USER).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(ASBIEP).on(
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .fetchStream().map(e -> {
-            SummaryBie item = new SummaryBie();
-            item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
-            item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP));
-            item.setState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
-            item.setOwnerUserId(e.get(TOP_LEVEL_ASBIEP.OWNER_USER_ID).toBigInteger());
-            item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-            item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
-            return item;
-        }).collect(Collectors.toList());
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID));
+
+        SelectConditionStep cond;
+        if (releaseId.longValue() > 0) {
+            cond = step.where(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+        } else {
+            cond = step.where(TOP_LEVEL_ASBIEP.RELEASE_ID.isNotNull());
+        }
+
+        return cond.fetchInto(SummaryBie.class);
     }
 
     public BigInteger getAccManifestIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId, BigInteger releaseId) {
@@ -387,7 +387,7 @@ public class BieRepository {
     }
 
     public List<BieEditAscc> getAsccListByFromAccManifestId(BigInteger fromAccManifestId, boolean isPublished) {
-        List<Condition> conditions = new ArrayList(Arrays.asList(
+        List<Condition> conditions = new ArrayList<>(Arrays.asList(
                 ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
         ));
 
@@ -429,7 +429,7 @@ public class BieRepository {
     }
 
     public List<BieEditBcc> getBccListByFromAccManifestId(BigInteger fromAccManifestId, boolean isPublished) {
-        List<Condition> conditions = new ArrayList(Arrays.asList(
+        List<Condition> conditions = new ArrayList<>(Arrays.asList(
                 ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
         ));
 
@@ -637,7 +637,7 @@ public class BieRepository {
         /*
          * Issue #808
          */
-        List<Condition> conds = new ArrayList();
+        List<Condition> conds = new ArrayList<>();
         conds.add(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId));
         if ("Date Time".equals(bdtDataTypeTerm)) {
             conds.add(XBT.NAME.eq("date time"));
@@ -694,7 +694,7 @@ public class BieRepository {
         /*
          * Issue #808
          */
-        List<Condition> conds = new ArrayList();
+        List<Condition> conds = new ArrayList<>();
         conds.add(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId));
         if ("Date Time".equals(bdtScRepresentationTerm)) {
             conds.add(XBT.NAME.eq("date time"));

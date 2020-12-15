@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,13 +31,13 @@ public class CcInfoService {
     @Autowired
     private SessionService sessionService;
 
-    public SummaryCcExtInfo getSummaryCcExtInfo(AuthenticatedPrincipal user) {
+    public SummaryCcExtInfo getSummaryCcExtInfo(AuthenticatedPrincipal user, BigInteger releaseId) {
         AppUser requester = sessionService.getAppUser(user);
         if (user == null || requester == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");
         }
 
-        List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList();
+        List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList(releaseId);
 
         SummaryCcExtInfo info = new SummaryCcExtInfo();
         Map<CcState, Integer> numberOfCcExtByStates =
