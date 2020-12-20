@@ -89,6 +89,10 @@ public class GraphService {
         return getAsccpGraph(asccpManifestId, excludeUEG);
     }
 
+    public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger targetReleaseId) {
+        return  bieRepository.getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(topLevelAsbiepId, targetReleaseId);
+    }
+
     public Graph getCodeListGraph(BigInteger codeListManifestId) {
         CodeListManifestRecord codeListManifestRecord =
                 codeListReadRepository.getCodeListManifestByManifestId(codeListManifestId);

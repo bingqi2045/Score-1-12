@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -688,6 +689,26 @@ public class BusinessInformationEntityRepository {
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 ))
                 .fetchOptionalInto(BigInteger.class).orElse(null);
+    }
+
+    public AsccpManifestRecord getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(BigInteger topLevelAsbiepId, BigInteger releaseId) {
+        BigInteger asccp_id = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
+                .from(ASBIEP)
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(TOP_LEVEL_ASBIEP).on(and(
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                        ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID)
+                ))
+                .where(and(
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
+                ))
+                .fetchOptionalInto(BigInteger.class).orElse(null);
+
+        return dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(and(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccp_id)),
+                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.graph;
 
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -69,6 +70,24 @@ public class GraphController {
             response.put("graph", graph);
         }
 
+        return response;
+    }
+
+    @RequestMapping(value = "/graphs/uplift/{topLevelAsbiepId:[\\d]+}/{targetReleaseId:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                        @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                        @PathVariable("targetReleaseId") BigInteger targetReleaseId) {
+
+        AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);
+        Graph graph;
+        graph = graphService.getAsccpGraph(asccpManifestRecord.getAsccpManifestId().toBigInteger(), false);
+
+        Map<String, Object> response = new HashMap();
+        response.put("graph", graph);
+        response.put("accManifestId", asccpManifestRecord.getRoleOfAccManifestId());
+        response.put("asccpManifestId", asccpManifestRecord.getAsccpManifestId());
         return response;
     }
 }
