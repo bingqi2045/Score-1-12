@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -62,6 +62,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
      * The column <code>oagi.dt_manifest.dt_id</code>.
      */
     public final TableField<DtManifestRecord, ULong> DT_ID = createField(DSL.name("dt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.dt_manifest.based_dt_manifest_id</code>.
+     */
+    public final TableField<DtManifestRecord, ULong> BASED_DT_MANIFEST_ID = createField(DSL.name("based_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.dt_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
@@ -143,7 +148,7 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -152,6 +157,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     public Dt dt() {
         return new Dt(this, Keys.DT_MANIFEST_DT_ID_FK);
+    }
+
+    public DtManifest dtManifestBasedDtManifestIdFk() {
+        return new DtManifest(this, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK);
     }
 
     public Log log() {
@@ -197,11 +206,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

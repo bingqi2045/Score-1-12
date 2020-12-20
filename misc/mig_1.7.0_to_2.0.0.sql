@@ -340,6 +340,7 @@ CREATE TABLE `dt_manifest` (
     `release_id` bigint(20) unsigned NOT NULL,
     `module_id` bigint(20) unsigned,
     `dt_id` bigint(20) unsigned NOT NULL,
+    `based_dt_manifest_id` bigint(20) unsigned,
     `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
     `log_id` bigint(20) unsigned COMMENT 'A foreign key pointed to a log for the current record.',
     `prev_dt_manifest_id` bigint(20) unsigned,
@@ -351,6 +352,8 @@ CREATE TABLE `dt_manifest` (
     KEY `dt_manifest_log_id_fk` (`log_id`),
     KEY `dt_manifest_prev_dt_manifest_id_fk` (`prev_dt_manifest_id`),
     KEY `dt_manifest_next_dt_manifest_id_fk` (`next_dt_manifest_id`),
+    KEY `dt_manifest_based_dt_manifest_id_fk` (`based_dt_manifest_id`),
+    CONSTRAINT `dt_manifest_based_dt_manifest_id_fk` FOREIGN KEY (`based_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
     CONSTRAINT `dt_manifest_dt_id_fk` FOREIGN KEY (`dt_id`) REFERENCES `dt` (`dt_id`),
     CONSTRAINT `dt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
     CONSTRAINT `dt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
@@ -386,6 +389,18 @@ SET @sql = CONCAT('ALTER TABLE `dt_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_
 PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
+-- Update `dt_manifest`.`based_dt_manifest_id`
+UPDATE `dt_manifest`, (
+    SELECT `dt_manifest`.`dt_manifest_id`, `based_dt_manifest`.`dt_manifest_id` AS `based_dt_manifest_id`
+    FROM `dt`
+             JOIN `dt_manifest` ON `dt`.`dt_id` = `dt_manifest`.`dt_id`
+             JOIN `dt` AS `based_dt` ON `dt`.`based_dt_id` = `based_dt`.`dt_id`
+             JOIN `dt_manifest` AS `based_dt_manifest` ON `based_dt`.`dt_id` = `based_dt_manifest`.`dt_id` AND `dt_manifest`.`release_id` = `based_dt_manifest`.`release_id`
+    WHERE `dt`.`based_dt_id` IS NOT NULL
+) t
+SET `dt_manifest`.`based_dt_manifest_id` = t.`based_dt_manifest_id`
+WHERE `dt_manifest`.`dt_manifest_id` = t.`dt_manifest_id`;
 
 -- Updating core component states' names.
 UPDATE `dt`
