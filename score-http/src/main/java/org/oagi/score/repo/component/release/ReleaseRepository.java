@@ -231,6 +231,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
             // Run after ASCC/BCC dependency resolved b/c ASCC/BCC use ACC's state.
             updateAccDependencies(releaseRecord.getReleaseId().toBigInteger());
+            updateDtDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copySeqKeyRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger());
             updateSeqKeyPrevNext(releaseRecord.getReleaseId().toBigInteger());
@@ -295,6 +296,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
         dslContext.insertInto(DT_MANIFEST,
                 DT_MANIFEST.RELEASE_ID,
                 DT_MANIFEST.DT_ID,
+                DT_MANIFEST.BASED_DT_MANIFEST_ID,
                 DT_MANIFEST.CONFLICT,
                 DT_MANIFEST.LOG_ID,
                 DT_MANIFEST.PREV_DT_MANIFEST_ID,
@@ -302,6 +304,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .select(dslContext.select(
                         inline(ULong.valueOf(releaseId)),
                         DT_MANIFEST.DT_ID,
+                        DT_MANIFEST.BASED_DT_MANIFEST_ID,
                         DT_MANIFEST.CONFLICT,
                         DT_MANIFEST.LOG_ID,
                         DT_MANIFEST.PREV_DT_MANIFEST_ID,
@@ -812,13 +815,11 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void updateDtDependencies(BigInteger releaseId) {
-        dslContext.update(DT_MANIFEST
-                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .join(DT_MANIFEST.as("prev")).on(DT_MANIFEST.PREV_DT_MANIFEST_ID.eq(DT_MANIFEST.as("prev").DT_MANIFEST_ID)))
-                .set(DT_MANIFEST.DT_ID, DT_MANIFEST.as("prev").DT_ID)
-                .set(DT_MANIFEST.LOG_ID, DT_MANIFEST.as("prev").LOG_ID)
+        dslContext.update(DT_MANIFEST.join(DT_MANIFEST.as("based"))
+                .on(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(DT_MANIFEST.as("based").NEXT_DT_MANIFEST_ID)))
+                .set(DT_MANIFEST.BASED_DT_MANIFEST_ID, DT_MANIFEST.as("based").DT_MANIFEST_ID)
                 .where(and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                        DT_MANIFEST.as("based").RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .execute();
 
         dslContext.update(DT_MANIFEST
