@@ -2,9 +2,10 @@ package org.oagi.score.repo.api.bie.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Abie extends Auditable {
+public class Abie implements Serializable {
 
     private BigInteger abieId;
 

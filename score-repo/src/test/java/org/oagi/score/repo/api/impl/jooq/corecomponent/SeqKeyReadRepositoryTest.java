@@ -2,12 +2,11 @@ package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
 import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.corecomponent.BccEntityType;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyResponse;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
-import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
@@ -51,19 +50,19 @@ public class SeqKeyReadRepositoryTest
 
         assertNotNull(seqKeys.get(0).getBccManifestId());
         assertEquals("Release Identifier", getBccpPropertyTerm(seqKeys.get(0).getBccManifestId()));
-        assertEquals(BccEntityType.Attribute, seqKeys.get(0).getEntityType());
+        assertEquals(EntityType.Attribute, seqKeys.get(0).getEntityType());
 
         assertNotNull(seqKeys.get(1).getBccManifestId());
         assertEquals("Version Identifier", getBccpPropertyTerm(seqKeys.get(1).getBccManifestId()));
-        assertEquals(BccEntityType.Attribute, seqKeys.get(1).getEntityType());
+        assertEquals(EntityType.Attribute, seqKeys.get(1).getEntityType());
 
         assertNotNull(seqKeys.get(2).getBccManifestId());
         assertEquals("System Environment Code", getBccpPropertyTerm(seqKeys.get(2).getBccManifestId()));
-        assertEquals(BccEntityType.Attribute, seqKeys.get(2).getEntityType());
+        assertEquals(EntityType.Attribute, seqKeys.get(2).getEntityType());
 
         assertNotNull(seqKeys.get(3).getBccManifestId());
         assertEquals("Language Code", getBccpPropertyTerm(seqKeys.get(3).getBccManifestId()));
-        assertEquals(BccEntityType.Attribute, seqKeys.get(3).getEntityType());
+        assertEquals(EntityType.Attribute, seqKeys.get(3).getEntityType());
 
         assertNotNull(seqKeys.get(4).getAsccManifestId());
         assertEquals("Application Area", getAsccpPropertyTerm(seqKeys.get(4).getAsccManifestId()));

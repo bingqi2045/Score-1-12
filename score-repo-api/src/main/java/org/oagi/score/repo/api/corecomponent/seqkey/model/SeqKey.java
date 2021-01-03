@@ -1,6 +1,6 @@
 package org.oagi.score.repo.api.corecomponent.seqkey.model;
 
-import org.oagi.score.repo.api.corecomponent.BccEntityType;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
 
     private BigInteger bccManifestId;
 
-    private BccEntityType entityType;
+    private EntityType entityType;
 
     private SeqKey prevSeqKey;
 
@@ -55,11 +55,11 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         this.bccManifestId = bccManifestId;
     }
 
-    public BccEntityType getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(BccEntityType entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 

@@ -3,15 +3,19 @@ package org.oagi.score.repo.api.impl.security;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
+import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.security.AccessControlException;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
 public abstract class AccessControlScoreRepositoryFactory implements ScoreRepositoryFactory {
@@ -58,6 +62,8 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
                         return method.invoke(obj, args);
                     } catch (ScoreDataAccessException e) {
                         throw e;
+                    } catch (InvocationTargetException e) {
+                        throw new ScoreDataAccessException(e.getCause());
                     } catch (Throwable e) {
                         throw new ScoreDataAccessException(e);
                     }
@@ -102,6 +108,11 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     }
 
     @Override
+    public ReleaseReadRepository createReleaseReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createReleaseReadRepository(), ReleaseReadRepository.class);
+    }
+
+    @Override
     public SeqKeyReadRepository createSeqKeyReadRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createSeqKeyReadRepository(), SeqKeyReadRepository.class);
     }
@@ -109,5 +120,15 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public SeqKeyWriteRepository createSeqKeyWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createSeqKeyWriteRepository(), SeqKeyWriteRepository.class);
+    }
+
+    @Override
+    public CcReadRepository createCcReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createCcReadRepository(), CcReadRepository.class);
+    }
+
+    @Override
+    public BieReadRepository createBieReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createBieReadRepository(), BieReadRepository.class);
     }
 }

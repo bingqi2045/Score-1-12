@@ -4,7 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.corecomponent.BccEntityType;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyResponse;
@@ -92,8 +92,8 @@ public class JooqSeqKeyReadRepository
             Integer entityType = node.get(BCC.ENTITY_TYPE);
             seqKey.setEntityType(
                     (entityType != null) ?
-                            BccEntityType.valueOf(node.get(BCC.ENTITY_TYPE)) :
-                            BccEntityType.Element
+                            EntityType.valueOf(node.get(BCC.ENTITY_TYPE)) :
+                            EntityType.Element
             );
         }
         seqKey.setPrevSeqKey(prev);

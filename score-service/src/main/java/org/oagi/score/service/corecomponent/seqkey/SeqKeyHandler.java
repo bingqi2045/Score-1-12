@@ -1,7 +1,7 @@
 package org.oagi.score.service.corecomponent.seqkey;
 
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
-import org.oagi.score.repo.api.corecomponent.BccEntityType;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class SeqKeyHandler {
 
                 while (target != null &&
                         target.getBccManifestId() != null &&
-                        target.getEntityType() == BccEntityType.Attribute) {
+                        target.getEntityType() == EntityType.Attribute) {
                     target = target.getNextSeqKey();
                 }
 

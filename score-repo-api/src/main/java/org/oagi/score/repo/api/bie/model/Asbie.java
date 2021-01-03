@@ -1,10 +1,8 @@
 package org.oagi.score.repo.api.bie.model;
 
-import org.oagi.score.repo.api.base.Auditable;
-
 import java.math.BigInteger;
 
-public class Asbie extends Auditable implements BieAssociation {
+public class Asbie implements BieAssociation {
 
     private BigInteger asbieId;
 

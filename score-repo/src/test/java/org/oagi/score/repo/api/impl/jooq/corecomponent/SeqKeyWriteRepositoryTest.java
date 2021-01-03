@@ -2,7 +2,7 @@ package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
 import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.corecomponent.BccEntityType;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
@@ -66,7 +66,7 @@ public class SeqKeyWriteRepositoryTest
                         BCCP.REPRESENTATION_TERM.eq(representationTerm)
                 ))
                 .fetchOneInto(ULong.class));
-        bccRecord.setEntityType(BccEntityType.Element.getValue());
+        bccRecord.setEntityType(EntityType.Element.getValue());
         bccRecord.setDen("All Extension. " + propertyTerm + ". " + representationTerm);
         bccRecord.setIsDeprecated((byte) 0);
         bccRecord.setIsNillable((byte) 0);
@@ -166,10 +166,10 @@ public class SeqKeyWriteRepositoryTest
         assertTrue(seqKeys.size() == 2);
 
         assertEquals(identifierBccManifestId, seqKeys.get(0).getBccManifestId());
-        assertEquals(BccEntityType.Element, seqKeys.get(0).getEntityType());
+        assertEquals(EntityType.Element, seqKeys.get(0).getEntityType());
 
         assertEquals(indicatorBccManifestId, seqKeys.get(1).getBccManifestId());
-        assertEquals(BccEntityType.Element, seqKeys.get(1).getEntityType());
+        assertEquals(EntityType.Element, seqKeys.get(1).getEntityType());
     }
 
     @Test
