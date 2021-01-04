@@ -1,9 +1,8 @@
 package org.oagi.score.repo.api.bie.model;
 
-import org.oagi.score.repo.api.base.Auditable;
-
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Objects;
 
 public class Abie implements Serializable {
 
@@ -95,5 +94,22 @@ public class Abie implements Serializable {
 
     public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Abie abie = (Abie) o;
+        if (abieId != null) {
+            return Objects.equals(abieId, abie.abieId);
+        } else {
+            return Objects.equals(guid, abie.guid);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(abieId, guid);
     }
 }

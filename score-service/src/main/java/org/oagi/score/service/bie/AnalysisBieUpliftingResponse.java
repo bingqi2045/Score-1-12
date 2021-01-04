@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class AnalysisBieUpliftingResponse implements BieUpliftingDiffListener {
+public class AnalysisBieUpliftingResponse implements BieUpliftingListener {
 
     private Map<BigInteger, String> sourceAsbiePathMap = new HashMap();
     private Map<BigInteger, String> targetAsbiePathMap = new HashMap();

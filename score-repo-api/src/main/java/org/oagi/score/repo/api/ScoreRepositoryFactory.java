@@ -2,6 +2,7 @@ package org.oagi.score.repo.api;
 
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieReadRepository;
+import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
@@ -28,6 +29,8 @@ public interface ScoreRepositoryFactory {
     SeqKeyWriteRepository createSeqKeyWriteRepository() throws ScoreDataAccessException;
 
     CcReadRepository createCcReadRepository() throws ScoreDataAccessException;
+
     BieReadRepository createBieReadRepository() throws ScoreDataAccessException;
+    BieWriteRepository createBieWriteRepository() throws ScoreDataAccessException;
 
 }
