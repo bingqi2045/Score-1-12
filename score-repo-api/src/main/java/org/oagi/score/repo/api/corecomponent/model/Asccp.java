@@ -6,7 +6,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Asccp extends Auditable implements Serializable {
+public class Asccp extends Auditable implements CoreComponent, Serializable {
 
     private BigInteger asccpId;
 
@@ -46,6 +46,12 @@ public class Asccp extends Auditable implements Serializable {
         this.asccpId = asccpId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getAsccpId();
+    }
+
+    @Override
     public String getGuid() {
         return guid;
     }

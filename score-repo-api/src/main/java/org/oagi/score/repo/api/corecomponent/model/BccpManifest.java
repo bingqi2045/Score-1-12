@@ -1,9 +1,11 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
+import org.oagi.score.repo.api.corecomponent.CcManifest;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class BccpManifest implements Serializable {
+public class BccpManifest implements CcManifest, Serializable {
 
     private BigInteger bccpManifestId;
 
@@ -29,8 +31,19 @@ public class BccpManifest implements Serializable {
         this.bccpManifestId = bccpManifestId;
     }
 
+    @Override
+    public BigInteger getManifestId() {
+        return getBccpManifestId();
+    }
+
+    @Override
     public BigInteger getReleaseId() {
         return releaseId;
+    }
+
+    @Override
+    public BigInteger getBasedCcId() {
+        return getBccpId();
     }
 
     public void setReleaseId(BigInteger releaseId) {

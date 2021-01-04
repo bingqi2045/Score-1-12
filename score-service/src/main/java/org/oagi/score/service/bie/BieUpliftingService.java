@@ -9,7 +9,9 @@ import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
 import org.oagi.score.service.corecomponent.CcDocument;
+import org.oagi.score.service.corecomponent.CcMatchingService;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
+import org.oagi.score.service.corecomponent.model.CcMatchingScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,9 @@ public class BieUpliftingService {
 
     @Autowired
     private BieReadService bieReadService;
+
+    @Autowired
+    private CcMatchingService ccMatchingService;
 
     private class Association {
 
@@ -80,25 +85,6 @@ public class BieUpliftingService {
 
         public BccpManifest getBccpManifest() {
             return bccpManifest;
-        }
-    }
-
-    private class ScoreResult<T> {
-
-        private double score;
-        private T obj;
-
-        public ScoreResult(double score, T obj) {
-            this.score = score;
-            this.obj = obj;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public T getObj() {
-            return obj;
         }
     }
 
@@ -216,34 +202,6 @@ public class BieUpliftingService {
             return associations;
         }
 
-        private ScoreResult<Association> score(CcDocument sourceCcDocument, CcDocument targetCcDocument,
-                                               Association sourceAssociation, Association targetAssociation) {
-            if (sourceAssociation.getCcAssociation().isAscc()) {
-                Ascc sourceAscc = sourceCcDocument.getAscc((AsccManifest) sourceAssociation.getCcAssociation());
-                Ascc targetAscc = targetCcDocument.getAscc((AsccManifest) targetAssociation.getCcAssociation());
-                if (sourceAscc.getGuid().equals(targetAscc.getGuid())) {
-                    return new ScoreResult(1.0d, targetAssociation);
-                }
-            } else {
-                Bcc sourceBcc = sourceCcDocument.getBcc((BccManifest) sourceAssociation.getCcAssociation());
-                Bcc targetBcc = targetCcDocument.getBcc((BccManifest) targetAssociation.getCcAssociation());
-                if (sourceBcc.getGuid().equals(targetBcc.getGuid())) {
-                    return new ScoreResult(1.0d, targetAssociation);
-                }
-            }
-            return new ScoreResult(0.0d, targetAssociation);
-        }
-
-        private ScoreResult<DtScManifest> score(CcDocument sourceCcDocument, CcDocument targetCcDocument,
-                                                DtScManifest sourceDtScManifest, DtScManifest targetDtScManifest) {
-            DtSc sourceDtSc = sourceCcDocument.getDtSc(sourceDtScManifest);
-            DtSc targetDtSc = targetCcDocument.getDtSc(targetDtScManifest);
-            if (sourceDtSc.getGuid().equals(targetDtSc.getGuid())) {
-                return new ScoreResult(1.0d, targetDtScManifest);
-            }
-            return new ScoreResult(0.0d, targetDtScManifest);
-        }
-
         @Override
         public void visitAsbie(Asbie asbie, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
@@ -256,9 +214,14 @@ public class BieUpliftingService {
             List<Association> targetAssociations =
                     abieTargetAssociationsMap.getOrDefault(asbie.getFromAbieId(), Collections.emptyList());
             Association targetAssociation = (Association) targetAssociations.stream().filter(e -> e.getCcAssociation().isAscc())
-                    .map(e -> score(sourceCcDocument, targetCcDocument, sourceAssociation, e))
-                    .max(Comparator.comparing(ScoreResult::getScore))
-                    .orElse(new ScoreResult(0.0d, null)).getObj();
+                    .map(e -> ccMatchingService.score(
+                            sourceCcDocument,
+                            sourceAssociation,
+                            targetCcDocument,
+                            e,
+                            (ccDocument, association) -> ccDocument.getAscc((AsccManifest) association.getCcAssociation())))
+                    .max(Comparator.comparing(CcMatchingScore::getScore))
+                    .orElse(new CcMatchingScore(0.0d, null, null)).getTarget();
 
             if (targetAssociation == null) {
                 this.listeners.forEach(listener -> {
@@ -296,9 +259,14 @@ public class BieUpliftingService {
             List<Association> targetAssociations =
                     abieTargetAssociationsMap.getOrDefault(bbie.getFromAbieId(), Collections.emptyList());
             Association targetAssociation = (Association) targetAssociations.stream().filter(e -> e.getCcAssociation().isBcc())
-                    .map(e -> score(sourceCcDocument, targetCcDocument, sourceAssociation, e))
-                    .max(Comparator.comparing(ScoreResult::getScore))
-                    .orElse(new ScoreResult(0.0d, null)).getObj();
+                    .map(e -> ccMatchingService.score(
+                            sourceCcDocument,
+                            sourceAssociation,
+                            targetCcDocument,
+                            e,
+                            (ccDocument, association) -> ccDocument.getBcc((BccManifest) association.getCcAssociation())))
+                    .max(Comparator.comparing(CcMatchingScore::getScore))
+                    .orElse(new CcMatchingScore(0.0d, null, null)).getTarget();
 
             if (targetAssociation == null) {
                 this.listeners.forEach(listener -> {
@@ -373,9 +341,14 @@ public class BieUpliftingService {
             String sourcePath = currentSourcePath + ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
             DtScManifest targetDtScManifest =
                     (DtScManifest) bbieTargetDtScManifestsMap.getOrDefault(bbieSc.getBbieId(), Collections.emptyList()).stream()
-                            .map(e -> score(sourceCcDocument, targetCcDocument, sourceDtScManifest, e))
-                            .max(Comparator.comparing(ScoreResult::getScore))
-                            .orElse(new ScoreResult(0.0d, null)).getObj();
+                            .map(e -> ccMatchingService.score(
+                                    sourceCcDocument,
+                                    sourceDtScManifest,
+                                    targetCcDocument,
+                                    e,
+                                    (ccDocument, dtScManifest) -> ccDocument.getDtSc(dtScManifest)))
+                            .max(Comparator.comparing(CcMatchingScore::getScore))
+                            .orElse(new CcMatchingScore(0.0d, null, null)).getTarget();
 
             if (targetDtScManifest == null) {
                 this.listeners.forEach(listener -> {

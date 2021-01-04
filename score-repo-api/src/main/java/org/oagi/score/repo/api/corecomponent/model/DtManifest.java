@@ -1,9 +1,11 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
+import org.oagi.score.repo.api.corecomponent.CcManifest;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class DtManifest implements Serializable {
+public class DtManifest implements CcManifest, Serializable {
 
     private BigInteger dtManifestId;
 
@@ -29,8 +31,19 @@ public class DtManifest implements Serializable {
         this.dtManifestId = dtManifestId;
     }
 
+    @Override
+    public BigInteger getManifestId() {
+        return getDtManifestId();
+    }
+
+    @Override
     public BigInteger getReleaseId() {
         return releaseId;
+    }
+
+    @Override
+    public BigInteger getBasedCcId() {
+        return getDtId();
     }
 
     public void setReleaseId(BigInteger releaseId) {

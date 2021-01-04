@@ -6,9 +6,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-import static org.oagi.score.repo.api.corecomponent.model.OagisComponentType.SemanticGroup;
-
-public class Acc extends Auditable implements Serializable {
+public class Acc extends Auditable implements CoreComponent, Serializable {
 
     private BigInteger accId;
 
@@ -50,6 +48,12 @@ public class Acc extends Auditable implements Serializable {
         this.accId = accId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getAccId();
+    }
+    
+    @Override
     public String getGuid() {
         return guid;
     }

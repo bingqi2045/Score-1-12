@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class Ascc implements CcAssociation, Serializable {
+public class Ascc implements CoreComponent, CcAssociation, Serializable {
 
     private BigInteger asccId;
 
@@ -34,6 +34,12 @@ public class Ascc implements CcAssociation, Serializable {
         this.asccId = asccId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getAsccId();
+    }
+
+    @Override
     public String getGuid() {
         return guid;
     }

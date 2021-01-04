@@ -6,7 +6,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Bccp extends Auditable implements Serializable {
+public class Bccp extends Auditable implements CoreComponent, Serializable {
 
     private BigInteger bccpId;
 
@@ -48,6 +48,12 @@ public class Bccp extends Auditable implements Serializable {
         this.bccpId = bccpId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getBccpId();
+    }
+
+    @Override
     public String getGuid() {
         return guid;
     }

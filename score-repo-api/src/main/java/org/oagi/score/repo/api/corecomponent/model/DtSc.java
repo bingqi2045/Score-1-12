@@ -3,7 +3,7 @@ package org.oagi.score.repo.api.corecomponent.model;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class DtSc implements Serializable {
+public class DtSc implements CoreComponent, Serializable {
 
     private BigInteger dtScId;
 
@@ -39,6 +39,12 @@ public class DtSc implements Serializable {
         this.dtScId = dtScId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getDtScId();
+    }
+
+    @Override
     public String getGuid() {
         return guid;
     }

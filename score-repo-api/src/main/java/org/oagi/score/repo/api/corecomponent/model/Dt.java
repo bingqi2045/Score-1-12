@@ -6,7 +6,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Dt extends Auditable implements Serializable {
+public class Dt extends Auditable implements CoreComponent, Serializable {
 
     private BigInteger dtId;
 
@@ -52,6 +52,12 @@ public class Dt extends Auditable implements Serializable {
         this.dtId = dtId;
     }
 
+    @Override
+    public BigInteger getId() {
+        return getDtId();
+    }
+
+    @Override
     public String getGuid() {
         return guid;
     }
