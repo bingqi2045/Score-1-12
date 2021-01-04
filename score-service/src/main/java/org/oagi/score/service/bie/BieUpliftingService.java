@@ -849,8 +849,13 @@ public class BieUpliftingService {
                         .withAsccpManifestId(targetAsccpManifestId))
                 .getCcPackage());
 
+        List<BigInteger> bizCtxIds = scoreRepositoryFactory.createBieReadRepository()
+                .getAssignedBusinessContext(new GetAssignedBusinessContextRequest(request.getRequester())
+                        .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
+                .getBusinessContextIdList();
+
         BieUpliftingHandler upliftingHandler =
-                new BieUpliftingHandler(request.getRequester(), request.getBizCtxIds(),
+                new BieUpliftingHandler(request.getRequester(), bizCtxIds,
                         sourceBieDocument, targetCcDocument, targetAsccpManifestId);
         BigInteger targetTopLevelAsbiepId = upliftingHandler.uplift();
 

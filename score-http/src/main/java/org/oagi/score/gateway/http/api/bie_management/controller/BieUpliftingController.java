@@ -44,7 +44,6 @@ public class BieUpliftingController {
         request.setRequester(sessionService.asScoreUser(user));
         request.setTopLevelAsbiepId(topLevelAsbiepId);
         request.setTargetAsccpManifestId(upliftBieRequest.getTargetAsccpManifestId());
-        request.setBizCtxIds(upliftBieRequest.getBizCtxIds());
 
         return upliftingService.upliftBie(request);
     }

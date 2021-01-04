@@ -390,4 +390,17 @@ public class JooqBieReadRepository
         return new GetBiePackageResponse(biePackage);
     }
 
+    @Override
+    public GetAssignedBusinessContextResponse getAssignedBusinessContext(
+            GetAssignedBusinessContextRequest request) throws ScoreDataAccessException {
+
+        BigInteger topLevelAsbiepId = request.getTopLevelAsbiepId();
+        List<BigInteger> bizCtxIds = dslContext().select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                .fetchInto(BigInteger.class);
+
+        return new GetAssignedBusinessContextResponse(bizCtxIds);
+    }
+
 }
