@@ -1323,6 +1323,10 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 dslContext.deleteFrom(DT_SC_MANIFEST)
                         .where(DT_SC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
+                dslContext.update(DT_MANIFEST)
+                        .setNull(DT_MANIFEST.BASED_DT_MANIFEST_ID)
+                        .where(DT_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
                 dslContext.deleteFrom(DT_MANIFEST)
                         .where(DT_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
