@@ -697,8 +697,7 @@ public class BieUpliftingService {
                     bbiep.getBasedBccpManifestId());
             DtManifest sourceDtManifest = sourceCcDocument.getDtManifest(
                     sourceBccpManifest.getBdtManifestId());
-            currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId() + ">" +
-                    "BDT-" + sourceDtManifest.getDtManifestId();
+            currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId();
 
             BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
             if (targetBccpManifest == null) {
@@ -726,6 +725,8 @@ public class BieUpliftingService {
                 targetBbiep.setBizTerm(bbiep.getBizTerm());
 
                 this.toBbiepToBbieMap.get(bbiep.getBbiepId()).setToBbiep(targetBbiep);
+
+                currentSourcePath = currentSourcePath + ">" + "BDT-" + sourceDtManifest.getDtManifestId();
                 currentTargetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId();
             }
         }
@@ -804,7 +805,11 @@ public class BieUpliftingService {
                         .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
                 .getBusinessContextIdList();
 
-        BieUpliftingCustomMappingTable customMappingTable = new BieUpliftingCustomMappingTable();
+        List<BieUpliftingCustomMappingTable.BieUpliftingMapping> mappingList = request.getCustomMappingTable();
+        BieUpliftingCustomMappingTable customMappingTable = new BieUpliftingCustomMappingTable(
+                sourceBieDocument.getCcDocument(),
+                targetCcDocument,
+                mappingList);
 
         BieUpliftingHandler upliftingHandler =
                 new BieUpliftingHandler(request.getRequester(), bizCtxIds, customMappingTable,
