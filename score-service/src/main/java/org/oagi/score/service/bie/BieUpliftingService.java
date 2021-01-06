@@ -1,6 +1,5 @@
 package org.oagi.score.service.bie;
 
-import lombok.Data;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.model.*;
@@ -11,6 +10,7 @@ import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable;
 import org.oagi.score.service.corecomponent.CcDocument;
 import org.oagi.score.service.corecomponent.CcMatchingService;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
@@ -18,7 +18,6 @@ import org.oagi.score.service.corecomponent.model.CcMatchingScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -75,23 +74,54 @@ public class BieUpliftingService {
         }
     }
 
-    private class BbieAndBccp {
-
-        private BigInteger bbieId;
-        private BccpManifest bccpManifest;
-
-        public BbieAndBccp(BigInteger bbieId, BccpManifest bccpManifest) {
-            this.bbieId = bbieId;
-            this.bccpManifest = bccpManifest;
+    private List<Association> getAssociationsRegardingBases(String path, CcDocument ccDocument, AccManifest accManifest) {
+        Stack<AccManifest> accManifestStack = new Stack();
+        while (accManifest != null) {
+            accManifestStack.push(accManifest);
+            accManifest = ccDocument.getBasedAccManifest(accManifest);
         }
 
-        public BigInteger getBbieId() {
-            return bbieId;
+        List<Association> associations = new ArrayList();
+        while (!accManifestStack.isEmpty()) {
+            String parentPath = path + ">" + String.join(">", accManifestStack.stream()
+                    .map(e -> "ACC-" + e.getAccManifestId()).collect(Collectors.toList()));
+            accManifest = accManifestStack.pop();
+            associations.addAll(getAssociationsRegardingGroup(parentPath, ccDocument, accManifest));
         }
 
-        public BccpManifest getBccpManifest() {
-            return bccpManifest;
+        return associations;
+    }
+
+    private List<Association> getAssociationsRegardingGroup(String parentPath, CcDocument ccDocument, AccManifest accManifest) {
+        Collection<CcAssociation> ccAssociations = ccDocument.getAssociations(accManifest);
+        List<Association> associations = new ArrayList();
+        for (CcAssociation ccAssociation : ccAssociations) {
+            if (ccAssociation.isAscc()) {
+                AsccManifest asccManifest = (AsccManifest) ccAssociation;
+                AsccpManifest asccpManifest =
+                        ccDocument.getAsccpManifest(asccManifest.getToAsccpManifestId());
+                AccManifest roleOfAccManifest =
+                        ccDocument.getRoleOfAccManifest(asccpManifest);
+                Acc acc = ccDocument.getAcc(roleOfAccManifest);
+                if (acc.isGroup()) {
+                    associations.addAll(
+                            getAssociationsRegardingGroup(
+                                    String.join(">",
+                                            Arrays.asList(parentPath,
+                                                    "ASCC-" + asccManifest.getAsccManifestId(),
+                                                    "ASCCP-" + asccpManifest.getAsccpManifestId(),
+                                                    "ACC-" + roleOfAccManifest.getAccManifestId())
+                                    ),
+                                    ccDocument, roleOfAccManifest)
+                    );
+                    continue;
+                }
+            }
+
+            associations.add(new Association(parentPath, ccAssociation));
         }
+
+        return associations;
     }
 
     private class BieDiff implements BieVisitor {
@@ -104,7 +134,8 @@ public class BieUpliftingService {
 
         private Queue<AsccpManifest> targetAsccpManifestQueue = new LinkedBlockingQueue();
         private Queue<AccManifest> targetAccManifestQueue = new LinkedBlockingQueue();
-        private Queue<BbieAndBccp> targetBccpManifestQueue = new LinkedBlockingQueue();
+        private Bbie previousBbie;
+        private Queue<BccpManifest> targetBccpManifestQueue = new LinkedBlockingQueue();
 
         private String currentSourcePath;
         private String currentTargetPath;
@@ -155,56 +186,6 @@ public class BieUpliftingService {
                         getAssociationsRegardingBases(currentTargetPath, targetCcDocument, targetAccManifest);
                 abieTargetAssociationsMap.put(abie.getAbieId(), targetAssociations);
             }
-        }
-
-        private List<Association> getAssociationsRegardingBases(String path, CcDocument ccDocument, AccManifest accManifest) {
-            Stack<AccManifest> accManifestStack = new Stack();
-            while (accManifest != null) {
-                accManifestStack.push(accManifest);
-                accManifest = ccDocument.getBasedAccManifest(accManifest);
-            }
-
-            List<Association> associations = new ArrayList();
-            while (!accManifestStack.isEmpty()) {
-                String parentPath = path + ">" + String.join(">", accManifestStack.stream()
-                        .map(e -> "ACC-" + e.getAccManifestId()).collect(Collectors.toList()));
-                accManifest = accManifestStack.pop();
-                associations.addAll(getAssociationsRegardingGroup(parentPath, ccDocument, accManifest));
-            }
-
-            return associations;
-        }
-
-        private List<Association> getAssociationsRegardingGroup(String parentPath, CcDocument ccDocument, AccManifest accManifest) {
-            Collection<CcAssociation> ccAssociations = ccDocument.getAssociations(accManifest);
-            List<Association> associations = new ArrayList();
-            for (CcAssociation ccAssociation : ccAssociations) {
-                if (ccAssociation.isAscc()) {
-                    AsccManifest asccManifest = (AsccManifest) ccAssociation;
-                    AsccpManifest asccpManifest =
-                            ccDocument.getAsccpManifest(asccManifest.getToAsccpManifestId());
-                    AccManifest roleOfAccManifest =
-                            ccDocument.getRoleOfAccManifest(asccpManifest);
-                    Acc acc = ccDocument.getAcc(roleOfAccManifest);
-                    if (acc.isGroup()) {
-                        associations.addAll(
-                                getAssociationsRegardingGroup(
-                                        String.join(">",
-                                                Arrays.asList(parentPath,
-                                                        "ASCC-" + asccManifest.getAsccManifestId(),
-                                                        "ASCCP-" + asccpManifest.getAsccpManifestId(),
-                                                        "ACC-" + roleOfAccManifest.getAccManifestId())
-                                        ),
-                                        ccDocument, roleOfAccManifest)
-                        );
-                        continue;
-                    }
-                }
-
-                associations.add(new Association(parentPath, ccAssociation));
-            }
-
-            return associations;
         }
 
         @Override
@@ -295,7 +276,8 @@ public class BieUpliftingService {
 
                 BccpManifest toBccpManifest = targetCcDocument.getBccpManifest(
                         ((BccManifest) targetAssociation.getCcAssociation()).getToBccpManifestId());
-                targetBccpManifestQueue.offer(new BbieAndBccp(bbie.getBbieId(), toBccpManifest));
+                this.previousBbie = bbie;
+                targetBccpManifestQueue.offer(toBccpManifest);
             }
         }
 
@@ -329,11 +311,11 @@ public class BieUpliftingService {
             currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId() + ">" +
                     "BDT-" + sourceDtManifest.getDtManifestId();
 
-            BbieAndBccp targetBccpManifest = targetBccpManifestQueue.poll();
+            BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
             if (targetBccpManifest != null) {
-                BigInteger targetBdtManifestId = targetBccpManifest.getBccpManifest().getBdtManifestId();
+                BigInteger targetBdtManifestId = targetBccpManifest.getBdtManifestId();
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
-                bbieTargetDtScManifestsMap.put(targetBccpManifest.getBbieId(),
+                bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
                 currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBdtManifestId + ">" +
                         "BDT-" + targetDtManifest.getDtManifestId();
@@ -413,10 +395,9 @@ public class BieUpliftingService {
 
     private class BieUpliftingHandler implements BieVisitor {
 
-        private List<BieUpliftingListener> listeners = new ArrayList();
-
         private ScoreUser requester;
         private List<BigInteger> bizCtxIds;
+        private BieUpliftingCustomMappingTable customMappingTable;
 
         private BieDocument sourceBieDocument;
         private CcDocument targetCcDocument;
@@ -424,7 +405,8 @@ public class BieUpliftingService {
 
         private Queue<AsccpManifest> targetAsccpManifestQueue = new LinkedBlockingQueue();
         private Queue<AccManifest> targetAccManifestQueue = new LinkedBlockingQueue();
-        private Queue<BbieAndBccp> targetBccpManifestQueue = new LinkedBlockingQueue();
+        private Bbie previousBbie;
+        private Queue<BccpManifest> targetBccpManifestQueue = new LinkedBlockingQueue();
 
         private String currentSourcePath;
         private String currentTargetPath;
@@ -444,11 +426,13 @@ public class BieUpliftingService {
         private BigInteger targetTopLevelAsbiepId;
 
         BieUpliftingHandler(ScoreUser requester, List<BigInteger> bizCtxIds,
+                            BieUpliftingCustomMappingTable customMappingTable,
                             BieDocument sourceBieDocument, CcDocument targetCcDocument,
                             BigInteger targetAsccpManifestId) {
 
             this.requester = requester;
             this.bizCtxIds = bizCtxIds;
+            this.customMappingTable = customMappingTable;
 
             this.sourceBieDocument = sourceBieDocument;
             this.targetCcDocument = targetCcDocument;
@@ -461,10 +445,6 @@ public class BieUpliftingService {
             this.toBbiepToBbieMap = new HashMap();
             this.bbieMap = new HashMap();
             this.bbieScList = new ArrayList();
-        }
-
-        public void addListener(BieUpliftingListener listener) {
-            this.listeners.add(listener);
         }
 
         public BigInteger uplift() {
@@ -506,6 +486,14 @@ public class BieUpliftingService {
             abieSourceAssociationsMap.put(abie.getAbieId(), sourceAssociations);
 
             AccManifest targetAccManifest = targetAccManifestQueue.poll();
+            if (targetAccManifest == null) {
+                BigInteger targetAccManifestId =
+                        this.customMappingTable.getTargetAccManifestIdBySourcePath(currentSourcePath);
+                if (targetAccManifestId != null) {
+                    targetAccManifest = targetCcDocument.getAccManifest(targetAccManifestId);
+                }
+            }
+
             if (targetAccManifest != null) { // found matched acc
                 List<Association> targetAssociations =
                         getAssociationsRegardingBases(currentTargetPath, targetCcDocument, targetAccManifest);
@@ -523,56 +511,6 @@ public class BieUpliftingService {
                 this.roleOfAbieToAsbiepMap.get(abie.getAbieId()).setRoleOfAbie(targetAbie);
                 this.abieIdToAbieMap.put(abie.getAbieId(), targetAbie);
             }
-        }
-
-        private List<Association> getAssociationsRegardingBases(String path, CcDocument ccDocument, AccManifest accManifest) {
-            Stack<AccManifest> accManifestStack = new Stack();
-            while (accManifest != null) {
-                accManifestStack.push(accManifest);
-                accManifest = ccDocument.getBasedAccManifest(accManifest);
-            }
-
-            List<Association> associations = new ArrayList();
-            while (!accManifestStack.isEmpty()) {
-                String parentPath = path + ">" + String.join(">", accManifestStack.stream()
-                        .map(e -> "ACC-" + e.getAccManifestId()).collect(Collectors.toList()));
-                accManifest = accManifestStack.pop();
-                associations.addAll(getAssociationsRegardingGroup(parentPath, ccDocument, accManifest));
-            }
-
-            return associations;
-        }
-
-        private List<Association> getAssociationsRegardingGroup(String parentPath, CcDocument ccDocument, AccManifest accManifest) {
-            Collection<CcAssociation> ccAssociations = ccDocument.getAssociations(accManifest);
-            List<Association> associations = new ArrayList();
-            for (CcAssociation ccAssociation : ccAssociations) {
-                if (ccAssociation.isAscc()) {
-                    AsccManifest asccManifest = (AsccManifest) ccAssociation;
-                    AsccpManifest asccpManifest =
-                            ccDocument.getAsccpManifest(asccManifest.getToAsccpManifestId());
-                    AccManifest roleOfAccManifest =
-                            ccDocument.getRoleOfAccManifest(asccpManifest);
-                    Acc acc = ccDocument.getAcc(roleOfAccManifest);
-                    if (acc.isGroup()) {
-                        associations.addAll(
-                                getAssociationsRegardingGroup(
-                                        String.join(">",
-                                                Arrays.asList(parentPath,
-                                                        "ASCC-" + asccManifest.getAsccManifestId(),
-                                                        "ASCCP-" + asccpManifest.getAsccpManifestId(),
-                                                        "ACC-" + roleOfAccManifest.getAccManifestId())
-                                        ),
-                                        ccDocument, roleOfAccManifest)
-                        );
-                        continue;
-                    }
-                }
-
-                associations.add(new Association(parentPath, ccAssociation));
-            }
-
-            return associations;
         }
 
         @Override
@@ -596,33 +534,30 @@ public class BieUpliftingService {
                     .max(Comparator.comparing(CcMatchingScore::getScore))
                     .orElse(new CcMatchingScore(0.0d, null, null));
 
+            currentSourcePath = sourceAssociation.getPath();
+            AsccManifest targetAsccManifest = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                this.listeners.forEach(listener -> {
-                    listener.notFoundMatchedAsbie(asbie,
-                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath());
-                });
-
-                currentSourcePath = sourceAssociation.getPath();
-                currentTargetPath = null;
+                BieUpliftingCustomMappingTable.BieUpliftingMapping targetAsccMapping =
+                        this.customMappingTable.getTargetAsccMappingBySourcePath(currentSourcePath);
+                if (targetAsccMapping != null) {
+                    currentTargetPath = targetAsccMapping.getTargetPath();
+                    targetAsccManifest = targetCcDocument.getAsccManifest(targetAsccMapping.getTargetManifestId());
+                }
             } else {
                 Association targetAssociation = (Association) matchingScore.getTarget();
-                this.listeners.forEach(listener -> {
-                    listener.foundBestMatchedAsbie(asbie,
-                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(),
-                            (AsccManifest) targetAssociation.getCcAssociation(), targetAssociation.getPath());
-                });
-
-                currentSourcePath = sourceAssociation.getPath();
                 currentTargetPath = targetAssociation.getPath();
+                targetAsccManifest = (AsccManifest) targetAssociation.getCcAssociation();
+            }
 
+            if (targetAsccManifest != null) {
                 AsccpManifest toAsccpManifest = targetCcDocument.getAsccpManifest(
-                        ((AsccManifest) targetAssociation.getCcAssociation()).getToAsccpManifestId());
+                        targetAsccManifest.getToAsccpManifestId());
                 targetAsccpManifestQueue.offer(toAsccpManifest);
 
                 Asbie targetAsbie = new Asbie();
                 targetAsbie.setGuid(ScoreGuidUtils.randomGuid());
-                targetAsbie.setBasedAsccManifestId(((AsccManifest) targetAssociation.getCcAssociation()).getAsccManifestId());
-                targetAsbie.setPath(targetAssociation.getPath());
+                targetAsbie.setBasedAsccManifestId(targetAsccManifest.getAsccManifestId());
+                targetAsbie.setPath(currentTargetPath);
                 targetAsbie.setHashPath(sha256(targetAsbie.getPath()));
                 targetAsbie.setCardinalityMin(asbie.getCardinalityMin());
                 targetAsbie.setCardinalityMax(asbie.getCardinalityMax());
@@ -660,33 +595,31 @@ public class BieUpliftingService {
                     .max(Comparator.comparing(CcMatchingScore::getScore))
                     .orElse(new CcMatchingScore(0.0d, null, null));
 
+            currentSourcePath = sourceAssociation.getPath();
+            BccManifest targetBccManifest = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                this.listeners.forEach(listener -> {
-                    listener.notFoundMatchedBbie(bbie,
-                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath());
-                });
-
-                currentSourcePath = sourceAssociation.getPath();
-                currentTargetPath = null;
+                BieUpliftingCustomMappingTable.BieUpliftingMapping targetBccMapping =
+                        this.customMappingTable.getTargetBccMappingBySourcePath(currentSourcePath);
+                if (targetBccMapping != null) {
+                    currentTargetPath = targetBccMapping.getTargetPath();
+                    targetBccManifest = targetCcDocument.getBccManifest(targetBccMapping.getTargetManifestId());
+                }
             } else {
                 Association targetAssociation = (Association) matchingScore.getTarget();
-                this.listeners.forEach(listener -> {
-                    listener.foundBestMatchedBbie(bbie,
-                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(),
-                            (BccManifest) targetAssociation.getCcAssociation(), targetAssociation.getPath());
-                });
-
-                currentSourcePath = sourceAssociation.getPath();
                 currentTargetPath = targetAssociation.getPath();
+                targetBccManifest = (BccManifest) targetAssociation.getCcAssociation();
+            }
 
+            if (targetBccManifest != null) {
                 BccpManifest toBccpManifest = targetCcDocument.getBccpManifest(
-                        ((BccManifest) targetAssociation.getCcAssociation()).getToBccpManifestId());
-                targetBccpManifestQueue.offer(new BbieAndBccp(bbie.getBbieId(), toBccpManifest));
+                        targetBccManifest.getToBccpManifestId());
+                this.previousBbie = bbie;
+                targetBccpManifestQueue.offer(toBccpManifest);
 
                 Bbie targetBbie = new Bbie();
                 targetBbie.setGuid(ScoreGuidUtils.randomGuid());
-                targetBbie.setBasedBccManifestId(((BccManifest) targetAssociation.getCcAssociation()).getBccManifestId());
-                targetBbie.setPath(targetAssociation.getPath());
+                targetBbie.setBasedBccManifestId(targetBccManifest.getBccManifestId());
+                targetBbie.setPath(currentTargetPath);
                 targetBbie.setHashPath(sha256(targetBbie.getPath()));
                 targetBbie.setBdtPriRestriId(bbie.getBdtPriRestriId());
                 targetBbie.setCodeListId(bbie.getCodeListId());
@@ -721,6 +654,14 @@ public class BieUpliftingService {
                     "ASCCP-" + sourceAsccpManifest.getAsccpManifestId();
 
             AsccpManifest targetAsccpManifest = targetAsccpManifestQueue.poll();
+            if (targetAsccpManifest == null) {
+                BigInteger targetAsccpManifestId =
+                        this.customMappingTable.getTargetAsccpManifestIdBySourcePath(currentSourcePath);
+                if (targetAsccpManifestId != null) {
+                    targetAsccpManifest = targetCcDocument.getAsccpManifest(targetAsccpManifestId);
+                }
+            }
+
             if (targetAsccpManifest != null) { // found matched asccp
                 AccManifest targetRoleOfAccManifest = targetCcDocument.getRoleOfAccManifest(targetAsccpManifest);
                 targetAccManifestQueue.offer(targetRoleOfAccManifest);
@@ -732,7 +673,7 @@ public class BieUpliftingService {
                 targetAsbiep.setGuid(ScoreGuidUtils.randomGuid());
                 targetAsbiep.setBasedAsccpManifestId(targetAsccpManifest.getAsccpManifestId());
                 targetAsbiep.setPath(currentTargetPath);
-                targetAsbiep.setHashPath(sha256(currentTargetPath));
+                targetAsbiep.setHashPath(sha256(targetAsbiep.getPath()));
                 targetAsbiep.setDefinition(asbiep.getDefinition());
                 targetAsbiep.setRemark(asbiep.getRemark());
                 targetAsbiep.setBizTerm(asbiep.getBizTerm());
@@ -759,25 +700,33 @@ public class BieUpliftingService {
             currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId() + ">" +
                     "BDT-" + sourceDtManifest.getDtManifestId();
 
-            BbieAndBccp targetBccpManifest = targetBccpManifestQueue.poll();
+            BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
+            if (targetBccpManifest == null) {
+                BigInteger targetBccpManifestId =
+                        this.customMappingTable.getTargetBccpManifestIdBySourcePath(currentSourcePath);
+                if (targetBccpManifestId != null) {
+                    targetBccpManifest = targetCcDocument.getBccpManifest(targetBccpManifestId);
+                }
+            }
+
             if (targetBccpManifest != null) {
-                BigInteger targetBdtManifestId = targetBccpManifest.getBccpManifest().getBdtManifestId();
+                BigInteger targetBdtManifestId = targetBccpManifest.getBdtManifestId();
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
-                bbieTargetDtScManifestsMap.put(targetBccpManifest.getBbieId(),
+                bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
-                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBdtManifestId + ">" +
-                        "BDT-" + targetDtManifest.getDtManifestId();
+                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBdtManifestId;
 
                 Bbiep targetBbiep = new Bbiep();
                 targetBbiep.setGuid(ScoreGuidUtils.randomGuid());
-                targetBbiep.setBasedBccpManifestId(targetBccpManifest.getBccpManifest().getBccpManifestId());
-                targetBbiep.setPath(currentTargetPath + ">" + "BCCP-" + targetBdtManifestId);
+                targetBbiep.setBasedBccpManifestId(targetBccpManifest.getBccpManifestId());
+                targetBbiep.setPath(currentTargetPath);
                 targetBbiep.setHashPath(sha256(targetBbiep.getPath()));
                 targetBbiep.setDefinition(bbiep.getDefinition());
                 targetBbiep.setRemark(bbiep.getRemark());
                 targetBbiep.setBizTerm(bbiep.getBizTerm());
 
                 this.toBbiepToBbieMap.get(bbiep.getBbiepId()).setToBbiep(targetBbiep);
+                currentTargetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId();
             }
         }
 
@@ -798,20 +747,21 @@ public class BieUpliftingService {
                             .max(Comparator.comparing(CcMatchingScore::getScore))
                             .orElse(new CcMatchingScore(0.0d, null, null));
 
+            DtScManifest targetDtScManifest = null;
+            String targetPath = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                this.listeners.forEach(listener -> {
-                    listener.notFoundMatchedBbieSc(bbieSc, sourceDtScManifest, sourcePath);
-                });
+                BieUpliftingCustomMappingTable.BieUpliftingMapping targetDtScMapping =
+                        this.customMappingTable.getTargetDtScMappingBySourcePath(currentSourcePath);
+                if (targetDtScMapping != null) {
+                    targetDtScManifest = targetCcDocument.getDtScManifest(targetDtScMapping.getTargetManifestId());
+                    targetPath = targetDtScMapping.getTargetPath();
+                }
             } else {
-                DtScManifest targetDtScManifest = (DtScManifest) matchingScore.getTarget();
-                String targetPath = currentTargetPath + ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                targetDtScManifest = (DtScManifest) matchingScore.getTarget();
+                targetPath = currentTargetPath + ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+            }
 
-                this.listeners.forEach(listener -> {
-                    listener.foundBestMatchedBbieSc(bbieSc,
-                            sourceDtScManifest, sourcePath,
-                            targetDtScManifest, targetPath);
-                });
-
+            if (targetDtScManifest != null) {
                 BbieSc targetBbieSc = new BbieSc();
                 targetBbieSc.setGuid(ScoreGuidUtils.randomGuid());
                 targetBbieSc.setBasedDtScManifestId(targetDtScManifest.getDtScManifestId());
@@ -854,15 +804,16 @@ public class BieUpliftingService {
                         .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
                 .getBusinessContextIdList();
 
+        BieUpliftingCustomMappingTable customMappingTable = new BieUpliftingCustomMappingTable();
+
         BieUpliftingHandler upliftingHandler =
-                new BieUpliftingHandler(request.getRequester(), bizCtxIds,
+                new BieUpliftingHandler(request.getRequester(), bizCtxIds, customMappingTable,
                         sourceBieDocument, targetCcDocument, targetAsccpManifestId);
         BigInteger targetTopLevelAsbiepId = upliftingHandler.uplift();
 
         UpliftBieResponse response = new UpliftBieResponse();
         response.setTopLevelAsbiepId(targetTopLevelAsbiepId);
         return response;
-
     }
 
 }
