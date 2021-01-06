@@ -317,7 +317,7 @@ public class BieUpliftingService {
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
                 bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
-                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBdtManifestId + ">" +
+                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId() + ">" +
                         "BDT-" + targetDtManifest.getDtManifestId();
             }
         }
