@@ -17,8 +17,8 @@ import static org.oagi.score.repo.api.impl.utils.StringUtils.hasLength;
 public class BieUpliftingCustomMappingTable {
 
     @Data
-    public class BieUpliftingMapping {
-        private String type;
+    public static class BieUpliftingMapping {
+        private String bieType;
         private BigInteger bieId;
         private BigInteger sourceManifestId;
         private String sourcePath;
