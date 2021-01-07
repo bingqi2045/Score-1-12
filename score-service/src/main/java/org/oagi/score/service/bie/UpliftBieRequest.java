@@ -2,7 +2,7 @@ package org.oagi.score.service.bie;
 
 import lombok.Data;
 import org.oagi.score.repo.api.user.model.ScoreUser;
-import org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable;
+import org.oagi.score.service.bie.model.BieUpliftingMapping;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -17,6 +17,6 @@ public class UpliftBieRequest {
 
     private BigInteger targetAsccpManifestId;
 
-    private List<BieUpliftingCustomMappingTable.BieUpliftingMapping> customMappingTable = Collections.emptyList();
+    private List<BieUpliftingMapping> customMappingTable = Collections.emptyList();
 
 }

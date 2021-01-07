@@ -1,6 +1,5 @@
 package org.oagi.score.service.bie.model;
 
-import lombok.Data;
 import org.oagi.score.repo.api.corecomponent.model.AsccManifest;
 import org.oagi.score.repo.api.corecomponent.model.AsccpManifest;
 import org.oagi.score.repo.api.corecomponent.model.BccManifest;
@@ -15,16 +14,6 @@ import java.util.stream.Collectors;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.hasLength;
 
 public class BieUpliftingCustomMappingTable {
-
-    @Data
-    public static class BieUpliftingMapping {
-        private String bieType;
-        private BigInteger bieId;
-        private BigInteger sourceManifestId;
-        private String sourcePath;
-        private BigInteger targetManifestId;
-        private String targetPath;
-    }
 
     private Map<String, BieUpliftingMapping> targetAsccMappingMap;
     private Map<String, BigInteger> targetAsccpManifestIdBySourcePathMap;

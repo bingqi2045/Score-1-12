@@ -11,6 +11,7 @@ import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable;
+import org.oagi.score.service.bie.model.BieUpliftingMapping;
 import org.oagi.score.service.corecomponent.CcDocument;
 import org.oagi.score.service.corecomponent.CcMatchingService;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
@@ -537,7 +538,7 @@ public class BieUpliftingService {
             currentSourcePath = sourceAssociation.getPath();
             AsccManifest targetAsccManifest = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingCustomMappingTable.BieUpliftingMapping targetAsccMapping =
+                BieUpliftingMapping targetAsccMapping =
                         this.customMappingTable.getTargetAsccMappingBySourcePath(currentSourcePath);
                 if (targetAsccMapping != null) {
                     currentTargetPath = targetAsccMapping.getTargetPath();
@@ -598,7 +599,7 @@ public class BieUpliftingService {
             currentSourcePath = sourceAssociation.getPath();
             BccManifest targetBccManifest = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingCustomMappingTable.BieUpliftingMapping targetBccMapping =
+                BieUpliftingMapping targetBccMapping =
                         this.customMappingTable.getTargetBccMappingBySourcePath(currentSourcePath);
                 if (targetBccMapping != null) {
                     currentTargetPath = targetBccMapping.getTargetPath();
@@ -751,7 +752,7 @@ public class BieUpliftingService {
             DtScManifest targetDtScManifest = null;
             String targetPath = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingCustomMappingTable.BieUpliftingMapping targetDtScMapping =
+                BieUpliftingMapping targetDtScMapping =
                         this.customMappingTable.getTargetDtScMappingBySourcePath(currentSourcePath);
                 if (targetDtScMapping != null) {
                     targetDtScManifest = targetCcDocument.getDtScManifest(targetDtScMapping.getTargetManifestId());
@@ -805,7 +806,7 @@ public class BieUpliftingService {
                         .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
                 .getBusinessContextIdList();
 
-        List<BieUpliftingCustomMappingTable.BieUpliftingMapping> mappingList = request.getCustomMappingTable();
+        List<BieUpliftingMapping> mappingList = request.getCustomMappingTable();
         BieUpliftingCustomMappingTable customMappingTable = new BieUpliftingCustomMappingTable(
                 sourceBieDocument.getCcDocument(),
                 targetCcDocument,
