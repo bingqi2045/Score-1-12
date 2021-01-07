@@ -15,6 +15,8 @@ import static org.oagi.score.repo.api.impl.utils.StringUtils.hasLength;
 
 public class BieUpliftingCustomMappingTable {
 
+    private List<BieUpliftingMapping> mappingList;
+
     private Map<String, BieUpliftingMapping> targetAsccMappingMap;
     private Map<String, BigInteger> targetAsccpManifestIdBySourcePathMap;
     private Map<String, BigInteger> targetAccManifestIdBySourcePathMap;
@@ -28,6 +30,8 @@ public class BieUpliftingCustomMappingTable {
         if (mappingList == null) {
             throw new IllegalArgumentException();
         }
+
+        this.mappingList = mappingList;
 
         targetAsccMappingMap = mappingList.stream()
                 .filter(e -> hasLength(e.getSourcePath()))
@@ -81,7 +85,7 @@ public class BieUpliftingCustomMappingTable {
                 .collect(Collectors.toMap(BieUpliftingMapping::getSourcePath, Function.identity()));
     }
 
-    private String getLastTag(String path) {
+    public static String getLastTag(String path) {
         if (path == null) {
             return null;
         }
@@ -89,7 +93,7 @@ public class BieUpliftingCustomMappingTable {
         return tags[tags.length - 1];
     }
 
-    private BigInteger extractManifestId(String tag) {
+    public static BigInteger extractManifestId(String tag) {
         return new BigInteger(tag.substring(tag.indexOf('-') + 1));
     }
 
@@ -115,6 +119,10 @@ public class BieUpliftingCustomMappingTable {
 
     public BieUpliftingMapping getTargetDtScMappingBySourcePath(String sourcePath) {
         return targetDtScMappingMap.get(sourcePath);
+    }
+
+    public List<BieUpliftingMapping> getMappingList() {
+        return this.mappingList;
     }
 
 }

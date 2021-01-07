@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class BieUpliftingMapping {
 
-    private String type;
+    private String bieType;
     private BigInteger bieId;
     private BigInteger sourceManifestId;
     private String sourcePath;

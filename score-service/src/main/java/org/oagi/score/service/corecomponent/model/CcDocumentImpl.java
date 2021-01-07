@@ -31,6 +31,8 @@ public class CcDocumentImpl implements CcDocument {
     private Map<BigInteger, DtScManifest> dtScManifestMap;
     private Map<BigInteger, DtSc> dtScMap;
     private Map<BigInteger, List<DtScManifest>> dtScManifestByDtManifestMap;
+    private Map<BigInteger, List<BdtPriRestri>> bdtPriRestriByDtMap;
+    private Map<BigInteger, List<BdtScPriRestri>> bdtScPriRestriByDtScMap;
 
     public CcDocumentImpl(CcPackage ccPackage) {
         this.accManifestMap = ccPackage.getAccManifestList().stream()
@@ -65,6 +67,10 @@ public class CcDocumentImpl implements CcDocument {
                 .collect(Collectors.toMap(DtSc::getDtScId, Function.identity()));
         this.dtScManifestByDtManifestMap = ccPackage.getDtScManifestList().stream()
                 .collect(Collectors.groupingBy(DtScManifest::getOwnerDtManifestId));
+        this.bdtPriRestriByDtMap = ccPackage.getBdtPriRestriList().stream()
+                .collect(Collectors.groupingBy(BdtPriRestri::getBdtId));
+        this.bdtScPriRestriByDtScMap = ccPackage.getBdtScPriRestriList().stream()
+                .collect(Collectors.groupingBy(BdtScPriRestri::getBdtScId));
     }
 
     @Override
@@ -227,5 +233,23 @@ public class CcDocumentImpl implements CcDocument {
         }
 
         return dtScManifestByDtManifestMap.getOrDefault(dtManifest.getDtManifestId(), Collections.emptyList());
+    }
+
+    @Override
+    public List<BdtPriRestri> getBdtPriRestriList(Dt bdt) {
+        if (bdt == null) {
+            return Collections.emptyList();
+        }
+
+        return bdtPriRestriByDtMap.getOrDefault(bdt.getDtId(), Collections.emptyList());
+    }
+
+    @Override
+    public List<BdtScPriRestri> getBdtScPriRestriList(DtSc bdtSc) {
+        if (bdtSc == null) {
+            return Collections.emptyList();
+        }
+
+        return bdtScPriRestriByDtScMap.getOrDefault(bdtSc.getDtScId(), Collections.emptyList());
     }
 }

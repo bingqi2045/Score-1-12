@@ -27,6 +27,9 @@ public class CcPackage {
     private List<DtScManifest> dtScManifestList;
     private List<DtSc> dtScList;
 
+    private List<BdtPriRestri> bdtPriRestriList;
+    private List<BdtScPriRestri> bdtScPriRestriList;
+
     public List<AccManifest> getAccManifestList() {
         return accManifestList;
     }
@@ -145,5 +148,21 @@ public class CcPackage {
 
     public void setDtScList(List<DtSc> dtScList) {
         this.dtScList = dtScList;
+    }
+
+    public List<BdtPriRestri> getBdtPriRestriList() {
+        return bdtPriRestriList;
+    }
+
+    public void setBdtPriRestriList(List<BdtPriRestri> bdtPriRestriList) {
+        this.bdtPriRestriList = bdtPriRestriList;
+    }
+
+    public List<BdtScPriRestri> getBdtScPriRestriList() {
+        return bdtScPriRestriList;
+    }
+
+    public void setBdtScPriRestriList(List<BdtScPriRestri> bdtScPriRestriList) {
+        this.bdtScPriRestriList = bdtScPriRestriList;
     }
 }

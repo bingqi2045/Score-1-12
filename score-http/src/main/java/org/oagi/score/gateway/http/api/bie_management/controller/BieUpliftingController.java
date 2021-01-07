@@ -38,12 +38,10 @@ public class BieUpliftingController {
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting", method = RequestMethod.POST)
     public UpliftBieResponse updateBie(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                       @RequestBody UpliftBieRequest upliftBieRequest) {
+                                       @RequestBody UpliftBieRequest request) {
 
-        UpliftBieRequest request = new UpliftBieRequest();
         request.setRequester(sessionService.asScoreUser(user));
         request.setTopLevelAsbiepId(topLevelAsbiepId);
-        request.setTargetAsccpManifestId(upliftBieRequest.getTargetAsccpManifestId());
 
         return upliftingService.upliftBie(request);
     }

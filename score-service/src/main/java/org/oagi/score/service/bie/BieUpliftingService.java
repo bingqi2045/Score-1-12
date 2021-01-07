@@ -5,7 +5,6 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.model.*;
 import org.oagi.score.repo.api.corecomponent.model.*;
 import org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils;
-import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
@@ -23,9 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreDigestUtils.sha256;
+import static org.oagi.score.repo.api.impl.utils.StringUtils.hasLength;
+import static org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable.extractManifestId;
+import static org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable.getLastTag;
 
 @Service
 @Transactional(readOnly = true)
@@ -288,7 +292,7 @@ public class BieUpliftingService {
             AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(
                     asbiep.getBasedAsccpManifestId());
 
-            currentSourcePath = (StringUtils.hasLength(currentSourcePath)) ?
+            currentSourcePath = (hasLength(currentSourcePath)) ?
                     currentSourcePath + ">" + "ASCCP-" + sourceAsccpManifest.getAsccpManifestId() :
                     "ASCCP-" + sourceAsccpManifest.getAsccpManifestId();
 
@@ -296,7 +300,7 @@ public class BieUpliftingService {
             if (targetAsccpManifest != null) { // found matched asccp
                 AccManifest targetRoleOfAccManifest = targetCcDocument.getRoleOfAccManifest(targetAsccpManifest);
                 targetAccManifestQueue.offer(targetRoleOfAccManifest);
-                currentTargetPath = (StringUtils.hasLength(currentTargetPath)) ?
+                currentTargetPath = (hasLength(currentTargetPath)) ?
                         currentTargetPath + ">" + "ASCCP-" + targetAsccpManifest.getAsccpManifestId() :
                         "ASCCP-" + targetAsccpManifest.getAsccpManifestId();
             }
@@ -459,17 +463,279 @@ public class BieUpliftingService {
             targetAsccpManifestQueue.offer(targetAsccpManifest);
         }
 
+        private String extractAbiePath(String assocPath) {
+            Stack<String> stack = new Stack();
+            stack.addAll(Arrays.asList(assocPath.split(">")));
+
+            stack.pop(); // drop the assoc tag.
+            while (!stack.isEmpty()) {
+                String tag = stack.pop();
+                if (tag.startsWith("ACC") && !stack.lastElement().startsWith("ACC")) { // find the last tag of ACCs
+                    stack.push(tag);
+                    return String.join(">", stack);
+                }
+            }
+
+            throw new IllegalStateException();
+        }
+
+        private String extractBbiePath(String bbieScPath) {
+            Stack<String> stack = new Stack();
+            stack.addAll(Arrays.asList(bbieScPath.split(">")));
+
+            stack.pop(); // drop 'BDT_SC' tag
+            stack.pop(); // drop 'BDT' tag
+            stack.pop(); // drop 'BCCP' tag
+
+            return String.join(">", stack);
+        }
+
         @Override
         public void visitEnd(TopLevelAsbiep topLevelAsbiep, BieVisitContext context) {
+            List<Abie> emptySourceAbieList = new ArrayList();
+            List<WrappedAsbie> emptySourceAsbieList = new ArrayList();
+            List<WrappedBbie> emptySourceBbieList = new ArrayList();
+            List<WrappedAsbiep> emptySourceAsbiepList = new ArrayList();
+            List<Bbiep> emptySourceBbiepList = new ArrayList();
+            List<WrappedBbieSc> emptySourceBbieScList = new ArrayList();
+
+            Function<String, Abie> getAbieIfExist = (path) -> {
+                Abie abie = abieIdToAbieMap.values().stream()
+                        .filter(e -> e.getPath().equals(path))
+                        .findAny().orElse(null);
+                if (abie == null) {
+                    abie = emptySourceAbieList.stream()
+                            .filter(e -> e.getPath().equals(path))
+                            .findAny().orElse(null);
+                }
+                return abie;
+            };
+
+            Function<String, Bbie> getBbieIfExist = (path) -> {
+                Bbie bbie = bbieMap.values().stream()
+                        .filter(e -> e.getPath().equals(path))
+                        .findAny().orElse(null);
+                if (bbie == null) {
+                    bbie = emptySourceBbieList.stream()
+                            .map(e -> e.getBbie())
+                            .filter(e -> e.getPath().equals(path))
+                            .findAny().orElse(null);
+                }
+                return bbie;
+            };
+
+            this.customMappingTable.getMappingList().stream()
+                    .filter(e -> !hasLength(e.getSourcePath()))
+                    .forEach(mapping -> {
+                        switch (mapping.getBieType()) {
+                            case "ASBIE":
+                            case "BBIE":
+                                String targetFromAbiePath = extractAbiePath(mapping.getTargetPath());
+                                Abie targetFromAbie = getAbieIfExist.apply(targetFromAbiePath);
+
+                                if (targetFromAbie == null) {
+                                    BigInteger targetAccManifestId = extractManifestId(getLastTag(targetFromAbiePath));
+                                    AccManifest targetAccManifest =
+                                            targetCcDocument.getAccManifest(targetAccManifestId);
+
+                                    targetFromAbie = new Abie();
+                                    targetFromAbie.setGuid(ScoreGuidUtils.randomGuid());
+                                    targetFromAbie.setBasedAccManifestId(targetAccManifest.getAccManifestId());
+                                    targetFromAbie.setPath(targetFromAbiePath);
+                                    targetFromAbie.setHashPath(sha256(targetFromAbie.getPath()));
+
+                                    emptySourceAbieList.add(targetFromAbie);
+                                }
+
+                                break;
+                        }
+
+                        switch (mapping.getBieType()) {
+                            case "ASBIE":
+                                AsccManifest targetAsccManifest =
+                                        targetCcDocument.getAsccManifest(mapping.getTargetManifestId());
+                                Ascc targetAscc = targetCcDocument.getAscc(targetAsccManifest);
+                                AsccpManifest targetAsccpManifest =
+                                        targetCcDocument.getAsccpManifest(targetAsccManifest.getToAsccpManifestId());
+                                AccManifest targetRoleOfAccManifest =
+                                        targetCcDocument.getAccManifest(targetAsccpManifest.getRoleOfAccManifestId());
+
+                                Asbie targetAsbie = new Asbie();
+                                targetAsbie.setGuid(ScoreGuidUtils.randomGuid());
+                                targetAsbie.setBasedAsccManifestId(targetAsccManifest.getAsccManifestId());
+                                targetAsbie.setPath(mapping.getTargetPath());
+                                targetAsbie.setHashPath(sha256(targetAsbie.getPath()));
+                                targetAsbie.setCardinalityMin(targetAscc.getCardinalityMin());
+                                targetAsbie.setCardinalityMax(targetAscc.getCardinalityMax());
+                                targetAsbie.setNillable(false);
+                                targetAsbie.setUsed(true);
+
+                                WrappedAsbie wrappedAsbie = new WrappedAsbie();
+                                wrappedAsbie.setAsbie(targetAsbie);
+                                emptySourceAsbieList.add(wrappedAsbie);
+
+                                Asbiep targetAsbiep = new Asbiep();
+                                targetAsbiep.setGuid(ScoreGuidUtils.randomGuid());
+                                targetAsbiep.setBasedAsccpManifestId(targetAsccpManifest.getAsccpManifestId());
+                                targetAsbiep.setPath(targetAsbie.getPath() + ">" + "ASCCP-" + targetAsccpManifest.getAsccpManifestId());
+                                targetAsbiep.setHashPath(sha256(targetAsbiep.getPath()));
+
+                                WrappedAsbiep wrappedAsbiep = new WrappedAsbiep();
+                                wrappedAsbie.setToAsbiep(wrappedAsbiep);
+                                wrappedAsbiep.setAsbiep(targetAsbiep);
+                                emptySourceAsbiepList.add(wrappedAsbiep);
+
+                                String targetRoleOfAccPath = targetAsbiep.getPath() + ">" + "ACC-" + targetRoleOfAccManifest.getAccManifestId();
+                                Abie targetRoleOfAbie = getAbieIfExist.apply(targetRoleOfAccPath);
+                                if (targetRoleOfAbie == null) {
+                                    targetRoleOfAbie = new Abie();
+                                    targetRoleOfAbie.setGuid(ScoreGuidUtils.randomGuid());
+                                    targetRoleOfAbie.setBasedAccManifestId(targetRoleOfAccManifest.getAccManifestId());
+                                    targetRoleOfAbie.setPath(targetRoleOfAccPath);
+                                    targetRoleOfAbie.setHashPath(sha256(targetRoleOfAbie.getPath()));
+
+                                    emptySourceAbieList.add(targetRoleOfAbie);
+                                }
+
+                                break;
+
+                            case "BBIE":
+                                BccManifest targetBccManifest =
+                                        targetCcDocument.getBccManifest(mapping.getTargetManifestId());
+                                Bcc targetBcc = targetCcDocument.getBcc(targetBccManifest);
+                                BccpManifest targetBccpManifest =
+                                        targetCcDocument.getBccpManifest(targetBccManifest.getToBccpManifestId());
+                                DtManifest targetDtManifest =
+                                        targetCcDocument.getDtManifest(targetBccpManifest.getBdtManifestId());
+                                Dt targetDt = targetCcDocument.getDt(targetDtManifest);
+                                BdtPriRestri targetDefaultBdtPriRestri =
+                                        targetCcDocument.getBdtPriRestriList(targetDt).stream()
+                                                .filter(e -> e.isDefault())
+                                                .findFirst().get();
+
+                                Bbie targetBbie = new Bbie();
+                                targetBbie.setGuid(ScoreGuidUtils.randomGuid());
+                                targetBbie.setBasedBccManifestId(targetBccManifest.getBccManifestId());
+                                targetBbie.setPath(mapping.getTargetPath());
+                                targetBbie.setHashPath(sha256(targetBbie.getPath()));
+                                targetBbie.setBdtPriRestriId(targetDefaultBdtPriRestri.getBdtPriRestriId());
+                                targetBbie.setDefaultValue(targetBcc.getDefaultValue());
+                                targetBbie.setFixedValue(targetBcc.getFixedValue());
+                                targetBbie.setCardinalityMin(targetBcc.getCardinalityMin());
+                                targetBbie.setCardinalityMax(targetBcc.getCardinalityMax());
+                                targetBbie.setNillable(targetBcc.isNillable());
+                                targetBbie.setUsed(true);
+
+                                WrappedBbie wrappedBbie = new WrappedBbie();
+                                wrappedBbie.setBbie(targetBbie);
+                                emptySourceBbieList.add(wrappedBbie);
+
+                                Bbiep targetBbiep = new Bbiep();
+                                targetBbiep.setGuid(ScoreGuidUtils.randomGuid());
+                                targetBbiep.setBasedBccpManifestId(targetBccpManifest.getBccpManifestId());
+                                targetBbiep.setPath(targetBbie.getPath() + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId());
+                                targetBbiep.setHashPath(sha256(targetBbiep.getPath()));
+
+                                wrappedBbie.setToBbiep(targetBbiep);
+                                emptySourceBbiepList.add(targetBbiep);
+
+                                break;
+
+                            case "BBIE_SC":
+                                DtScManifest targetDtScManifest =
+                                        targetCcDocument.getDtScManifest(mapping.getTargetManifestId());
+                                DtSc targetDtSc = targetCcDocument.getDtSc(targetDtScManifest);
+                                BdtScPriRestri targetDefaultBdtScPriRestri =
+                                        targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                                .filter(e -> e.isDefault())
+                                                .findFirst().get();
+
+                                BbieSc targetBbieSc = new BbieSc();
+                                targetBbieSc.setGuid(ScoreGuidUtils.randomGuid());
+                                targetBbieSc.setBasedDtScManifestId(targetDtScManifest.getDtScManifestId());
+                                targetBbieSc.setPath(mapping.getTargetPath());
+                                targetBbieSc.setHashPath(sha256(targetBbieSc.getPath()));
+                                targetBbieSc.setDtScPriRestriId(targetDefaultBdtScPriRestri.getBdtScPriRestriId());
+                                targetBbieSc.setDefaultValue(targetDtSc.getDefaultValue());
+                                targetBbieSc.setFixedValue(targetDtSc.getFixedValue());
+                                targetBbieSc.setCardinalityMin(targetDtSc.getCardinalityMin());
+                                targetBbieSc.setCardinalityMax(targetDtSc.getCardinalityMax());
+                                targetBbieSc.setUsed(true);
+
+                                WrappedBbieSc wrappedBbieSc = new WrappedBbieSc();
+                                wrappedBbieSc.setBbieSc(targetBbieSc);
+                                emptySourceBbieScList.add(wrappedBbieSc);
+
+                                break;
+                        }
+                    });
 
             CreateBieRequest createBieRequest = new CreateBieRequest(this.requester);
             createBieRequest.setBizCtxIds(bizCtxIds);
             createBieRequest.setStatus(topLevelAsbiep.getStatus());
             createBieRequest.setVersion(topLevelAsbiep.getVersion());
             createBieRequest.setTopLevelAsbiep(this.asbiepMap.get(topLevelAsbiep.getAsbiepId()));
-            createBieRequest.setAsbieList(new ArrayList(toAsbiepToAsbieMap.values()));
-            createBieRequest.setBbieList(new ArrayList(toBbiepToBbieMap.values()));
-            createBieRequest.setBbieScList(bbieScList);
+            createBieRequest.setAsbieList(
+                    Stream.concat(toAsbiepToAsbieMap.values().stream(),
+                            emptySourceAsbieList.stream())
+                            .map(asbie -> {
+                                if (asbie.getFromAbie() == null) {
+                                    String targetFromAbiePath = extractAbiePath(asbie.getAsbie().getPath());
+                                    Abie targetFromAbie = getAbieIfExist.apply(targetFromAbiePath);
+                                    if (targetFromAbie == null) {
+                                        throw new IllegalStateException();
+                                    }
+                                    asbie.setFromAbie(targetFromAbie);
+                                }
+
+                                WrappedAsbiep asbiep = asbie.getToAsbiep();
+                                if (asbiep.getRoleOfAbie() == null) {
+                                    AsccpManifest targetAsccpManifest =
+                                            targetCcDocument.getAsccpManifest(asbiep.getAsbiep().getBasedAsccpManifestId());
+                                    String targetRoleOfAbiePath = asbiep.getAsbiep().getPath() + ">" + "ACC-" +
+                                            targetAsccpManifest.getRoleOfAccManifestId();
+                                    Abie targetRoleOfAbie = getAbieIfExist.apply(targetRoleOfAbiePath);
+                                    if (targetRoleOfAbie == null) {
+                                        throw new IllegalStateException();
+                                    }
+                                    asbiep.setRoleOfAbie(targetRoleOfAbie);
+                                }
+
+                                return asbie;
+                            })
+                    .collect(Collectors.toList()));
+            createBieRequest.setBbieList(
+                    Stream.concat(toBbiepToBbieMap.values().stream(),
+                            emptySourceBbieList.stream())
+                            .map(bbie -> {
+                                if (bbie.getFromAbie() == null) {
+                                    String targetFromAbiePath = extractAbiePath(bbie.getBbie().getPath());
+                                    Abie targetFromAbie = getAbieIfExist.apply(targetFromAbiePath);
+                                    if (targetFromAbie == null) {
+                                        throw new IllegalStateException();
+                                    }
+                                    bbie.setFromAbie(targetFromAbie);
+                                }
+
+                                return bbie;
+                            })
+                            .collect(Collectors.toList()));
+            createBieRequest.setBbieScList(
+                    Stream.concat(bbieScList.stream(),
+                            emptySourceBbieScList.stream())
+                            .map(bbieSc -> {
+                                if (bbieSc.getBbie() == null) {
+                                    String targetBbiePath = extractBbiePath(bbieSc.getBbieSc().getPath());
+                                    Bbie targetBbie = getBbieIfExist.apply(targetBbiePath);
+                                    if (targetBbie == null) {
+                                        throw new IllegalStateException();
+                                    }
+                                    bbieSc.setBbie(targetBbie);
+                                }
+
+                                return bbieSc;
+                            })
+                            .collect(Collectors.toList()));
 
             targetTopLevelAsbiepId = scoreRepositoryFactory.createBieWriteRepository()
                     .createBie(createBieRequest)
@@ -650,7 +916,7 @@ public class BieUpliftingService {
             AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(
                     asbiep.getBasedAsccpManifestId());
 
-            currentSourcePath = (StringUtils.hasLength(currentSourcePath)) ?
+            currentSourcePath = (hasLength(currentSourcePath)) ?
                     currentSourcePath + ">" + "ASCCP-" + sourceAsccpManifest.getAsccpManifestId() :
                     "ASCCP-" + sourceAsccpManifest.getAsccpManifestId();
 
@@ -666,7 +932,7 @@ public class BieUpliftingService {
             if (targetAsccpManifest != null) { // found matched asccp
                 AccManifest targetRoleOfAccManifest = targetCcDocument.getRoleOfAccManifest(targetAsccpManifest);
                 targetAccManifestQueue.offer(targetRoleOfAccManifest);
-                currentTargetPath = (StringUtils.hasLength(currentTargetPath)) ?
+                currentTargetPath = (hasLength(currentTargetPath)) ?
                         currentTargetPath + ">" + "ASCCP-" + targetAsccpManifest.getAsccpManifestId() :
                         "ASCCP-" + targetAsccpManifest.getAsccpManifestId();
 
@@ -696,8 +962,6 @@ public class BieUpliftingService {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
             BccpManifest sourceBccpManifest = sourceCcDocument.getBccpManifest(
                     bbiep.getBasedBccpManifestId());
-            DtManifest sourceDtManifest = sourceCcDocument.getDtManifest(
-                    sourceBccpManifest.getBdtManifestId());
             currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId();
 
             BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
@@ -710,11 +974,12 @@ public class BieUpliftingService {
             }
 
             if (targetBccpManifest != null) {
+                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId();
+
                 BigInteger targetBdtManifestId = targetBccpManifest.getBdtManifestId();
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
                 bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
-                currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBdtManifestId;
 
                 Bbiep targetBbiep = new Bbiep();
                 targetBbiep.setGuid(ScoreGuidUtils.randomGuid());
@@ -726,9 +991,6 @@ public class BieUpliftingService {
                 targetBbiep.setBizTerm(bbiep.getBizTerm());
 
                 this.toBbiepToBbieMap.get(bbiep.getBbiepId()).setToBbiep(targetBbiep);
-
-                currentSourcePath = currentSourcePath + ">" + "BDT-" + sourceDtManifest.getDtManifestId();
-                currentTargetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId();
             }
         }
 
@@ -736,8 +998,10 @@ public class BieUpliftingService {
         public void visitBbieSc(BbieSc bbieSc, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
             DtScManifest sourceDtScManifest = sourceCcDocument.getDtScManifest(bbieSc.getBasedDtScManifestId());
+            DtManifest sourceDtManifest = sourceCcDocument.getDtManifest(sourceDtScManifest.getOwnerDtManifestId());
 
-            String sourcePath = currentSourcePath + ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
+            String sourcePath = currentSourcePath + ">" + "BDT-" + sourceDtManifest.getDtManifestId() +
+                    ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
             CcMatchingScore matchingScore =
                     bbieTargetDtScManifestsMap.getOrDefault(bbieSc.getBbieId(), Collections.emptyList()).stream()
                             .map(e -> ccMatchingService.score(
@@ -753,14 +1017,16 @@ public class BieUpliftingService {
             String targetPath = null;
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
                 BieUpliftingMapping targetDtScMapping =
-                        this.customMappingTable.getTargetDtScMappingBySourcePath(currentSourcePath);
+                        this.customMappingTable.getTargetDtScMappingBySourcePath(sourcePath);
                 if (targetDtScMapping != null) {
                     targetDtScManifest = targetCcDocument.getDtScManifest(targetDtScMapping.getTargetManifestId());
                     targetPath = targetDtScMapping.getTargetPath();
                 }
             } else {
                 targetDtScManifest = (DtScManifest) matchingScore.getTarget();
-                targetPath = currentTargetPath + ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetDtScManifest.getOwnerDtManifestId());
+                targetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId() +
+                        ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
             }
 
             if (targetDtScManifest != null) {

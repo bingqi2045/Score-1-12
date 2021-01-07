@@ -792,6 +792,64 @@ public class JooqCcReadRepository
         };
     }
 
+    private SelectJoinStep selectBdtPriRestri() {
+        return dslContext().select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
+                BDT_PRI_RESTRI.BDT_ID,
+                BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
+                BDT_PRI_RESTRI.CODE_LIST_ID,
+                BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                BDT_PRI_RESTRI.IS_DEFAULT)
+                .from(BDT_PRI_RESTRI);
+    }
+
+    private RecordMapper<Record, BdtPriRestri> mapperBdtPriRestri() {
+        return record -> {
+            BdtPriRestri bdtPriRestri = new BdtPriRestri();
+            bdtPriRestri.setBdtPriRestriId(record.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
+            bdtPriRestri.setBdtId(record.get(BDT_PRI_RESTRI.BDT_ID).toBigInteger());
+            if (record.get(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID) != null) {
+                bdtPriRestri.setCdtAwdPriXpsTypeMapId(record.get(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID).toBigInteger());
+            }
+            if (record.get(BDT_PRI_RESTRI.CODE_LIST_ID) != null) {
+                bdtPriRestri.setCodeListId(record.get(BDT_PRI_RESTRI.CODE_LIST_ID).toBigInteger());
+            }
+            if (record.get(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID) != null) {
+                bdtPriRestri.setAgencyIdListId(record.get(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID).toBigInteger());
+            }
+            bdtPriRestri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == (byte) 1);
+            return bdtPriRestri;
+        };
+    }
+
+    private SelectJoinStep selectBdtScPriRestri() {
+        return dslContext().select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
+                BDT_SC_PRI_RESTRI.BDT_SC_ID,
+                BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                BDT_SC_PRI_RESTRI.CODE_LIST_ID,
+                BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                BDT_SC_PRI_RESTRI.IS_DEFAULT)
+                .from(BDT_SC_PRI_RESTRI);
+    }
+
+    private RecordMapper<Record, BdtScPriRestri> mapperBdtScPriRestri() {
+        return record -> {
+            BdtScPriRestri bdtScPriRestri = new BdtScPriRestri();
+            bdtScPriRestri.setBdtScPriRestriId(record.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
+            bdtScPriRestri.setBdtScId(record.get(BDT_SC_PRI_RESTRI.BDT_SC_ID).toBigInteger());
+            if (record.get(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID) != null) {
+                bdtScPriRestri.setCdtScAwdPriXpsTypeMapId(record.get(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID).toBigInteger());
+            }
+            if (record.get(BDT_SC_PRI_RESTRI.CODE_LIST_ID) != null) {
+                bdtScPriRestri.setCodeListId(record.get(BDT_SC_PRI_RESTRI.CODE_LIST_ID).toBigInteger());
+            }
+            if (record.get(BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID) != null) {
+                bdtScPriRestri.setAgencyIdListId(record.get(BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID).toBigInteger());
+            }
+            bdtScPriRestri.setDefault(record.get(BDT_SC_PRI_RESTRI.IS_DEFAULT) == (byte) 1);
+            return bdtScPriRestri;
+        };
+    }
+
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetCcPackageResponse getCcPackage(GetCcPackageRequest request) throws ScoreDataAccessException {
@@ -872,6 +930,9 @@ public class JooqCcReadRepository
                         .map(e -> ULong.valueOf(e.getDtScId())).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperDtSc()));
+
+        ccPackage.setBdtPriRestriList(selectBdtPriRestri().fetch(mapperBdtPriRestri()));
+        ccPackage.setBdtScPriRestriList(selectBdtScPriRestri().fetch(mapperBdtScPriRestri()));
 
         return new GetCcPackageResponse(ccPackage);
     }

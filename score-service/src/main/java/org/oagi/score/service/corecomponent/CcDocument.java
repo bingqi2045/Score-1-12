@@ -43,4 +43,8 @@ public interface CcDocument {
 
     List<DtScManifest> getDtScManifests(DtManifest dtManifest);
 
+    List<BdtPriRestri> getBdtPriRestriList(Dt bdt);
+
+    List<BdtScPriRestri> getBdtScPriRestriList(DtSc bdtSc);
+
 }

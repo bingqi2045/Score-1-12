@@ -105,6 +105,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertAbie(Abie abie, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (abie == null) {
+            throw new IllegalArgumentException();
+        }
         if (abie.getAbieId() != null) {
             return;
         }
@@ -132,6 +135,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertAsbiep(Asbiep asbiep, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (asbiep == null) {
+            throw new IllegalArgumentException();
+        }
         if (asbiep.getAsbiepId() != null) {
             return;
         }
@@ -160,6 +166,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertBbiep(Bbiep bbiep, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (bbiep == null) {
+            throw new IllegalArgumentException();
+        }
         if (bbiep.getBbiepId() != null) {
             return;
         }
@@ -187,6 +196,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertAsbie(Asbie asbie, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (asbie == null) {
+            throw new IllegalArgumentException();
+        }
         if (asbie.getAsbieId() != null) {
             return;
         }
@@ -220,6 +232,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertBbie(Bbie bbie, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (bbie == null) {
+            throw new IllegalArgumentException();
+        }
         if (bbie.getBbieId() != null) {
             return;
         }
@@ -266,6 +281,9 @@ public class JooqBieWriteRepository
     }
 
     private void insertBbieSc(BbieSc bbieSc, ScoreUser user, BigInteger topLevelAsbiepId) {
+        if (bbieSc == null) {
+            throw new IllegalArgumentException();
+        }
         if (bbieSc.getBbieScId() != null) {
             return;
         }
