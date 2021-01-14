@@ -9,6 +9,8 @@ public class BieEditUsed {
 
     private String hashPath;
     private BigInteger topLevelAsbiepId;
+    private BigInteger bieId;
+    private BigInteger manifestId;
     private String type;
     private boolean isUsed;
 

@@ -112,7 +112,7 @@ public class AsbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedAsbieList(BigInteger topLevelAsbiepId) {
-        return dslContext.select(ASBIE.HASH_PATH)
+        return dslContext.select(ASBIE.ASBIE_ID, ASBIE.BASED_ASCC_MANIFEST_ID, ASBIE.HASH_PATH)
                 .from(ASBIE)
                 .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .where(and(
@@ -122,6 +122,8 @@ public class AsbieReadRepository {
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("ASBIE");
+                    bieEditUsed.setBieId(record.get(ASBIE.ASBIE_ID).toBigInteger());
+                    bieEditUsed.setManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID).toBigInteger());
                     bieEditUsed.setHashPath(record.get(ASBIE.HASH_PATH));
                     bieEditUsed.setTopLevelAsbiepId(topLevelAsbiepId);
                     bieEditUsed.setUsed(true);
@@ -148,7 +150,9 @@ public class AsbieReadRepository {
 
     private List<BieEditRef> getRefTopLevelAsbiepIdList(BigInteger topLevelAsbiepId) {
         return dslContext.select(
+                ASBIE.ASBIE_ID,
                 ASBIE.HASH_PATH,
+                ASBIE.BASED_ASCC_MANIFEST_ID,
                 ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.as("top_level_asbiep_id"),
                 ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.as("ref_top_level_asbiep_id"))
                 .from(ASBIE)

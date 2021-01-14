@@ -9,6 +9,8 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 public class BieEditRef {
 
+    private BigInteger asbieId;
+    private BigInteger basedAsccManifestId;
     private String hashPath;
     private BigInteger topLevelAsbiepId;
     private BigInteger refTopLevelAsbiepId;
