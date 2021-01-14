@@ -148,6 +148,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         ACC.STATE, ACC.GUID, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                        .where(ACC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new AccManifest(
                                 record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
                                 record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
@@ -166,6 +167,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         ASCCP_MANIFEST.RELEASE_ID, ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID)
                         .from(ASCCP_MANIFEST)
                         .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                        .where(ASCCP_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new AsccpManifest(
                                 record.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID),
                                 record.get(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID),
@@ -182,6 +184,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         BCCP_MANIFEST.RELEASE_ID, BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID)
                         .from(BCCP_MANIFEST)
                         .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                        .where(BCCP_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new BccpManifest(
                                 record.get(BCCP_MANIFEST.BCCP_MANIFEST_ID),
                                 record.get(BCCP_MANIFEST.BDT_MANIFEST_ID),
@@ -204,6 +207,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                         .join(SEQ_KEY).on(ASCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
@@ -234,6 +238,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                         .join(SEQ_KEY).on(BCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
+                        .where(BCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
@@ -259,6 +264,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         DT_MANIFEST.RELEASE_ID, DT_MANIFEST.PREV_DT_MANIFEST_ID)
                         .from(DT_MANIFEST)
                         .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                        .where(DT_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new DtManifest(
                                 record.get(DT_MANIFEST.DT_MANIFEST_ID),
                                 record.get(DT.DATA_TYPE_TERM),
@@ -276,6 +282,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         .from(DT_SC_MANIFEST)
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
                         .join(DT).on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
+                        .where(DT_SC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new DtScManifest(
                                 record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID),
                                 record.get(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID),
@@ -310,10 +317,10 @@ public class CoreComponentGraphContext implements GraphContext {
                 }
                 assocs.addAll(asccManifestMap.getOrDefault(node.getManifestId(),
                         asccManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
-                        .stream().filter(e -> e.getReleaseId().equals(releaseId)).collect(Collectors.toList()));
+                        .stream().collect(Collectors.toList()));
                 assocs.addAll(bccManifestMap.getOrDefault(node.getManifestId(),
                         bccManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
-                        .stream().filter(e -> e.getReleaseId().equals(releaseId)).collect(Collectors.toList()));
+                        .stream().collect(Collectors.toList()));
                 assocs = SeqKeyHandler.sort(assocs);
                 children.addAll(
                         assocs.stream().map(e -> {
@@ -356,7 +363,6 @@ public class CoreComponentGraphContext implements GraphContext {
                 return dtScManifestMap.getOrDefault(node.getManifestId(),
                         dtScManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
                         .stream()
-                        .filter(e -> e.getReleaseId().equals(releaseId))
                         .map(e -> toNode(e)).collect(Collectors.toList());
 
             case BDT_SC:
