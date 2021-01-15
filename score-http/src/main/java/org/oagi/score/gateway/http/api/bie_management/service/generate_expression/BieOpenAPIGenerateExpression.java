@@ -157,6 +157,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             path.put("get", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")
+                    .put("tags", Arrays.asList(basedAsccp.getPropertyTerm()))
                     .put("parameters", Arrays.asList(
                             ImmutableMap.<String, Object>builder()
                                     .put("name", "id")
@@ -201,6 +202,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             path.put("post", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")
+                    .put("tags", Arrays.asList(basedAsccp.getPropertyTerm()))
                     .put("requestBody", ImmutableMap.<String, Object>builder()
                             .put("description", "")
                             .put("content", ImmutableMap.<String, Object>builder()
