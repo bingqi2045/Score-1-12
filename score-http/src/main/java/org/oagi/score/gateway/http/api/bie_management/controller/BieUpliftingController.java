@@ -1,8 +1,6 @@
 package org.oagi.score.gateway.http.api.bie_management.controller;
 
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.repo.api.user.model.ScoreRole;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.bie.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,6 +18,21 @@ public class BieUpliftingController {
 
     @Autowired
     private SessionService sessionService;
+
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting/target", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public FindTargetAsccpManifestResponse findTargetAsccpManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                                   @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                                                   @RequestParam("targetReleaseId") BigInteger targetReleaseId) {
+
+        FindTargetAsccpManifestRequest request = new FindTargetAsccpManifestRequest();
+        request.setRequester(sessionService.asScoreUser(user));
+        request.setTopLevelAsbiepId(topLevelAsbiepId);
+        request.setTargetReleaseId(targetReleaseId);
+
+        return upliftingService.findTargetAsccpManifest(request);
+    }
+
 
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)

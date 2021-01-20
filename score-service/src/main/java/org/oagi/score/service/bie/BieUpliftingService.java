@@ -361,8 +361,8 @@ public class BieUpliftingService {
         }
     }
 
-    public AnalysisBieUpliftingResponse analysisBieUplifting(AnalysisBieUpliftingRequest request) {
-        AnalysisBieUpliftingResponse response = new AnalysisBieUpliftingResponse();
+    public FindTargetAsccpManifestResponse findTargetAsccpManifest(FindTargetAsccpManifestRequest request) {
+        FindTargetAsccpManifestResponse response = new FindTargetAsccpManifestResponse();
 
         ReleaseReadRepository releaseReadRepository = scoreRepositoryFactory.createReleaseReadRepository();
         Release sourceRelease = releaseReadRepository.getRelease(new GetReleaseRequest(request.getRequester())
@@ -385,6 +385,25 @@ public class BieUpliftingService {
         if (targetAsccpManifestId == null) {
             throw new ScoreDataAccessException("Unable to find the target ASCCP.");
         }
+
+        response.setAsccpManifestId(targetAsccpManifestId);
+        if (request.isIncludingBieDocument()) {
+            response.setBieDocument(sourceBieDocument);
+        }
+        return response;
+    }
+
+    public AnalysisBieUpliftingResponse analysisBieUplifting(AnalysisBieUpliftingRequest request) {
+        AnalysisBieUpliftingResponse response = new AnalysisBieUpliftingResponse();
+
+        FindTargetAsccpManifestResponse targetAsccpManifestResponse = findTargetAsccpManifest(
+                new FindTargetAsccpManifestRequest(request.getRequester())
+                .withTopLevelAsbiepId(request.getTopLevelAsbiepId())
+                .withTargetReleaseId(request.getTargetReleaseId())
+                .withIncludingBieDocument(true));
+
+        BieDocument sourceBieDocument = targetAsccpManifestResponse.getBieDocument();
+        BigInteger targetAsccpManifestId = targetAsccpManifestResponse.getAsccpManifestId();
 
         CcDocument targetCcDocument = new CcDocumentImpl(scoreRepositoryFactory.createCcReadRepository()
                 .getCcPackage(new GetCcPackageRequest(request.getRequester())
