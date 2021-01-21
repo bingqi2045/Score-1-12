@@ -178,6 +178,10 @@ public class BieUpliftingService {
         @Override
         public void visitAbie(Abie abie, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
+            // reused bie case;
+            if (abie == null) {
+                return;
+            }
             AccManifest sourceAccManifest = sourceCcDocument.getAccManifest(
                     abie.getBasedAccManifestId()
             );
@@ -289,6 +293,10 @@ public class BieUpliftingService {
         @Override
         public void visitAsbiep(Asbiep asbiep, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
+            // reused bie case;
+            if (asbiep == null) {
+                return;
+            }
             AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(
                     asbiep.getBasedAsccpManifestId());
 
