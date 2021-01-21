@@ -275,7 +275,7 @@ public class BieEditService implements InitializingBean {
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
         BigInteger asccpManifestId = extension.getAsccpManifestId();
-        BigInteger releaseId = extension.getReleaseId();
+        BigInteger releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
         BigInteger roleOfAccManifestId = bieRepository.getRoleOfAccManifestIdByAsccpManifestId(asccpManifestId);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
@@ -309,7 +309,7 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public CreateExtensionResponse createGlobalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
-        BigInteger releaseId = extension.getReleaseId();
+        BigInteger releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
         BigInteger roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(Tables.ACC_MANIFEST)
                 .join(Tables.ACC).on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
