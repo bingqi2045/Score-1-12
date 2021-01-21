@@ -13,5 +13,6 @@ public class BieUpliftingMapping {
     private String sourcePath;
     private BigInteger targetManifestId;
     private String targetPath;
+    private BigInteger refTopLevelAsbiepId;
 
 }
