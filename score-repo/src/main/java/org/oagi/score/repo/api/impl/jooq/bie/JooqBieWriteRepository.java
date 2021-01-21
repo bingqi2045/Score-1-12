@@ -43,13 +43,15 @@ public class JooqBieWriteRepository
                 .execute();
 
         request.getAsbieList().forEach(asbie -> {
-            insertAbie(asbie.getFromAbie(), requester, topLevelAsbiepId);
-            asbie.getAsbie().setFromAbieId(asbie.getFromAbie().getAbieId());
-            insertAbie(asbie.getToAsbiep().getRoleOfAbie(), requester, topLevelAsbiepId);
-            asbie.getToAsbiep().getAsbiep().setRoleOfAbieId(asbie.getToAsbiep().getRoleOfAbie().getAbieId());
-            insertAsbiep(asbie.getToAsbiep().getAsbiep(), requester, topLevelAsbiepId);
-            asbie.getAsbie().setToAsbiepId(asbie.getToAsbiep().getAsbiep().getAsbiepId());
-            insertAsbie(asbie.getAsbie(), requester, topLevelAsbiepId);
+            if (asbie.getToAsbiep() != null) {
+                insertAbie(asbie.getFromAbie(), requester, topLevelAsbiepId);
+                asbie.getAsbie().setFromAbieId(asbie.getFromAbie().getAbieId());
+                insertAbie(asbie.getToAsbiep().getRoleOfAbie(), requester, topLevelAsbiepId);
+                asbie.getToAsbiep().getAsbiep().setRoleOfAbieId(asbie.getToAsbiep().getRoleOfAbie().getAbieId());
+                insertAsbiep(asbie.getToAsbiep().getAsbiep(), requester, topLevelAsbiepId);
+                asbie.getAsbie().setToAsbiepId(asbie.getToAsbiep().getAsbiep().getAsbiepId());
+                insertAsbie(asbie.getAsbie(), requester, topLevelAsbiepId);
+            }
         });
         request.getBbieList().forEach(bbie -> {
             insertAbie(bbie.getFromAbie(), requester, topLevelAsbiepId);

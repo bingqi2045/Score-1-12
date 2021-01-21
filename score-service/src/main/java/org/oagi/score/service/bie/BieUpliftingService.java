@@ -716,7 +716,7 @@ public class BieUpliftingService {
                                 }
 
                                 WrappedAsbiep asbiep = asbie.getToAsbiep();
-                                if (asbiep.getRoleOfAbie() == null) {
+                                if (asbiep != null && asbiep.getRoleOfAbie() == null) {
                                     AsccpManifest targetAsccpManifest =
                                             targetCcDocument.getAsccpManifest(asbiep.getAsbiep().getBasedAsccpManifestId());
                                     String targetRoleOfAbiePath = asbiep.getAsbiep().getPath() + ">" + "ACC-" +
@@ -772,6 +772,9 @@ public class BieUpliftingService {
         @Override
         public void visitAbie(Abie abie, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
+            if (abie == null) {
+                return;
+            }
             AccManifest sourceAccManifest = sourceCcDocument.getAccManifest(
                     abie.getBasedAccManifestId()
             );
@@ -940,6 +943,9 @@ public class BieUpliftingService {
         @Override
         public void visitAsbiep(Asbiep asbiep, BieVisitContext context) {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
+            if (asbiep == null) {
+                return;
+            }
             AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(
                     asbiep.getBasedAsccpManifestId());
 
