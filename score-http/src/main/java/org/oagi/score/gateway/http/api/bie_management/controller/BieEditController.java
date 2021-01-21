@@ -283,16 +283,14 @@ public class BieEditController {
         service.reuseBIE(user, reuseBIERequest);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/asbiep/{manifestId}/remove_reuse",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/remove_reuse",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reuseBIE(@AuthenticationPrincipal AuthenticatedPrincipal user,
                          @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                         @PathVariable("manifestId") BigInteger manifestId,
                          @RequestBody RemoveReusedBIERequest removeReusedBIERequest) {
 
         removeReusedBIERequest.setTopLevelAsbiepId(topLevelAsbiepId);
-        removeReusedBIERequest.setAsccpManifestId(manifestId);
         service.removeReusedBIE(user, removeReusedBIERequest);
     }
 

@@ -8,6 +8,5 @@ import java.math.BigInteger;
 public class RemoveReusedBIERequest {
 
     private BigInteger topLevelAsbiepId;
-    private BigInteger asccpManifestId;
     private String asbieHashPath;
 }
