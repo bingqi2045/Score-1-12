@@ -716,16 +716,23 @@ public class BieUpliftingService {
                                 }
 
                                 WrappedAsbiep asbiep = asbie.getToAsbiep();
-                                if (asbiep != null && asbiep.getRoleOfAbie() == null) {
-                                    AsccpManifest targetAsccpManifest =
-                                            targetCcDocument.getAsccpManifest(asbiep.getAsbiep().getBasedAsccpManifestId());
-                                    String targetRoleOfAbiePath = asbiep.getAsbiep().getPath() + ">" + "ACC-" +
-                                            targetAsccpManifest.getRoleOfAccManifestId();
-                                    Abie targetRoleOfAbie = getAbieIfExist.apply(targetRoleOfAbiePath);
-                                    if (targetRoleOfAbie == null) {
-                                        throw new IllegalStateException();
+                                if (asbiep == null) {
+                                    String path = asbie.getAsbie().getPath();
+                                    BieUpliftingMapping mapping = customMappingTable.getTargetAsccMappingByTargetPath(path);
+                                    asbie.setRefTopLevelAsbiepId(mapping.getRefTopLevelAsbiepId());
+
+                                } else {
+                                    if (asbiep.getRoleOfAbie() == null) {
+                                        AsccpManifest targetAsccpManifest =
+                                                targetCcDocument.getAsccpManifest(asbiep.getAsbiep().getBasedAsccpManifestId());
+                                        String targetRoleOfAbiePath = asbiep.getAsbiep().getPath() + ">" + "ACC-" +
+                                                targetAsccpManifest.getRoleOfAccManifestId();
+                                        Abie targetRoleOfAbie = getAbieIfExist.apply(targetRoleOfAbiePath);
+                                        if (targetRoleOfAbie == null) {
+                                            throw new IllegalStateException();
+                                        }
+                                        asbiep.setRoleOfAbie(targetRoleOfAbie);
                                     }
-                                    asbiep.setRoleOfAbie(targetRoleOfAbie);
                                 }
 
                                 return asbie;

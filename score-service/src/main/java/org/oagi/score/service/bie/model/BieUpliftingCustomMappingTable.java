@@ -18,6 +18,7 @@ public class BieUpliftingCustomMappingTable {
     private List<BieUpliftingMapping> mappingList;
 
     private Map<String, BieUpliftingMapping> targetAsccMappingMap;
+    private Map<String, BieUpliftingMapping> targetAsccMappingByTargetPathMap;
     private Map<String, BigInteger> targetAsccpManifestIdBySourcePathMap;
     private Map<String, BigInteger> targetAccManifestIdBySourcePathMap;
     private Map<String, BieUpliftingMapping> targetBccMappingMap;
@@ -37,6 +38,11 @@ public class BieUpliftingCustomMappingTable {
                 .filter(e -> hasLength(e.getSourcePath()))
                 .filter(e -> getLastTag(e.getTargetPath()).contains("ASCC"))
                 .collect(Collectors.toMap(BieUpliftingMapping::getSourcePath, Function.identity()));
+
+        targetAsccMappingByTargetPathMap = mappingList.stream()
+                .filter(e -> hasLength(e.getSourcePath()))
+                .filter(e -> getLastTag(e.getTargetPath()).contains("ASCC"))
+                .collect(Collectors.toMap(BieUpliftingMapping::getTargetPath, Function.identity()));
 
         targetAsccpManifestIdBySourcePathMap = targetAsccMappingMap.values().stream()
                 .collect(Collectors.toMap(e -> {
@@ -111,6 +117,10 @@ public class BieUpliftingCustomMappingTable {
 
     public BieUpliftingMapping getTargetAsccMappingBySourcePath(String sourcePath) {
         return targetAsccMappingMap.get(sourcePath);
+    }
+
+    public BieUpliftingMapping getTargetAsccMappingByTargetPath(String targetPath) {
+        return targetAsccMappingByTargetPathMap.get(targetPath);
     }
 
     public BieUpliftingMapping getTargetBccMappingBySourcePath(String sourcePath) {
