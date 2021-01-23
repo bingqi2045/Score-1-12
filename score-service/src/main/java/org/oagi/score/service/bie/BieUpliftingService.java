@@ -799,6 +799,7 @@ public class BieUpliftingService {
             }
 
             if (targetAccManifest != null) { // found matched acc
+                currentTargetPath = currentTargetPath + ">" + "ACC-" + targetAccManifest.getAccManifestId();
                 List<Association> targetAssociations =
                         getAssociationsRegardingBases(currentTargetPath, targetCcDocument, targetAccManifest);
                 abieTargetAssociationsMap.put(abie.getAbieId(), targetAssociations);
