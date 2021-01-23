@@ -1,9 +1,6 @@
 package org.oagi.score.repo.component.bbie;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.jooq.SelectOnConditionStep;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
@@ -186,5 +183,17 @@ public class BbieReadRepository {
                     return bieEditUsed;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public boolean isUsed(BieEditUsed request) {
+        Record res = dslContext.select(BBIE.IS_USED)
+                .from(BBIE)
+                .where(and(
+                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())),
+                        BBIE.BASED_BCC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                        BBIE.HASH_PATH.eq(request.getHashPath())
+                ))
+                .fetchOptional().orElse(null);
+        return (res != null) ? res.get(BBIE.IS_USED) == (byte) 1 : false;
     }
 }

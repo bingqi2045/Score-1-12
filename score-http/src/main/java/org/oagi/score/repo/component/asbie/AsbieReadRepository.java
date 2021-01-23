@@ -1,6 +1,7 @@
 package org.oagi.score.repo.component.asbie;
 
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
@@ -129,6 +130,18 @@ public class AsbieReadRepository {
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 }).collect(Collectors.toList());
+    }
+
+    public boolean isUsed(BieEditUsed request) {
+        Record res = dslContext.select(ASBIE.IS_USED)
+                .from(ASBIE)
+                .where(and(
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())),
+                        ASBIE.BASED_ASCC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                        ASBIE.HASH_PATH.eq(request.getHashPath())
+                ))
+                .fetchOptional().orElse(null);
+        return (res != null) ? res.get(ASBIE.IS_USED) == (byte) 1 : false;
     }
 
     public List<BieEditRef> getBieRefList(BigInteger topLevelAsbiepId) {

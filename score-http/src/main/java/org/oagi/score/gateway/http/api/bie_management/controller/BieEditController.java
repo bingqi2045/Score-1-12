@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.score.data.BieState;
-import org.oagi.score.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -224,6 +223,24 @@ public class BieEditController {
     public List<BieEditUsed> getUsedAbieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
         return service.getBieUsedList(user, topLevelAsbiepId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/used_list/{type}/{manifestId}/{hashPath}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public BieEditUsed getUsed(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                               @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                               @PathVariable("type") String type,
+                               @PathVariable("manifestId") BigInteger manifestId,
+                               @PathVariable("hashPath") String hashPath) {
+
+        BieEditUsed used = new BieEditUsed();
+        used.setTopLevelAsbiepId(topLevelAsbiepId);
+        used.setType(type.toUpperCase());
+        used.setManifestId(manifestId);
+        used.setHashPath(hashPath);
+        used.setUsed(service.isUsed(user, used));
+        return used;
     }
 
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/ref_list",

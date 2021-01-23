@@ -428,6 +428,18 @@ public class BieEditService implements InitializingBean {
         return usedList;
     }
 
+    public boolean isUsed(AuthenticatedPrincipal user, BieEditUsed request) {
+        switch (request.getType()) {
+            case "ASBIE":
+                return asbieReadRepository.isUsed(request);
+            case "BBIE":
+                return bbieReadRepository.isUsed(request);
+            case "BBIE_SC":
+                return bbieScReadRepository.isUsed(request);
+        }
+        throw new IllegalArgumentException();
+    }
+
     public List<BieEditRef> getBieRefList(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
         return asbieReadRepository.getBieRefList(topLevelAsbiepId);
     }
