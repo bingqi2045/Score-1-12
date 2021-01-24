@@ -126,22 +126,8 @@ public class AsbieReadRepository {
                     bieEditUsed.setBieId(record.get(ASBIE.ASBIE_ID).toBigInteger());
                     bieEditUsed.setManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID).toBigInteger());
                     bieEditUsed.setHashPath(record.get(ASBIE.HASH_PATH));
-                    bieEditUsed.setTopLevelAsbiepId(topLevelAsbiepId);
-                    bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 }).collect(Collectors.toList());
-    }
-
-    public boolean isUsed(BieEditUsed request) {
-        Record res = dslContext.select(ASBIE.IS_USED)
-                .from(ASBIE)
-                .where(and(
-                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())),
-                        ASBIE.BASED_ASCC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                        ASBIE.HASH_PATH.eq(request.getHashPath())
-                ))
-                .fetchOptional().orElse(null);
-        return (res != null) ? res.get(ASBIE.IS_USED) == (byte) 1 : false;
     }
 
     public List<BieEditRef> getBieRefList(BigInteger topLevelAsbiepId) {

@@ -2,13 +2,11 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
-import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -25,7 +23,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
-import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.abie.AbieNode;
 import org.oagi.score.repo.component.abie.AbieReadRepository;
 import org.oagi.score.repo.component.abie.AbieWriteRepository;
@@ -426,18 +423,6 @@ public class BieEditService implements InitializingBean {
         usedList.addAll(bbieScReadRepository.getUsedBbieScList(topLevelAsbiepId));
 
         return usedList;
-    }
-
-    public boolean isUsed(AuthenticatedPrincipal user, BieEditUsed request) {
-        switch (request.getType()) {
-            case "ASBIE":
-                return asbieReadRepository.isUsed(request);
-            case "BBIE":
-                return bbieReadRepository.isUsed(request);
-            case "BBIE_SC":
-                return bbieScReadRepository.isUsed(request);
-        }
-        throw new IllegalArgumentException();
     }
 
     public List<BieEditRef> getBieRefList(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {

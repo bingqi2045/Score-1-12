@@ -178,22 +178,8 @@ public class BbieReadRepository {
                     bieEditUsed.setBieId(record.get(BBIE.BBIE_ID).toBigInteger());
                     bieEditUsed.setManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID).toBigInteger());
                     bieEditUsed.setHashPath(record.get(BBIE.HASH_PATH));
-                    bieEditUsed.setTopLevelAsbiepId(topLevelAsbiepId);
-                    bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 })
                 .collect(Collectors.toList());
-    }
-
-    public boolean isUsed(BieEditUsed request) {
-        Record res = dslContext.select(BBIE.IS_USED)
-                .from(BBIE)
-                .where(and(
-                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())),
-                        BBIE.BASED_BCC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                        BBIE.HASH_PATH.eq(request.getHashPath())
-                ))
-                .fetchOptional().orElse(null);
-        return (res != null) ? res.get(BBIE.IS_USED) == (byte) 1 : false;
     }
 }
