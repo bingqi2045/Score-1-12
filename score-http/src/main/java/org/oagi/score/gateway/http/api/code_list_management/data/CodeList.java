@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 
 import java.math.BigInteger;

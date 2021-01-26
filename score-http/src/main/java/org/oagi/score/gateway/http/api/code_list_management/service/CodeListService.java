@@ -293,6 +293,15 @@ public class CodeListService extends EventHandler {
                 .fetchInto(CodeListValue.class);
         codeList.setCodeListValues(codeListValues);
 
+        if (codeList.getBasedCodeListManifestId() != null) {
+            List<String> basedCodeListValueList = dslContext.select(CODE_LIST_VALUE.VALUE)
+                    .from(CODE_LIST_VALUE)
+                    .join(CODE_LIST_VALUE_MANIFEST).on(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID))
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeList.getBasedCodeListManifestId())))
+                    .fetchInto(String.class);
+            codeListValues.stream().forEach(e -> e.setDerived(basedCodeListValueList.contains(e.getValue())));
+        }
+
         return codeList;
     }
 
@@ -540,7 +549,7 @@ public class CodeListService extends EventHandler {
 
         // deletion begins
         Set<ULong> codeListValueManifestIds = codeListValues.stream()
-                .filter(e -> e.getCodeListValueManifestId() != null && e.getCodeListValueManifestId() > 0L)
+                .filter(e -> e.getCodeListValueManifestId() != null && e.getCodeListValueManifestId().compareTo(BigInteger.ZERO) > 0)
                 .map(e -> ULong.valueOf(e.getCodeListValueManifestId()))
                 .collect(Collectors.toSet());
 
@@ -589,8 +598,8 @@ public class CodeListService extends EventHandler {
         // insertion / updating begins
         for (CodeListValue codeListValue : codeListValues) {
             CodeListValueRecord codeListValueRecord;
-            Long codeListValueManifestId = codeListValue.getCodeListValueManifestId();
-            if (codeListValueManifestId == null || codeListValueManifestId <= 0L) {
+            BigInteger codeListValueManifestId = codeListValue.getCodeListValueManifestId();
+            if (codeListValueManifestId == null || codeListValueManifestId.compareTo(BigInteger.ZERO) <= 0) {
                 codeListValueRecord = new CodeListValueRecord();
             } else {
                 CodeListValueManifestRecord codeListValueManifestRecord =

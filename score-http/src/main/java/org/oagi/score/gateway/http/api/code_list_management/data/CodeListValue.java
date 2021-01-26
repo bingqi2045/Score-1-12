@@ -2,10 +2,12 @@ package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CodeListValue {
 
-    private Long codeListValueManifestId;
+    private BigInteger codeListValueManifestId;
     private String guid;
     private String value;
     private String meaning;
@@ -16,5 +18,6 @@ public class CodeListValue {
     private boolean locked;
     private boolean extension;
     private boolean deprecated;
+    private boolean derived;
 
 }
