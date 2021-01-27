@@ -9,8 +9,10 @@ import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.service.bie.model.BieDocumentBuilder;
 import org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable;
 import org.oagi.score.service.bie.model.BieUpliftingMapping;
+import org.oagi.score.service.bie.model.BieUpliftingValidation;
 import org.oagi.score.service.corecomponent.CcDocument;
 import org.oagi.score.service.corecomponent.CcMatchingService;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
@@ -1129,4 +1131,47 @@ public class BieUpliftingService {
         return response;
     }
 
+    public UpliftValidationResponse validateBieUplifting(UpliftValidationRequest request) {
+        UpliftValidationResponse response = new UpliftValidationResponse();
+        List<BieUpliftingValidation> validations = new ArrayList<>();
+
+        ReleaseReadRepository releaseReadRepository = scoreRepositoryFactory.createReleaseReadRepository();
+        Release sourceRelease = releaseReadRepository.getRelease(new GetReleaseRequest(request.getRequester())
+                .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
+                .getRelease();
+        Release targetRelease = releaseReadRepository.getRelease(new GetReleaseRequest(request.getRequester())
+                .withReleaseId(request.getTargetReleaseId()))
+                .getRelease();
+
+        if (sourceRelease.compareTo(targetRelease) >= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BieDocument sourceBieDocument = bieReadService.getBieDocument(request.getRequester(), request.getTopLevelAsbiepId());
+        sourceBieDocument.getAssociations()
+
+        request.getMappingList().forEach(mapping -> {
+            BieUpliftingValidation validation = new BieUpliftingValidation();
+            validation.setBieId(mapping.getBieId());
+            validation.setBieType(mapping.getBieType());
+            switch (mapping.getBieType().toUpperCase()) {
+                case "ABIE":
+                    validation.setValid(true);
+                    break;
+                case "ASBIE":
+                    validation.setValid(true);
+                    break;
+                case "BBIE":
+                    scoreRepositoryFactory.createBieReadRepository()
+                    validation.setValid(true);
+                    break;
+                case "BBIE_SC":
+                    validation.setValid(true);
+                    break;
+            }
+            validations.add(new BieUpliftingValidation());
+        });
+        response.setValidations(validations);
+        return response;
+    }
 }

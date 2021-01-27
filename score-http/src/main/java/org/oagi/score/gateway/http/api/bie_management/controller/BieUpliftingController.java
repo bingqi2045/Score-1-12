@@ -59,4 +59,16 @@ public class BieUpliftingController {
         return upliftingService.upliftBie(request);
     }
 
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting/{targetReleaseId}/valid", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UpliftValidationResponse validateUplift(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                             @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                                             @PathVariable("targetReleaseId") BigInteger targetReleaseId,
+                                                             @RequestBody UpliftValidationRequest request) {
+        request.setRequester(sessionService.asScoreUser(user));
+        request.setTopLevelAsbiepId(topLevelAsbiepId);
+        request.setTargetReleaseId(targetReleaseId);
+        return upliftingService.validateBieUplifting(request);
+    }
+
 }
