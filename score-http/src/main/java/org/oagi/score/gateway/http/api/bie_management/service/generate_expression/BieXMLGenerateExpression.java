@@ -12,6 +12,7 @@ import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateEx
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
+import org.oagi.score.service.common.data.BCCEntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

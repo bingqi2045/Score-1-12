@@ -1,6 +1,6 @@
 package org.oagi.score.repo.component.acc;
 
-import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 

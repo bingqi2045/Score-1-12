@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.api.info.service;
 
-import org.oagi.score.data.AppUser;
+import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.score.gateway.http.api.info.data.SummaryCcExtInfo;

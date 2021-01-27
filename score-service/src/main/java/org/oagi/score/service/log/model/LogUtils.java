@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.log_management.helper;
+package org.oagi.score.service.log.model;
 
 import java.security.SecureRandom;
 

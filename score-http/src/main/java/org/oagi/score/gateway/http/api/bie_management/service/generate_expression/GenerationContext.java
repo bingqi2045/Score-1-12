@@ -7,6 +7,7 @@ import org.oagi.score.repo.component.asbiep.AsbiepReadRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.top_level_asbiep.TopLevelAsbiepReadRepository;
 import org.oagi.score.repository.*;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 import org.springframework.beans.factory.InitializingBean;

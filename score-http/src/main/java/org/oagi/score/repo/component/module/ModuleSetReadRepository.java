@@ -2,9 +2,9 @@ package org.oagi.score.repo.component.module;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleSet;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleSetListRequest;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleSetModule;

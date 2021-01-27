@@ -3,7 +3,7 @@ package org.oagi.score.gateway.http.configuration.security;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
+import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.user.model.GetScoreUserRequest;

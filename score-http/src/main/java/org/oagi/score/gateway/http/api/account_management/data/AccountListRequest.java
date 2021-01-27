@@ -1,7 +1,7 @@
 package org.oagi.score.gateway.http.api.account_management.data;
 
 import lombok.Data;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageRequest;
 
 @Data
 public class AccountListRequest {

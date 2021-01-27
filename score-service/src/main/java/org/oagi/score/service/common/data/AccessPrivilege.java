@@ -1,8 +1,4 @@
-package org.oagi.score.gateway.http.api.common.data;
-
-import org.oagi.score.data.AppUser;
-import org.oagi.score.data.BieState;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+package org.oagi.score.service.common.data;
 
 import java.math.BigInteger;
 

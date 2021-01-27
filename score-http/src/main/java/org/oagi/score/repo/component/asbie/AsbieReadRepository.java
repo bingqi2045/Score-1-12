@@ -1,11 +1,10 @@
 package org.oagi.score.repo.component.asbie;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;

@@ -2,9 +2,9 @@ package org.oagi.score.repo.component.namespace;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.springframework.beans.factory.annotation.Autowired;

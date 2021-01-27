@@ -2,7 +2,7 @@ package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.oagi.score.data.BCCEntityType;
+import org.oagi.score.service.common.data.BCCEntityType;
 
 import java.math.BigInteger;
 

@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
-import org.oagi.score.data.AppUser;
+import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.module_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.component.module.*;

@@ -1,4 +1,4 @@
-package org.oagi.score.data;
+package org.oagi.score.service.log.model;
 
 public enum LogAction {
     Added,

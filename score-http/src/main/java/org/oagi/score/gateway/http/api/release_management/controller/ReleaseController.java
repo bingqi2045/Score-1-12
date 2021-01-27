@@ -1,7 +1,7 @@
 package org.oagi.score.gateway.http.api.release_management.controller;
 
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.api.release_management.service.ReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;

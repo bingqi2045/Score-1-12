@@ -1,7 +1,7 @@
 package org.oagi.score.gateway.http.api.cc_management.controller;
 
 import org.oagi.score.gateway.http.api.cc_management.data.CcActionRequest;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcNode;

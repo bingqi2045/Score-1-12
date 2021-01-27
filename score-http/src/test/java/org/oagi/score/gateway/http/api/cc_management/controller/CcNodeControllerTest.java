@@ -25,8 +25,8 @@ import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.configuration.AppUserAuthority.DEVELOPER_GRANTED_AUTHORITY;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;

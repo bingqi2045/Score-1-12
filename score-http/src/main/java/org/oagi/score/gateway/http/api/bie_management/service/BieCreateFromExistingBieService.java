@@ -3,8 +3,8 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
-import org.oagi.score.data.BieState;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.CreateBieFromExistingBieRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.data.BieState.Initiating;
+import static org.oagi.score.service.common.data.BieState.Initiating;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service

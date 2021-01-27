@@ -2,7 +2,7 @@ package org.oagi.score.repo.component.bbiep;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;

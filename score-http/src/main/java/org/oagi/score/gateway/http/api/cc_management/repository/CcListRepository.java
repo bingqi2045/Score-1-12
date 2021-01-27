@@ -2,12 +2,9 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.data.DTType;
-import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.service.common.data.*;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.component.release.ReleaseRepository;
@@ -24,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.data.OagisComponentType.*;
+import static org.oagi.score.service.common.data.OagisComponentType.*;
 import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 

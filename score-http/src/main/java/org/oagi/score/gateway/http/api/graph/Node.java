@@ -2,7 +2,7 @@ package org.oagi.score.gateway.http.api.graph;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 
 import java.math.BigInteger;
 import java.util.HashMap;

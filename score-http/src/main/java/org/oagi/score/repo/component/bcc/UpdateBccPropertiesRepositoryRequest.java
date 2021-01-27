@@ -1,6 +1,6 @@
 package org.oagi.score.repo.component.bcc;
 
-import org.oagi.score.data.BCCEntityType;
+import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 

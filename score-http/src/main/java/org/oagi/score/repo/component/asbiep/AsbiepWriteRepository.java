@@ -2,7 +2,7 @@ package org.oagi.score.repo.component.asbiep;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
+import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;

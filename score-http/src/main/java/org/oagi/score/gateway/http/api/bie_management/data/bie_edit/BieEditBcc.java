@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.score.data.Cardinality;
 import org.oagi.score.data.SeqKeySupportable;
-import org.oagi.score.gateway.http.api.common.data.TrackableImpl;
+import org.oagi.score.service.common.data.TrackableImpl;
 
 import java.math.BigInteger;
 

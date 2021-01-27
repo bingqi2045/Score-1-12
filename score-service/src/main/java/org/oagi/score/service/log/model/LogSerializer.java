@@ -1,4 +1,4 @@
-package org.oagi.score.repo.domain;
+package org.oagi.score.service.log.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -8,10 +8,10 @@ import lombok.SneakyThrows;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.types.ULong;
-import org.oagi.score.data.BCCEntityType;
-import org.oagi.score.data.DTType;
-import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.BCCEntityType;
+import org.oagi.score.service.common.data.DTType;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

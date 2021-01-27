@@ -1,4 +1,4 @@
-package org.oagi.score.data;
+package org.oagi.score.service.common.data;
 
 import java.io.Serializable;
 import java.math.BigInteger;

@@ -1,7 +1,6 @@
-package org.oagi.score.gateway.http.api.common.data;
+package org.oagi.score.service.common.data;
 
 import lombok.Data;
-import org.oagi.score.data.Trackable;
 
 import java.math.BigInteger;
 

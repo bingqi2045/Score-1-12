@@ -2,7 +2,7 @@ package org.oagi.score.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 
 import java.math.BigInteger;
 import java.util.Date;

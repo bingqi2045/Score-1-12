@@ -1,9 +1,9 @@
 package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
-import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.PageRequest;
 
 import java.util.Collections;
 import java.util.Date;

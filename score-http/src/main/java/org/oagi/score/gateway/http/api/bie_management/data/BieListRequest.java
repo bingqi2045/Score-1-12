@@ -1,9 +1,9 @@
 package org.oagi.score.gateway.http.api.bie_management.data;
 
 import lombok.Data;
-import org.oagi.score.data.BieState;
-import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.service.common.data.BieState;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.PageRequest;
 
 import java.math.BigInteger;
 import java.util.Collections;

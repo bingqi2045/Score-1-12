@@ -5,7 +5,6 @@ import org.oagi.score.gateway.http.api.account_management.data.AppUser;
 import org.oagi.score.gateway.http.api.account_management.service.AccountListService;
 import org.oagi.score.gateway.http.api.account_management.service.AccountService;
 import org.oagi.score.gateway.http.api.account_management.service.PendingListService;
-import org.oagi.score.gateway.http.configuration.security.AppUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.oagi.score.service.configuration.AppUserAuthority.*;
 
 @RestController
 public class AccountController {
@@ -66,15 +67,15 @@ public class AccountController {
                 AppUser appUser = accountListService.getAccountById(appOauth2User.getAppUserId().longValue());
                 resp.put("username", appUser.getLoginId());
                 resp.put("authentication", "oauth2");
-                resp.put("role", appUser.isDeveloper() ? AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY : AppUserDetailsService.END_USER_GRANTED_AUTHORITY);
+                resp.put("role", appUser.isDeveloper() ? DEVELOPER_GRANTED_AUTHORITY : END_USER_GRANTED_AUTHORITY);
                 resp.put("enabled", appUser.isEnabled());
             } else {
                 resp.put("username", "unknown");
                 resp.put("authentication", "unknown");
                 if (appOauth2User == null) {
-                    resp.put("role", AppUserDetailsService.REJECT_GRANTED_AUTHORITY);
+                    resp.put("role", REJECT_GRANTED_AUTHORITY);
                 } else {
-                    resp.put("role", AppUserDetailsService.PENDING_GRANTED_AUTHORITY);
+                    resp.put("role", PENDING_GRANTED_AUTHORITY);
                 }
                 resp.put("enabled", false);
             }

@@ -1,6 +1,6 @@
 package org.oagi.score.gateway.http.api.context_management.controller;
 
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.businesscontext.ContextSchemeService;

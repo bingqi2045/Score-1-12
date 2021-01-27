@@ -3,7 +3,7 @@ package org.oagi.score.repo.component.bbie;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
 import org.oagi.score.repo.component.bccp.BccpReadRepository;

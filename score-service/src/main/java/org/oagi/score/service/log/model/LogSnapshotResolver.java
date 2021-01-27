@@ -1,4 +1,4 @@
-package org.oagi.score.repo.domain;
+package org.oagi.score.service.log.model;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
-import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.END_USER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.configuration.AppUserAuthority.DEVELOPER_GRANTED_AUTHORITY;
+import static org.oagi.score.service.configuration.AppUserAuthority.END_USER_GRANTED_AUTHORITY;
 
 @Repository
 public class LogSnapshotResolver {

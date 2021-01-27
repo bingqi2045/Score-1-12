@@ -1,14 +1,14 @@
 package org.oagi.score.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.oagi.score.data.BieState;
+import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.score.gateway.http.api.bie_management.service.BieCreateFromExistingBieService;
 import org.oagi.score.gateway.http.api.bie_management.service.BieEditService;
-import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.component.abie.AbieNode;
 import org.oagi.score.repo.component.agency_id_list.AvailableAgencyIdList;

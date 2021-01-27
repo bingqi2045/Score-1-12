@@ -5,14 +5,14 @@ import lombok.EqualsAndHashCode;
 import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
-import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
-import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.api.common.data.TrackableImpl;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.TrackableImpl;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repository.UserRepository;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.data.BCCEntityType.Attribute;
+import static org.oagi.score.service.common.data.BCCEntityType.Attribute;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository

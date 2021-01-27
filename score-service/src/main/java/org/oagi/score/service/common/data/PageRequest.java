@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.common.data;
+package org.oagi.score.service.common.data;
 
 import lombok.Data;
 

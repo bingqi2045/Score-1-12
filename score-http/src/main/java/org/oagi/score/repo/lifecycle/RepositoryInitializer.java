@@ -2,14 +2,13 @@ package org.oagi.score.repo.lifecycle;
 
 import org.jooq.DSLContext;
 import org.jooq.JSON;
-import org.jooq.Record;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.data.LogAction;
+import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.LogRepository;
+import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.domain.LogSerializer;
+import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
-import static org.oagi.score.gateway.http.api.log_management.helper.LogUtils.generateHash;
+import static org.oagi.score.service.log.model.LogUtils.generateHash;
 import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 

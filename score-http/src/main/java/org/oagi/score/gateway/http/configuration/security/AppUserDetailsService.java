@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+import static org.oagi.score.service.configuration.AppUserAuthority.DEVELOPER_GRANTED_AUTHORITY;
+import static org.oagi.score.service.configuration.AppUserAuthority.END_USER_GRANTED_AUTHORITY;
+
 @Component
 public class AppUserDetailsService implements UserDetailsService {
-
-    public static final String DEVELOPER_GRANTED_AUTHORITY = "developer";
-    public static final String END_USER_GRANTED_AUTHORITY = "end-user";
-    public static final String PENDING_GRANTED_AUTHORITY = "pending";
-    public static final String REJECT_GRANTED_AUTHORITY = "reject";
 
     @Autowired
     private DSLContext dslContext;

@@ -2,10 +2,10 @@ package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
+import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.ReleaseCleanupEvent;

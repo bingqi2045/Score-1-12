@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.cc_management.data;
+package org.oagi.score.service.common.data;
 
 public enum CcState {
 

@@ -1,7 +1,8 @@
 package org.oagi.score.gateway.http.api.cc_management.data;
 
 import lombok.Data;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.PageRequest;
 
 import java.math.BigInteger;
 import java.util.Date;

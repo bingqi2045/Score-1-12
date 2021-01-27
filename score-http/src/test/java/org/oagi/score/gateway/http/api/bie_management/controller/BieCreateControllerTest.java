@@ -22,8 +22,8 @@ import java.util.Arrays;
 
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.configuration.AppUserAuthority.DEVELOPER_GRANTED_AUTHORITY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

@@ -1,13 +1,13 @@
-package org.oagi.score.gateway.http.api.log_management.data;
+package org.oagi.score.service.log.model;
 
 import lombok.Data;
-import org.oagi.score.data.LogAction;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
 public class Log {
+
     private BigInteger logId;
     private String hash;
     private int revisionNum;
@@ -17,4 +17,5 @@ public class Log {
     private LocalDateTime timestamp;
     private BigInteger prevLogId;
     private boolean isDeveloper;
+
 }

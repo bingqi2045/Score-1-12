@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.bie_management.service.generate_expressi
 
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.helper.Utility;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;

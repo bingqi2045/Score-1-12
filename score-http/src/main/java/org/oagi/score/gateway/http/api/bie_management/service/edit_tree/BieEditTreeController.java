@@ -1,6 +1,6 @@
 package org.oagi.score.gateway.http.api.bie_management.service.edit_tree;
 
-import org.oagi.score.data.BieState;
+import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditNodeDetail;

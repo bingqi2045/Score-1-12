@@ -1,12 +1,12 @@
 package org.oagi.score.gateway.http.api.info.service;
 
-import org.oagi.score.data.AppUser;
-import org.oagi.score.data.BieState;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.score.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.score.gateway.http.api.bie_management.service.BieService;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
 import org.oagi.score.gateway.http.api.info.data.SummaryBieInfo;
 import org.oagi.score.gateway.http.configuration.security.SessionService;

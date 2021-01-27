@@ -1,12 +1,17 @@
 package org.oagi.score.gateway.http.api.code_list_management.controller;
 
 import org.oagi.score.gateway.http.api.cc_management.data.CcCreateResponse;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.code_list_management.data.*;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
-import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.codelist.CodeListUpliftingService;
+import org.oagi.score.service.codelist.model.CodeListUpliftingRequest;
+import org.oagi.score.service.codelist.model.CodeListUpliftingResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +29,15 @@ public class CodeListController {
 
     @Autowired
     private CodeListService service;
+
+    @Autowired
+    private CodeListUpliftingService upliftingService;
+
+    @Autowired
+    private LogRepository logRepository;
+
+    @Autowired
+    private SessionService sessionService;
 
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -204,5 +218,18 @@ public class CodeListController {
         String targetLoginId = request.get("targetLoginId");
         service.transferOwnership(user, manifestId, targetLoginId);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/code_list/{manifestId}/uplift",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CodeListUpliftingResponse upliftCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                    @PathVariable("manifestId") BigInteger manifestId,
+                                                    @RequestBody CodeListUpliftingRequest request) {
+        request.setRequester(sessionService.asScoreUser(user));
+        request.setCodeListManifestId(manifestId);
+
+
+        return upliftingService.upliftCodeList(request);
     }
 }

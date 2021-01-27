@@ -8,7 +8,7 @@ import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.service.common.data.*;
 import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;

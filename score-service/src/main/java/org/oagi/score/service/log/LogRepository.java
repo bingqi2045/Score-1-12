@@ -1,4 +1,4 @@
-package org.oagi.score.repo;
+package org.oagi.score.service.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,15 +9,12 @@ import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.data.LogAction;
-import org.oagi.score.gateway.http.api.cc_management.data.CcAction;
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.log_management.data.Log;
-import org.oagi.score.gateway.http.api.log_management.data.LogListRequest;
+import org.oagi.score.service.common.data.CcAction;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.domain.LogSerializer;
+import org.oagi.score.service.log.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -31,7 +28,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.gateway.http.api.log_management.helper.LogUtils.generateHash;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.base.SortDirection.DESC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -520,7 +516,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
-        logRecord.setHash(generateHash());
+        logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
             logRecord.setRevisionNum(prevLogRecord.getRevisionNum().add(1));
@@ -585,7 +581,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
-        logRecord.setHash(generateHash());
+        logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
             logRecord.setRevisionNum(prevLogRecord.getRevisionNum().add(1));
@@ -649,7 +645,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
-        logRecord.setHash(generateHash());
+        logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
             logRecord.setRevisionNum(prevLogRecord.getRevisionNum().add(1));
@@ -713,7 +709,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
-        logRecord.setHash(generateHash());
+        logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
             logRecord.setRevisionNum(prevLogRecord.getRevisionNum().add(1));
