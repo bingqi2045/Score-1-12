@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
+import static org.oagi.score.data.BieState.*;
 import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -104,6 +105,23 @@ public class CodeListService extends EventHandler {
         if (StringUtils.hasLength(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
+        if (request.getAccess() != null) {
+            AppUser requester = sessionService.getAppUser(user);
+            switch (request.getAccess()) {
+                case CanEdit:
+                    conditions.add(CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId())));
+                    break;
+
+                case CanView:
+                    conditions.add(
+                            or(
+                                    CODE_LIST.STATE.in(QA.name(), Production.name()),
+                                    CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId()))
+                            )
+                    );
+                    break;
+            }
+        }
         if (!request.getStates().isEmpty()) {
             conditions.add(CODE_LIST.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
@@ -125,6 +143,9 @@ public class CodeListService extends EventHandler {
         }
         if (request.getUpdateEndDate() != null) {
             conditions.add(CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
+        }
+        if (request.getOwnedByDeveloper() != null) {
+            conditions.add(APP_USER.as("owner").IS_DEVELOPER.eq(request.getOwnedByDeveloper() ? (byte) 1 : 0));
         }
 
         SelectConnectByStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> conditionStep = step;

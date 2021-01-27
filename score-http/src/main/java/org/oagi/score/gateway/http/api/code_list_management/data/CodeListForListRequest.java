@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 
 import java.util.Collections;
@@ -15,9 +16,11 @@ public class CodeListForListRequest {
     private String name;
     private String definition;
     private String module;
+    private AccessPrivilege access;
     private List<CcState> states = Collections.emptyList();
     private Boolean deprecated;
     private Boolean extensible;
+    private Boolean ownedByDeveloper;
 
     private List<String> ownerLoginIds;
     private List<String> updaterLoginIds;

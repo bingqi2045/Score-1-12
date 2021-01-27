@@ -4,6 +4,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcCreateResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.code_list_management.data.*;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
+import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,11 @@ public class CodeListController {
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "module", required = false) String module,
+            @RequestParam(name = "access", required = false) String access,
             @RequestParam(name = "states", required = false) String states,
             @RequestParam(name = "deprecated", required = false) String deprecated,
             @RequestParam(name = "extensible", required = false) Boolean extensible,
+            @RequestParam(name = "ownedByDeveloper", required = false) Boolean ownedByDeveloper,
             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -50,6 +53,7 @@ public class CodeListController {
         request.setName(name);
         request.setDefinition(definition);
         request.setModule(module);
+        request.setAccess(StringUtils.hasLength(access) ? AccessPrivilege.valueOf(access) : null);
         if (StringUtils.hasLength(states)) {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
             request.setStates(stateStrings.stream()
@@ -63,6 +67,7 @@ public class CodeListController {
             }
         }
         request.setExtensible(extensible);
+        request.setOwnedByDeveloper(ownedByDeveloper);
 
         request.setOwnerLoginIds(!StringUtils.hasLength(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
