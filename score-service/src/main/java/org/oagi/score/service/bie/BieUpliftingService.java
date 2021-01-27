@@ -1166,16 +1166,18 @@ public class BieUpliftingService {
                     break;
                 case "BBIE":
                     Bbie bbie = sourceBieDocument.getBbie(mapping.getBieId());
-                    if (bbie.getCodeListId() != null) {
-                        validation.setValid(codeListMap.get(bbie.getCodeListId()) != null);
+                    if (bbie.getCodeListId() != null && codeListMap.get(bbie.getCodeListId()) == null) {
+                        validation.setValid(false);
+                        validation.setMessage("CodeList not mapped");
                     } else {
                         validation.setValid(true);
                     }
                     break;
                 case "BBIE_SC":
                     BbieSc bbieSc = sourceBieDocument.getBbieSc(mapping.getBieId());
-                    if (bbieSc.getCodeListId() != null) {
-                        validation.setValid(codeListMap.get(bbieSc.getCodeListId()) != null);
+                    if (bbieSc.getCodeListId() != null && codeListMap.get(bbieSc.getCodeListId()) == null) {
+                        validation.setValid(false);
+                        validation.setMessage("CodeList not mapped");
                     } else {
                         validation.setValid(true);
                     }

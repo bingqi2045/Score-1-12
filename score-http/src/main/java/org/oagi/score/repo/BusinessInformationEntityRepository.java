@@ -571,7 +571,7 @@ public class BusinessInformationEntityRepository {
         }
 
         public SelectBieListArguments setReleaseId(BigInteger releaseId) {
-            if (releaseId != null) {
+            if (releaseId != null && releaseId.longValue() > 0) {
                 conditions.add(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(ULong.valueOf(releaseId)));
             }
             return this;
