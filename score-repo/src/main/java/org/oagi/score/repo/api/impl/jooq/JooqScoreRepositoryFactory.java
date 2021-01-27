@@ -7,12 +7,14 @@ import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
+import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.bie.JooqBieReadRepository;
 import org.oagi.score.repo.api.impl.jooq.bie.JooqBieWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.*;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqCcReadRepository;
+import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqCodeListReadRepository;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyReadRepository;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.release.JooqReleaseReadRepository;
@@ -85,6 +87,11 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
     @Override
     public CcReadRepository createCcReadRepository() throws ScoreDataAccessException {
         return new JooqCcReadRepository(this.dslContext);
+    }
+
+    @Override
+    public CodeListReadRepository createCodeListReadRepository() throws ScoreDataAccessException {
+        return new JooqCodeListReadRepository(this.dslContext);
     }
 
     @Override

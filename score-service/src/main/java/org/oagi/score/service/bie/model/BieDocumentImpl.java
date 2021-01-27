@@ -22,9 +22,11 @@ public class BieDocumentImpl implements BieDocument {
     private Map<BigInteger, Abie> abieMap;
     private Map<BigInteger, List<Asbie>> asbieMap;
     private Map<BigInteger, List<Bbie>> bbieMap;
+    private Map<BigInteger, Bbie> bbieByIdMap;
     private Map<BigInteger, Asbiep> asbiepMap;
     private Map<BigInteger, Bbiep> bbiepMap;
     private Map<BigInteger, List<BbieSc>> bbieScMap;
+    private Map<BigInteger, BbieSc> bbieScByIdMap;
 
     private CcDocument ccDocument;
 
@@ -36,12 +38,16 @@ public class BieDocumentImpl implements BieDocument {
                 .collect(Collectors.groupingBy(Asbie::getFromAbieId));
         this.bbieMap = biePackage.getBbieList().stream()
                 .collect(Collectors.groupingBy(Bbie::getFromAbieId));
+        this.bbieByIdMap = biePackage.getBbieList().stream()
+                .collect(Collectors.toMap(Bbie::getBbieId, Function.identity()));
         this.asbiepMap = biePackage.getAsbiepList().stream()
                 .collect(Collectors.toMap(Asbiep::getAsbiepId, Function.identity()));
         this.bbiepMap = biePackage.getBbiepList().stream()
                 .collect(Collectors.toMap(Bbiep::getBbiepId, Function.identity()));
         this.bbieScMap = biePackage.getBbieScList().stream()
                 .collect(Collectors.groupingBy(BbieSc::getBbieId));
+        this.bbieScByIdMap = biePackage.getBbieScList().stream()
+                .collect(Collectors.toMap(BbieSc::getBbieScId, Function.identity()));
     }
 
     void with(CcDocument ccDocument) {
@@ -134,12 +140,22 @@ public class BieDocumentImpl implements BieDocument {
     }
 
     @Override
+    public Bbie getBbie(BigInteger bbieId) {
+        return this.bbieByIdMap.get(bbieId);
+    }
+
+    @Override
     public Bbiep getBbiep(Bbie bbie) {
         if (bbie == null) {
             return null;
         }
 
         return this.bbiepMap.get(bbie.getToBbiepId());
+    }
+
+    @Override
+    public BbieSc getBbieSc(BigInteger bbieScId) {
+        return this.bbieScByIdMap.get(bbieScId);
     }
 
     @Override

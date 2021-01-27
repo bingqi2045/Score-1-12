@@ -15,8 +15,6 @@ public interface BieDocument {
 
     Collection<BieAssociation> getAssociations(Abie abie);
 
-    Asbie getAsbie(BigInteger asbieId);
-
     Asbiep getAsbiep(Asbie asbie);
 
     Bbie getBbie(BigInteger bbieId);

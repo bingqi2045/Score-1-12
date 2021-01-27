@@ -3,6 +3,7 @@ package org.oagi.score.service.bie;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.model.*;
+import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.model.*;
 import org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
@@ -1148,7 +1149,9 @@ public class BieUpliftingService {
         }
 
         BieDocument sourceBieDocument = bieReadService.getBieDocument(request.getRequester(), request.getTopLevelAsbiepId());
-        sourceBieDocument.getAssociations()
+
+        CodeListReadRepository codeListReadRepository = scoreRepositoryFactory.createCodeListReadRepository();
+        Map<BigInteger, CodeList> codeListMap = codeListReadRepository.getCodeListMap(request.getTargetReleaseId());
 
         request.getMappingList().forEach(mapping -> {
             BieUpliftingValidation validation = new BieUpliftingValidation();
@@ -1162,14 +1165,23 @@ public class BieUpliftingService {
                     validation.setValid(true);
                     break;
                 case "BBIE":
-                    scoreRepositoryFactory.createBieReadRepository()
-                    validation.setValid(true);
+                    Bbie bbie = sourceBieDocument.getBbie(mapping.getBieId());
+                    if (bbie.getCodeListId() != null) {
+                        validation.setValid(codeListMap.get(bbie.getCodeListId()) != null);
+                    } else {
+                        validation.setValid(true);
+                    }
                     break;
                 case "BBIE_SC":
-                    validation.setValid(true);
+                    BbieSc bbieSc = sourceBieDocument.getBbieSc(mapping.getBieId());
+                    if (bbieSc.getCodeListId() != null) {
+                        validation.setValid(codeListMap.get(bbieSc.getCodeListId()) != null);
+                    } else {
+                        validation.setValid(true);
+                    }
                     break;
             }
-            validations.add(new BieUpliftingValidation());
+            validations.add(validation);
         });
         response.setValidations(validations);
         return response;

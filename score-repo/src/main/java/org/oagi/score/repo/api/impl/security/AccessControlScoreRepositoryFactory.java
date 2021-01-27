@@ -7,6 +7,7 @@ import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
+import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
@@ -126,6 +127,11 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public CcReadRepository createCcReadRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createCcReadRepository(), CcReadRepository.class);
+    }
+
+    @Override
+    public CodeListReadRepository createCodeListReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createCodeListReadRepository(), CodeListReadRepository.class);
     }
 
     @Override
