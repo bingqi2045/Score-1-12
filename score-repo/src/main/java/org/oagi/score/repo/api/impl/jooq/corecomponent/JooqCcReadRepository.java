@@ -126,10 +126,10 @@ public class JooqCcReadRepository
 
             List<AsccManifestRecord> asccManifestRecordList =
                     ccMap.asccManifestRecordMap.getOrDefault(accManifestRecord.getAccManifestId(), Collections.emptyList());
+            if (asccManifestRecordMap == null) {
+                asccManifestRecordMap = new HashMap();
+            }
             asccManifestRecordList.forEach(asccManifestRecord -> {
-                if (asccManifestRecordMap == null) {
-                    asccManifestRecordMap = new HashMap();
-                }
                 asccManifestRecordMap.putIfAbsent(asccManifestRecord.getAsccManifestId(), asccManifestRecord);
 
                 AsccpManifestRecord asccpManifestRecord =
@@ -139,10 +139,10 @@ public class JooqCcReadRepository
 
             List<BccManifestRecord> bccManifestRecordList =
                     ccMap.bccManifestRecordMap.getOrDefault(accManifestRecord.getAccManifestId(), Collections.emptyList());
+            if (bccManifestRecordMap == null) {
+                bccManifestRecordMap = new HashMap();
+            }
             bccManifestRecordList.forEach(bccManifestRecord -> {
-                if (bccManifestRecordMap == null) {
-                    bccManifestRecordMap = new HashMap();
-                }
                 bccManifestRecordMap.putIfAbsent(bccManifestRecord.getBccManifestId(), bccManifestRecord);
 
                 BccpManifestRecord bccpManifestRecord =
