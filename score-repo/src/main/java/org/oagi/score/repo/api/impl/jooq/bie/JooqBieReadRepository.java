@@ -285,6 +285,7 @@ public class JooqBieReadRepository
                 BBIE_SC.FIXED_VALUE,
                 BBIE_SC.IS_USED,
                 BBIE_SC.DEFINITION,
+                BBIE_SC.BIZ_TERM,
                 BBIE_SC.REMARK,
                 BBIE_SC.EXAMPLE,
                 BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID)
@@ -312,6 +313,7 @@ public class JooqBieReadRepository
             bbieSc.setFixedValue(record.get(BBIE_SC.FIXED_VALUE));
             bbieSc.setUsed((byte) 1 == record.get(BBIE_SC.IS_USED));
             bbieSc.setDefinition(record.get(BBIE_SC.DEFINITION));
+            bbieSc.setBizTerm(record.get(BBIE_SC.BIZ_TERM));
             bbieSc.setRemark(record.get(BBIE_SC.REMARK));
             bbieSc.setExample(record.get(BBIE_SC.EXAMPLE));
             bbieSc.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());

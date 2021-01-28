@@ -322,6 +322,7 @@ public class JooqBieWriteRepository
         bbieScRecord.setDefinition(bbieSc.getDefinition());
         bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
         bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
+        bbieScRecord.setBizTerm(bbieSc.getBizTerm());
         bbieScRecord.setRemark(bbieSc.getRemark());
         bbieScRecord.setExample(bbieSc.getExample());
         bbieScRecord.setIsUsed((byte) (bbieSc.isUsed() ? 1 : 0));
