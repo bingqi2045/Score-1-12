@@ -183,6 +183,7 @@ public class BieUpliftingService {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
             // reused bie case;
             if (abie == null) {
+                targetAccManifestQueue.poll();
                 return;
             }
             AccManifest sourceAccManifest = sourceCcDocument.getAccManifest(
@@ -298,6 +299,7 @@ public class BieUpliftingService {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
             // reused bie case;
             if (asbiep == null) {
+                targetAsccpManifestQueue.poll();
                 return;
             }
             AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(
