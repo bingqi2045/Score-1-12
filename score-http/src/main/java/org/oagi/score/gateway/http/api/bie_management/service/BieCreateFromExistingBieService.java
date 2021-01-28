@@ -717,6 +717,9 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             if (tokens.length < 2) {
                 return sourceAsccpKey;
             } else {
+                if(path.endsWith(sourceAsccpKey)) {
+                    return sourceAsccpKey;
+                }
                 return seperator + path.split(seperator)[1];
             }
         }
