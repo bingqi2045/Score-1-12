@@ -506,7 +506,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 abieList.add(roleOfAbie);
 
                 List<BieCreateFromExistingBieAsbie> asbies = this.asbieList.stream()
-                        .filter(e -> e.getFromAbieId() == roleOfAbie.getAbieId()).collect(Collectors.toList());
+                        .filter(e -> e.getFromAbieId().equals(roleOfAbie.getAbieId())).collect(Collectors.toList());
 
                 asbieList.addAll(asbies);
                 asbies.forEach(e -> {
@@ -516,12 +516,12 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 });
 
                 List<BieCreateFromExistingBieBbie> bbies = this.bbieList.stream()
-                        .filter(e -> e.getFromAbieId() == roleOfAbie.getAbieId()).collect(Collectors.toList());
+                        .filter(e -> e.getFromAbieId().equals(roleOfAbie.getAbieId())).collect(Collectors.toList());
                 bbieList.addAll(bbies);
                 bbies.forEach(e -> {
                     bbiepList.add(bbiepMap.get(e.getToBbiepId()));
                     bbieScList.addAll(this.bbieScList.stream()
-                            .filter(sc -> sc.getBbieId() == e.getBbieId())
+                            .filter(sc -> sc.getBbieId().equals(e.getBbieId()))
                             .collect(Collectors.toList()));
                 });
             }
@@ -553,7 +553,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     break;
 
                 case "asbiep":
-                    if (previousVal == targetTopLevelAsbiep.getAsbiepId()) {
+                    if (previousVal.equals(targetTopLevelAsbiep.getAsbiepId())) {
                         targetTopLevelAsbiep.setAsbiepId(nextVal);
                     }
 
