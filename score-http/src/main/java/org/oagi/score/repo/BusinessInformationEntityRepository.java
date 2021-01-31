@@ -431,9 +431,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setAccManifestId(BigInteger accManifestId) {
-            if (accManifestId != null && accManifestId.longValue() > 0L) {
-                conditions.add(ABIE.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)));
+        public SelectBieListArguments setAsccpManifestId(BigInteger asccpManifestId) {
+            if (asccpManifestId != null && asccpManifestId.longValue() > 0L) {
+                conditions.add(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)));
             }
             return this;
         }

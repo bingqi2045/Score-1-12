@@ -34,7 +34,7 @@ public class BieListController {
     public PageResponse<BieList> getBieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
                                             @RequestParam(name = "businessContext", required = false) String businessContext,
-                                            @RequestParam(name = "accManifestId", required = false) BigInteger accManifestId,
+                                            @RequestParam(name = "asccpManifestId", required = false) BigInteger asccpManifestId,
                                             @RequestParam(name = "access", required = false) String access,
                                             @RequestParam(name = "states", required = false) String states,
                                             @RequestParam(name = "excludePropertyTerms", required = false) String excludePropertyTerms,
@@ -54,7 +54,7 @@ public class BieListController {
 
         request.setPropertyTerm(propertyTerm);
         request.setBusinessContext(businessContext);
-        request.setAccManifestId(accManifestId);
+        request.setAsccpManifestId(asccpManifestId);
         request.setAccess(StringUtils.hasLength(access) ? AccessPrivilege.valueOf(access) : null);
         request.setStates(StringUtils.hasLength(states) ?
                 Arrays.asList(states.split(",")).stream()
