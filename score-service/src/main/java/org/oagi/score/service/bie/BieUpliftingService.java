@@ -10,7 +10,6 @@ import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.release.model.GetReleaseRequest;
 import org.oagi.score.repo.api.release.model.Release;
 import org.oagi.score.repo.api.user.model.ScoreUser;
-import org.oagi.score.service.bie.model.BieDocumentBuilder;
 import org.oagi.score.service.bie.model.BieUpliftingCustomMappingTable;
 import org.oagi.score.service.bie.model.BieUpliftingMapping;
 import org.oagi.score.service.bie.model.BieUpliftingValidation;
@@ -922,7 +921,16 @@ public class BieUpliftingService {
                 targetBbie.setBasedBccManifestId(targetBccManifest.getBccManifestId());
                 targetBbie.setPath(currentTargetPath);
                 targetBbie.setHashPath(sha256(targetBbie.getPath()));
-                targetBbie.setBdtPriRestriId(bbie.getBdtPriRestriId());
+                // TODO: finding matched primitive restriction
+                if (bbie.getBdtPriRestriId() != null) {
+                    DtManifest targetDtManifest = targetCcDocument.getDtManifest(toBccpManifest.getBdtManifestId());
+                    Dt targetDt = targetCcDocument.getDt(targetDtManifest);
+                    BdtPriRestri targetDefaultBdtPriRestri =
+                            targetCcDocument.getBdtPriRestriList(targetDt).stream()
+                                    .filter(e -> e.isDefault())
+                                    .findFirst().get();
+                    targetBbie.setBdtPriRestriId(targetDefaultBdtPriRestri.getBdtPriRestriId());
+                }
                 targetBbie.setCodeListId(bbie.getCodeListId());
                 targetBbie.setAgencyIdListId(bbie.getAgencyIdListId());
                 targetBbie.setDefaultValue(bbie.getDefaultValue());
@@ -1055,7 +1063,15 @@ public class BieUpliftingService {
                 targetBbieSc.setBasedDtScManifestId(targetDtScManifest.getDtScManifestId());
                 targetBbieSc.setPath(targetPath);
                 targetBbieSc.setHashPath(sha256(targetBbieSc.getPath()));
-                targetBbieSc.setDtScPriRestriId(bbieSc.getDtScPriRestriId());
+                // TODO: finding matched primitive restriction
+                if (bbieSc.getDtScPriRestriId() != null) {
+                    DtSc targetDtSc = targetCcDocument.getDtSc(targetDtScManifest);
+                    BdtScPriRestri targetDefaultBdtScPriRestri =
+                            targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                    .filter(e -> e.isDefault())
+                                    .findFirst().get();
+                    targetBbieSc.setDtScPriRestriId(targetDefaultBdtScPriRestri.getBdtScPriRestriId());
+                }
                 targetBbieSc.setCodeListId(bbieSc.getCodeListId());
                 targetBbieSc.setAgencyIdListId(bbieSc.getAgencyIdListId());
                 targetBbieSc.setDefaultValue(bbieSc.getDefaultValue());
