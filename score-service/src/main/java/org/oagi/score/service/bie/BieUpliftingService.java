@@ -795,14 +795,6 @@ public class BieUpliftingService {
             abieSourceAssociationsMap.put(abie.getAbieId(), sourceAssociations);
 
             AccManifest targetAccManifest = targetAccManifestQueue.poll();
-            if (targetAccManifest == null) {
-                BigInteger targetAccManifestId =
-                        this.customMappingTable.getTargetAccManifestIdBySourcePath(currentSourcePath);
-                if (targetAccManifestId != null) {
-                    targetAccManifest = targetCcDocument.getAccManifest(targetAccManifestId);
-                }
-            }
-
             if (targetAccManifest != null) { // found matched acc
                 List<Association> targetAssociations =
                         getAssociationsRegardingBases(currentTargetPath, targetCcDocument, targetAccManifest);
@@ -832,31 +824,30 @@ public class BieUpliftingService {
             Association sourceAssociation = sourceAssociations.stream()
                     .filter(e -> e.isMatched(sourceAsccManifest)).findAny().orElse(null);
 
-            List<Association> targetAssociations =
-                    abieTargetAssociationsMap.getOrDefault(asbie.getFromAbieId(), Collections.emptyList());
-            CcMatchingScore matchingScore = targetAssociations.stream().filter(e -> e.getCcAssociation().isAscc())
-                    .map(e -> ccMatchingService.score(
-                            sourceCcDocument,
-                            sourceAssociation,
-                            targetCcDocument,
-                            e,
-                            (ccDocument, association) -> ccDocument.getAscc((AsccManifest) association.getCcAssociation())))
-                    .max(Comparator.comparing(CcMatchingScore::getScore))
-                    .orElse(new CcMatchingScore(0.0d, null, null));
-
             currentSourcePath = sourceAssociation.getPath();
             AsccManifest targetAsccManifest = null;
-            if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingMapping targetAsccMapping =
-                        this.customMappingTable.getTargetAsccMappingBySourcePath(currentSourcePath);
-                if (targetAsccMapping != null) {
-                    currentTargetPath = targetAsccMapping.getTargetPath();
-                    targetAsccManifest = targetCcDocument.getAsccManifest(targetAsccMapping.getTargetManifestId());
-                }
+            BieUpliftingMapping targetAsccMapping =
+                    this.customMappingTable.getTargetAsccMappingBySourcePath(currentSourcePath);
+            if (targetAsccMapping != null) {
+                currentTargetPath = targetAsccMapping.getTargetPath();
+                targetAsccManifest = targetCcDocument.getAsccManifest(targetAsccMapping.getTargetManifestId());
             } else {
-                Association targetAssociation = (Association) matchingScore.getTarget();
-                currentTargetPath = targetAssociation.getPath();
-                targetAsccManifest = (AsccManifest) targetAssociation.getCcAssociation();
+                List<Association> targetAssociations =
+                        abieTargetAssociationsMap.getOrDefault(asbie.getFromAbieId(), Collections.emptyList());
+                CcMatchingScore matchingScore = targetAssociations.stream().filter(e -> e.getCcAssociation().isAscc())
+                        .map(e -> ccMatchingService.score(
+                                sourceCcDocument,
+                                sourceAssociation,
+                                targetCcDocument,
+                                e,
+                                (ccDocument, association) -> ccDocument.getAscc((AsccManifest) association.getCcAssociation())))
+                        .max(Comparator.comparing(CcMatchingScore::getScore))
+                        .orElse(new CcMatchingScore(0.0d, null, null));
+                if (matchingScore.getScore() > 0.0d) {
+                    Association targetAssociation = (Association) matchingScore.getTarget();
+                    currentTargetPath = targetAssociation.getPath();
+                    targetAsccManifest = (AsccManifest) targetAssociation.getCcAssociation();
+                }
             }
 
             if (targetAsccManifest != null) {
@@ -893,31 +884,31 @@ public class BieUpliftingService {
             Association sourceAssociation = sourceAssociations.stream()
                     .filter(e -> e.isMatched(sourceBccManifest)).findAny().orElse(null);
 
-            List<Association> targetAssociations =
-                    abieTargetAssociationsMap.getOrDefault(bbie.getFromAbieId(), Collections.emptyList());
-            CcMatchingScore matchingScore = targetAssociations.stream().filter(e -> e.getCcAssociation().isBcc())
-                    .map(e -> ccMatchingService.score(
-                            sourceCcDocument,
-                            sourceAssociation,
-                            targetCcDocument,
-                            e,
-                            (ccDocument, association) -> ccDocument.getBcc((BccManifest) association.getCcAssociation())))
-                    .max(Comparator.comparing(CcMatchingScore::getScore))
-                    .orElse(new CcMatchingScore(0.0d, null, null));
-
             currentSourcePath = sourceAssociation.getPath();
             BccManifest targetBccManifest = null;
-            if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingMapping targetBccMapping =
-                        this.customMappingTable.getTargetBccMappingBySourcePath(currentSourcePath);
-                if (targetBccMapping != null) {
-                    currentTargetPath = targetBccMapping.getTargetPath();
-                    targetBccManifest = targetCcDocument.getBccManifest(targetBccMapping.getTargetManifestId());
-                }
+            BieUpliftingMapping targetBccMapping =
+                    this.customMappingTable.getTargetBccMappingBySourcePath(currentSourcePath);
+            if (targetBccMapping != null) {
+                currentTargetPath = targetBccMapping.getTargetPath();
+                targetBccManifest = targetCcDocument.getBccManifest(targetBccMapping.getTargetManifestId());
             } else {
-                Association targetAssociation = (Association) matchingScore.getTarget();
-                currentTargetPath = targetAssociation.getPath();
-                targetBccManifest = (BccManifest) targetAssociation.getCcAssociation();
+                List<Association> targetAssociations =
+                        abieTargetAssociationsMap.getOrDefault(bbie.getFromAbieId(), Collections.emptyList());
+                CcMatchingScore matchingScore = targetAssociations.stream().filter(e -> e.getCcAssociation().isBcc())
+                        .map(e -> ccMatchingService.score(
+                                sourceCcDocument,
+                                sourceAssociation,
+                                targetCcDocument,
+                                e,
+                                (ccDocument, association) -> ccDocument.getBcc((BccManifest) association.getCcAssociation())))
+                        .max(Comparator.comparing(CcMatchingScore::getScore))
+                        .orElse(new CcMatchingScore(0.0d, null, null));
+
+                if (matchingScore.getScore() > 0.0d) {
+                    Association targetAssociation = (Association) matchingScore.getTarget();
+                    currentTargetPath = targetAssociation.getPath();
+                    targetBccManifest = (BccManifest) targetAssociation.getCcAssociation();
+                }
             }
 
             if (targetBccManifest != null) {
@@ -967,14 +958,6 @@ public class BieUpliftingService {
                     "ASCCP-" + sourceAsccpManifest.getAsccpManifestId();
 
             AsccpManifest targetAsccpManifest = targetAsccpManifestQueue.poll();
-            if (targetAsccpManifest == null) {
-                BigInteger targetAsccpManifestId =
-                        this.customMappingTable.getTargetAsccpManifestIdBySourcePath(currentSourcePath);
-                if (targetAsccpManifestId != null) {
-                    targetAsccpManifest = targetCcDocument.getAsccpManifest(targetAsccpManifestId);
-                }
-            }
-
             if (targetAsccpManifest != null) { // found matched asccp
                 AccManifest targetRoleOfAccManifest = targetCcDocument.getRoleOfAccManifest(targetAsccpManifest);
                 targetAccManifestQueue.offer(targetRoleOfAccManifest);
@@ -1011,14 +994,6 @@ public class BieUpliftingService {
             currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId();
 
             BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
-            if (targetBccpManifest == null) {
-                BigInteger targetBccpManifestId =
-                        this.customMappingTable.getTargetBccpManifestIdBySourcePath(currentSourcePath);
-                if (targetBccpManifestId != null) {
-                    targetBccpManifest = targetCcDocument.getBccpManifest(targetBccpManifestId);
-                }
-            }
-
             if (targetBccpManifest != null) {
                 currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId();
 
@@ -1048,31 +1023,30 @@ public class BieUpliftingService {
 
             String sourcePath = currentSourcePath + ">" + "BDT-" + sourceDtManifest.getDtManifestId() +
                     ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
-            CcMatchingScore matchingScore =
-                    bbieTargetDtScManifestsMap.getOrDefault(bbieSc.getBbieId(), Collections.emptyList()).stream()
-                            .map(e -> ccMatchingService.score(
-                                    sourceCcDocument,
-                                    sourceDtScManifest,
-                                    targetCcDocument,
-                                    e,
-                                    (ccDocument, dtScManifest) -> ccDocument.getDtSc(dtScManifest)))
-                            .max(Comparator.comparing(CcMatchingScore::getScore))
-                            .orElse(new CcMatchingScore(0.0d, null, null));
-
             DtScManifest targetDtScManifest = null;
             String targetPath = null;
-            if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
-                BieUpliftingMapping targetDtScMapping =
-                        this.customMappingTable.getTargetDtScMappingBySourcePath(sourcePath);
-                if (targetDtScMapping != null) {
-                    targetDtScManifest = targetCcDocument.getDtScManifest(targetDtScMapping.getTargetManifestId());
-                    targetPath = targetDtScMapping.getTargetPath();
-                }
+            BieUpliftingMapping targetDtScMapping =
+                    this.customMappingTable.getTargetDtScMappingBySourcePath(sourcePath);
+            if (targetDtScMapping != null) {
+                targetDtScManifest = targetCcDocument.getDtScManifest(targetDtScMapping.getTargetManifestId());
+                targetPath = targetDtScMapping.getTargetPath();
             } else {
-                targetDtScManifest = (DtScManifest) matchingScore.getTarget();
-                DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetDtScManifest.getOwnerDtManifestId());
-                targetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId() +
-                        ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                CcMatchingScore matchingScore =
+                        bbieTargetDtScManifestsMap.getOrDefault(bbieSc.getBbieId(), Collections.emptyList()).stream()
+                                .map(e -> ccMatchingService.score(
+                                        sourceCcDocument,
+                                        sourceDtScManifest,
+                                        targetCcDocument,
+                                        e,
+                                        (ccDocument, dtScManifest) -> ccDocument.getDtSc(dtScManifest)))
+                                .max(Comparator.comparing(CcMatchingScore::getScore))
+                                .orElse(new CcMatchingScore(0.0d, null, null));
+                if (matchingScore.getScore() > 0.0d) {
+                    targetDtScManifest = (DtScManifest) matchingScore.getTarget();
+                    DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetDtScManifest.getOwnerDtManifestId());
+                    targetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId() +
+                            ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                }
             }
 
             if (targetDtScManifest != null) {
