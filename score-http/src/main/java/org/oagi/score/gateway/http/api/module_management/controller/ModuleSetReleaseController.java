@@ -27,17 +27,4 @@ public class ModuleSetReleaseController {
     public List<ModuleList> getModuleList(@AuthenticationPrincipal AuthenticatedPrincipal user) {
         return moduleService.getModuleList(user);
     }
-
-    @RequestMapping(value = "/module/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Module getModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                            @PathVariable("id") long moduleId) {
-        return moduleService.getModule(user, moduleId);
-    }
-
-    @RequestMapping(value = "/modules", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ModuleElement getModuleElement() {
-        return moduleService.getModuleElement();
-    }
 }
