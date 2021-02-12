@@ -726,6 +726,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
                     .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
+                    .set(BBIE.CREATED_BY, ULong.valueOf(userId))
+                    .set(BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(BBIE.CREATION_TIMESTAMP, timestamp)
+                    .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();
         }
 
