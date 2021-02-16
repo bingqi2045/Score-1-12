@@ -11,9 +11,15 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
 
     private BigInteger moduleDirId;
 
+    private String path;
+
     private String name;
 
     private BigInteger namespaceId;
+
+    private String namespaceUri;
+
+    private boolean assigned;
 
     private String versionNum;
 
@@ -55,6 +61,30 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
 
     public void setVersionNum(String versionNum) {
         this.versionNum = versionNum;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getNamespaceUri() {
+        return namespaceUri;
+    }
+
+    public void setNamespaceUri(String namespaceUri) {
+        this.namespaceUri = namespaceUri;
+    }
+
+    public boolean isAssigned() {
+        return assigned;
+    }
+
+    public void setAssigned(boolean assigned) {
+        this.assigned = assigned;
     }
 
     @Override

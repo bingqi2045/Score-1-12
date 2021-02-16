@@ -11,9 +11,29 @@ public class ModuleSetRelease extends Auditable implements Comparable<ModuleSetR
 
     private BigInteger moduleSetId;
 
+    private String moduleSetName;
+
     private BigInteger releaseId;
 
+    private String releaseNum;
+
     private boolean isDefault;
+
+    public String getModuleSetName() {
+        return moduleSetName;
+    }
+
+    public void setModuleSetName(String moduleSetName) {
+        this.moduleSetName = moduleSetName;
+    }
+
+    public String getReleaseNum() {
+        return releaseNum;
+    }
+
+    public void setReleaseNum(String releaseNum) {
+        this.releaseNum = releaseNum;
+    }
 
     public BigInteger getModuleSetReleaseId() {
         return moduleSetReleaseId;

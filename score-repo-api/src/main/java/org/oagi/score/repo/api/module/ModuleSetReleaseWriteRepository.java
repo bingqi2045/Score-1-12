@@ -11,6 +11,6 @@ public interface ModuleSetReleaseWriteRepository {
     UpdateModuleSetReleaseResponse updateModuleSetRelease(
             UpdateModuleSetReleaseRequest request) throws ScoreDataAccessException;
 
-    DeleteModuleSetReleaseResponse deleteModuleReleaseSet(
+    DeleteModuleSetReleaseResponse deleteModuleSetRelease(
             DeleteModuleSetReleaseRequest request) throws ScoreDataAccessException;
 }
