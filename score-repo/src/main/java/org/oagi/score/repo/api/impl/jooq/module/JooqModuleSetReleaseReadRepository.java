@@ -64,6 +64,7 @@ public class JooqModuleSetReleaseReadRepository
             moduleSetRelease.setModuleSetName(record.get(MODULE_SET.NAME));
             moduleSetRelease.setReleaseId(record.get(MODULE_SET_RELEASE.RELEASE_ID).toBigInteger());
             moduleSetRelease.setReleaseNum(record.get(RELEASE.RELEASE_NUM));
+            moduleSetRelease.setDefault(record.get(MODULE_SET_RELEASE.IS_DEFAULT) == 1);
 
             moduleSetRelease.setCreatedBy(new ScoreUser(
                     record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
