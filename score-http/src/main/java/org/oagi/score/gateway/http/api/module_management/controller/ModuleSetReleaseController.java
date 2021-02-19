@@ -3,14 +3,14 @@ package org.oagi.score.gateway.http.api.module_management.controller;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
-import org.oagi.score.repo.api.module.model.GetModuleSetReleaseListRequest;
-import org.oagi.score.repo.api.module.model.GetModuleSetReleaseListResponse;
+import org.oagi.score.repo.api.module.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,5 +65,50 @@ public class ModuleSetReleaseController {
         request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
 
         return service.getModuleSetReleaseList(request);
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleSetRelease getModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                @PathVariable("id") BigInteger moduleSetReleaseId) {
+        GetModuleSetReleaseRequest request = new GetModuleSetReleaseRequest(sessionService.asScoreUser(user));
+        request.setModuleSetReleaseId(moduleSetReleaseId);
+        GetModuleSetReleaseResponse response = service.getModuleSetRelease(request);
+        return response.getModuleSetRelease();
+    }
+
+    @RequestMapping(value = "/module_set_release", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleSetRelease createModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                     @RequestBody ModuleSetRelease moduleSetRelease) {
+        CreateModuleSetReleaseRequest request = new CreateModuleSetReleaseRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetRelease.getModuleSetId());
+        request.setReleaseId(moduleSetRelease.getReleaseId());
+        request.setDefault(moduleSetRelease.isDefault());
+        CreateModuleSetReleaseResponse response = service.createModuleSetRelease(request);
+        return response.getModuleSetRelease();
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleSetRelease updateModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                     @PathVariable("id") BigInteger moduleSetReleaseId,
+                                     @RequestBody ModuleSetRelease moduleSetRelease) {
+        UpdateModuleSetReleaseRequest request = new UpdateModuleSetReleaseRequest(sessionService.asScoreUser(user));
+        request.setModuleSetReleaseId(moduleSetReleaseId);
+        request.setModuleSetId(moduleSetRelease.getModuleSetId());
+        request.setReleaseId(moduleSetRelease.getReleaseId());
+        request.setDefault(moduleSetRelease.isDefault());
+        UpdateModuleSetReleaseResponse response = service.updateModuleSetRelease(request);
+        return response.getModuleSetRelease();
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void discardModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                 @PathVariable("id") BigInteger moduleSetReleaseId) {
+        DeleteModuleSetReleaseRequest request = new DeleteModuleSetReleaseRequest(sessionService.asScoreUser(user));
+        request.setModuleSetReleaseId(moduleSetReleaseId);
+        service.discardModuleSetRelease(request);
     }
 }

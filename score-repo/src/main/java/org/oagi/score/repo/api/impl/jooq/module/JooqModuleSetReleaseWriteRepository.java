@@ -36,6 +36,7 @@ public class JooqModuleSetReleaseWriteRepository
         ModuleSetReleaseRecord moduleSetRecord = dslContext().insertInto(MODULE_SET_RELEASE)
                 .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
                 .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+                .set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
                 .set(MODULE_SET_RELEASE.CREATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.CREATION_TIMESTAMP, timestamp)
@@ -47,6 +48,7 @@ public class JooqModuleSetReleaseWriteRepository
         moduleSetRelease.setModuleSetReleaseId(moduleSetRecord.getModuleSetReleaseId().toBigInteger());
         moduleSetRelease.setReleaseId(moduleSetRecord.getReleaseId().toBigInteger());
         moduleSetRelease.setModuleSetId(moduleSetRecord.getModuleSetId().toBigInteger());
+        moduleSetRelease.setDefault(request.isDefault());
         moduleSetRelease.setCreatedBy(requester);
         moduleSetRelease.setCreationTimestamp(
                 Date.from(moduleSetRecord.getCreationTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
@@ -67,6 +69,7 @@ public class JooqModuleSetReleaseWriteRepository
         ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().update(MODULE_SET_RELEASE)
                 .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
                 .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+                .set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
                 .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
@@ -76,6 +79,7 @@ public class JooqModuleSetReleaseWriteRepository
         moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
         moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId().toBigInteger());
         moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId().toBigInteger());
+        moduleSetRelease.setDefault(request.isDefault());
 
         moduleSetRelease.setCreationTimestamp(
                 Date.from(moduleSetReleaseRecord.getCreationTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
@@ -90,7 +94,8 @@ public class JooqModuleSetReleaseWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetReleaseResponse deleteModuleSetRelease(DeleteModuleSetReleaseRequest request) throws ScoreDataAccessException {
         dslContext().deleteFrom(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())));
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .execute();
 
         return new DeleteModuleSetReleaseResponse();
     }
