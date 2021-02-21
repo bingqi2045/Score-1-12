@@ -62,8 +62,7 @@ public class CodeListReadRepository {
         }
     }
 
-    private List<AvailableCodeList> availableCodeListByCodeListManifestId(
-            BigInteger codeListManifestId) {
+    private List<AvailableCodeList> availableCodeListByCodeListManifestId(BigInteger codeListManifestId) {
         if (codeListManifestId == null) {
             return Collections.emptyList();
         }
@@ -99,6 +98,21 @@ public class CodeListReadRepository {
                             associatedCodeListId)
             );
         }
+
+        // #1094: Add Code list which is base availableCodeLists
+        List<AvailableCodeList> baseCodeLists =
+                dslContext.select(
+                        CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                        CODE_LIST.CODE_LIST_ID,
+                        CODE_LIST.NAME.as("code_list_name"),
+                        CODE_LIST.STATE)
+                        .from(CODE_LIST)
+                        .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                        .where(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
+                        .fetchInto(AvailableCodeList.class);
+
+        mergedCodeLists.addAll(baseCodeLists);
         return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
