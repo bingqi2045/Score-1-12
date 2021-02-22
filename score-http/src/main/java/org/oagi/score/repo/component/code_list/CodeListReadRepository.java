@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -53,33 +50,21 @@ public class CodeListReadRepository {
 
         if (result.size() > 0) {
             return result.stream().map(e ->
-                    availableCodeListByCodeListManifestIdOrReleaseId(
-                            e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger(),
-                            e.get(CODE_LIST_MANIFEST.RELEASE_ID).toBigInteger()))
+                    availableCodeListByCodeListManifestId(
+                            e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger()))
                     .flatMap(e -> e.stream())
                     .distinct()
                     .sorted(Comparator.comparing(AvailableCodeList::getCodeListName))
                     .collect(Collectors.toList());
 
         } else {
-            return availableCodeListByCodeListManifestIdOrReleaseId(
-                    null, bccpManifestRecord.getReleaseId().toBigInteger());
+            return availableCodeListByReleaseId(bccpManifestRecord.getReleaseId().toBigInteger());
         }
     }
 
-    private List<AvailableCodeList> availableCodeListByCodeListManifestIdOrReleaseId(
-            BigInteger codeListManifestId, BigInteger releaseId) {
+    private List<AvailableCodeList> availableCodeListByCodeListManifestId(BigInteger codeListManifestId) {
         if (codeListManifestId == null) {
-            return dslContext.select(
-                    CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
-                    CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
-                    CODE_LIST.CODE_LIST_ID,
-                    CODE_LIST.NAME.as("code_list_name"))
-                    .from(CODE_LIST)
-                    .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
-                    .where(and(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        CODE_LIST.STATE.in(Arrays.asList(CcState.Published.name(), CcState.Production.name()))
-            )).fetchInto(AvailableCodeList.class);
+            return Collections.emptyList();
         }
 
         List<AvailableCodeList> availableCodeLists =
@@ -87,7 +72,8 @@ public class CodeListReadRepository {
                     CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                     CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                     CODE_LIST.CODE_LIST_ID,
-                    CODE_LIST.NAME.as("code_list_name"))
+                    CODE_LIST.NAME.as("code_list_name"),
+                    CODE_LIST.STATE)
                     .from(CODE_LIST)
                     .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
@@ -108,11 +94,39 @@ public class CodeListReadRepository {
         mergedCodeLists.addAll(availableCodeLists);
         for (BigInteger associatedCodeListId : associatedCodeLists) {
             mergedCodeLists.addAll(
-                    availableCodeListByCodeListManifestIdOrReleaseId(
-                            associatedCodeListId, releaseId)
+                    availableCodeListByCodeListManifestId(
+                            associatedCodeListId)
             );
         }
+
+        // #1094: Add Code list which is base availableCodeLists
+        List<AvailableCodeList> baseCodeLists =
+                dslContext.select(
+                        CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                        CODE_LIST.CODE_LIST_ID,
+                        CODE_LIST.NAME.as("code_list_name"),
+                        CODE_LIST.STATE)
+                        .from(CODE_LIST)
+                        .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                        .where(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
+                        .fetchInto(AvailableCodeList.class);
+
+        mergedCodeLists.addAll(baseCodeLists);
         return mergedCodeLists.stream().distinct().collect(Collectors.toList());
+    }
+
+    private List<AvailableCodeList> availableCodeListByReleaseId(BigInteger releaseId) {
+        return dslContext.select(
+                CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                CODE_LIST.CODE_LIST_ID,
+                CODE_LIST.NAME.as("code_list_name"),
+                CODE_LIST.STATE)
+                .from(CODE_LIST)
+                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(AvailableCodeList.class);
     }
 
     public List<AvailableCodeList> availableCodeListByBdtScManifestId(BigInteger bdtScManifestId) {
@@ -134,17 +148,15 @@ public class CodeListReadRepository {
 
         if (result.size() > 0) {
             return result.stream().map(e ->
-                    availableCodeListByCodeListManifestIdOrReleaseId(
-                            e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger(),
-                            e.get(CODE_LIST_MANIFEST.RELEASE_ID).toBigInteger()))
+                    availableCodeListByCodeListManifestId(
+                            e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger()))
                     .flatMap(e -> e.stream())
                     .distinct()
                     .sorted(Comparator.comparing(AvailableCodeList::getCodeListName))
                     .collect(Collectors.toList());
 
         } else {
-            return availableCodeListByCodeListManifestIdOrReleaseId(
-                    null, dtScManifestRecord.getReleaseId().toBigInteger());
+            return availableCodeListByReleaseId(dtScManifestRecord.getReleaseId().toBigInteger());
         }
     }
 }
