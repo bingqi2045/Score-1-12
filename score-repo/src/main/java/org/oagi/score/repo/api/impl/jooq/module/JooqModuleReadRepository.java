@@ -67,22 +67,40 @@ public class JooqModuleReadRepository
             module.setNamespaceUri(record.get(NAMESPACE.URI));
             module.setName(record.get(MODULE.NAME));
             module.setVersionNum(record.get(MODULE.VERSION_NUM));
-
-            module.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-            ));
-            module.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-            ));
+//
+//            module.setCreatedBy(new ScoreUser(
+//                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+//                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+//                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
+//            ));
+//            module.setLastUpdatedBy(new ScoreUser(
+//                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+//                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+//                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
+//            ));
             module.setCreationTimestamp(
                     Date.from(record.get(MODULE.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             module.setLastUpdateTimestamp(
                     Date.from(record.get(MODULE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             return module;
+        };
+    }
+
+    private RecordMapper<Record, ModuleDir> moduleDirMapper() {
+        return record -> {
+            ModuleDir moduleDir = new ModuleDir();
+            moduleDir.setModuleDirId(record.get(MODULE_DIR.MODULE_DIR_ID).toBigInteger());
+            moduleDir.setName(record.get(MODULE_DIR.NAME));
+            if (record.get(MODULE_DIR.PARENT_MODULE_DIR_ID) != null) {
+                moduleDir.setParentModuleDirId(record.get(MODULE_DIR.PARENT_MODULE_DIR_ID).toBigInteger());
+            }
+            moduleDir.setPath(record.get(MODULE_DIR.PATH));
+
+            moduleDir.setCreationTimestamp(
+                    Date.from(record.get(MODULE_DIR.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+            moduleDir.setLastUpdateTimestamp(
+                    Date.from(record.get(MODULE_DIR.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+            return moduleDir;
         };
     }
 
@@ -172,5 +190,141 @@ public class JooqModuleReadRepository
         }
 
         return (request.getSortDirection() == ASC) ? field.asc() : field.desc();
+    }
+
+    private SelectOnConditionStep selectModuleElement() {
+        return dslContext().select(
+                MODULE.MODULE_ID,
+                MODULE.NAME,
+                MODULE.NAMESPACE_ID,
+                NAMESPACE.URI,
+                MODULE.VERSION_NUM,
+                APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
+                APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
+                APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
+                APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
+                APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                MODULE.CREATION_TIMESTAMP,
+                MODULE.LAST_UPDATE_TIMESTAMP)
+                .from(MODULE)
+                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
+                .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
+                .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .leftJoin(MODULE_SET_ASSIGNMENT).on(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID));
+    }
+
+    private SelectOnConditionStep selectModuleDirElement() {
+        return dslContext().select(
+                MODULE_DIR.MODULE_DIR_ID,
+                MODULE_DIR.NAME,
+                MODULE_DIR.PATH,
+                APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
+                APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
+                APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
+                APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
+                APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                MODULE_DIR.CREATION_TIMESTAMP,
+                MODULE_DIR.LAST_UPDATE_TIMESTAMP)
+                .from(MODULE_DIR)
+                .join(MODULE_DIR.as("parent")).on(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(MODULE_DIR.as("parent").MODULE_DIR_ID))
+                .join(APP_USER.as("creator")).on(MODULE_DIR.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
+                .join(APP_USER.as("updater")).on(MODULE_DIR.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
+    }
+
+    @Override
+    public GetModuleElementResponse getModuleElements(GetModuleElementRequest request) throws ScoreDataAccessException {
+
+        SelectOnConditionStep stepModuleDir = selectModuleDirElement();
+
+        List<Condition> moduleDirConditions = new ArrayList();
+
+        SelectOnConditionStep stepModule = selectModuleElement();
+
+        List<Condition> moduleConditions = new ArrayList();
+
+        if (request.getModuleSetId() != null) {
+            moduleConditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
+            stepModuleDir = stepModuleDir.leftJoin(MODULE).on(MODULE_DIR.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
+                    .leftJoin(MODULE_SET_ASSIGNMENT).on(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID));
+            moduleDirConditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
+        }
+
+        if (request.getModuleDirId() != null) {
+            moduleConditions.add(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
+            moduleDirConditions.add(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
+        } else {
+            moduleConditions.add(MODULE_DIR.PARENT_MODULE_DIR_ID.isNull());
+            moduleDirConditions.add(MODULE_DIR.as("parent").PARENT_MODULE_DIR_ID.isNull());
+        }
+
+        List<ModuleElement> elements = stepModuleDir.where(moduleDirConditions).fetch(record -> {
+            ModuleElement moduleElement = new ModuleElement();
+            moduleElement.setDirectory(true);
+            moduleElement.setId(record.get(MODULE_DIR.MODULE_DIR_ID).toBigInteger());
+            moduleElement.setName(record.get(MODULE_DIR.NAME));
+            moduleElement.setPath(record.get(MODULE_DIR.PATH));
+            return moduleElement;
+        });
+
+        elements.addAll(stepModule.where(moduleConditions).fetch(record -> {
+            ModuleElement moduleElement = new ModuleElement();
+            moduleElement.setDirectory(false);
+            moduleElement.setId(record.get(MODULE.MODULE_ID).toBigInteger());
+            moduleElement.setName(record.get(MODULE.NAME));
+            moduleElement.setPath(record.get(MODULE_DIR.PATH));
+            moduleElement.setNamespaceId(record.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
+            moduleElement.setNamespaceUri(record.get(NAMESPACE.URI));
+            return moduleElement;
+        }));
+
+        GetModuleElementResponse response = new GetModuleElementResponse();
+        response.setElements(elements);
+        return response;
+    }
+
+    @Override
+    public List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException {
+        if (request.getModuleSetId() == null) {
+            return dslContext().select(
+                    MODULE.MODULE_ID,
+                    MODULE.MODULE_DIR_ID,
+                    MODULE_DIR.PATH,
+                    MODULE.NAME,
+                    MODULE.VERSION_NUM,
+                    MODULE.NAMESPACE_ID,
+                    NAMESPACE.URI,
+                    MODULE.CREATION_TIMESTAMP,
+                    MODULE.LAST_UPDATE_TIMESTAMP)
+                    .from(MODULE)
+                    .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
+                    .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                    .fetch(mapper());
+        } else {
+            return dslContext().select(
+                    MODULE.MODULE_ID,
+                    MODULE.MODULE_DIR_ID,
+                    MODULE_DIR.PATH,
+                    MODULE.NAME,
+                    MODULE.VERSION_NUM,
+                    MODULE.NAMESPACE_ID,
+                    NAMESPACE.URI,
+                    MODULE.CREATION_TIMESTAMP,
+                    MODULE.LAST_UPDATE_TIMESTAMP)
+                    .from(MODULE)
+                    .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
+                    .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                    .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
+                    .where(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
+                    .fetch(mapper());
+        }
+    }
+
+    @Override
+    public List<ModuleDir> getAllModuleDirs(GetModuleListRequest request) throws ScoreDataAccessException {
+        return dslContext().selectFrom(MODULE_DIR)
+                .fetch(moduleDirMapper());
     }
 }

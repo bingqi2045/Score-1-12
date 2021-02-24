@@ -5,13 +5,17 @@ import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.module_management.data.Module;
 import org.oagi.score.gateway.http.api.module_management.data.*;
-import org.oagi.score.gateway.http.api.module_management.data.module_edit.ModuleElement;
-import org.oagi.score.gateway.http.api.module_management.data.module_edit.ModuleElementDependency;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
+import org.oagi.score.repo.api.module.ModuleReadRepository;
+import org.oagi.score.repo.api.module.model.GetModuleElementRequest;
+import org.oagi.score.repo.api.module.model.GetModuleElementResponse;
+import org.oagi.score.repo.api.module.model.ModuleElement;
+import org.oagi.score.service.module.ModuleElementContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,9 @@ public class ModuleService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     public List<SimpleModule> getSimpleModules() {
         return dslContext.select(Tables.MODULE.MODULE_ID, Tables.MODULE.NAME)
@@ -107,60 +114,10 @@ public class ModuleService {
         return moduleDependencies;
     }
 
-    public ModuleElement getModuleElement() {
-        List<ModuleRecord> modules =
-                dslContext.selectFrom(Tables.MODULE).fetch()
-                        .stream().collect(Collectors.toList());
-
-        ModuleElement root = new ModuleElement("/", true);
-
-        Map<BigInteger, ModuleElement> moduleMap = new HashMap();
-
-        for (ModuleRecord moduleRecord : modules) {
-            String module = moduleRecord.getName();
-            List<String> splitModule = Arrays.asList(module.split("\\\\"));
-
-            String parentName = null;
-            for (int i = 0; i < splitModule.size(); ++i) {
-                String name = splitModule.get(i);
-                boolean isDirectory = !((i + 1) == splitModule.size());
-
-                ModuleElement element = new ModuleElement(name, isDirectory);
-                if (!element.isDirectory()) {
-                    BigInteger moduleId = moduleRecord.getModuleId().toBigInteger();
-                    element.setModuleId(moduleId);
-
-                    moduleMap.put(moduleId, element);
-                }
-
-                if (!root.addElement(parentName, element)) {
-                    throw new IllegalStateException("Can't add a module: " + module);
-                }
-
-                parentName = name;
-            }
-        }
-
-        List<ModuleDepRecord> moduleDeps =
-                dslContext.selectFrom(Tables.MODULE_DEP).fetch()
-                        .stream().collect(Collectors.toList());
-
-        for (ModuleDepRecord moduleDep : moduleDeps) {
-            ModuleElement dependedModule =
-                    moduleMap.get(moduleDep.getDependedModuleSetAssignmentId().longValue());
-
-            ModuleElement dependingModule =
-                    moduleMap.get(moduleDep.getDependingModuleSetAssignmentId().longValue());
-
-            String type =
-                    (moduleDep.getDependencyType() == 0) ? "include" : "import";
-
-            dependedModule.addDependent(
-                    new ModuleElementDependency(type, dependingModule)
-            );
-        }
-
-        return root;
+    public ModuleElement getModuleElements(GetModuleElementRequest request) {
+        ModuleReadRepository repository = scoreRepositoryFactory.createModuleReadRepository();
+        ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, null, null);
+        return context.getRootElement();
     }
 
 }

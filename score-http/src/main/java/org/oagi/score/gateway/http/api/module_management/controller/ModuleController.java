@@ -3,17 +3,18 @@ package org.oagi.score.gateway.http.api.module_management.controller;
 import org.oagi.score.gateway.http.api.module_management.data.Module;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleList;
 import org.oagi.score.gateway.http.api.module_management.data.SimpleModule;
-import org.oagi.score.gateway.http.api.module_management.data.module_edit.ModuleElement;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleService;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.module.model.GetModuleElementRequest;
+import org.oagi.score.repo.api.module.model.GetModuleElementResponse;
+import org.oagi.score.repo.api.module.model.ModuleElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -21,6 +22,9 @@ public class ModuleController {
 
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private SessionService sessionService;
 
     @RequestMapping(value = "/simple_modules", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +47,11 @@ public class ModuleController {
 
     @RequestMapping(value = "/modules", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ModuleElement getModuleElement() {
-        return moduleService.getModuleElement();
+    public ModuleElement getModuleElement(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                          @RequestParam(name = "moduleSetId", required = false) BigInteger moduleSetId,
+                                          @RequestParam(name = "parentModuleDirId", required = false) BigInteger parentModuleDirId) {
+        GetModuleElementRequest request = new GetModuleElementRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetId);
+        return moduleService.getModuleElements(request);
     }
 }
