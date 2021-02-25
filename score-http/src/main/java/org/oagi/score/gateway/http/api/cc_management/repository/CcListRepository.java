@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.service.common.data.OagisComponentType.*;
-import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
+import static org.oagi.score.gateway.http.helper.Utility.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository

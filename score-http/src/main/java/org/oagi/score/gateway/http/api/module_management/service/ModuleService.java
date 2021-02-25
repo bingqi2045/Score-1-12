@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.module_management.service;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.module_management.data.Module;
 import org.oagi.score.gateway.http.api.module_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
@@ -12,9 +11,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.module.ModuleReadRepository;
-import org.oagi.score.repo.api.module.model.GetModuleElementRequest;
-import org.oagi.score.repo.api.module.model.GetModuleElementResponse;
-import org.oagi.score.repo.api.module.model.ModuleElement;
+import org.oagi.score.repo.api.module.model.*;
+import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.service.module.ModuleElementContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -84,7 +82,6 @@ public class ModuleService {
                 .from(Tables.MODULE)
                 .where(Tables.MODULE.MODULE_ID.eq(ULong.valueOf(moduleId)))
                 .fetchOneInto(Module.class);
-        module.setModuleDependencies(getModuleDependencies(moduleId));
         return module;
     }
 
@@ -118,6 +115,11 @@ public class ModuleService {
         ModuleReadRepository repository = scoreRepositoryFactory.createModuleReadRepository();
         ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, null, null);
         return context.getRootElement();
+    }
+
+    @Transactional
+    public CreateModuleResponse createModule(CreateModuleRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().createModule(request);
     }
 
 }

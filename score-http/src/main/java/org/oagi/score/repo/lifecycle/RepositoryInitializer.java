@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
+import static org.oagi.score.gateway.http.helper.Utility.MODULE_SEPARATOR;
 import static org.oagi.score.service.log.model.LogUtils.generateHash;
-import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Component

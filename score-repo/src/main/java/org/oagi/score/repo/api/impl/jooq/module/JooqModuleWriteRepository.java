@@ -58,6 +58,17 @@ public class JooqModuleWriteRepository
         module.setLastUpdateTimestamp(
                 Date.from(moduleRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
+        if (request.getModuleSetId() != null) {
+            dslContext().insertInto(MODULE_SET_ASSIGNMENT)
+                    .set(MODULE_SET_ASSIGNMENT.MODULE_ID, moduleRecord.getModuleId())
+                    .set(MODULE_SET_ASSIGNMENT.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+                    .set(MODULE_SET_ASSIGNMENT.CREATED_BY, requesterUserId)
+                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATED_BY, requesterUserId)
+                    .set(MODULE_SET_ASSIGNMENT.CREATION_TIMESTAMP, timestamp)
+                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .execute();
+        }
+
         return new CreateModuleResponse(module);
     }
 

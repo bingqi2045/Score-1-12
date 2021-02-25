@@ -17,6 +17,8 @@ public class CreateModuleRequest extends Request {
 
     private String versionNum;
 
+    private BigInteger moduleSetId;
+
     public BigInteger getModuleDirId() {
         return moduleDirId;
     }
@@ -47,5 +49,17 @@ public class CreateModuleRequest extends Request {
 
     public void setVersionNum(String versionNum) {
         this.versionNum = versionNum;
+    }
+
+    public CreateModuleRequest(ScoreUser requester) {
+        super(requester);
+    }
+
+    public BigInteger getModuleSetId() {
+        return moduleSetId;
+    }
+
+    public void setModuleSetId(BigInteger moduleSetId) {
+        this.moduleSetId = moduleSetId;
     }
 }
