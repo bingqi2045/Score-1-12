@@ -113,7 +113,7 @@ public class ModuleService {
 
     public ModuleElement getModuleElements(GetModuleElementRequest request) {
         ModuleReadRepository repository = scoreRepositoryFactory.createModuleReadRepository();
-        ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, null, null);
+        ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, request.getModuleSetId(), null);
         return context.getRootElement();
     }
 
@@ -122,4 +122,28 @@ public class ModuleService {
         return scoreRepositoryFactory.createModuleWriteRepository().createModule(request);
     }
 
+    @Transactional
+    public CreateModuleDirResponse createModuleDir(CreateModuleDirRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().createModuleDir(request);
+    }
+
+    @Transactional
+    public void copyModuleDir(CopyModuleDirRequest request) {
+        scoreRepositoryFactory.createModuleWriteRepository().copyModuleDir(request);
+    }
+
+    @Transactional
+    public void copyModule(CopyModuleRequest request) {
+        scoreRepositoryFactory.createModuleWriteRepository().copyModule(request);
+    }
+
+    @Transactional
+    public UpdateModuleResponse updateModule(UpdateModuleRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().updateModule(request);
+    }
+
+    @Transactional
+    public UpdateModuleDirResponse updateModuleDir(UpdateModuleDirRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().updateModuleDir(request);
+    }
 }

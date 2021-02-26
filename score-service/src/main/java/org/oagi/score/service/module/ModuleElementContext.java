@@ -110,6 +110,9 @@ public class ModuleElementContext {
                 item.setDirectory(false);
                 item.setName(e.getName());
                 item.setId(e.getModuleId());
+                item.setVersionNum(e.getVersionNum());
+                item.setNamespaceUri(e.getNamespaceUri());
+                item.setNamespaceId(e.getNamespaceId());
                 child.add(item);
             });
         }

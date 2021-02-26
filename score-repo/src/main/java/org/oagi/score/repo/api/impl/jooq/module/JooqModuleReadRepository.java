@@ -65,6 +65,7 @@ public class JooqModuleReadRepository
             module.setModuleDirId(record.get(MODULE.MODULE_DIR_ID).toBigInteger());
             module.setPath(record.get(MODULE_DIR.PATH).concat("\\").concat(record.get(MODULE.NAME)));
             module.setNamespaceUri(record.get(NAMESPACE.URI));
+            module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
             module.setName(record.get(MODULE.NAME));
             module.setVersionNum(record.get(MODULE.VERSION_NUM));
 //
