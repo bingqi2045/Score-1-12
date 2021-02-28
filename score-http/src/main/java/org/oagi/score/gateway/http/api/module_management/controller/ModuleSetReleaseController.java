@@ -1,5 +1,10 @@
 package org.oagi.score.gateway.http.api.module_management.controller;
 
+import org.oagi.score.export.ExportContext;
+import org.oagi.score.export.ExportContextBuilder;
+import org.oagi.score.export.impl.DefaultExportContextBuilder;
+import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
+import org.oagi.score.export.model.SchemaModule;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
@@ -10,6 +15,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -107,5 +113,12 @@ public class ModuleSetReleaseController {
         DeleteModuleSetReleaseRequest request = new DeleteModuleSetReleaseRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
         service.discardModuleSetRelease(request);
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}/export", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                        @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+        service.exportModuleSetRelease(moduleSetReleaseId);
     }
 }
