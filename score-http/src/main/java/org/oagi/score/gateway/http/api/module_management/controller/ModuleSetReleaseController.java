@@ -80,11 +80,8 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSetRelease createModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                     @RequestBody ModuleSetRelease moduleSetRelease) {
-        CreateModuleSetReleaseRequest request = new CreateModuleSetReleaseRequest(sessionService.asScoreUser(user));
-        request.setModuleSetId(moduleSetRelease.getModuleSetId());
-        request.setReleaseId(moduleSetRelease.getReleaseId());
-        request.setDefault(moduleSetRelease.isDefault());
+                                                   @RequestBody CreateModuleSetReleaseRequest request) {
+        request.setRequester(sessionService.asScoreUser(user));
         CreateModuleSetReleaseResponse response = service.createModuleSetRelease(request);
         return response.getModuleSetRelease();
     }

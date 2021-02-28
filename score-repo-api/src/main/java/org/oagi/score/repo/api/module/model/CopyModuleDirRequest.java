@@ -36,4 +36,14 @@ public class CopyModuleDirRequest extends Request {
     }
 
     private BigInteger moduleSetId;
+
+    private BigInteger copyPosDirId;
+
+    public BigInteger getCopyPosDirId() {
+        return copyPosDirId;
+    }
+
+    public void setCopyPosDirId(BigInteger copyPosDirId) {
+        this.copyPosDirId = copyPosDirId;
+    }
 }

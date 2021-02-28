@@ -193,14 +193,7 @@ public class JooqModuleWriteRepository
         }
 
         if (StringUtils.hasLength(request.getName())) {
-            String path = moduleDirRecord.getPath();
-            if (path != null && path.length() > 0) {
-                path = path.substring(0, path.lastIndexOf(MODULE_PATH_SEPARATOR)) + MODULE_PATH_SEPARATOR +  request.getName();
-            } else {
-                path = request.getName();
-            }
             moduleDirRecord.setName(request.getName());
-            moduleDirRecord.setPath(path);
         }
 
         if (moduleDirRecord.changed()) {
@@ -249,7 +242,7 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Can not found ModuleDir");
         }
 
-        copyModuleDir(requesterUserId, moduleDirRecord, moduleDirRecord.getParentModuleDirId(), moduleSetRecord, timestamp);
+        copyModuleDir(requesterUserId, moduleDirRecord, ULong.valueOf(request.getCopyPosDirId()), moduleSetRecord, timestamp);
     }
 
     private void copyModuleDir(ULong requesterId, ModuleDirRecord moduleDirRecord, ULong parentModuleDirId,
@@ -282,7 +275,7 @@ public class JooqModuleWriteRepository
                 .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))).fetchOne();
 
         ULong insertedModuleId = dslContext().insertInto(MODULE)
-                .set(MODULE.MODULE_DIR_ID, moduleRecord.getModuleDirId())
+                .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getCopyPosDirId()))
                 .set(MODULE.NAME, moduleRecord.getName())
                 .set(MODULE.NAMESPACE_ID, moduleRecord.getNamespaceId())
                 .set(MODULE.VERSION_NUM, moduleRecord.getVersionNum())
