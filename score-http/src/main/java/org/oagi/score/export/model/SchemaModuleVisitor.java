@@ -1,5 +1,9 @@
 package org.oagi.score.export.model;
 
+import org.jdom2.output.XMLOutputter;
+
+import java.io.File;
+
 public interface SchemaModuleVisitor {
 
     public void startSchemaModule(SchemaModule schemaModule) throws Exception;
@@ -30,5 +34,5 @@ public interface SchemaModuleVisitor {
 
     public void visitBlobContent(byte[] content) throws Exception;
 
-    public void endSchemaModule(SchemaModule schemaModule) throws Exception;
+    public File endSchemaModule(SchemaModule schemaModule) throws Exception;
 }

@@ -143,7 +143,5 @@ public class SchemaModule {
         } else {
             schemaModuleVisitor.visitBlobContent(content);
         }
-
-        schemaModuleVisitor.endSchemaModule(this);
     }
 }

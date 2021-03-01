@@ -10,12 +10,19 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -117,8 +124,15 @@ public class ModuleSetReleaseController {
 
     @RequestMapping(value = "/module_set_release/{id}/export", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                        @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
-        service.exportModuleSetRelease(moduleSetReleaseId);
+    public ResponseEntity<InputStreamResource> exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                                        @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+
+        File output = service.exportModuleSetRelease(moduleSetReleaseId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=test.zip")
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .contentLength(output.length())
+                .body(new InputStreamResource(new FileInputStream(output)));
     }
 }

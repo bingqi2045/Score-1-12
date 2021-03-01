@@ -20,8 +20,10 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipOutputStream;
 
 import static org.oagi.score.common.util.OagisComponentType.Extension;
 import static org.oagi.score.common.util.OagisComponentType.UserExtensionGroup;
@@ -1002,17 +1005,10 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
     }
 
     @Override
-    public void endSchemaModule(SchemaModule schemaModule) throws Exception {
+    public File endSchemaModule(SchemaModule schemaModule) throws Exception {
         if (this.rootElement.getContent().isEmpty()) {
-            return;
+            return null;
         }
-
-        FileUtils.forceMkdir(this.moduleFile.getParentFile());
-
-        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat().setIndent("\t"));
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(this.moduleFile))) {
-            outputter.output(this.document, outputStream);
-            outputStream.flush();
-        }
+        return this.moduleFile;
     }
 }
