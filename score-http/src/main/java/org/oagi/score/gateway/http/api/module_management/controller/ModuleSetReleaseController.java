@@ -5,7 +5,9 @@ import org.oagi.score.export.ExportContextBuilder;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.export.model.SchemaModule;
+import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
+import org.oagi.score.gateway.http.api.release_management.data.AssignComponents;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.model.*;
@@ -125,7 +127,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/export", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InputStreamResource> exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                                        @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+                                                                      @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
 
         File output = service.exportModuleSetRelease(moduleSetReleaseId);
 
@@ -134,5 +136,23 @@ public class ModuleSetReleaseController {
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .contentLength(output.length())
                 .body(new InputStreamResource(new FileInputStream(output)));
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}/assignable", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleAssignComponents getAssignableCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                   @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+        GetAssignableCCListRequest request = new GetAssignableCCListRequest(sessionService.asScoreUser(user));
+        request.setModuleSetReleaseId(moduleSetReleaseId);
+        return service.getAssignableCCs(request);
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}/assigned", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleAssignComponents getAssignedCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                 @PathVariable("id") BigInteger moduleSetReleaseId,
+                                                 @RequestParam(name = "moduleId", required = true) BigInteger moduleId) throws Exception {
+
+        return service.getAssignedCCs(sessionService.asScoreUser(user), moduleSetReleaseId, moduleId);
     }
 }

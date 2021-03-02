@@ -3,6 +3,7 @@ package org.oagi.score.repo.api.impl.jooq.module;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
+import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
@@ -17,6 +18,8 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
@@ -182,5 +185,55 @@ public class JooqModuleSetReleaseReadRepository
         }
 
         return (request.getSortDirection() == ASC) ? field.asc() : field.desc();
+    }
+
+    @Override
+    public List<AssignableNode> getAssignableACCByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        return dslContext().select(
+                ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
+                ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
+                LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
+                .from(ACC_MANIFEST)
+                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(LOG).on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
+                .leftJoin(MODULE_ACC_MANIFEST).on(
+                        and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID),
+                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                .where(and(ACC.STATE.eq(CcState.Published.name()),
+                            ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                            MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
+                .fetchStream().map(e -> {
+                    AssignableNode node = new AssignableNode();
+                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    node.setDen(e.get(ACC.DEN));
+                    node.setType("ACC");
+                    node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
+                    node.setRevision(e.get(LOG.REVISION_NUM).toBigInteger());
+                    node.setState(CcState.valueOf(e.get(ACC.STATE)));
+                    node.setTimestamp(e.get(ACC.LAST_UPDATE_TIMESTAMP));
+                    return node;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AssignableNode> getAssignableASCCPByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        return null;
+    }
+
+    @Override
+    public List<AssignableNode> getAssignableBCCPByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        return null;
+    }
+
+    @Override
+    public List<AssignableNode> getAssignableDTByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        return null;
+    }
+
+    @Override
+    public List<AssignableNode> getAssignableCodeListByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        return null;
     }
 }
