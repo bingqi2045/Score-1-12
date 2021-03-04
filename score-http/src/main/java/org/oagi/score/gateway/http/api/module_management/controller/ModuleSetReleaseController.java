@@ -5,6 +5,7 @@ import org.oagi.score.export.ExportContextBuilder;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.export.model.SchemaModule;
+import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.api.release_management.data.AssignComponents;
@@ -154,5 +155,23 @@ public class ModuleSetReleaseController {
                                                  @RequestParam(name = "moduleId", required = true) BigInteger moduleId) throws Exception {
 
         return service.getAssignedCCs(sessionService.asScoreUser(user), moduleSetReleaseId, moduleId);
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}/assign", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void assignCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                             @PathVariable("id") BigInteger moduleSetReleaseId,
+                             @RequestBody AssignCCToModule assignCCToModule) throws Exception {
+
+        service.setAssignCc(sessionService.asScoreUser(user), assignCCToModule);
+    }
+
+    @RequestMapping(value = "/module_set_release/{id}/unassign", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void unassignCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                             @PathVariable("id") BigInteger moduleSetReleaseId,
+                             @RequestBody AssignCCToModule assignCCToModule) throws Exception {
+
+        service.unAssignCc(sessionService.asScoreUser(user), assignCCToModule);
     }
 }

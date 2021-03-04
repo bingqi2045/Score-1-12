@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
@@ -172,5 +173,19 @@ public class JooqModuleSetReadRepository
         }
 
         return (request.getSortDirection() == ASC) ? field.asc() : field.desc();
+    }
+
+    @Override
+    public ModuleSetAssignment getModuleSetAssignment(BigInteger moduleSetId, BigInteger moduleId) throws ScoreDataAccessException {
+        return dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
+                .where(and(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId))),
+                        MODULE_SET_ASSIGNMENT.MODULE_ID.eq(ULong.valueOf(moduleId)))
+                .fetchOne().map(e -> {
+            ModuleSetAssignment assignment = new ModuleSetAssignment();
+            assignment.setModuleId(e.get(MODULE_SET_ASSIGNMENT.MODULE_ID).toBigInteger());
+            assignment.setModuleSetAssignmentId(e.get(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID).toBigInteger());
+            assignment.setModuleSetId(e.get(MODULE_SET_ASSIGNMENT.MODULE_SET_ID).toBigInteger());
+            return assignment;
+        });
     }
 }

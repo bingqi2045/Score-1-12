@@ -3,6 +3,8 @@ package org.oagi.score.repo.api.impl.jooq.module;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
+import org.oagi.score.repo.api.corecomponent.model.CcState;
+import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
@@ -321,5 +323,127 @@ public class JooqModuleSetReleaseWriteRepository
                         .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
+    }
+
+    @Override
+    public void createModuleManifest(CreateModuleManifestRequest request) throws ScoreDataAccessException {
+        if (request.getType().equals(CcType.ACC)) {
+            dslContext().insertInto(MODULE_ACC_MANIFEST)
+                    .set(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_ACC_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ACC_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_ACC_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ACC_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.ASCCP)) {
+            dslContext().insertInto(MODULE_ASCCP_MANIFEST)
+                    .set(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_ASCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ASCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ASCCP_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.BCCP)) {
+            dslContext().insertInto(MODULE_BCCP_MANIFEST)
+                    .set(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_BCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_BCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_BCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_BCCP_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.DT)) {
+            dslContext().insertInto(MODULE_DT_MANIFEST)
+                    .set(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_DT_MANIFEST.DT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_DT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_DT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_DT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_DT_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.CODE_LIST)) {
+            dslContext().insertInto(MODULE_CODE_LIST_MANIFEST)
+                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
+            dslContext().insertInto(MODULE_AGENCY_ID_LIST_MANIFEST)
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        } else if (request.getType().equals(CcType.XBT)) {
+            dslContext().insertInto(MODULE_XBT_MANIFEST)
+                    .set(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
+                    .set(MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_XBT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_XBT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
+                    .set(MODULE_XBT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_XBT_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
+                    .execute();
+        }
+    }
+
+    @Override
+    public void deleteModuleManifest(DeleteModuleManifestRequest request) throws ScoreDataAccessException {
+        if (request.getType().equals(CcType.ACC)) {
+            dslContext().deleteFrom(MODULE_ACC_MANIFEST)
+                    .where(and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.ASCCP)) {
+            dslContext().deleteFrom(MODULE_ASCCP_MANIFEST)
+                    .where(and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.BCCP)) {
+            dslContext().deleteFrom(MODULE_BCCP_MANIFEST)
+                    .where(and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.DT)) {
+            dslContext().deleteFrom(MODULE_DT_MANIFEST)
+                    .where(and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.CODE_LIST)) {
+            dslContext().deleteFrom(MODULE_CODE_LIST_MANIFEST)
+                    .where(and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
+            dslContext().deleteFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
+                    .where(and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        } else if (request.getType().equals(CcType.XBT)) {
+            dslContext().deleteFrom(MODULE_XBT_MANIFEST)
+                    .where(and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
+                            MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
+                            MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                    .execute();
+        }
     }
 }

@@ -1,25 +1,31 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
+import net.sf.cglib.core.Local;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.ExportContextBuilder;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.export.model.SchemaModule;
+import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.release_management.data.AssignComponents;
 import org.oagi.score.gateway.http.helper.Zip;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.corecomponent.model.CcType;
+import org.oagi.score.repo.api.module.ModuleSetReleaseWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +86,7 @@ public class ModuleSetReleaseService {
             }
         }
 
-        return Zip.compression(files, "test.zip");
+        return Zip.compressionHierarchy(files, "test.zip");
     }
 
     public ModuleAssignComponents getAssignableCCs(GetAssignableCCListRequest request) {
@@ -129,5 +135,44 @@ public class ModuleSetReleaseService {
         assignComponents.setAssignedXbtManifestMap(xbtList.stream().collect(Collectors.toMap(AssignableNode::getManifestId, Function.identity())));
 
         return assignComponents;
+    }
+
+    @Transactional
+    public void setAssignCc(ScoreUser user, AssignCCToModule assignCCToModule) {
+        ModuleSetReleaseWriteRepository repo = scoreRepositoryFactory.createModuleSetReleaseWriteRepository();
+        ModuleSetAssignment moduleAssignment = scoreRepositoryFactory.createModuleSetReadRepository()
+                .getModuleSetAssignment(assignCCToModule.getModuleSetId(), assignCCToModule.getModuleId());
+        if (moduleAssignment == null) {
+            throw new IllegalArgumentException("Can not found ModuleSetAssignment.");
+        }
+        LocalDateTime timestamp = LocalDateTime.now();
+        assignCCToModule.getNodes().forEach(node -> {
+            CreateModuleManifestRequest request = new CreateModuleManifestRequest(user);
+            request.setType(CcType.valueOf(node.getType()));
+            request.setManifestId(node.getManifestId());
+            request.setModuleSetAssignmentId(moduleAssignment.getModuleSetAssignmentId());
+            request.setModuleSetReleaseId(assignCCToModule.getModuleSetReleaseId());
+            request.setTimestamp(timestamp);
+            repo.createModuleManifest(request);
+        });
+    }
+
+    @Transactional
+    public void unAssignCc(ScoreUser user, AssignCCToModule assignCCToModule) {
+        ModuleSetReleaseWriteRepository repo = scoreRepositoryFactory.createModuleSetReleaseWriteRepository();
+        ModuleSetAssignment moduleAssignment = scoreRepositoryFactory.createModuleSetReadRepository()
+                .getModuleSetAssignment(assignCCToModule.getModuleSetId(), assignCCToModule.getModuleId());
+        if (moduleAssignment == null) {
+            throw new IllegalArgumentException("Can not found ModuleSetAssignment.");
+        }
+        LocalDateTime timestamp = LocalDateTime.now();
+        assignCCToModule.getNodes().forEach(node -> {
+            DeleteModuleManifestRequest request = new DeleteModuleManifestRequest(user);
+            request.setType(CcType.valueOf(node.getType()));
+            request.setManifestId(node.getManifestId());
+            request.setModuleSetAssignmentId(moduleAssignment.getModuleSetAssignmentId());
+            request.setModuleSetReleaseId(assignCCToModule.getModuleSetReleaseId());
+            repo.deleteModuleManifest(request);
+        });
     }
 }
