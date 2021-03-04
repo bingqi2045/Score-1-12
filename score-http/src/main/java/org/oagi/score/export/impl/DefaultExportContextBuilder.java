@@ -2,18 +2,13 @@ package org.oagi.score.export.impl;
 
 import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
-import org.oagi.score.export.ExportContextBuilder;
 import org.oagi.score.export.model.*;
+import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repository.ModuleDepRepository;
 import org.oagi.score.repository.ModuleRepository;
-import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -21,22 +16,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.common.ScoreConstants.ANY_ASCCP_DEN;
-import static org.oagi.score.common.ScoreConstants.MODULE_SET_RELEASE_ID;
 
-@Component
-public class DefaultExportContextBuilder implements ExportContextBuilder {
+public class DefaultExportContextBuilder {
 
-    @Autowired
     private ModuleRepository moduleRepository;
 
-    @Autowired
     private ModuleDepRepository moduleDepRepository;
 
-    @Autowired
-    @Lazy
     private ImportedDataProvider importedDataProvider;
 
-    @Override
+    private BigInteger moduleSetReleaseId;
+
+    public DefaultExportContextBuilder(ModuleRepository moduleRepository,
+                                       ModuleDepRepository moduleDepRepository,
+                                       ImportedDataProvider importedDataProvider,
+                                       BigInteger moduleSetReleaseId) {
+        this.moduleRepository = moduleRepository;
+        this.moduleDepRepository = moduleDepRepository;
+        this.importedDataProvider = importedDataProvider;
+        this.moduleSetReleaseId = moduleSetReleaseId;
+    }
+
     @Transactional
     public ExportContext build(BigInteger moduleSetReleaseId) {
         DefaultExportContext context = new DefaultExportContext();
@@ -63,7 +63,7 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
             context.addSchemaModule(schemaModule);
         }
 
-        for (ModuleDepRecord depend : moduleDepRepository.findAllDepending(ULong.valueOf(MODULE_SET_RELEASE_ID))) {
+        for (ModuleDepRecord depend : moduleDepRepository.findAllDepending(ULong.valueOf(moduleSetReleaseId))) {
             SchemaModule dependingModuleSchema = moduleMap.get(depend.getDependingModuleSetAssignmentId());
             SchemaModule dependedModuleSchema = moduleMap.get(depend.getDependedModuleSetAssignmentId());
 
@@ -143,6 +143,9 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
             }
             DtRecord baseDataType = importedDataProvider.findDT(bdt.getBasedDtId());
             ModuleCCID moduleCCID = importedDataProvider.findModuleDt(bdt.getDtId());
+            if (moduleCCID == null) {
+                continue;
+            }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             List<DtScRecord> dtScList =
                     importedDataProvider.findDtScByOwnerDtId(bdt.getDtId()).stream()
@@ -235,6 +238,10 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
                 continue;
             }
             ModuleCCID moduleCCID = importedDataProvider.findModuleAsccp(asccp.getAsccpId());
+
+            if (moduleCCID == null) {
+                continue;
+            }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             schemaModule.addASCCP(ASCCP.newInstance(asccp, asccpManifest, importedDataProvider));
         }
@@ -243,6 +250,9 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
     private void createBlobContents(Map<ULong, SchemaModule> moduleMap) {
         for (BlobContentRecord blobContent : importedDataProvider.findBlobContent()) {
             ModuleCCID moduleCCID = importedDataProvider.findModuleBlobContent(blobContent.getBlobContentId());
+            if (moduleCCID == null) {
+                continue;
+            }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             schemaModule.setContent(blobContent.getContent());
         }

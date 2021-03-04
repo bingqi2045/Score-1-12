@@ -1,6 +1,7 @@
 package org.oagi.score.export.model;
 
 import org.apache.commons.io.FilenameUtils;
+import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 
 import java.util.*;
 
@@ -87,7 +88,7 @@ public class SchemaModule {
         this.content = content;
     }
 
-    public void visit(SchemaModuleVisitor schemaModuleVisitor) throws Exception {
+    public void visit(XMLExportSchemaModuleVisitor schemaModuleVisitor) throws Exception {
         schemaModuleVisitor.startSchemaModule(this);
 
         if (content == null) {

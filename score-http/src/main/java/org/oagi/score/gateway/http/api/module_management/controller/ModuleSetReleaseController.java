@@ -1,29 +1,20 @@
 package org.oagi.score.gateway.http.api.module_management.controller;
 
-import org.oagi.score.export.ExportContext;
-import org.oagi.score.export.ExportContextBuilder;
-import org.oagi.score.export.impl.DefaultExportContextBuilder;
-import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
-import org.oagi.score.export.model.SchemaModule;
 import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
-import org.oagi.score.gateway.http.api.release_management.data.AssignComponents;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;

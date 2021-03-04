@@ -15,20 +15,16 @@ import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.populate.helper.Context;
 import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.provider.ImportedDataProvider;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -36,15 +32,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.zip.ZipOutputStream;
 
 import static org.oagi.score.common.util.OagisComponentType.Extension;
-import static org.oagi.score.common.util.OagisComponentType.UserExtensionGroup;
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
 @Scope(SCOPE_PROTOTYPE)
-@Component
-public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
+public class XMLExportSchemaModuleVisitor {
 
     private SchemaModule schemaModule;
     private File baseDir;
@@ -55,22 +48,24 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
 
     private final Namespace OAGI_NS = Namespace.getNamespace("", ScoreConstants.OAGI_NS);
     private final Namespace XSD_NS = Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
-
-    @Autowired
+    
     @Qualifier("defaultCoreComponentProvider")
     private CoreComponentProvider coreComponentProvider;
-
-    @Autowired
+    
     private CoreComponentService coreComponentService;
-
-    @Autowired
+    
     private ImportedDataProvider importedDataProvider;
+
+    public XMLExportSchemaModuleVisitor(CoreComponentProvider coreComponentProvider, CoreComponentService coreComponentService, ImportedDataProvider importedDataProvider) {
+        this.coreComponentProvider = coreComponentProvider;
+        this.coreComponentService = coreComponentService;
+        this.importedDataProvider = importedDataProvider;
+    }
 
     public void setBaseDirectory(File baseDirectory) throws IOException {
         this.baseDir = baseDirectory.getCanonicalFile();
     }
 
-    @Override
     public void startSchemaModule(SchemaModule schemaModule) throws Exception {
         this.schemaModule = schemaModule;
         this.document = createDocument();
@@ -118,7 +113,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         return jdomBuilder.build(document);
     }
 
-    @Override
+    
     public void visitIncludeModule(SchemaModule includeSchemaModule) throws Exception {
         Element includeElement = new Element("include", XSD_NS);
         String schemaLocation = getRelativeSchemaLocation(includeSchemaModule);
@@ -126,7 +121,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         rootElement.addContent(includeElement);
     }
 
-    @Override
+    
     public void visitImportModule(SchemaModule importSchemaModule) throws Exception {
         Element importElement = new Element("import", XSD_NS);
         String schemaLocation = getRelativeSchemaLocation(importSchemaModule);
@@ -134,7 +129,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         rootElement.addContent(importElement);
     }
 
-    @Override
+    
     public void visitAgencyId(AgencyId agencyId) throws Exception {
         // ContentType part
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
@@ -185,7 +180,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         }
     }
 
-    @Override
+    
     public void visitCodeList(SchemaCodeList schemaCodeList) throws Exception {
         String name = schemaCodeList.getName();
         if (schemaCodeList.getEnumTypeGuid() != null) {
@@ -225,7 +220,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         }
     }
 
-    @Override
+    
     public void visitXBTSimpleType(XBTSimpleType xbtSimpleType) throws Exception {
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
         String name = xbtSimpleType.getName();
@@ -253,7 +248,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         rootElement.addContent(simpleTypeElement);
     }
 
-    @Override
+    
     public void visitBDTSimpleType(BDTSimpleType bdtSimpleType) throws Exception {
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
         String name = bdtSimpleType.getName();
@@ -432,7 +427,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         return agencyIdList.getName();
     }
 
-    @Override
+    
     public void visitBDTSimpleContent(BDTSimpleContent bdtSimpleContent) throws Exception {
         Element complexTypeElement = new Element("complexType", XSD_NS);
         complexTypeElement.setAttribute("name", bdtSimpleContent.getName());
@@ -699,7 +694,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         documentationElement.setText(definition);
     }
 
-    @Override
+    
     public void visitBCCP(BCCP bccp) throws Exception {
         Element element = addSimpleElement(bccp);
         if (bccp.isNillable()) {
@@ -725,7 +720,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         return element;
     }
 
-    @Override
+    
     public void visitACCComplexType(ACCComplexType accComplexType) throws Exception {
         switch (accComplexType.getOagisComponentType()) {
             case OAGIS10Nouns:
@@ -951,12 +946,12 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         return null;
     }
 
-    @Override
+    
     public void visitACCGroup(ACCGroup accGroup) throws Exception {
         // not implemented yet
     }
 
-    @Override
+    
     public void visitASCCPComplexType(ASCCPComplexType asccpComplexType) throws Exception {
         /*
          * <xsd:group> element doesn't need to be created here.
@@ -971,12 +966,12 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         }
     }
 
-    @Override
+    
     public void visitASCCPGroup(ASCCPGroup asccpGroup) throws Exception {
         // not implemented yet
     }
 
-    @Override
+    
     public void visitBlobContent(byte[] content) throws Exception {
         this.document = createDocument(content);
         this.rootElement = this.document.getRootElement();
@@ -1004,11 +999,20 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         return FilenameUtils.separatorsToUnix(pathRelative.toString()) + ".xsd";
     }
 
-    @Override
+    
     public File endSchemaModule(SchemaModule schemaModule) throws Exception {
         if (this.rootElement.getContent().isEmpty()) {
             return null;
         }
+
+        FileUtils.forceMkdir(this.moduleFile.getParentFile());
+
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat().setIndent("\t"));
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(this.moduleFile))) {
+            outputter.output(this.document, outputStream);
+            outputStream.flush();
+        }
+
         return this.moduleFile;
     }
 }

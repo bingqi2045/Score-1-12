@@ -1,53 +1,56 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
-import net.sf.cglib.core.Local;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.oagi.score.export.ExportContext;
-import org.oagi.score.export.ExportContextBuilder;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.export.model.SchemaModule;
+import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
-import org.oagi.score.gateway.http.api.release_management.data.AssignComponents;
 import org.oagi.score.gateway.http.helper.Zip;
+import org.oagi.score.provider.CoreComponentProvider;
+import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.module.ModuleSetReleaseWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.repository.CcRepository;
+import org.oagi.score.repository.ModuleDepRepository;
+import org.oagi.score.repository.ModuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @Transactional(readOnly = true)
 public class ModuleSetReleaseService {
 
-
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
     @Autowired
-    private  DefaultExportContextBuilder defaultExportContextBuilder;
+    private CcRepository ccRepository;
 
     @Autowired
-    private XMLExportSchemaModuleVisitor visitor;
+    private ModuleRepository moduleRepository;
+
+    @Autowired
+    private ModuleDepRepository moduleDepRepository;
+
+    @Autowired
+    private CoreComponentProvider coreComponentProvider;
+
+    @Autowired
+    private CoreComponentService coreComponentService;
 
     public GetModuleSetReleaseListResponse getModuleSetReleaseList(GetModuleSetReleaseListRequest request) {
         return scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetReleaseList(request);
@@ -73,7 +76,10 @@ public class ModuleSetReleaseService {
     }
 
     public File exportModuleSetRelease(BigInteger moduleSetReleaseId) throws Exception {
-        ExportContext exportContext = defaultExportContextBuilder.build(moduleSetReleaseId);
+        ImportedDataProvider dataProvider = new ImportedDataProvider(ccRepository, moduleSetReleaseId);
+        DefaultExportContextBuilder builder = new DefaultExportContextBuilder(moduleRepository, moduleDepRepository, dataProvider, moduleSetReleaseId);
+        XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentProvider, coreComponentService, dataProvider);
+        ExportContext exportContext = builder.build(moduleSetReleaseId);
 
         List<File> files = new ArrayList<>();
 

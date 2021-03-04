@@ -30,5 +30,4 @@ public class ScoreConstants {
     public static final String ANY_ASCCP_DEN = "Any Property. Any Structured Content";
 
     public static final double OAGIS_VERSION = 10.6D;
-    public static final long MODULE_SET_RELEASE_ID = 1;
 }
