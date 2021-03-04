@@ -73,14 +73,18 @@ public class JooqModuleSetReleaseWriteRepository
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
-        ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().update(MODULE_SET_RELEASE)
-                .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
-                .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                .set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
-                .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
-                .set(MODULE_SET_RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
+        dslContext().update(MODULE_SET_RELEASE)
+            .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
+            .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+            .set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
+            .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
+            .set(MODULE_SET_RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
+            .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+            .execute();
+
+        ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().selectFrom(MODULE_SET_RELEASE)
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
-                .returning().fetchOne();
+                .fetchOne();
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
         moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
