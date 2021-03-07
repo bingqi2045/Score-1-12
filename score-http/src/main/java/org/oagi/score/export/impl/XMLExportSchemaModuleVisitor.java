@@ -46,6 +46,9 @@ public class XMLExportSchemaModuleVisitor {
     private Element rootElement;
     private File moduleFile;
 
+    private List<String> includeModules;
+    private List<String> importModules;
+
     private final Namespace OAGI_NS = Namespace.getNamespace("", ScoreConstants.OAGI_NS);
     private final Namespace XSD_NS = Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
     
@@ -60,6 +63,8 @@ public class XMLExportSchemaModuleVisitor {
         this.coreComponentProvider = coreComponentProvider;
         this.coreComponentService = coreComponentService;
         this.importedDataProvider = importedDataProvider;
+        this.includeModules = new ArrayList<>();
+        this.importModules = new ArrayList<>();
     }
 
     public void setBaseDirectory(File baseDirectory) throws IOException {
@@ -125,6 +130,21 @@ public class XMLExportSchemaModuleVisitor {
     public void visitImportModule(SchemaModule importSchemaModule) throws Exception {
         Element importElement = new Element("import", XSD_NS);
         String schemaLocation = getRelativeSchemaLocation(importSchemaModule);
+        importElement.setAttribute("schemaLocation", schemaLocation);
+        rootElement.addContent(importElement);
+    }
+
+    public void visitIncludeModule(String path) throws Exception {
+        Element includeElement = new Element("include", XSD_NS);
+        String schemaLocation = getRelativeSchemaLocation(path);
+        includeElement.setAttribute("schemaLocation", schemaLocation);
+        rootElement.addContent(includeElement);
+    }
+
+
+    public void visitImportModule(String path) throws Exception {
+        Element importElement = new Element("import", XSD_NS);
+        String schemaLocation = getRelativeSchemaLocation(path);
         importElement.setAttribute("schemaLocation", schemaLocation);
         rootElement.addContent(importElement);
     }
@@ -757,7 +777,7 @@ public class XMLExportSchemaModuleVisitor {
             String path = dependedModule.getPath();
             if (path.contains(delimiter + File.separator)) {
                 Element element = new Element("element", XSD_NS);
-
+                this.addIncludeModules(path);
                 String bodName = path.substring(path.lastIndexOf(File.separator) + 1, path.length());
                 element.setAttribute("ref", bodName);
                 element.setAttribute("id", Utility.generateGUID((name + path).getBytes()));
@@ -809,10 +829,17 @@ public class XMLExportSchemaModuleVisitor {
                     AccManifestRecord accManifest = importedDataProvider.findACCManifest(asccpManifest.getRoleOfAccManifestId());
 
                     AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
+                    ModuleCCID moduleCCID =importedDataProvider.findModuleAsccp(asccp.getAsccpId());
                     AccRecord acc = importedDataProvider.findACC(accManifest.getAccId());
+
+                    if (moduleCCID == null) {
+                        continue;
+                    }
 
                     if (asccp.getGuid().equals(acc.getGuid())) {
                         Element groupElement = new Element("group", XSD_NS);
+
+                        this.addIncludeModules(moduleCCID.getPath());
 
                         groupElement.setAttribute("ref", Utility.toCamelCase(asccp.getPropertyTerm()));
                         groupElement.setAttribute("id", ascc.getGuid());
@@ -824,6 +851,7 @@ public class XMLExportSchemaModuleVisitor {
                         Element element = new Element("element", XSD_NS);
 
                         if (asccp.getReusableIndicator() == 1) {
+                            this.addIncludeModules(moduleCCID.getPath());
                             element.setAttribute("ref", Utility.toCamelCase(asccp.getPropertyTerm()));
                         } else {
                             element.setAttribute("name", Utility.toCamelCase(asccp.getPropertyTerm()));
@@ -843,10 +871,15 @@ public class XMLExportSchemaModuleVisitor {
                 BccRecord bcc = importedDataProvider.findBCC(bccManifest.getBccId());
                 BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
                 BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
+                ModuleCCID moduleCCID = importedDataProvider.findModuleBccp(bccp.getBccpId());
+
+                if (moduleCCID == null) {
+                    continue;
+                }
 
                 if (bcc.getSeqKey() > 0) {
                     Element element = new Element("element", XSD_NS);
-
+                    this.addIncludeModules(moduleCCID.getPath());
                     element.setAttribute("ref", Utility.toCamelCase(bccp.getPropertyTerm()));
                     element.setAttribute("id", bcc.getGuid());
                     setCardinalities(element, bcc.getCardinalityMin(), bcc.getCardinalityMax());
@@ -999,6 +1032,16 @@ public class XMLExportSchemaModuleVisitor {
         return FilenameUtils.separatorsToUnix(pathRelative.toString()) + ".xsd";
     }
 
+    private String getRelativeSchemaLocation(String path) throws IOException {
+        File moduleFile = new File(baseDir, path);
+
+        Path pathAbsolute = Paths.get(moduleFile.getCanonicalPath());
+        Path pathBase = Paths.get(this.moduleFile.getParentFile().getCanonicalPath());
+        Path pathRelative = pathBase.relativize(pathAbsolute);
+
+        return FilenameUtils.separatorsToUnix(pathRelative.toString()) + ".xsd";
+    }
+
     
     public File endSchemaModule(SchemaModule schemaModule) throws Exception {
         if (this.rootElement.getContent().isEmpty()) {
@@ -1014,5 +1057,21 @@ public class XMLExportSchemaModuleVisitor {
         }
 
         return this.moduleFile;
+    }
+
+    public List<String> getIncludeModules() {
+        return includeModules;
+    }
+
+    public void addIncludeModules(String path) {
+        this.includeModules.add(path);
+    }
+
+    public List<String> getImportModules() {
+        return importModules;
+    }
+
+    public void addImportModules(String path) {
+        this.importModules.add(path);
     }
 }

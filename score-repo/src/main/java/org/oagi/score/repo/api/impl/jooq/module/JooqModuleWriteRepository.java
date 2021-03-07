@@ -17,6 +17,8 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -192,14 +194,16 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Can not found ModuleDir");
         }
 
-        if (StringUtils.hasLength(request.getName())) {
-            moduleDirRecord.setName(request.getName());
-        }
+        if (StringUtils.hasLength(request.getName()) && !moduleDirRecord.getName().equals(request.getName())) {
+            List<String> tokens = Arrays.asList(moduleDirRecord.getPath().split(MODULE_PATH_SEPARATOR + MODULE_PATH_SEPARATOR));
+            tokens.set(tokens.size()-1, request.getName());
 
-        if (moduleDirRecord.changed()) {
+            moduleDirRecord.setName(request.getName());
+            moduleDirRecord.setPath(String.join(MODULE_PATH_SEPARATOR, tokens));
             moduleDirRecord.setLastUpdatedBy(requesterUserId);
             moduleDirRecord.setLastUpdateTimestamp(timestamp);
             moduleDirRecord.update();
+            broadcastModulePath(moduleDirRecord.getModuleDirId(), tokens);
         }
 
         ModuleDir moduleDir = new ModuleDir();
@@ -215,6 +219,18 @@ public class JooqModuleWriteRepository
                 Date.from(moduleDirRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
         return new UpdateModuleDirResponse(moduleDir);
+    }
+
+    private void broadcastModulePath(ULong parentModuleDirId, List<String> tokens) {
+        List<ModuleDirRecord> moduleDirRecordList = dslContext().selectFrom(MODULE_DIR)
+                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(parentModuleDirId))
+                .fetch();
+
+        moduleDirRecordList.forEach(e -> {
+            e.setPath(String.join(MODULE_PATH_SEPARATOR, tokens) + MODULE_PATH_SEPARATOR + e.getName());
+            e.update(MODULE_DIR.PATH);
+            broadcastModulePath(e.getModuleDirId(), Arrays.asList(e.getPath().split(MODULE_PATH_SEPARATOR + MODULE_PATH_SEPARATOR)));
+        });
     }
 
     @Override

@@ -61,7 +61,9 @@ public class JooqModuleSetReleaseWriteRepository
         moduleSetRelease.setLastUpdateTimestamp(
                 Date.from(moduleSetReleaseRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
-        copyModuleCcManifest(requesterUserId, timestamp, moduleSetReleaseRecord, ULong.valueOf(request.getBaseModuleSetReleaseId()));
+        if (request.getBaseModuleSetReleaseId() != null) {
+            copyModuleCcManifest(requesterUserId, timestamp, moduleSetReleaseRecord, ULong.valueOf(request.getBaseModuleSetReleaseId()));
+        }
 
         return new CreateModuleSetReleaseResponse(moduleSetRelease);
     }

@@ -7,4 +7,5 @@ import org.jooq.types.ULong;
 public class ModuleCCID {
     public ULong moduleSetAssignmentId;
     public ULong ccId;
+    public String path;
 }

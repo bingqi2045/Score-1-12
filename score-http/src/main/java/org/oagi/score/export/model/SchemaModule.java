@@ -92,15 +92,15 @@ public class SchemaModule {
         schemaModuleVisitor.startSchemaModule(this);
 
         if (content == null) {
-            for (int i = 0; i < dependedModuleSize; ++i) {
-                if (includeModules.containsKey(i)) {
-                    SchemaModule includeSchemaModule = includeModules.get(i);
-                    schemaModuleVisitor.visitIncludeModule(includeSchemaModule);
-                } else {
-                    SchemaModule importSchemaModule = importModules.get(i);
-                    schemaModuleVisitor.visitImportModule(importSchemaModule);
-                }
-            }
+//            for (int i = 0; i < dependedModuleSize; ++i) {
+//                if (includeModules.containsKey(i)) {
+//                    SchemaModule includeSchemaModule = includeModules.get(i);
+//                    schemaModuleVisitor.visitIncludeModule(includeSchemaModule);
+//                } else {
+//                    SchemaModule importSchemaModule = importModules.get(i);
+//                    schemaModuleVisitor.visitImportModule(importSchemaModule);
+//                }
+//            }
 
             for (AgencyId agencyId : agencyIdList) {
                 schemaModuleVisitor.visitAgencyId(agencyId);
@@ -144,5 +144,22 @@ public class SchemaModule {
         } else {
             schemaModuleVisitor.visitBlobContent(content);
         }
+
+        schemaModuleVisitor.getImportModules().stream().distinct().forEach(e -> {
+            try {
+                schemaModuleVisitor.visitImportModule(e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        schemaModuleVisitor.getIncludeModules().stream().distinct().forEach(e -> {
+            try {
+                schemaModuleVisitor.visitIncludeModule(e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
     }
 }
