@@ -38,6 +38,13 @@ public class JooqModuleSetReleaseWriteRepository
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
+        if (request.isDefault()) {
+            dslContext().update(MODULE_SET_RELEASE)
+                    .set(MODULE_SET_RELEASE.IS_DEFAULT, (byte) 0)
+                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                    .execute();
+        }
+
         ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().insertInto(MODULE_SET_RELEASE)
                 .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
                 .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
@@ -74,6 +81,13 @@ public class JooqModuleSetReleaseWriteRepository
         ScoreUser requester = request.getRequester();
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
+
+        if (request.isDefault()) {
+            dslContext().update(MODULE_SET_RELEASE)
+                    .set(MODULE_SET_RELEASE.IS_DEFAULT, (byte) 0)
+                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                    .execute();
+        }
 
         dslContext().update(MODULE_SET_RELEASE)
             .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))

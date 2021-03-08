@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
 import org.oagi.score.service.common.data.*;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
@@ -37,24 +38,32 @@ public class CcListRepository {
     public PageResponse<CcList> getCcList(CcListRequest request) {
         Release release = releaseRepository.findById(request.getReleaseId());
 
+        ULong defaultModuleSetReleaseId = null;
+        ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .fetchOne();
+        if (defaultModuleSetRelease != null) {
+            defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
+        }
+
         SelectOrderByStep select = null;
         if (request.getTypes().isAcc()) {
-            select = (select != null) ? select.union(getAccList(request, release)) : getAccList(request, release);
+            select = (select != null) ? select.union(getAccList(request, release, defaultModuleSetReleaseId)) : getAccList(request, release, defaultModuleSetReleaseId);
         }
         if (request.getTypes().isAsccp()) {
-            select = (select != null) ? select.union(getAsccpList(request, release)) : getAsccpList(request, release);
+            select = (select != null) ? select.union(getAsccpList(request, release, defaultModuleSetReleaseId)) : getAsccpList(request, release, defaultModuleSetReleaseId);
         }
         if (request.getTypes().isBccp()) {
-            select = (select != null) ? select.union(getBccpList(request, release)) : getBccpList(request, release);
+            select = (select != null) ? select.union(getBccpList(request, release, defaultModuleSetReleaseId)) : getBccpList(request, release, defaultModuleSetReleaseId);
         }
         if (request.getTypes().isAscc()) {
-            select = (select != null) ? select.union(getAsccList(request, release)) : getAsccList(request, release);
+            select = (select != null) ? select.union(getAsccList(request, release, defaultModuleSetReleaseId)) : getAsccList(request, release, defaultModuleSetReleaseId);
         }
         if (request.getTypes().isBcc()) {
-            select = (select != null) ? select.union(getBccList(request, release)) : getBccList(request, release);
+            select = (select != null) ? select.union(getBccList(request, release, defaultModuleSetReleaseId)) : getBccList(request, release, defaultModuleSetReleaseId);
         }
         if (request.getTypes().isBdt()) {
-            select = (select != null) ? select.union(getBdtList(request, release)) : getBdtList(request, release);
+            select = (select != null) ? select.union(getBdtList(request, release, defaultModuleSetReleaseId)) : getBdtList(request, release, defaultModuleSetReleaseId);
         }
 
         if (select == null) {
@@ -175,7 +184,7 @@ public class CcListRepository {
                 .fetchInto(BigInteger.class);
     }
 
-    private SelectOrderByStep getAccList(CcListRequest request, Release release) {
+    private SelectOrderByStep getAccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -360,7 +369,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(ACC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ACC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
+                .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
@@ -370,7 +379,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccList(CcListRequest request, Release release) {
+    private SelectOrderByStep getAsccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -481,7 +490,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(ASCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ACC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
+                .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
@@ -491,7 +500,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccList(CcListRequest request, Release release) {
+    private SelectOrderByStep getBccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -602,7 +611,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(BCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ACC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
+                .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
@@ -612,7 +621,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccpList(CcListRequest request, Release release) {
+    private SelectOrderByStep getAsccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -726,7 +735,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(ASCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ASCCP_MANIFEST)
-                .on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .on(and(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID), MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
@@ -736,7 +745,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccpList(CcListRequest request, Release release) {
+    private SelectOrderByStep getBccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -829,7 +838,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(BCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_BCCP_MANIFEST)
-                .on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                .on(and(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID), MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
@@ -839,7 +848,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    public SelectOrderByStep getBdtList(CcListRequest request, Release release) {
+    public SelectOrderByStep getBdtList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -921,7 +930,7 @@ public class CcListRepository {
                 .join(appUserUpdater)
                 .on(DT.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_DT_MANIFEST)
-                .on(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID))
+                .on(and(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID), MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE_SET_ASSIGNMENT)
                 .on(MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
