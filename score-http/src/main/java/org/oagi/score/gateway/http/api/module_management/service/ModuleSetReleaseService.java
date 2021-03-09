@@ -8,7 +8,6 @@ import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.helper.Zip;
-import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
@@ -47,9 +46,6 @@ public class ModuleSetReleaseService {
     private ModuleDepRepository moduleDepRepository;
 
     @Autowired
-    private CoreComponentProvider coreComponentProvider;
-
-    @Autowired
     private CoreComponentService coreComponentService;
 
     public GetModuleSetReleaseListResponse getModuleSetReleaseList(GetModuleSetReleaseListRequest request) {
@@ -78,7 +74,7 @@ public class ModuleSetReleaseService {
     public File exportModuleSetRelease(BigInteger moduleSetReleaseId) throws Exception {
         ImportedDataProvider dataProvider = new ImportedDataProvider(ccRepository, moduleSetReleaseId);
         DefaultExportContextBuilder builder = new DefaultExportContextBuilder(moduleRepository, moduleDepRepository, dataProvider, moduleSetReleaseId);
-        XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentProvider, coreComponentService, dataProvider);
+        XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
         ExportContext exportContext = builder.build(moduleSetReleaseId);
 
         List<File> files = new ArrayList<>();

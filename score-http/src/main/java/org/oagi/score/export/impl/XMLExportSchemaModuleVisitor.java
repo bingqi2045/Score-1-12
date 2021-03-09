@@ -13,13 +13,10 @@ import org.oagi.score.common.util.Utility;
 import org.oagi.score.export.model.*;
 import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.populate.helper.Context;
-import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.xml.sax.SAXException;
 
@@ -49,15 +46,11 @@ public class XMLExportSchemaModuleVisitor {
     private final Namespace OAGI_NS = Namespace.getNamespace("", ScoreConstants.OAGI_NS);
     private final Namespace XSD_NS = Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
     
-    @Qualifier("defaultCoreComponentProvider")
-    private CoreComponentProvider coreComponentProvider;
-    
     private CoreComponentService coreComponentService;
     
     private ImportedDataProvider importedDataProvider;
 
-    public XMLExportSchemaModuleVisitor(CoreComponentProvider coreComponentProvider, CoreComponentService coreComponentService, ImportedDataProvider importedDataProvider) {
-        this.coreComponentProvider = coreComponentProvider;
+    public XMLExportSchemaModuleVisitor(CoreComponentService coreComponentService, ImportedDataProvider importedDataProvider) {
         this.coreComponentService = coreComponentService;
         this.importedDataProvider = importedDataProvider;
     }
@@ -788,7 +781,7 @@ public class XMLExportSchemaModuleVisitor {
         Element sequenceElement = new Element("sequence", XSD_NS);
 
         List<SeqKeyRecord> seqKeys = coreComponentService.getCoreComponents(
-                accComplexType.getAccManifest().getAccManifestId().longValue(), coreComponentProvider);
+                accComplexType.getAccManifest().getAccManifestId(), importedDataProvider);
         // for ASCC or BCC (Sequence Key != 0)
         for (SeqKeyRecord seqKey : seqKeys) {
             if (seqKey.getAsccManifestId() != null) {

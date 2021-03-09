@@ -162,7 +162,20 @@ public class ImportedDataProvider {
         findModuleBlobContentManifestMap = ccRepository.findAllModuleBlobContentManifest(ULong.valueOf(moduleSetReleaseId))
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
+        findSeqKeyList = ccRepository.findAllSeqKeyRecord();
+
+        findSeqKeyMap = findSeqKeyList.stream()
+                .collect(Collectors.groupingBy(SeqKeyRecord::getFromAccManifestId));
+
+
         logger.info("Ready for " + getClass().getSimpleName() + " in " + (System.currentTimeMillis() - s) / 1000d + " seconds");
+    }
+
+    private List<SeqKeyRecord> findSeqKeyList;
+    private Map<ULong, List<SeqKeyRecord>> findSeqKeyMap;
+
+    public List<SeqKeyRecord> getSeqKeys(ULong accManifestId) {
+        return findSeqKeyMap.containsKey(accManifestId) ? findSeqKeyMap.get(accManifestId) : Collections.emptyList();
     }
 
     private List<AgencyIdListRecord> findAgencyIdListList;

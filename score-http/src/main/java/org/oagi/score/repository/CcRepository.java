@@ -423,4 +423,10 @@ public class CcRepository {
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(BlobContentRecord.class);
     }
+
+    public List<SeqKeyRecord> findAllSeqKeyRecord() {
+        return dslContext.select(SEQ_KEY.fields())
+                .from(SEQ_KEY)
+                .fetchInto(SeqKeyRecord.class);
+    }
 }

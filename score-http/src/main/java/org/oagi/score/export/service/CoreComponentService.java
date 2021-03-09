@@ -2,7 +2,7 @@ package org.oagi.score.export.service;
 
 
 import org.jooq.types.ULong;
-import org.oagi.score.provider.CoreComponentProvider;
+import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class CoreComponentService {
 
     public List<SeqKeyRecord> getCoreComponents(
-            long accManifestId, CoreComponentProvider coreComponentProvider) {
-        List<SeqKeyRecord> seqKeyList = coreComponentProvider.getSeqKeys(accManifestId);
+            ULong accManifestId, ImportedDataProvider provider) {
+        List<SeqKeyRecord> seqKeyList = provider.getSeqKeys(accManifestId);
 
         return sort(seqKeyList);
     }
