@@ -7,6 +7,7 @@ import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDirRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
+import org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
@@ -22,6 +23,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.boolAnd;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -42,6 +45,10 @@ public class JooqModuleWriteRepository
         ScoreUser requester = request.getRequester();
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
+
+        if (hasDuplicateName(request.getModuleDirId(), request.getName())) {
+            throw new IllegalArgumentException("Duplicate module name exist.");
+        }
 
         ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
                 .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getModuleDirId()))
@@ -97,7 +104,19 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Can not found Module");
         }
 
-        if (StringUtils.hasLength(request.getName())) {
+        if (StringUtils.hasLength(request.getName()) && !moduleRecord.getName().equals(request.getName())) {
+            if (dslContext().selectFrom(MODULE_DIR)
+                    .where(and(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(moduleRecord.getModuleDirId()),
+                            MODULE_DIR.NAME.eq(request.getName()))).fetch().size() > 0) {
+                throw new IllegalArgumentException("Duplicate module name exist.");
+            }
+
+            if (dslContext().selectFrom(MODULE)
+                    .where(and(MODULE.MODULE_DIR_ID.eq(moduleRecord.getModuleDirId()),
+                            MODULE.MODULE_ID.notEqual(moduleRecord.getModuleId()),
+                            MODULE.NAME.eq(request.getName()))).fetch().size() > 0) {
+                throw new IllegalArgumentException("Duplicate module name exist.");
+            }
             moduleRecord.setName(request.getName());
         }
 
@@ -154,6 +173,10 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Can not found parent ModuleDir");
         }
 
+        if (hasDuplicateName(request.getParentModuleDirId(), request.getName())) {
+            throw new IllegalArgumentException("Duplicate module name exist.");
+        }
+
         ModuleDirRecord moduleDirRecord = dslContext().insertInto(MODULE_DIR)
                 .set(MODULE_DIR.PARENT_MODULE_DIR_ID, parent.getModuleDirId())
                 .set(MODULE_DIR.NAME, request.getName())
@@ -195,8 +218,21 @@ public class JooqModuleWriteRepository
         }
 
         if (StringUtils.hasLength(request.getName()) && !moduleDirRecord.getName().equals(request.getName())) {
+            if (dslContext().selectFrom(MODULE_DIR)
+                    .where(and(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(moduleDirRecord.getParentModuleDirId()),
+                            MODULE_DIR.MODULE_DIR_ID.notEqual(moduleDirRecord.getModuleDirId()),
+                            MODULE_DIR.NAME.eq(request.getName()))).fetch().size() > 0) {
+                throw new IllegalArgumentException("Duplicate module name exist.");
+            }
+
+            if (dslContext().selectFrom(MODULE)
+                    .where(and(MODULE.MODULE_DIR_ID.eq(moduleDirRecord.getParentModuleDirId()),
+                            MODULE.NAME.eq(request.getName()))).fetch().size() > 0) {
+                throw new IllegalArgumentException("Duplicate module name exist.");
+            }
+
             List<String> tokens = Arrays.asList(moduleDirRecord.getPath().split(MODULE_PATH_SEPARATOR + MODULE_PATH_SEPARATOR));
-            tokens.set(tokens.size()-1, request.getName());
+            tokens.set(tokens.size() - 1, request.getName());
 
             moduleDirRecord.setName(request.getName());
             moduleDirRecord.setPath(String.join(MODULE_PATH_SEPARATOR, tokens));
@@ -257,12 +293,18 @@ public class JooqModuleWriteRepository
         if (moduleDirRecord == null) {
             throw new IllegalArgumentException("Can not found ModuleDir");
         }
+        ULong inserted = copyModuleDir(requesterUserId, moduleDirRecord, ULong.valueOf(request.getCopyPosDirId()), moduleSetRecord, timestamp);
 
-        copyModuleDir(requesterUserId, moduleDirRecord, ULong.valueOf(request.getCopyPosDirId()), moduleSetRecord, timestamp);
+        if (hasDuplicateName(request.getCopyPosDirId(), moduleDirRecord.getName())) {
+            UpdateModuleDirRequest moduleDirRequest = new UpdateModuleDirRequest(requester);
+            moduleDirRequest.setModuleDirId(inserted.toBigInteger());
+            moduleDirRequest.setName(moduleDirRecord.getName() + "_" + ScoreGuidUtils.randomGuid().substring(0, 4));
+            updateModuleDir(moduleDirRequest);
+        }
     }
 
-    private void copyModuleDir(ULong requesterId, ModuleDirRecord moduleDirRecord, ULong parentModuleDirId,
-                               ModuleSetRecord moduleSetRecord, LocalDateTime timestamp) {
+    private ULong copyModuleDir(ULong requesterId, ModuleDirRecord moduleDirRecord, ULong parentModuleDirId,
+                                ModuleSetRecord moduleSetRecord, LocalDateTime timestamp) {
         ULong insertedModuleDirId = dslContext().insertInto(MODULE_DIR)
                 .set(MODULE_DIR.PARENT_MODULE_DIR_ID, parentModuleDirId)
                 .set(MODULE_DIR.NAME, moduleDirRecord.getName())
@@ -273,11 +315,13 @@ public class JooqModuleWriteRepository
                 .set(MODULE_DIR.LAST_UPDATE_TIMESTAMP, timestamp)
                 .returning().fetchOne().getModuleDirId();
 
-        copyModuleAndAssign(requesterId, moduleDirRecord.getModuleDirId() , insertedModuleDirId, moduleSetRecord.getModuleSetId(), timestamp);
+        copyModuleAndAssign(requesterId, moduleDirRecord.getModuleDirId(), insertedModuleDirId, moduleSetRecord.getModuleSetId(), timestamp);
 
         getModuleDirByParentModuleDirId(moduleDirRecord.getModuleDirId()).forEach(dir -> {
             copyModuleDir(requesterId, dir, insertedModuleDirId, moduleSetRecord, timestamp);
         });
+
+        return insertedModuleDirId;
     }
 
     @Override
@@ -290,9 +334,15 @@ public class JooqModuleWriteRepository
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
                 .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))).fetchOne();
 
+        String name = moduleRecord.getName();
+
+        if (hasDuplicateName(request.getCopyPosDirId(), moduleRecord.getName())) {
+            name = moduleRecord.getName() + "_" + ScoreGuidUtils.randomGuid().substring(0, 4);
+        }
+
         ULong insertedModuleId = dslContext().insertInto(MODULE)
                 .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getCopyPosDirId()))
-                .set(MODULE.NAME, moduleRecord.getName())
+                .set(MODULE.NAME, name)
                 .set(MODULE.NAMESPACE_ID, moduleRecord.getNamespaceId())
                 .set(MODULE.VERSION_NUM, moduleRecord.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
@@ -343,5 +393,18 @@ public class JooqModuleWriteRepository
 
     private List<ModuleRecord> getModuleByModuleDir(ULong moduleDirId) {
         return dslContext().selectFrom(MODULE).where(MODULE.MODULE_DIR_ID.eq(moduleDirId)).fetch();
+    }
+
+    private boolean hasDuplicateName(BigInteger parentModuleDirId, String name) {
+        if (dslContext().selectFrom(MODULE_DIR)
+                .where(and(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(ULong.valueOf(parentModuleDirId)),
+                        MODULE_DIR.NAME.eq(name))).fetch().size() > 0)
+            return true;
+        if (dslContext().selectFrom(MODULE)
+                .where(and(MODULE.MODULE_DIR_ID.eq(ULong.valueOf(parentModuleDirId)),
+                        MODULE.NAME.eq(name))).fetch().size() > 0) {
+            return true;
+        }
+        return false;
     }
 }
