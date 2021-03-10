@@ -16,15 +16,12 @@ public abstract class ACC implements Component {
     private ImportedDataProvider importedDataProvider;
     private Integer oagisComponentType;
 
-    private ModuleCCID moduleCCID;
-
     ACC(AccRecord acc, ACC basedAcc,
         ImportedDataProvider importedDataProvider) {
         this.acc = acc;
         this.basedAcc = basedAcc;
         this.importedDataProvider = importedDataProvider;
         this.oagisComponentType = acc.getOagisComponentType();
-        this.moduleCCID = this.importedDataProvider.findModuleAcc(this.acc.getAccId());
     }
 
     public static ACC newInstance(AccRecord acc, AccManifestRecord accManifest,
@@ -95,11 +92,5 @@ public abstract class ACC implements Component {
         return acc.getDefinitionSource();
     }
 
-    public ModuleCCID getModuleCCID() {
-        return moduleCCID;
-    }
 
-    public void setModuleCCID(ModuleCCID moduleCCID) {
-        this.moduleCCID = moduleCCID;
-    }
 }
