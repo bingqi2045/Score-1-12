@@ -16,7 +16,6 @@
         <module>score-repo</module>
         <module>score-service</module>
         <module>score-http</module>
-        <module>score-export</module>
     </modules>
 
     <properties>
