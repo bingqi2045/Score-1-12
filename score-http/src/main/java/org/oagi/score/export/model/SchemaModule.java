@@ -5,15 +5,14 @@ import org.jooq.types.ULong;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SchemaModule {
 
     private final ScoreModule module;
 
-    private List<SchemaModule> includeModules = new ArrayList();
-    private List<SchemaModule> importModules = new ArrayList();
+    private Map<Integer, SchemaModule> includeModules = new HashMap();
+    private Map<Integer, SchemaModule> importModules = new HashMap();
+    private int dependedModuleSize = 0;
 
     private List<AgencyId> agencyIdList = new ArrayList();
     private List<SchemaCodeList> schemaCodeLists = new ArrayList();
@@ -42,45 +41,28 @@ public class SchemaModule {
         return module.getNamespaceId();
     }
 
-    public boolean hasInclude(SchemaModule schemaModule) {
-        if (this.includeModules.indexOf(schemaModule) > -1) {
-            return true;
-        }
-        for (SchemaModule include : this.includeModules) {
-            if (include.hasInclude(schemaModule)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasImport(SchemaModule schemaModule) {
-        if (this.importModules.indexOf(schemaModule) > -1) {
-            return true;
-        }
-        for (SchemaModule imported : this.importModules) {
-            if (imported.hasImport(schemaModule)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void addInclude(SchemaModule schemaModule) {
-        if (!hasInclude(schemaModule)) {
-            includeModules.add(schemaModule);
+        if (!includeModules.containsValue(schemaModule)) {
+            includeModules.put(dependedModuleSize++, schemaModule);
         }
     }
 
     public void addImport(SchemaModule schemaModule) {
-        if (!hasImport(schemaModule)) {
-            importModules.add(schemaModule);
+        if (!importModules.containsValue(schemaModule)) {
+            importModules.put(dependedModuleSize++, schemaModule);
         }
     }
 
     public Collection<SchemaModule> getDependedModules() {
-        return Stream.concat(includeModules.stream(), importModules.stream())
-                .collect(Collectors.toList());
+        List<SchemaModule> dependedModules = new ArrayList();
+        for (int i = 0; i < dependedModuleSize; ++i) {
+            if (includeModules.containsKey(i)) {
+                dependedModules.add(includeModules.get(i));
+            } else {
+                dependedModules.add(importModules.get(i));
+            }
+        }
+        return Collections.unmodifiableCollection(dependedModules);
     }
 
     public void addAgencyId(AgencyId agencyId) {
@@ -120,12 +102,14 @@ public class SchemaModule {
         schemaModuleVisitor.startSchemaModule(this);
 
         if (content == null) {
-            for (SchemaModule include: includeModules) {
-                schemaModuleVisitor.visitIncludeModule(include);
-            }
-
-            for (SchemaModule imported: importModules) {
-                schemaModuleVisitor.visitIncludeModule(imported);
+            for (int i = 0; i < dependedModuleSize; ++i) {
+                if (includeModules.containsKey(i)) {
+                    SchemaModule includeSchemaModule = includeModules.get(i);
+                    schemaModuleVisitor.visitIncludeModule(includeSchemaModule);
+                } else {
+                    SchemaModule importSchemaModule = importModules.get(i);
+                    schemaModuleVisitor.visitImportModule(importSchemaModule);
+                }
             }
 
             for (AgencyId agencyId : agencyIdList) {
@@ -169,36 +153,6 @@ public class SchemaModule {
             }
         } else {
             schemaModuleVisitor.visitBlobContent(content);
-        }
-    }
-
-    public void minimizeDependency() {
-        for (SchemaModule cur: new ArrayList<>(includeModules)) {
-            for (SchemaModule next: new ArrayList<>(includeModules)) {
-                if (cur.equals(next)) {
-                    continue;
-                }
-                if (cur.hasInclude(next)) {
-                    includeModules.remove(next);
-                } else if (next.hasInclude(cur)) {
-                    includeModules.remove(cur);
-                    break;
-                }
-            }
-        }
-
-        for (SchemaModule cur: new ArrayList<>(importModules)) {
-            for (SchemaModule next: new ArrayList<>(importModules)) {
-                if (cur.equals(next)) {
-                    continue;
-                }
-                if (cur.hasInclude(next)) {
-                    importModules.remove(next);
-                } else if (next.hasInclude(cur)) {
-                    importModules.remove(cur);
-                    break;
-                }
-            }
         }
     }
 }
