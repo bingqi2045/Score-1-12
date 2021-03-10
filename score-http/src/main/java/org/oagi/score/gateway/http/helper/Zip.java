@@ -50,7 +50,7 @@ public class Zip {
 
     public static File compressionHierarchy(Collection<File> targetFiles, String filename) throws IOException {
         File file = File.createTempFile("oagis-", null);
-        URI currentPath = Paths.get("").toAbsolutePath().toUri();
+        URI currentPath = Paths.get("./data").toAbsolutePath().toUri();
         FileOutputStream dest = new FileOutputStream(file);
         try (ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest))) {
             logger.info("Compressing files in Zip format...");

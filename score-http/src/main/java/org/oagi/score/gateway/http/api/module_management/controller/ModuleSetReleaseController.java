@@ -121,10 +121,10 @@ public class ModuleSetReleaseController {
     public ResponseEntity<InputStreamResource> exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                                       @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
 
-        File output = service.exportModuleSetRelease(moduleSetReleaseId);
+        File output = service.exportModuleSetRelease(sessionService.asScoreUser(user), moduleSetReleaseId);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=test.zip")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.getName() + "\"")
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .contentLength(output.length())
                 .body(new InputStreamResource(new FileInputStream(output)));

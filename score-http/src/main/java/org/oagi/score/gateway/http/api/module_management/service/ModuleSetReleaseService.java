@@ -71,7 +71,11 @@ public class ModuleSetReleaseService {
         return scoreRepositoryFactory.createModuleSetReleaseWriteRepository().deleteModuleSetRelease(request);
     }
 
-    public File exportModuleSetRelease(BigInteger moduleSetReleaseId) throws Exception {
+    public File exportModuleSetRelease(ScoreUser user, BigInteger moduleSetReleaseId) throws Exception {
+        GetModuleSetReleaseRequest request = new GetModuleSetReleaseRequest(user);
+        request.setModuleSetReleaseId(moduleSetReleaseId);
+        ModuleSetRelease moduleSetRelease = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(request).getModuleSetRelease();
+
         ImportedDataProvider dataProvider = new ImportedDataProvider(ccRepository, moduleSetReleaseId);
         DefaultExportContextBuilder builder = new DefaultExportContextBuilder(moduleRepository, moduleDepRepository, dataProvider, moduleSetReleaseId);
         XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
@@ -79,8 +83,10 @@ public class ModuleSetReleaseService {
 
         List<File> files = new ArrayList<>();
 
+        String fileName = moduleSetRelease.getModuleSetName().replace(" ", "");
+
         for (SchemaModule schemaModule : exportContext.getSchemaModules()) {
-            visitor.setBaseDirectory(new File("./data"));
+            visitor.setBaseDirectory(new File("./data/" + fileName));
             schemaModule.visit(visitor);
             File file = visitor.endSchemaModule(schemaModule);
             if (file != null) {
@@ -88,7 +94,7 @@ public class ModuleSetReleaseService {
             }
         }
 
-        return Zip.compressionHierarchy(files, "test.zip");
+        return Zip.compressionHierarchy(files, fileName);
     }
 
     public ModuleAssignComponents getAssignableCCs(GetAssignableCCListRequest request) {
