@@ -36,6 +36,7 @@
         <jdom2.version>2.0.6</jdom2.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang.version>3.9</commons-lang.version>
+        <saxon.version>10.3</saxon.version>
     </properties>
 
     <dependencies>
@@ -198,9 +199,9 @@
             <version>2.13.3</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.saxon</artifactId>
-            <version>9.6.0-1_1</version>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>${saxon.version}</version>
         </dependency>
     </dependencies>
 
