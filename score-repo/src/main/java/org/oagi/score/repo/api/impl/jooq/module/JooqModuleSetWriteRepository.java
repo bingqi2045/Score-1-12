@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MODULE;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MODULE_SET;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -103,6 +102,16 @@ public class JooqModuleSetWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetResponse deleteModuleSet(DeleteModuleSetRequest request) throws ScoreDataAccessException {
+        if (dslContext().selectFrom(MODULE_SET_RELEASE)
+                .where(MODULE_SET_RELEASE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
+                .fetch().size() > 0) {
+            throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
+        }
+        if (dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
+                .where(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
+                .fetch().size() > 0) {
+            throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
+        }
         dslContext().deleteFrom(MODULE_SET)
                 .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
 

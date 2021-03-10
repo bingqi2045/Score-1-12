@@ -120,6 +120,29 @@ public class JooqModuleSetReleaseWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetReleaseResponse deleteModuleSetRelease(DeleteModuleSetReleaseRequest request) throws ScoreDataAccessException {
+        if (dslContext().selectFrom(MODULE_ACC_MANIFEST)
+                    .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_ASCCP_MANIFEST)
+                    .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_BCCP_MANIFEST)
+                    .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_DT_MANIFEST)
+                    .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_CODE_LIST_MANIFEST)
+                    .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
+                    .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_XBT_MANIFEST)
+                    .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0) {
+            throw new IllegalArgumentException("This ModuleSetRelease in use can not be discard.");
+        }
         dslContext().deleteFrom(MODULE_SET_RELEASE)
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
                 .execute();
