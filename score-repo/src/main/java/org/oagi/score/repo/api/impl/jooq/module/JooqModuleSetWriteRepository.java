@@ -36,6 +36,10 @@ public class JooqModuleSetWriteRepository
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
+        if (!StringUtils.hasLength(request.getName())) {
+            throw new IllegalArgumentException("Module set name cannot be empty.");
+        }
+
         ModuleSetRecord moduleSetRecord = dslContext().insertInto(MODULE_SET)
                 .set(MODULE_SET.GUID, randomGuid())
                 .set(MODULE_SET.NAME, request.getName())
@@ -67,6 +71,10 @@ public class JooqModuleSetWriteRepository
         ScoreUser requester = request.getRequester();
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
+
+        if (!StringUtils.hasLength(request.getName())) {
+            throw new IllegalArgumentException("Module set name cannot be empty.");
+        }
 
         ModuleSetRecord moduleSetRecord = dslContext().selectFrom(MODULE_SET)
                 .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
