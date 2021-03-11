@@ -68,6 +68,7 @@ public class JooqModuleWriteRepository
         module.setModuleDirId(moduleRecord.getModuleDirId().toBigInteger());
         module.setName(moduleRecord.getName());
         module.setVersionNum(moduleRecord.getVersionNum());
+        module.setNamespaceId(moduleRecord.getNamespaceId().toBigInteger());
         module.setCreatedBy(requester);
         module.setCreationTimestamp(
                 Date.from(moduleRecord.getCreationTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
