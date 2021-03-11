@@ -298,7 +298,7 @@ public class JooqModuleWriteRepository
         if (hasDuplicateName(request.getCopyPosDirId(), moduleDirRecord.getName())) {
             UpdateModuleDirRequest moduleDirRequest = new UpdateModuleDirRequest(requester);
             moduleDirRequest.setModuleDirId(inserted.toBigInteger());
-            moduleDirRequest.setName(moduleDirRecord.getName() + "_" + ScoreGuidUtils.randomGuid().substring(0, 4));
+            moduleDirRequest.setName(moduleDirRecord.getName() + " (" + ScoreGuidUtils.randomGuid().substring(0, 4) + ")");
             updateModuleDir(moduleDirRequest);
         }
     }
@@ -337,7 +337,7 @@ public class JooqModuleWriteRepository
         String name = moduleRecord.getName();
 
         if (hasDuplicateName(request.getCopyPosDirId(), moduleRecord.getName())) {
-            name = moduleRecord.getName() + "_" + ScoreGuidUtils.randomGuid().substring(0, 4);
+            name = moduleRecord.getName() + " (" + ScoreGuidUtils.randomGuid().substring(0, 4) + ")";
         }
 
         ULong insertedModuleId = dslContext().insertInto(MODULE)
