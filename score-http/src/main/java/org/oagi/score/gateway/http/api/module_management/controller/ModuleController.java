@@ -120,4 +120,24 @@ public class ModuleController {
         request.setName(moduleDir.getName());
         return moduleService.updateModuleDir(request);
     }
+
+    @RequestMapping(value = "/module/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                             @PathVariable("id") BigInteger moduleId,
+                                             @RequestParam(name = "moduleSetId", required = false) BigInteger moduleSetId) {
+        DeleteModuleRequest request = new DeleteModuleRequest(sessionService.asScoreUser(user));
+        request.setModuleId(moduleId);
+        request.setModuleSetId(moduleSetId);
+        moduleService.deleteModule(request);
+    }
+
+    @RequestMapping(value = "/module_dir/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                             @PathVariable("id") BigInteger moduleDirId) {
+        DeleteModuleDirRequest request = new DeleteModuleDirRequest(sessionService.asScoreUser(user));
+        request.setModuleDirId(moduleDirId);
+        moduleService.deleteModuleDir(request);
+    }
 }

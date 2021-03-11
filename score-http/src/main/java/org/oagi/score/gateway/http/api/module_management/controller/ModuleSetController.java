@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.module_management.controller;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetService;
+import org.oagi.score.repo.api.module.model.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -145,6 +146,17 @@ public class ModuleSetController {
         request.setSortActive(sortActive);
         request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
         return service.getModuleSetModuleList(request);
+    }
+
+    @RequestMapping(value = "/module_set/{id}/module/{moduleId}/unassign", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void unassignModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                               @PathVariable("id") BigInteger moduleSetId,
+                                               @PathVariable("moduleId") BigInteger moduleId) {
+        DeleteModuleSetAssignmentRequest request = new DeleteModuleSetAssignmentRequest(sessionService.asScoreUser(user));
+        request.setModuleId(moduleId);
+        request.setModuleSetId(moduleSetId);
+        service.unassignModule(request);
     }
 
 }

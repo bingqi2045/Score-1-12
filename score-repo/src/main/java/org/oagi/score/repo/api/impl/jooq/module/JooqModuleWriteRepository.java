@@ -23,8 +23,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.boolAnd;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -166,6 +165,11 @@ public class JooqModuleWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) throws ScoreDataAccessException {
+        if (dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
+                .where(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(ULong.valueOf(request.getModuleId())))
+                .fetch().size() > 0) {
+            throw new IllegalArgumentException("This Module in use cannot be discard.");
+        }
         dslContext().deleteFrom(MODULE)
                 .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId())));
 
@@ -285,7 +289,26 @@ public class JooqModuleWriteRepository
 
     @Override
     public DeleteModuleDirResponse deleteModuleDir(DeleteModuleDirRequest request) throws ScoreDataAccessException {
-        return null;
+        if (dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())))
+                .fetch().size() > 0) {
+            throw new IllegalArgumentException("Submodule exist, cannot be discard.");
+        }
+
+        List<ModuleDirRecord> moduleDirRecordList = dslContext().selectFrom(MODULE_DIR)
+                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())))
+                .fetch();
+
+        for (ModuleDirRecord moduleDirRecord : moduleDirRecordList) {
+            DeleteModuleDirRequest subRequest = new DeleteModuleDirRequest(request.getRequester());
+            subRequest.setModuleDirId(moduleDirRecord.getModuleDirId().toBigInteger());
+            deleteModuleDir(subRequest);
+        }
+
+        dslContext().deleteFrom(MODULE_DIR)
+                .where(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
+
+        return new DeleteModuleDirResponse();
     }
 
     @Override

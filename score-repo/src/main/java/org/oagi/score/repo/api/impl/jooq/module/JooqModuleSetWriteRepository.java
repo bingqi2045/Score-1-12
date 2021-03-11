@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetAssignmentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetWriteRepository;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
@@ -124,5 +126,48 @@ public class JooqModuleSetWriteRepository
                 .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
 
         return new DeleteModuleSetResponse();
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public DeleteModuleSetAssignmentResponse unassignModule(DeleteModuleSetAssignmentRequest request) throws ScoreDataAccessException {
+        ModuleSetAssignmentRecord moduleSetAssignmentRecord = dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
+                .where(and(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(ULong.valueOf(request.getModuleId())),
+                        MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))))
+                .fetchOne();
+        if (moduleSetAssignmentRecord == null) {
+            throw new IllegalArgumentException("Cannot found assignment.");
+        }
+
+        if (dslContext().selectFrom(MODULE_ACC_MANIFEST)
+                .where(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_ASCCP_MANIFEST)
+                .where(MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_BCCP_MANIFEST)
+                .where(MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_DT_MANIFEST)
+                .where(MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_CODE_LIST_MANIFEST)
+                .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
+                .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_XBT_MANIFEST)
+                .where(MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0
+                || dslContext().selectFrom(MODULE_BLOB_CONTENT_MANIFEST)
+                .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(moduleSetAssignmentRecord.getModuleSetAssignmentId()))
+                .fetch().size() > 0) {
+            throw new IllegalArgumentException("This module has assigned core component, unassign core component first.");
+        }
+
+        moduleSetAssignmentRecord.delete();
+
+        return new DeleteModuleSetAssignmentResponse();
     }
 }

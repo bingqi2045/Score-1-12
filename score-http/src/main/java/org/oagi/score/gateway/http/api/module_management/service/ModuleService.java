@@ -146,4 +146,20 @@ public class ModuleService {
     public UpdateModuleDirResponse updateModuleDir(UpdateModuleDirRequest request) {
         return scoreRepositoryFactory.createModuleWriteRepository().updateModuleDir(request);
     }
+
+    @Transactional
+    public DeleteModuleResponse deleteModule(DeleteModuleRequest request) {
+        if(request.getModuleSetId() != null) {
+            DeleteModuleSetAssignmentRequest requestUnassign = new DeleteModuleSetAssignmentRequest(request.getRequester());
+            requestUnassign.setModuleId(request.getModuleId());
+            requestUnassign.setModuleSetId(request.getModuleSetId());
+            scoreRepositoryFactory.createModuleSetWriteRepository().unassignModule(requestUnassign);
+        }
+        return scoreRepositoryFactory.createModuleWriteRepository().deleteModule(request);
+    }
+
+    @Transactional
+    public DeleteModuleDirResponse deleteModuleDir(DeleteModuleDirRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().deleteModuleDir(request);
+    }
 }

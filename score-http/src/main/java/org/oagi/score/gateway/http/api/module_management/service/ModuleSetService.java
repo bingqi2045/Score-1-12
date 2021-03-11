@@ -41,4 +41,9 @@ public class ModuleSetService {
     public GetModuleListResponse getModuleSetModuleList(GetModuleListRequest request) {
         return scoreRepositoryFactory.createModuleReadRepository().getModuleList(request);
     }
+
+    @Transactional
+    public DeleteModuleSetAssignmentResponse unassignModule(DeleteModuleSetAssignmentRequest request) {
+        return scoreRepositoryFactory.createModuleSetWriteRepository().unassignModule(request);
+    }
 }

@@ -140,6 +140,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .fetch().size() > 0
             || dslContext().selectFrom(MODULE_XBT_MANIFEST)
                     .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                    .fetch().size() > 0
+            || dslContext().selectFrom(MODULE_BLOB_CONTENT_MANIFEST)
+                    .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
                     .fetch().size() > 0) {
             throw new IllegalArgumentException("This ModuleSetRelease in use can not be discard.");
         }
