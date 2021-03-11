@@ -50,6 +50,19 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Duplicate module name exist.");
         }
 
+        // If a `namespaceId` parameter does not define in the request, overrides it by releases' one.
+        if (request.getNamespaceId() == null && request.getModuleSetId() != null) {
+            BigInteger releaseNamespaceId = dslContext().selectDistinct(RELEASE.NAMESPACE_ID)
+                    .from(RELEASE)
+                    .join(MODULE_SET_RELEASE).on(RELEASE.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
+                    .where(and(
+                            MODULE_SET_RELEASE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())),
+                            MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1)
+                    ))
+                    .fetchOneInto(BigInteger.class);
+            request.setNamespaceId(releaseNamespaceId);
+        }
+
         ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
                 .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getModuleDirId()))
                 .set(MODULE.NAME, request.getName())
