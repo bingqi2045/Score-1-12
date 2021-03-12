@@ -21,6 +21,7 @@ public class DeleteModuleSetAssignmentRequest extends Request {
 
     private BigInteger moduleSetId;
     private BigInteger moduleId;
+    private BigInteger moduleDirId;
 
     public BigInteger getModuleId() {
         return moduleId;
@@ -28,5 +29,13 @@ public class DeleteModuleSetAssignmentRequest extends Request {
 
     public void setModuleId(BigInteger moduleId) {
         this.moduleId = moduleId;
+    }
+
+    public BigInteger getModuleDirId() {
+        return moduleDirId;
+    }
+
+    public void setModuleDirId(BigInteger moduleDirId) {
+        this.moduleDirId = moduleDirId;
     }
 }

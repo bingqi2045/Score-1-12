@@ -159,4 +159,15 @@ public class ModuleSetController {
         service.unassignModule(request);
     }
 
+    @RequestMapping(value = "/module_set/{id}/module_dir/{moduleDirId}/unassign", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void unassignModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                               @PathVariable("id") BigInteger moduleSetId,
+                               @PathVariable("moduleDirId") BigInteger moduleDirId) {
+        DeleteModuleSetAssignmentRequest request = new DeleteModuleSetAssignmentRequest(sessionService.asScoreUser(user));
+        request.setModuleDirId(moduleDirId);
+        request.setModuleSetId(moduleSetId);
+        service.unassignModule(request);
+    }
+
 }
