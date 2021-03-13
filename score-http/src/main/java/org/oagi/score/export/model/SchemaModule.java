@@ -1,6 +1,7 @@
 package org.oagi.score.export.model;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jooq.types.ULong;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 
 import java.util.*;
@@ -36,12 +37,20 @@ public class SchemaModule {
         return module.getVersionNum();
     }
 
+    public ULong getNamespace() {
+        return module.getNamespaceId();
+    }
+
     public void addInclude(SchemaModule schemaModule) {
-        includeModules.put(dependedModuleSize++, schemaModule);
+        if (!includeModules.containsValue(schemaModule)) {
+            includeModules.put(dependedModuleSize++, schemaModule);
+        }
     }
 
     public void addImport(SchemaModule schemaModule) {
-        importModules.put(dependedModuleSize++, schemaModule);
+        if (!importModules.containsValue(schemaModule)) {
+            importModules.put(dependedModuleSize++, schemaModule);
+        }
     }
 
     public Collection<SchemaModule> getDependedModules() {
@@ -69,6 +78,7 @@ public class SchemaModule {
     }
 
     public void addBDTSimple(BDTSimple bdtSimple) {
+
         this.bdtSimples.add(bdtSimple);
     }
 
