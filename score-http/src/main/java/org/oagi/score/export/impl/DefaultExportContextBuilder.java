@@ -54,11 +54,12 @@ public class DefaultExportContextBuilder {
         createACC(moduleMap);
         createASCCP(moduleMap);
         createBlobContents(moduleMap);
+        minimizeDependency(moduleMap);
 
         return context;
     }
 
-    private void addIncludeImport(SchemaModule source, SchemaModule target) {
+    private void addDependency(SchemaModule source, SchemaModule target) {
         if (source.equals(target)) {
             return;
         }
@@ -66,6 +67,12 @@ public class DefaultExportContextBuilder {
             source.addInclude(target);
         } else {
             source.addImport(target);
+        }
+    }
+
+    private void minimizeDependency(Map<ULong, SchemaModule> moduleMap) {
+        for (SchemaModule schemaModule : moduleMap.values()) {
+            schemaModule.minimizeDependency();
         }
     }
 
@@ -137,7 +144,7 @@ public class DefaultExportContextBuilder {
                     throw new IllegalStateException("CodeList '" + baseSchemaCodeList.getName() + "' required. ");
                 }
 
-                addIncludeImport(moduleMap.get(codeListModuleCCID.getModuleSetAssignmentId()),
+                addDependency(moduleMap.get(codeListModuleCCID.getModuleSetAssignmentId()),
                         moduleMap.get(baseCodeListModuleCCID.getModuleSetAssignmentId()));
             }
         }
@@ -174,14 +181,14 @@ public class DefaultExportContextBuilder {
 
             if (baseModuleCCID != null) {
                 SchemaModule baseSchemaModule = moduleMap.get(baseModuleCCID.getModuleSetAssignmentId());
-                addIncludeImport(schemaModule, baseSchemaModule);
+                addDependency(schemaModule, baseSchemaModule);
             }
 
             List<DtScRecord> dtScList =
                     importedDataProvider.findDtScByOwnerDtId(bdt.getDtId()).stream()
                             .filter(e -> e.getCardinalityMax() > 0).collect(Collectors.toList());
 
-            boolean isDefaultBDT = schemaModule.getPath().contains("BusinessDataType_1");
+            boolean isDefaultBDT = bdt.getType().equals("Default");
             BDTSimple bdtSimple;
             if (dtScList.isEmpty()) {
                 ULong bdtId = bdt.getDtId();
@@ -200,7 +207,7 @@ public class DefaultExportContextBuilder {
                         ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbtRecord.getXbtId());
 
                         if (xbtModuleCCID != null) {
-                            addIncludeImport(schemaModule,
+                            addDependency(schemaModule,
                                     moduleMap.get(xbtModuleCCID.getModuleSetAssignmentId()));
                         }
                     });
@@ -238,7 +245,7 @@ public class DefaultExportContextBuilder {
                 if (dtModuleCCID == null) {
                     return;
                 }
-                addIncludeImport(schemaModule, moduleMap.get(dtModuleCCID.getModuleSetAssignmentId()));
+                addDependency(schemaModule, moduleMap.get(dtModuleCCID.getModuleSetAssignmentId()));
             }
         }
     }
@@ -274,14 +281,14 @@ public class DefaultExportContextBuilder {
             importedDataProvider.findASCCByFromAccId(acc.getAccId()).forEach(e -> {
                 ModuleCCID asccpModuleCCID = importedDataProvider.findModuleAsccp(e.getToAsccpId());
                 if (asccpModuleCCID != null) {
-                    addIncludeImport(schemaModule, moduleMap.get(asccpModuleCCID.getModuleSetAssignmentId()));
+                    addDependency(schemaModule, moduleMap.get(asccpModuleCCID.getModuleSetAssignmentId()));
                 }
             });
 
             importedDataProvider.findBCCByFromAccId(acc.getAccId()).forEach(e -> {
                 ModuleCCID bccpModuleCCID = importedDataProvider.findModuleBccp(e.getToBccpId());
                 if (bccpModuleCCID != null) {
-                    addIncludeImport(schemaModule, moduleMap.get(bccpModuleCCID.getModuleSetAssignmentId()));
+                    addDependency(schemaModule, moduleMap.get(bccpModuleCCID.getModuleSetAssignmentId()));
                 }
             });
         }
@@ -309,7 +316,7 @@ public class DefaultExportContextBuilder {
             if (roleOfAccModuleCCID == null) {
                 continue;
             }
-            addIncludeImport(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleSetAssignmentId()));
+            addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleSetAssignmentId()));
         }
     }
 
