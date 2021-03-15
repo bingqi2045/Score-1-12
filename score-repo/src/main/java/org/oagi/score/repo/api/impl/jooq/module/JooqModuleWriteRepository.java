@@ -18,7 +18,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -65,6 +64,7 @@ public class JooqModuleWriteRepository
         ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
                 .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getModuleDirId()))
                 .set(MODULE.NAME, request.getName())
+                .set(MODULE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
                 .set(MODULE.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()))
                 .set(MODULE.VERSION_NUM, request.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
@@ -87,17 +87,6 @@ public class JooqModuleWriteRepository
         module.setLastUpdatedBy(requester);
         module.setLastUpdateTimestamp(
                 Date.from(moduleRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
-
-        if (request.getModuleSetId() != null) {
-            dslContext().insertInto(MODULE_SET_ASSIGNMENT)
-                    .set(MODULE_SET_ASSIGNMENT.MODULE_ID, moduleRecord.getModuleId())
-                    .set(MODULE_SET_ASSIGNMENT.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                    .set(MODULE_SET_ASSIGNMENT.CREATED_BY, requesterUserId)
-                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATED_BY, requesterUserId)
-                    .set(MODULE_SET_ASSIGNMENT.CREATION_TIMESTAMP, timestamp)
-                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .execute();
-        }
 
         return new CreateModuleResponse(module);
     }
@@ -165,15 +154,22 @@ public class JooqModuleWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) throws ScoreDataAccessException {
-        if (dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
-                .where(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(ULong.valueOf(request.getModuleId())))
-                .fetch().size() > 0) {
-            throw new IllegalArgumentException("This Module in use cannot be discard.");
-        }
-        dslContext().deleteFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId())));
-
+        ULong moduleId = ULong.valueOf(request.getModuleId());
+        deleteModule(moduleId);
         return new DeleteModuleResponse();
+    }
+
+    private void deleteModule(ULong moduleId) {
+        dslContext().delete(MODULE_ACC_MANIFEST).where(MODULE_ACC_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_ASCCP_MANIFEST).where(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_BCCP_MANIFEST).where(MODULE_BCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_CODE_LIST_MANIFEST).where(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_AGENCY_ID_LIST_MANIFEST).where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_DT_MANIFEST).where(MODULE_DT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_BLOB_CONTENT_MANIFEST).where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_XBT_MANIFEST).where(MODULE_XBT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+
+        dslContext().delete(MODULE).where(MODULE.MODULE_ID.eq(moduleId)).execute();
     }
 
     @Override
@@ -198,6 +194,7 @@ public class JooqModuleWriteRepository
         ModuleDirRecord moduleDirRecord = dslContext().insertInto(MODULE_DIR)
                 .set(MODULE_DIR.PARENT_MODULE_DIR_ID, parent.getModuleDirId())
                 .set(MODULE_DIR.NAME, request.getName())
+                .set(MODULE_DIR.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
                 .set(MODULE_DIR.PATH, parent.getPath() + MODULE_PATH_SEPARATOR + request.getName())
                 .set(MODULE_DIR.CREATED_BY, requesterUserId)
                 .set(MODULE_DIR.LAST_UPDATED_BY, requesterUserId)
@@ -289,24 +286,18 @@ public class JooqModuleWriteRepository
 
     @Override
     public DeleteModuleDirResponse deleteModuleDir(DeleteModuleDirRequest request) throws ScoreDataAccessException {
-        if (dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())))
-                .fetch().size() > 0) {
-            throw new IllegalArgumentException("Submodule exist, cannot be discard.");
-        }
+        ULong moduleDirId = ULong.valueOf(request.getModuleDirId());
+        dslContext().select(MODULE.MODULE_ID).from(MODULE)
+                .where(MODULE.MODULE_DIR_ID.eq(moduleDirId))
+                .fetchStream()
+                .forEach(e -> deleteModule(e.get(MODULE.MODULE_ID)));
 
-        List<ModuleDirRecord> moduleDirRecordList = dslContext().selectFrom(MODULE_DIR)
-                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())))
-                .fetch();
+        dslContext().select(MODULE_DIR.MODULE_DIR_ID).from(MODULE_DIR)
+                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(moduleDirId))
+                .fetchStream()
+                .forEach(e -> deleteModule(e.get(MODULE_DIR.MODULE_DIR_ID)));
 
-        for (ModuleDirRecord moduleDirRecord : moduleDirRecordList) {
-            DeleteModuleDirRequest subRequest = new DeleteModuleDirRequest(request.getRequester());
-            subRequest.setModuleDirId(moduleDirRecord.getModuleDirId().toBigInteger());
-            deleteModuleDir(subRequest);
-        }
-
-        dslContext().deleteFrom(MODULE_DIR)
-                .where(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
+        dslContext().delete(MODULE_DIR).where(MODULE_DIR.MODULE_DIR_ID.eq(moduleDirId));
 
         return new DeleteModuleDirResponse();
     }
@@ -380,6 +371,7 @@ public class JooqModuleWriteRepository
         ULong insertedModuleId = dslContext().insertInto(MODULE)
                 .set(MODULE.MODULE_DIR_ID, ULong.valueOf(request.getCopyPosDirId()))
                 .set(MODULE.NAME, name)
+                .set(MODULE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
                 .set(MODULE.NAMESPACE_ID, moduleRecord.getNamespaceId())
                 .set(MODULE.VERSION_NUM, moduleRecord.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
@@ -388,15 +380,6 @@ public class JooqModuleWriteRepository
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .returning().fetchOne().getModuleId();
-
-        dslContext().insertInto(MODULE_SET_ASSIGNMENT)
-                .set(MODULE_SET_ASSIGNMENT.MODULE_ID, insertedModuleId)
-                .set(MODULE_SET_ASSIGNMENT.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                .set(MODULE_SET_ASSIGNMENT.CREATED_BY, requesterUserId)
-                .set(MODULE_SET_ASSIGNMENT.LAST_UPDATED_BY, requesterUserId)
-                .set(MODULE_SET_ASSIGNMENT.CREATION_TIMESTAMP, timestamp)
-                .set(MODULE_SET_ASSIGNMENT.LAST_UPDATE_TIMESTAMP, timestamp)
-                .execute();
     }
 
     private void copyModuleAndAssign(ULong requesterId, ULong prevModuleDirId, ULong nextModuleDirId, ULong moduleSetId, LocalDateTime timestamp) {
@@ -412,15 +395,6 @@ public class JooqModuleWriteRepository
                     .set(MODULE.CREATION_TIMESTAMP, timestamp)
                     .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .returning().fetchOne().getModuleId();
-
-            dslContext().insertInto(MODULE_SET_ASSIGNMENT)
-                    .set(MODULE_SET_ASSIGNMENT.MODULE_ID, insertedModuleId)
-                    .set(MODULE_SET_ASSIGNMENT.MODULE_SET_ID, moduleSetId)
-                    .set(MODULE_SET_ASSIGNMENT.CREATED_BY, requesterId)
-                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATED_BY, requesterId)
-                    .set(MODULE_SET_ASSIGNMENT.CREATION_TIMESTAMP, timestamp)
-                    .set(MODULE_SET_ASSIGNMENT.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .execute();
         });
     }
 

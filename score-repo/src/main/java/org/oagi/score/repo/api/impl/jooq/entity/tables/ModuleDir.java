@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -60,6 +60,11 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
      * The column <code>oagi.module_dir.parent_module_dir_id</code>. This indicates the parent of this directory.
      */
     public final TableField<ModuleDirRecord, ULong> PARENT_MODULE_DIR_ID = createField(DSL.name("parent_module_dir_id"), SQLDataType.BIGINTUNSIGNED, this, "This indicates the parent of this directory.");
+
+    /**
+     * The column <code>oagi.module_dir.module_set_id</code>. This indicates a module set.
+     */
+    public final TableField<ModuleDirRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module set.");
 
     /**
      * The column <code>oagi.module_dir.name</code>. This is the name of the directory.
@@ -151,11 +156,15 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
 
     @Override
     public List<ForeignKey<ModuleDirRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleDirRecord, ?>>asList(Keys.MODULE_DIR_PARENT_MODULE_DIR_ID_FK, Keys.MODULE_DIR_CREATED_BY_FK, Keys.MODULE_DIR_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<ModuleDirRecord, ?>>asList(Keys.MODULE_DIR_PARENT_MODULE_DIR_ID_FK, Keys.MODULE_DIR_MODULE_SET_ID_FK, Keys.MODULE_DIR_CREATED_BY_FK, Keys.MODULE_DIR_LAST_UPDATED_BY_FK);
     }
 
     public ModuleDir moduleDir() {
         return new ModuleDir(this, Keys.MODULE_DIR_PARENT_MODULE_DIR_ID_FK);
+    }
+
+    public ModuleSet moduleSet() {
+        return new ModuleSet(this, Keys.MODULE_DIR_MODULE_SET_ID_FK);
     }
 
     public AppUser moduleDirCreatedByFk() {
@@ -193,11 +202,11 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

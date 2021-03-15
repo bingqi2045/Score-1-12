@@ -67,9 +67,9 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     public final TableField<ModuleBlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the blob content manifest record.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.module_set_assignment_id</code>.
+     * The column <code>oagi.module_blob_content_manifest.module_id</code>. This indicates a module.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
@@ -151,7 +151,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
 
     @Override
     public List<ForeignKey<ModuleBlobContentManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleBlobContentManifestRecord, ?>>asList(Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<ModuleBlobContentManifestRecord, ?>>asList(Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK);
     }
 
     public ModuleSetRelease moduleSetRelease() {
@@ -162,8 +162,8 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         return new BlobContentManifest(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK);
     }
 
-    public ModuleSetAssignment moduleSetAssignment() {
-        return new ModuleSetAssignment(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK);
+    public Module module() {
+        return new Module(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK);
     }
 
     public AppUser moduleBlobContentManifestCreatedByFk() {

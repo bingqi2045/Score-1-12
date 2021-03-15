@@ -5,10 +5,9 @@ import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
-import org.oagi.score.repo.api.module.ModuleReadRepository;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
-import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.repo.api.module.model.*;
+import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
@@ -173,19 +172,5 @@ public class JooqModuleSetReadRepository
         }
 
         return (request.getSortDirection() == ASC) ? field.asc() : field.desc();
-    }
-
-    @Override
-    public ModuleSetAssignment getModuleSetAssignment(BigInteger moduleSetId, BigInteger moduleId) throws ScoreDataAccessException {
-        return dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
-                .where(and(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId))),
-                        MODULE_SET_ASSIGNMENT.MODULE_ID.eq(ULong.valueOf(moduleId)))
-                .fetchOne().map(e -> {
-            ModuleSetAssignment assignment = new ModuleSetAssignment();
-            assignment.setModuleId(e.get(MODULE_SET_ASSIGNMENT.MODULE_ID).toBigInteger());
-            assignment.setModuleSetAssignmentId(e.get(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID).toBigInteger());
-            assignment.setModuleSetId(e.get(MODULE_SET_ASSIGNMENT.MODULE_SET_ID).toBigInteger());
-            return assignment;
-        });
     }
 }

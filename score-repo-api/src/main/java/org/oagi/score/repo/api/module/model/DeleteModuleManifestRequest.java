@@ -18,7 +18,7 @@ public class DeleteModuleManifestRequest extends Request {
 
     private BigInteger moduleSetReleaseId;
 
-    private BigInteger moduleSetAssignmentId;
+    private BigInteger moduleId;
 
     public BigInteger getManifestId() {
         return manifestId;
@@ -44,11 +44,11 @@ public class DeleteModuleManifestRequest extends Request {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getModuleSetAssignmentId() {
-        return moduleSetAssignmentId;
+    public BigInteger getModuleId() {
+        return moduleId;
     }
 
-    public void setModuleSetAssignmentId(BigInteger moduleSetAssignmentId) {
-        this.moduleSetAssignmentId = moduleSetAssignmentId;
+    public void setModuleId(BigInteger moduleId) {
+        this.moduleId = moduleId;
     }
 }

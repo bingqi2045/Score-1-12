@@ -82,10 +82,8 @@ public class CodeListService extends EventHandler {
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
                 .leftJoin(MODULE_CODE_LIST_MANIFEST)
                 .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
-                .leftJoin(MODULE_SET_ASSIGNMENT)
-                .on(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
-                .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
+                .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID));
     }
@@ -221,10 +219,8 @@ public class CodeListService extends EventHandler {
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
                 .leftJoin(MODULE_CODE_LIST_MANIFEST)
                 .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
-                .leftJoin(MODULE_SET_ASSIGNMENT)
-                .on(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .leftJoin(MODULE)
-                .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
+                .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions)

@@ -8,8 +8,6 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDepRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.module.ModuleReadRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
@@ -84,33 +82,7 @@ public class ModuleService {
                 .fetchOneInto(Module.class);
         return module;
     }
-
-    private List<ModuleDependency> getModuleDependencies(long moduleId) {
-        List<ModuleDependency> moduleDependencies = new ArrayList();
-
-        moduleDependencies.addAll(
-                dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
-                        DSL.inline(ModuleDependencyType.Include.name()).as("dependency_type"),
-                        Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.as("related_module_id"))
-                        .from(Tables.MODULE_DEP)
-                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(moduleId)),
-                                Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Include.getValue()))
-                        .fetchInto(ModuleDependency.class)
-        );
-
-        moduleDependencies.addAll(
-                dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
-                        inline(ModuleDependencyType.Import.name()).as("dependency_type"),
-                        Tables.MODULE_DEP.DEPENDING_MODULE_SET_ASSIGNMENT_ID.as("related_module_id"))
-                        .from(Tables.MODULE_DEP)
-                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(moduleId)),
-                                Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Import.getValue()))
-                        .fetchInto(ModuleDependency.class)
-        );
-
-        return moduleDependencies;
-    }
-
+    
     public ModuleElement getModuleElements(GetModuleElementRequest request) {
         ModuleReadRepository repository = scoreRepositoryFactory.createModuleReadRepository();
         ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, request.getModuleSetId(), null);

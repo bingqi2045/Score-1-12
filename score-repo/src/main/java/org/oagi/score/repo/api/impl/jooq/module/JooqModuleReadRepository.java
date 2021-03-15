@@ -48,14 +48,12 @@ public class JooqModuleReadRepository
                 APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                 APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
                 MODULE.CREATION_TIMESTAMP,
-                MODULE.LAST_UPDATE_TIMESTAMP,
-                MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID)
+                MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
                 .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
-                .leftJoin(MODULE_SET_ASSIGNMENT).on(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID));
+                .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
     }
 
     private RecordMapper<Record, Module> mapper() {
@@ -68,17 +66,7 @@ public class JooqModuleReadRepository
             module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
             module.setName(record.get(MODULE.NAME));
             module.setVersionNum(record.get(MODULE.VERSION_NUM));
-//
-//            module.setCreatedBy(new ScoreUser(
-//                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-//                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-//                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-//            ));
-//            module.setLastUpdatedBy(new ScoreUser(
-//                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-//                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-//                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-//            ));
+
             module.setCreationTimestamp(
                     Date.from(record.get(MODULE.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             module.setLastUpdateTimestamp(
@@ -159,7 +147,7 @@ public class JooqModuleReadRepository
         List<Condition> conditions = new ArrayList();
 
         if (request.getModuleSetId() != null) {
-            conditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(
+            conditions.add(MODULE.MODULE_SET_ID.eq(
                     ULong.valueOf(request.getModuleSetId())
             ));
         }
@@ -212,8 +200,7 @@ public class JooqModuleReadRepository
                 .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
-                .leftJoin(MODULE_SET_ASSIGNMENT).on(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID));
+                .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
     }
 
     private SelectOnConditionStep selectModuleDirElement() {
@@ -246,12 +233,8 @@ public class JooqModuleReadRepository
 
         List<Condition> moduleConditions = new ArrayList();
 
-        if (request.getModuleSetId() != null) {
-            moduleConditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
-            stepModuleDir = stepModuleDir.leftJoin(MODULE).on(MODULE_DIR.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                    .leftJoin(MODULE_SET_ASSIGNMENT).on(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID));
-            moduleDirConditions.add(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
-        }
+        moduleConditions.add(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
+        moduleDirConditions.add(MODULE_DIR.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
 
         if (request.getModuleDirId() != null) {
             moduleConditions.add(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
@@ -288,8 +271,7 @@ public class JooqModuleReadRepository
 
     @Override
     public List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException {
-        if (request.getModuleSetId() == null) {
-            return dslContext().select(
+        return dslContext().select(
                     MODULE.MODULE_ID,
                     MODULE.MODULE_DIR_ID,
                     MODULE_DIR.PATH,
@@ -302,25 +284,8 @@ public class JooqModuleReadRepository
                     .from(MODULE)
                     .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                     .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                    .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
                     .fetch(mapper());
-        } else {
-            return dslContext().select(
-                    MODULE.MODULE_ID,
-                    MODULE.MODULE_DIR_ID,
-                    MODULE_DIR.PATH,
-                    MODULE.NAME,
-                    MODULE.VERSION_NUM,
-                    MODULE.NAMESPACE_ID,
-                    NAMESPACE.URI,
-                    MODULE.CREATION_TIMESTAMP,
-                    MODULE.LAST_UPDATE_TIMESTAMP)
-                    .from(MODULE)
-                    .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                    .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
-                    .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
-                    .where(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
-                    .fetch(mapper());
-        }
     }
 
     @Override

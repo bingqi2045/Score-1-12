@@ -11,6 +11,8 @@ public class CreateModuleDirRequest extends Request {
 
     private String name;
 
+    private BigInteger moduleSetId;
+
     public CreateModuleDirRequest(ScoreUser requester) {
         super(requester);
     }
@@ -29,5 +31,13 @@ public class CreateModuleDirRequest extends Request {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public BigInteger getModuleSetId() {
+        return moduleSetId;
+    }
+
+    public void setModuleSetId(BigInteger moduleSetId) {
+        this.moduleSetId = moduleSetId;
     }
 }

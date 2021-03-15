@@ -12,7 +12,4 @@ public interface ModuleSetReadRepository {
 
     GetModuleSetListResponse getModuleSetList(
             GetModuleSetListRequest request) throws ScoreDataAccessException;
-
-    ModuleSetAssignment getModuleSetAssignment(
-            BigInteger moduleSetId, BigInteger moduleId) throws ScoreDataAccessException;
 }

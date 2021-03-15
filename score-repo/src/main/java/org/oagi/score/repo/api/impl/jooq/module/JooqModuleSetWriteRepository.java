@@ -1,13 +1,9 @@
 package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.DSLContext;
-import org.jooq.exception.DataAccessException;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDirRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetAssignmentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetWriteRepository;
@@ -18,10 +14,8 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -123,11 +117,11 @@ public class JooqModuleSetWriteRepository
                 .fetch().size() > 0) {
             throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
         }
-        if (dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
-                .where(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
-                .fetch().size() > 0) {
-            throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
-        }
+
+        dslContext().deleteFrom(MODULE)
+                .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
+        dslContext().deleteFrom(MODULE_DIR)
+                .where(MODULE_DIR.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
         dslContext().deleteFrom(MODULE_SET)
                 .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
 
@@ -138,51 +132,38 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetAssignmentResponse unassignModule(DeleteModuleSetAssignmentRequest request) throws ScoreDataAccessException {
         if (request.getModuleDirId() != null) {
-            deleteModuleSetAssignmentByModuleDir(ULong.valueOf(request.getModuleSetId()), ULong.valueOf(request.getModuleDirId()));
+            deleteModuleDir(ULong.valueOf(request.getModuleDirId()));
         } else {
-            deleteModuleSetAssignmentByModule(ULong.valueOf(request.getModuleSetId()), ULong.valueOf(request.getModuleId()));
+            deleteModule(ULong.valueOf(request.getModuleId()));
         }
 
         return new DeleteModuleSetAssignmentResponse();
     }
 
-    private void deleteModuleSetAssignmentByModule(ULong moduleSetId, ULong moduleId) {
-        ModuleSetAssignmentRecord moduleSetAssignmentRecord = dslContext().selectFrom(MODULE_SET_ASSIGNMENT)
-                .where(and(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(moduleId),
-                        MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(moduleSetId)))
-                .fetchOne();
-        if (moduleSetAssignmentRecord == null) {
-            throw new IllegalArgumentException("Cannot found assignment.");
-        }
-        try {
-            moduleSetAssignmentRecord.delete();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("This module has assigned core component, unassign core component first.");
-        }
+    private void deleteModule(ULong moduleId) {
+        dslContext().delete(MODULE_ACC_MANIFEST).where(MODULE_ACC_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_ASCCP_MANIFEST).where(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_BCCP_MANIFEST).where(MODULE_BCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_CODE_LIST_MANIFEST).where(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_AGENCY_ID_LIST_MANIFEST).where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_DT_MANIFEST).where(MODULE_DT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_BLOB_CONTENT_MANIFEST).where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+        dslContext().delete(MODULE_XBT_MANIFEST).where(MODULE_XBT_MANIFEST.MODULE_ID.eq(moduleId)).execute();
+
+        dslContext().delete(MODULE).where(MODULE.MODULE_ID.eq(moduleId)).execute();
     }
 
-    private void deleteModuleSetAssignmentByModuleDir(ULong moduleSetId, ULong moduleDirId) {
-        dslContext().selectFrom(MODULE_DIR)
-                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(moduleDirId))
-                .fetch().forEach(e -> {
-                    deleteModuleSetAssignmentByModuleDir(moduleSetId, e.getModuleDirId());
-        });
-
-        List<ULong> moduleSetAssignmentIdList = dslContext()
-                .select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID)
-                .from(MODULE)
-                .join(MODULE_SET_ASSIGNMENT).on(
-                        and(MODULE.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID),
-                                MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(moduleSetId)))
-
+    private void deleteModuleDir(ULong moduleDirId) {
+        dslContext().select(MODULE.MODULE_ID).from(MODULE)
                 .where(MODULE.MODULE_DIR_ID.eq(moduleDirId))
-                .fetchInto(ULong.class);
+                .fetchStream()
+                .forEach(e -> deleteModule(e.get(MODULE.MODULE_ID)));
 
-        try {
-            dslContext().deleteFrom(MODULE_SET_ASSIGNMENT)
-                    .where(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.in(moduleSetAssignmentIdList)).execute();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("This module has assigned core component, unassign core component first.");
-        }
+        dslContext().select(MODULE_DIR.MODULE_DIR_ID).from(MODULE_DIR)
+                .where(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(moduleDirId))
+                .fetchStream()
+                .forEach(e -> deleteModuleDir(e.get(MODULE_DIR.MODULE_DIR_ID)));
+
+        dslContext().delete(MODULE_DIR).where(MODULE_DIR.MODULE_DIR_ID.eq(moduleDirId));
     }
 }

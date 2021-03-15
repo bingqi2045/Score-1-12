@@ -4,7 +4,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
 import org.oagi.score.provider.ImportedDataProvider;
-import org.oagi.score.repository.ModuleDepRepository;
 import org.oagi.score.repository.ModuleRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +20,14 @@ public class DefaultExportContextBuilder {
 
     private ModuleRepository moduleRepository;
 
-    private ModuleDepRepository moduleDepRepository;
-
     private ImportedDataProvider importedDataProvider;
 
     private BigInteger moduleSetReleaseId;
 
     public DefaultExportContextBuilder(ModuleRepository moduleRepository,
-                                       ModuleDepRepository moduleDepRepository,
                                        ImportedDataProvider importedDataProvider,
                                        BigInteger moduleSetReleaseId) {
         this.moduleRepository = moduleRepository;
-        this.moduleDepRepository = moduleDepRepository;
         this.importedDataProvider = importedDataProvider;
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
@@ -43,7 +38,7 @@ public class DefaultExportContextBuilder {
 
         List<ScoreModule> moduleList = moduleRepository.findAll(ULong.valueOf(moduleSetReleaseId));
         Map<ULong, SchemaModule> moduleMap = moduleList.stream()
-                .collect(Collectors.toMap(ScoreModule::getModuleSetAssignmentId, SchemaModule::new));
+                .collect(Collectors.toMap(ScoreModule::getModuleId, SchemaModule::new));
 
         createSchemaModules(context, moduleMap);
         createAgencyIdList(moduleMap);
@@ -80,20 +75,6 @@ public class DefaultExportContextBuilder {
         for (SchemaModule schemaModule : moduleMap.values()) {
             context.addSchemaModule(schemaModule);
         }
-
-//        for (ModuleDepRecord depend : moduleDepRepository.findAllDepending(ULong.valueOf(moduleSetReleaseId))) {
-//            SchemaModule dependingModuleSchema = moduleMap.get(depend.getDependingModuleSetAssignmentId());
-//            SchemaModule dependedModuleSchema = moduleMap.get(depend.getDependedModuleSetAssignmentId());
-//
-//            switch (depend.getDependencyType()) {
-//                case 0: // include
-//                    dependedModuleSchema.addInclude(dependingModuleSchema);
-//                    break;
-//                case 1: // import
-//                    dependedModuleSchema.addImport(dependingModuleSchema);
-//                    break;
-//            }
-//        }
     }
 
     private void createAgencyIdList(Map<ULong, SchemaModule> moduleMap) {
@@ -103,7 +84,7 @@ public class DefaultExportContextBuilder {
                     importedDataProvider.findAgencyIdListValueByOwnerListId(agencyIdList.getAgencyIdListId());
 
             ModuleCCID moduleCCID = importedDataProvider.findModuleAgencyIdList(agencyIdList.getAgencyIdListId());
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addAgencyId(new AgencyId(agencyIdList, agencyIdListValues));
         }
     }
@@ -125,7 +106,7 @@ public class DefaultExportContextBuilder {
             if (moduleCCID == null) {
                 continue;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addCodeList(schemaCodeList);
 
             schemaCodeListMap.put(codeList.getCodeListId(), schemaCodeList);
@@ -144,8 +125,8 @@ public class DefaultExportContextBuilder {
                     throw new IllegalStateException("CodeList '" + baseSchemaCodeList.getName() + "' required. ");
                 }
 
-                addDependency(moduleMap.get(codeListModuleCCID.getModuleSetAssignmentId()),
-                        moduleMap.get(baseCodeListModuleCCID.getModuleSetAssignmentId()));
+                addDependency(moduleMap.get(codeListModuleCCID.getModuleId()),
+                        moduleMap.get(baseCodeListModuleCCID.getModuleId()));
             }
         }
     }
@@ -157,7 +138,7 @@ public class DefaultExportContextBuilder {
             if (moduleCCID == null) {
                 continue;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addXBTSimpleType(new XBTSimpleType(xbt, importedDataProvider.findXbt(xbt.getSubtypeOfXbtId())));
         }
     }
@@ -175,12 +156,12 @@ public class DefaultExportContextBuilder {
                 continue;
             }
 
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
 
             ModuleCCID baseModuleCCID = importedDataProvider.findModuleDt(baseDataType.getDtId());
 
             if (baseModuleCCID != null) {
-                SchemaModule baseSchemaModule = moduleMap.get(baseModuleCCID.getModuleSetAssignmentId());
+                SchemaModule baseSchemaModule = moduleMap.get(baseModuleCCID.getModuleId());
                 addDependency(schemaModule, baseSchemaModule);
             }
 
@@ -208,7 +189,7 @@ public class DefaultExportContextBuilder {
 
                         if (xbtModuleCCID != null) {
                             addDependency(schemaModule,
-                                    moduleMap.get(xbtModuleCCID.getModuleSetAssignmentId()));
+                                    moduleMap.get(xbtModuleCCID.getModuleId()));
                         }
                     });
                 } else {
@@ -238,14 +219,14 @@ public class DefaultExportContextBuilder {
                 if (moduleCCID == null) {
                     return;
                 }
-                SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+                SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
                 schemaModule.addBCCP(new BCCP(bccp, bdt));
 
                 ModuleCCID dtModuleCCID = importedDataProvider.findModuleDt(bdt.getDtId());
                 if (dtModuleCCID == null) {
                     return;
                 }
-                addDependency(schemaModule, moduleMap.get(dtModuleCCID.getModuleSetAssignmentId()));
+                addDependency(schemaModule, moduleMap.get(dtModuleCCID.getModuleId()));
             }
         }
     }
@@ -272,7 +253,7 @@ public class DefaultExportContextBuilder {
                 continue;
             }
 
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             if (schemaModule == null) {
                 throw new IllegalStateException();
             }
@@ -281,14 +262,14 @@ public class DefaultExportContextBuilder {
             importedDataProvider.findASCCByFromAccId(acc.getAccId()).forEach(e -> {
                 ModuleCCID asccpModuleCCID = importedDataProvider.findModuleAsccp(e.getToAsccpId());
                 if (asccpModuleCCID != null) {
-                    addDependency(schemaModule, moduleMap.get(asccpModuleCCID.getModuleSetAssignmentId()));
+                    addDependency(schemaModule, moduleMap.get(asccpModuleCCID.getModuleId()));
                 }
             });
 
             importedDataProvider.findBCCByFromAccId(acc.getAccId()).forEach(e -> {
                 ModuleCCID bccpModuleCCID = importedDataProvider.findModuleBccp(e.getToBccpId());
                 if (bccpModuleCCID != null) {
-                    addDependency(schemaModule, moduleMap.get(bccpModuleCCID.getModuleSetAssignmentId()));
+                    addDependency(schemaModule, moduleMap.get(bccpModuleCCID.getModuleId()));
                 }
             });
         }
@@ -309,14 +290,14 @@ public class DefaultExportContextBuilder {
             if (moduleCCID == null) {
                 continue;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addASCCP(ASCCP.newInstance(asccp, asccpManifest, importedDataProvider));
 
             ModuleCCID roleOfAccModuleCCID = importedDataProvider.findModuleAcc(asccp.getRoleOfAccId());
             if (roleOfAccModuleCCID == null) {
                 continue;
             }
-            addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleSetAssignmentId()));
+            addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleId()));
         }
     }
 
@@ -326,7 +307,7 @@ public class DefaultExportContextBuilder {
             if (moduleCCID == null) {
                 continue;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.setContent(blobContent.getContent());
         }
     }

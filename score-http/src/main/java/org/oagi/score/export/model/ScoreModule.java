@@ -9,7 +9,6 @@ public class ScoreModule {
     ULong moduleSetReleaseId;
     ULong moduleSetId;
     ULong releaseId;
-    ULong moduleSetAssignmentId;
     ULong moduleId;
     String name;
     ULong namespaceId;

@@ -15,7 +15,6 @@ import org.oagi.score.repo.api.module.ModuleSetReleaseWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repository.CcRepository;
-import org.oagi.score.repository.ModuleDepRepository;
 import org.oagi.score.repository.ModuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,9 +40,6 @@ public class ModuleSetReleaseService {
 
     @Autowired
     private ModuleRepository moduleRepository;
-
-    @Autowired
-    private ModuleDepRepository moduleDepRepository;
 
     @Autowired
     private CoreComponentService coreComponentService;
@@ -77,7 +73,7 @@ public class ModuleSetReleaseService {
         ModuleSetRelease moduleSetRelease = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(request).getModuleSetRelease();
 
         ImportedDataProvider dataProvider = new ImportedDataProvider(ccRepository, moduleSetReleaseId);
-        DefaultExportContextBuilder builder = new DefaultExportContextBuilder(moduleRepository, moduleDepRepository, dataProvider, moduleSetReleaseId);
+        DefaultExportContextBuilder builder = new DefaultExportContextBuilder(moduleRepository, dataProvider, moduleSetReleaseId);
         XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
         ExportContext exportContext = builder.build(moduleSetReleaseId);
 
@@ -148,17 +144,12 @@ public class ModuleSetReleaseService {
     @Transactional
     public void setAssignCc(ScoreUser user, AssignCCToModule assignCCToModule) {
         ModuleSetReleaseWriteRepository repo = scoreRepositoryFactory.createModuleSetReleaseWriteRepository();
-        ModuleSetAssignment moduleAssignment = scoreRepositoryFactory.createModuleSetReadRepository()
-                .getModuleSetAssignment(assignCCToModule.getModuleSetId(), assignCCToModule.getModuleId());
-        if (moduleAssignment == null) {
-            throw new IllegalArgumentException("Can not found ModuleSetAssignment.");
-        }
         LocalDateTime timestamp = LocalDateTime.now();
         assignCCToModule.getNodes().forEach(node -> {
             CreateModuleManifestRequest request = new CreateModuleManifestRequest(user);
             request.setType(CcType.valueOf(node.getType()));
             request.setManifestId(node.getManifestId());
-            request.setModuleSetAssignmentId(moduleAssignment.getModuleSetAssignmentId());
+            request.setModuleId(assignCCToModule.getModuleId());
             request.setModuleSetReleaseId(assignCCToModule.getModuleSetReleaseId());
             request.setTimestamp(timestamp);
             repo.createModuleManifest(request);
@@ -168,17 +159,12 @@ public class ModuleSetReleaseService {
     @Transactional
     public void unAssignCc(ScoreUser user, AssignCCToModule assignCCToModule) {
         ModuleSetReleaseWriteRepository repo = scoreRepositoryFactory.createModuleSetReleaseWriteRepository();
-        ModuleSetAssignment moduleAssignment = scoreRepositoryFactory.createModuleSetReadRepository()
-                .getModuleSetAssignment(assignCCToModule.getModuleSetId(), assignCCToModule.getModuleId());
-        if (moduleAssignment == null) {
-            throw new IllegalArgumentException("Can not found ModuleSetAssignment.");
-        }
         LocalDateTime timestamp = LocalDateTime.now();
         assignCCToModule.getNodes().forEach(node -> {
             DeleteModuleManifestRequest request = new DeleteModuleManifestRequest(user);
             request.setType(CcType.valueOf(node.getType()));
             request.setManifestId(node.getManifestId());
-            request.setModuleSetAssignmentId(moduleAssignment.getModuleSetAssignmentId());
+            request.setModuleId(assignCCToModule.getModuleId());
             request.setModuleSetReleaseId(assignCCToModule.getModuleSetReleaseId());
             repo.deleteModuleManifest(request);
         });

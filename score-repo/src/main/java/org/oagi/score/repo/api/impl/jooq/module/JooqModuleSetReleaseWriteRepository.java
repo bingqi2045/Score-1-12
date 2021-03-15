@@ -3,10 +3,8 @@ package org.oagi.score.repo.api.impl.jooq.module;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
 import org.oagi.score.repo.api.module.ModuleSetReleaseWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
@@ -162,7 +160,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_ACC_MANIFEST,
                 MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_ACC_MANIFEST.ACC_MANIFEST_ID,
-                MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_ACC_MANIFEST.MODULE_ID,
                 MODULE_ACC_MANIFEST.CREATED_BY,
                 MODULE_ACC_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_ACC_MANIFEST.LAST_UPDATED_BY,
@@ -170,7 +168,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         ACC_MANIFEST.as("acc_manifest_target").ACC_MANIFEST_ID,
-                        MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_ACC_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -189,7 +187,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_ASCCP_MANIFEST,
                 MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
-                MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_ASCCP_MANIFEST.MODULE_ID,
                 MODULE_ASCCP_MANIFEST.CREATED_BY,
                 MODULE_ASCCP_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY,
@@ -197,7 +195,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         ASCCP_MANIFEST.as("asccp_manifest_target").ASCCP_MANIFEST_ID,
-                        MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_ASCCP_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -216,7 +214,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_BCCP_MANIFEST,
                 MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID,
-                MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_BCCP_MANIFEST.MODULE_ID,
                 MODULE_BCCP_MANIFEST.CREATED_BY,
                 MODULE_BCCP_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_BCCP_MANIFEST.LAST_UPDATED_BY,
@@ -224,7 +222,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         BCCP_MANIFEST.as("bccp_manifest_target").BCCP_MANIFEST_ID,
-                        MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_BCCP_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -243,7 +241,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_CODE_LIST_MANIFEST,
                 MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
-                MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_CODE_LIST_MANIFEST.MODULE_ID,
                 MODULE_CODE_LIST_MANIFEST.CREATED_BY,
                 MODULE_CODE_LIST_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY,
@@ -251,7 +249,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         CODE_LIST_MANIFEST.as("code_list_manifest_target").CODE_LIST_MANIFEST_ID,
-                        MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_CODE_LIST_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -270,7 +268,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_AGENCY_ID_LIST_MANIFEST,
                 MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
-                MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID,
                 MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY,
                 MODULE_AGENCY_ID_LIST_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY,
@@ -278,7 +276,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         AGENCY_ID_LIST_MANIFEST.as("agency_id_list_manifest_target").AGENCY_ID_LIST_MANIFEST_ID,
-                        MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -297,7 +295,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_BLOB_CONTENT_MANIFEST,
                 MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID,
-                MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID,
                 MODULE_BLOB_CONTENT_MANIFEST.CREATED_BY,
                 MODULE_BLOB_CONTENT_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_BLOB_CONTENT_MANIFEST.LAST_UPDATED_BY,
@@ -305,7 +303,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID,
-                        MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -319,7 +317,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_XBT_MANIFEST,
                 MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_XBT_MANIFEST.XBT_MANIFEST_ID,
-                MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_XBT_MANIFEST.MODULE_ID,
                 MODULE_XBT_MANIFEST.CREATED_BY,
                 MODULE_XBT_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_XBT_MANIFEST.LAST_UPDATED_BY,
@@ -327,7 +325,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         XBT_MANIFEST.as("xbt_manifest_target").XBT_MANIFEST_ID,
-                        MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_XBT_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -346,7 +344,7 @@ public class JooqModuleSetReleaseWriteRepository
         dslContext().insertInto(MODULE_DT_MANIFEST,
                 MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID,
                 MODULE_DT_MANIFEST.DT_MANIFEST_ID,
-                MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                MODULE_DT_MANIFEST.MODULE_ID,
                 MODULE_DT_MANIFEST.CREATED_BY,
                 MODULE_DT_MANIFEST.CREATION_TIMESTAMP,
                 MODULE_DT_MANIFEST.LAST_UPDATED_BY,
@@ -354,7 +352,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         DT_MANIFEST.as("dt_manifest_target").DT_MANIFEST_ID,
-                        MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID,
+                        MODULE_DT_MANIFEST.MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -377,7 +375,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_ACC_MANIFEST)
                     .set(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_ACC_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_ACC_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_ACC_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_ACC_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -387,7 +385,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_ASCCP_MANIFEST)
                     .set(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_ASCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_ASCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_ASCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -397,7 +395,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_BCCP_MANIFEST)
                     .set(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_BCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_BCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_BCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_BCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -407,7 +405,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_DT_MANIFEST)
                     .set(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_DT_MANIFEST.DT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_DT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_DT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_DT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_DT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -417,7 +415,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_CODE_LIST_MANIFEST)
                     .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_CODE_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_CODE_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -427,7 +425,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_AGENCY_ID_LIST_MANIFEST)
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -437,7 +435,7 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().insertInto(MODULE_XBT_MANIFEST)
                     .set(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID, ULong.valueOf(request.getModuleSetAssignmentId()))
+                    .set(MODULE_XBT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
                     .set(MODULE_XBT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
                     .set(MODULE_XBT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_XBT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
@@ -452,43 +450,43 @@ public class JooqModuleSetReleaseWriteRepository
             dslContext().deleteFrom(MODULE_ACC_MANIFEST)
                     .where(and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_ACC_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.ASCCP)) {
             dslContext().deleteFrom(MODULE_ASCCP_MANIFEST)
                     .where(and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_ASCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_ASCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.BCCP)) {
             dslContext().deleteFrom(MODULE_BCCP_MANIFEST)
                     .where(and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_BCCP_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_BCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.DT)) {
             dslContext().deleteFrom(MODULE_DT_MANIFEST)
                     .where(and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_DT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.CODE_LIST)) {
             dslContext().deleteFrom(MODULE_CODE_LIST_MANIFEST)
                     .where(and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
             dslContext().deleteFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
                     .where(and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         } else if (request.getType().equals(CcType.XBT)) {
             dslContext().deleteFrom(MODULE_XBT_MANIFEST)
                     .where(and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
                             MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(request.getModuleSetAssignmentId()))))
+                            MODULE_XBT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
                     .execute();
         }
     }
