@@ -4,7 +4,6 @@ import org.oagi.score.gateway.http.api.module_management.data.ModuleList;
 import org.oagi.score.gateway.http.api.module_management.data.SimpleModule;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.repo.api.base.Response;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,25 +60,13 @@ public class ModuleController {
                                                  @RequestParam(name = "moduleSetId", required = false) BigInteger moduleSetId) {
 
         CreateModuleRequest request = new CreateModuleRequest(sessionService.asScoreUser(user));
-        request.setModuleDirId(module.getModuleDirId());
+        request.setParentModuleId(module.getParentModuleId());
         request.setName(module.getName());
         request.setNamespaceId(module.getNamespaceId());
         request.setVersionNum(module.getVersionNum());
         request.setModuleSetId(moduleSetId);
         return moduleService.createModule(request);
     }
-
-    @RequestMapping(value = "/module_dir", method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public CreateModuleDirResponse createModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @RequestBody ModuleDir moduleDir) {
-
-        CreateModuleDirRequest request = new CreateModuleDirRequest(sessionService.asScoreUser(user));
-        request.setName(moduleDir.getName());
-        request.setParentModuleDirId(moduleDir.getParentModuleDirId());
-        return moduleService.createModuleDir(request);
-    }
-
 
     @RequestMapping(value = "/module_dir/copy", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,17 +97,6 @@ public class ModuleController {
         return moduleService.updateModule(request);
     }
 
-    @RequestMapping(value = "/module_dir/{id}", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public UpdateModuleDirResponse updateModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("id") BigInteger moduleDirId,
-                                             @RequestBody ModuleDir moduleDir) {
-        UpdateModuleDirRequest request = new UpdateModuleDirRequest(sessionService.asScoreUser(user));
-        request.setModuleDirId(moduleDirId);
-        request.setName(moduleDir.getName());
-        return moduleService.updateModuleDir(request);
-    }
-
     @RequestMapping(value = "/module/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -130,14 +106,5 @@ public class ModuleController {
         request.setModuleId(moduleId);
         request.setModuleSetId(moduleSetId);
         moduleService.deleteModule(request);
-    }
-
-    @RequestMapping(value = "/module_dir/{id}", method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("id") BigInteger moduleDirId) {
-        DeleteModuleDirRequest request = new DeleteModuleDirRequest(sessionService.asScoreUser(user));
-        request.setModuleDirId(moduleDirId);
-        moduleService.deleteModuleDir(request);
     }
 }

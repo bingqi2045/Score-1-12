@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -56,14 +56,24 @@ public class Module extends TableImpl<ModuleRecord> {
     public final TableField<ModuleRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.module.module_dir_id</code>. This indicates a module directory.
-     */
-    public final TableField<ModuleRecord, ULong> MODULE_DIR_ID = createField(DSL.name("module_dir_id"), SQLDataType.BIGINTUNSIGNED, this, "This indicates a module directory.");
-
-    /**
      * The column <code>oagi.module.module_set_id</code>. This indicates a module set.
      */
     public final TableField<ModuleRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module set.");
+
+    /**
+     * The column <code>oagi.module.parent_module_id</code>. This indicates a parent module id. root module will be NULL.
+     */
+    public final TableField<ModuleRecord, ULong> PARENT_MODULE_ID = createField(DSL.name("parent_module_id"), SQLDataType.BIGINTUNSIGNED, this, "This indicates a parent module id. root module will be NULL.");
+
+    /**
+     * The column <code>oagi.module.type</code>. This is a type column for indicates module is FILE or DIRECTORY.
+     */
+    public final TableField<ModuleRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(45).nullable(false), this, "This is a type column for indicates module is FILE or DIRECTORY.");
+
+    /**
+     * The column <code>oagi.module.path</code>. Absolute path to the module.
+     */
+    public final TableField<ModuleRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.nullable(false), this, "Absolute path to the module.");
 
     /**
      * The column <code>oagi.module.name</code>. The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
@@ -162,15 +172,15 @@ In the history record, this should always be the user who is editing the entity 
 
     @Override
     public List<ForeignKey<ModuleRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleRecord, ?>>asList(Keys.MODULE_MODULE_DIR_ID_FK, Keys.MODULE_MODULE_SET_ID_FK, Keys.MODULE_NAMESPACE_ID_FK, Keys.MODULE_CREATED_BY_FK, Keys.MODULE_LAST_UPDATED_BY_FK, Keys.MODULE_OWNER_USER_ID_FK);
-    }
-
-    public ModuleDir moduleDir() {
-        return new ModuleDir(this, Keys.MODULE_MODULE_DIR_ID_FK);
+        return Arrays.<ForeignKey<ModuleRecord, ?>>asList(Keys.MODULE_MODULE_SET_ID_FK, Keys.MODULE_PARENT_MODULE_ID_FK, Keys.MODULE_NAMESPACE_ID_FK, Keys.MODULE_CREATED_BY_FK, Keys.MODULE_LAST_UPDATED_BY_FK, Keys.MODULE_OWNER_USER_ID_FK);
     }
 
     public ModuleSet moduleSet() {
         return new ModuleSet(this, Keys.MODULE_MODULE_SET_ID_FK);
+    }
+
+    public Module module() {
+        return new Module(this, Keys.MODULE_PARENT_MODULE_ID_FK);
     }
 
     public Namespace namespace() {
@@ -216,11 +226,11 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row13<ULong, ULong, ULong, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

@@ -305,12 +305,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleAgencyIdListManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID,
                 AGENCY_ID_LIST.AGENCY_ID_LIST_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH.as("path"))
                 .from(AGENCY_ID_LIST)
                 .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
                 .join(MODULE_AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
                 .join(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -318,12 +317,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleCodeListManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_CODE_LIST_MANIFEST.MODULE_ID,
                 CODE_LIST.CODE_LIST_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH.as("path"))
                 .from(CODE_LIST)
                 .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
                 .join(MODULE_CODE_LIST_MANIFEST).on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
                 .join(MODULE).on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -331,12 +329,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleAccManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_ACC_MANIFEST.MODULE_ID,
                 ACC.ACC_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH.as("path"))
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(MODULE_ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
                 .join(MODULE).on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -344,12 +341,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleAsccpManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_ASCCP_MANIFEST.MODULE_ID,
                 ASCCP.ASCCP_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH.as("path"))
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .join(MODULE_ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(MODULE).on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -357,12 +353,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleBccpManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_BCCP_MANIFEST.MODULE_ID,
                 BCCP.BCCP_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH.as("path"))
                 .from(BCCP)
                 .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                 .join(MODULE_BCCP_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .join(MODULE).on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -370,12 +365,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleDtManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_DT_MANIFEST.MODULE_ID,
                 DT.DT_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH)
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .join(MODULE_DT_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID))
                 .join(MODULE).on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -383,12 +377,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleXbtManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_XBT_MANIFEST.MODULE_ID,
                 XBT.XBT_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH)
                 .from(XBT)
                 .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
                 .join(MODULE_XBT_MANIFEST).on(XBT_MANIFEST.XBT_MANIFEST_ID.eq(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID))
                 .join(MODULE).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -396,12 +389,11 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleBlobContentManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID,
                 BLOB_CONTENT.BLOB_CONTENT_ID.as("ccId"),
-                concat(MODULE_DIR.PATH, inline("\\"), MODULE.NAME).as("path"))
+                MODULE.PATH)
                 .from(BLOB_CONTENT)
                 .join(BLOB_CONTENT_MANIFEST).on(BLOB_CONTENT.BLOB_CONTENT_ID.eq(BLOB_CONTENT_MANIFEST.BLOB_CONTENT_ID))
                 .join(MODULE_BLOB_CONTENT_MANIFEST).on(BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID.eq(MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID))
                 .join(MODULE).on(MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }

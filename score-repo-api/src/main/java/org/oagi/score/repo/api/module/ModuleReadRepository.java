@@ -17,8 +17,6 @@ public interface ModuleReadRepository {
 
     List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException;
 
-    List<ModuleDir> getAllModuleDirs(GetModuleListRequest request) throws ScoreDataAccessException;
-
     GetModuleElementResponse getModuleElements(
             GetModuleElementRequest request) throws ScoreDataAccessException;
 

@@ -9,7 +9,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleReadRepository;
 import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.repo.api.security.AccessControl;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.time.ZoneId;
@@ -34,9 +33,8 @@ public class JooqModuleReadRepository
     private SelectOnConditionStep select() {
         return dslContext().select(
                 MODULE.MODULE_ID,
-                MODULE.MODULE_DIR_ID,
-                MODULE_DIR.PATH,
-                MODULE_DIR.NAME.as("dir_name"),
+                MODULE.PARENT_MODULE_ID,
+                MODULE.PATH,
                 MODULE.NAME,
                 MODULE.VERSION_NUM,
                 MODULE.NAMESPACE_ID,
@@ -50,7 +48,6 @@ public class JooqModuleReadRepository
                 MODULE.CREATION_TIMESTAMP,
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
@@ -60,8 +57,8 @@ public class JooqModuleReadRepository
         return record -> {
             Module module = new Module();
             module.setModuleId(record.get(MODULE.MODULE_ID).toBigInteger());
-            module.setModuleDirId(record.get(MODULE.MODULE_DIR_ID).toBigInteger());
-            module.setPath(record.get(MODULE_DIR.PATH).concat("\\").concat(record.get(MODULE.NAME)));
+            module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID).toBigInteger());
+            module.setPath(record.get(MODULE.PATH));
             module.setNamespaceUri(record.get(NAMESPACE.URI));
             module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
             module.setName(record.get(MODULE.NAME));
@@ -72,24 +69,6 @@ public class JooqModuleReadRepository
             module.setLastUpdateTimestamp(
                     Date.from(record.get(MODULE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             return module;
-        };
-    }
-
-    private RecordMapper<Record, ModuleDir> moduleDirMapper() {
-        return record -> {
-            ModuleDir moduleDir = new ModuleDir();
-            moduleDir.setModuleDirId(record.get(MODULE_DIR.MODULE_DIR_ID).toBigInteger());
-            moduleDir.setName(record.get(MODULE_DIR.NAME));
-            if (record.get(MODULE_DIR.PARENT_MODULE_DIR_ID) != null) {
-                moduleDir.setParentModuleDirId(record.get(MODULE_DIR.PARENT_MODULE_DIR_ID).toBigInteger());
-            }
-            moduleDir.setPath(record.get(MODULE_DIR.PATH));
-
-            moduleDir.setCreationTimestamp(
-                    Date.from(record.get(MODULE_DIR.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-            moduleDir.setLastUpdateTimestamp(
-                    Date.from(record.get(MODULE_DIR.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-            return moduleDir;
         };
     }
 
@@ -197,35 +176,14 @@ public class JooqModuleReadRepository
                 MODULE.CREATION_TIMESTAMP,
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
-                .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
     }
 
-    private SelectOnConditionStep selectModuleDirElement() {
-        return dslContext().select(
-                MODULE_DIR.MODULE_DIR_ID,
-                MODULE_DIR.NAME,
-                MODULE_DIR.PATH,
-                APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
-                APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
-                APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
-                APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
-                APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
-                APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
-                MODULE_DIR.CREATION_TIMESTAMP,
-                MODULE_DIR.LAST_UPDATE_TIMESTAMP)
-                .from(MODULE_DIR)
-                .join(MODULE_DIR.as("parent")).on(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(MODULE_DIR.as("parent").MODULE_DIR_ID))
-                .join(APP_USER.as("creator")).on(MODULE_DIR.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(MODULE_DIR.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
-    }
-
     @Override
     public GetModuleElementResponse getModuleElements(GetModuleElementRequest request) throws ScoreDataAccessException {
 
-        SelectOnConditionStep stepModuleDir = selectModuleDirElement();
 
         List<Condition> moduleDirConditions = new ArrayList();
 
@@ -234,35 +192,17 @@ public class JooqModuleReadRepository
         List<Condition> moduleConditions = new ArrayList();
 
         moduleConditions.add(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
-        moduleDirConditions.add(MODULE_DIR.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
 
-        if (request.getModuleDirId() != null) {
-            moduleConditions.add(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
-            moduleDirConditions.add(MODULE_DIR.PARENT_MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId())));
-        } else {
-            moduleConditions.add(MODULE_DIR.PARENT_MODULE_DIR_ID.isNull());
-            moduleDirConditions.add(MODULE_DIR.as("parent").PARENT_MODULE_DIR_ID.isNull());
-        }
-
-        List<ModuleElement> elements = stepModuleDir.where(moduleDirConditions).fetch(record -> {
-            ModuleElement moduleElement = new ModuleElement();
-            moduleElement.setDirectory(true);
-            moduleElement.setId(record.get(MODULE_DIR.MODULE_DIR_ID).toBigInteger());
-            moduleElement.setName(record.get(MODULE_DIR.NAME));
-            moduleElement.setPath(record.get(MODULE_DIR.PATH));
-            return moduleElement;
-        });
-
-        elements.addAll(stepModule.where(moduleConditions).fetch(record -> {
+        List<ModuleElement> elements = stepModule.where(moduleConditions).fetch(record -> {
             ModuleElement moduleElement = new ModuleElement();
             moduleElement.setDirectory(false);
             moduleElement.setId(record.get(MODULE.MODULE_ID).toBigInteger());
             moduleElement.setName(record.get(MODULE.NAME));
-            moduleElement.setPath(record.get(MODULE_DIR.PATH));
+            moduleElement.setPath(record.get(MODULE.PATH));
             moduleElement.setNamespaceId(record.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
             moduleElement.setNamespaceUri(record.get(NAMESPACE.URI));
             return moduleElement;
-        }));
+        });
 
         GetModuleElementResponse response = new GetModuleElementResponse();
         response.setElements(elements);
@@ -273,8 +213,9 @@ public class JooqModuleReadRepository
     public List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException {
         return dslContext().select(
                     MODULE.MODULE_ID,
-                    MODULE.MODULE_DIR_ID,
-                    MODULE_DIR.PATH,
+                    MODULE.PARENT_MODULE_ID,
+                    MODULE.PATH,
+                    MODULE.TYPE,
                     MODULE.NAME,
                     MODULE.VERSION_NUM,
                     MODULE.NAMESPACE_ID,
@@ -282,15 +223,8 @@ public class JooqModuleReadRepository
                     MODULE.CREATION_TIMESTAMP,
                     MODULE.LAST_UPDATE_TIMESTAMP)
                     .from(MODULE)
-                    .join(MODULE_DIR).on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                     .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                     .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
                     .fetch(mapper());
-    }
-
-    @Override
-    public List<ModuleDir> getAllModuleDirs(GetModuleListRequest request) throws ScoreDataAccessException {
-        return dslContext().selectFrom(MODULE_DIR)
-                .fetch(moduleDirMapper());
     }
 }

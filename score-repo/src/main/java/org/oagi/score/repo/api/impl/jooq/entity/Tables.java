@@ -62,7 +62,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDir;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSet;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetRelease;
@@ -388,9 +388,9 @@ If we use a separate table for each expression, then we need binding all the way
     public static final ModuleCodeListManifest MODULE_CODE_LIST_MANIFEST = ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST;
 
     /**
-     * The table <code>oagi.module_dir</code>.
+     * This table carries the dependency between modules in the MODULE table.
      */
-    public static final ModuleDir MODULE_DIR = ModuleDir.MODULE_DIR;
+    public static final ModuleDep MODULE_DEP = ModuleDep.MODULE_DEP;
 
     /**
      * The table <code>oagi.module_dt_manifest</code>.

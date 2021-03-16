@@ -94,7 +94,7 @@ public class CcListRepository {
                 field = field("owner");
                 break;
             case "module":
-                field = concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME);
+                field = field(MODULE.PATH);
                 break;
             case "lastUpdateTimestamp":
                 field = field("last_update_timestamp");
@@ -216,7 +216,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ACC.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -351,7 +351,7 @@ public class CcListRepository {
                 ACC.STATE,
                 ACC.IS_DEPRECATED,
                 ACC.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -372,8 +372,6 @@ public class CcListRepository {
                 .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 
@@ -408,7 +406,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCC.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -464,7 +462,7 @@ public class CcListRepository {
                 ACC.STATE,
                 ASCC.IS_DEPRECATED,
                 ASCC.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -491,8 +489,6 @@ public class CcListRepository {
                 .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 
@@ -527,7 +523,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCC.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -583,7 +579,7 @@ public class CcListRepository {
                 ACC.STATE,
                 BCC.IS_DEPRECATED,
                 BCC.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -610,8 +606,6 @@ public class CcListRepository {
                 .on(and(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID), MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 
@@ -646,7 +640,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCCP.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -707,7 +701,7 @@ public class CcListRepository {
                 ASCCP.STATE,
                 ASCCP.IS_DEPRECATED,
                 ASCCP.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -732,8 +726,6 @@ public class CcListRepository {
                 .on(and(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID), MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 
@@ -767,7 +759,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCCP.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -812,7 +804,7 @@ public class CcListRepository {
                 BCCP.STATE,
                 BCCP.IS_DEPRECATED,
                 BCCP.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -833,8 +825,6 @@ public class CcListRepository {
                 .on(and(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID), MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 
@@ -867,7 +857,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), DT.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (!request.getDtTypes().isEmpty()) {
             if (request.getDtTypes().size() == 1) {
@@ -902,7 +892,7 @@ public class CcListRepository {
                 DT.STATE,
                 DT.IS_DEPRECATED,
                 DT.LAST_UPDATE_TIMESTAMP,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
@@ -923,8 +913,6 @@ public class CcListRepository {
                 .on(and(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID), MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions);
     }
 }

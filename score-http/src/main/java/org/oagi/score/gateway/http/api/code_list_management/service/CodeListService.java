@@ -70,7 +70,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST.IS_DEPRECATED.as("deprecated"),
                 CODE_LIST.DEFINITION,
                 CODE_LIST.DEFINITION_SOURCE,
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
+                MODULE.PATH.as("module_path"),
                 LOG.REVISION_NUM.as("revision"))
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
@@ -83,9 +83,7 @@ public class CodeListService extends EventHandler {
                 .leftJoin(MODULE_CODE_LIST_MANIFEST)
                 .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
                 .leftJoin(MODULE)
-                .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID));
+                .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID));
     }
 
     public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
@@ -101,7 +99,7 @@ public class CodeListService extends EventHandler {
             conditions.addAll(contains(request.getDefinition(), CODE_LIST.DEFINITION));
         }
         if (StringUtils.hasLength(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getAccess() != null) {
             AppUser requester = sessionService.getAppUser(user);
@@ -221,8 +219,6 @@ public class CodeListService extends EventHandler {
                 .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
                 .leftJoin(MODULE)
                 .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
-                .leftJoin(MODULE_DIR)
-                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions)
                 .fetchOptionalInto(Integer.class).orElse(0));
 

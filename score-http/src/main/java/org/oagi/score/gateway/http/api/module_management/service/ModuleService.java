@@ -95,11 +95,6 @@ public class ModuleService {
     }
 
     @Transactional
-    public CreateModuleDirResponse createModuleDir(CreateModuleDirRequest request) {
-        return scoreRepositoryFactory.createModuleWriteRepository().createModuleDir(request);
-    }
-
-    @Transactional
     public void copyModuleDir(CopyModuleDirRequest request) {
         scoreRepositoryFactory.createModuleWriteRepository().copyModuleDir(request);
     }
@@ -115,11 +110,6 @@ public class ModuleService {
     }
 
     @Transactional
-    public UpdateModuleDirResponse updateModuleDir(UpdateModuleDirRequest request) {
-        return scoreRepositoryFactory.createModuleWriteRepository().updateModuleDir(request);
-    }
-
-    @Transactional
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) {
         if(request.getModuleSetId() != null) {
             DeleteModuleSetAssignmentRequest requestUnassign = new DeleteModuleSetAssignmentRequest(request.getRequester());
@@ -128,10 +118,5 @@ public class ModuleService {
             scoreRepositoryFactory.createModuleSetWriteRepository().unassignModule(requestUnassign);
         }
         return scoreRepositoryFactory.createModuleWriteRepository().deleteModule(request);
-    }
-
-    @Transactional
-    public DeleteModuleDirResponse deleteModuleDir(DeleteModuleDirRequest request) {
-        return scoreRepositoryFactory.createModuleWriteRepository().deleteModuleDir(request);
     }
 }
