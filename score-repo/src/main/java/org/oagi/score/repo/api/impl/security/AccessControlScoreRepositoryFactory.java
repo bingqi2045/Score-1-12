@@ -146,11 +146,6 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     }
 
     @Override
-    public ModuleReadRepository createModuleReadRepository() throws ScoreDataAccessException {
-        return wrapForAccessControl(delegate.createModuleReadRepository(), ModuleReadRepository.class);
-    }
-
-    @Override
     public ModuleWriteRepository createModuleWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createModuleWriteRepository(), ModuleWriteRepository.class);
     }

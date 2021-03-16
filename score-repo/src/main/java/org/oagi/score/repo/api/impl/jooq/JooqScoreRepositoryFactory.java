@@ -107,11 +107,6 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
     }
 
     @Override
-    public ModuleReadRepository createModuleReadRepository() throws ScoreDataAccessException {
-        return new JooqModuleReadRepository(this.dslContext);
-    }
-
-    @Override
     public ModuleWriteRepository createModuleWriteRepository() throws ScoreDataAccessException {
         return new JooqModuleWriteRepository(this.dslContext);
     }

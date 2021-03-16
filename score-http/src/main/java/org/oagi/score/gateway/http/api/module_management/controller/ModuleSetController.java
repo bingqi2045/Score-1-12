@@ -111,43 +111,6 @@ public class ModuleSetController {
         service.discardModuleSet(request);
     }
 
-    @RequestMapping(value = "/module_set/{id}/module", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public GetModuleListResponse getModuleSetModuleList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                                @PathVariable("id") BigInteger moduleSetId,
-                                                                @RequestParam(name = "path", required = false) String path,
-                                                                @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
-                                                                @RequestParam(name = "updateStart", required = false) String updateStart,
-                                                                @RequestParam(name = "updateEnd", required = false) String updateEnd,
-                                                                @RequestParam(name = "sortActive") String sortActive,
-                                                                @RequestParam(name = "sortDirection") String sortDirection,
-                                                                @RequestParam(name = "pageIndex") int pageIndex,
-                                                                @RequestParam(name = "pageSize") int pageSize) {
-
-        GetModuleListRequest request = new GetModuleListRequest(sessionService.asScoreUser(user));
-
-        request.setModuleSetId(moduleSetId);
-
-        request.setUpdaterUsernameList(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
-
-        if (StringUtils.hasLength(updateStart)) {
-            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
-        }
-        if (StringUtils.hasLength(updateEnd)) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(Long.valueOf(updateEnd));
-            calendar.add(Calendar.DATE, 1);
-            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
-        }
-
-        request.setPageIndex(pageIndex);
-        request.setPageSize(pageSize);
-        request.setSortActive(sortActive);
-        request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
-        return service.getModuleSetModuleList(request);
-    }
-
     @RequestMapping(value = "/module_set/{id}/module/{moduleId}/unassign", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void unassignModule(@AuthenticationPrincipal AuthenticatedPrincipal user,

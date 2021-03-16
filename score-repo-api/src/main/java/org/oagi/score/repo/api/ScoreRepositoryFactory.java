@@ -36,7 +36,6 @@ public interface ScoreRepositoryFactory {
     BieReadRepository createBieReadRepository() throws ScoreDataAccessException;
     BieWriteRepository createBieWriteRepository() throws ScoreDataAccessException;
 
-    ModuleReadRepository createModuleReadRepository() throws ScoreDataAccessException;
     ModuleWriteRepository createModuleWriteRepository() throws ScoreDataAccessException;
 
     ModuleSetReadRepository createModuleSetReadRepository() throws ScoreDataAccessException;
