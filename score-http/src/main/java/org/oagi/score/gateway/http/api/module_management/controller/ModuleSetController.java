@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.module_management.controller;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetService;
-import org.oagi.score.repo.api.module.model.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -142,4 +141,42 @@ public class ModuleSetController {
         return service.getModuleSetModules(request);
     }
 
+    @RequestMapping(value = "/module_set/{id}/module/create", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CreateModuleResponse addModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @PathVariable("id") BigInteger moduleSetId,
+                                            @RequestBody ModuleElement moduleElement) {
+        CreateModuleRequest request = new CreateModuleRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetId);
+        request.setName(moduleElement.getName());
+        request.setModuleType(moduleElement.isDirectory() ? ModuleType.DIRECTORY : ModuleType.FILE);
+        request.setNamespaceId(moduleElement.getNamespaceId());
+        request.setVersionNum(moduleElement.getVersionNum());
+        request.setParentModuleId(moduleElement.getParentModuleId());
+        return service.createModule(request);
+    }
+
+    @RequestMapping(value = "/module_set/{id}/module/{moduleId}", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UpdateModuleResponse updateModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                   @PathVariable("id") BigInteger moduleSetId,
+                                                   @PathVariable("moduleId") BigInteger moduleId,
+                                                   @RequestBody ModuleElement moduleElement) {
+        UpdateModuleRequest request = new UpdateModuleRequest(sessionService.asScoreUser(user));
+        request.setModuleId(moduleElement.getModuleId());
+        request.setName(moduleElement.getName());
+        request.setNamespaceId(moduleElement.getNamespaceId());
+        request.setVersionNum(moduleElement.getVersionNum());
+        return service.updateModule(request);
+    }
+
+    @RequestMapping(value = "/module_set/{id}/module/{moduleId}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                      @PathVariable("id") BigInteger moduleSetId,
+                                      @PathVariable("moduleId") BigInteger moduleId) {
+        DeleteModuleRequest request = new DeleteModuleRequest(sessionService.asScoreUser(user));
+        request.setModuleId(moduleId);
+        service.deleteModule(request);
+    }
 }

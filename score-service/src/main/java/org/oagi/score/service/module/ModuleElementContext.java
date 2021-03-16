@@ -3,14 +3,12 @@ package org.oagi.score.service.module;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +31,7 @@ public class ModuleElementContext {
         rootElement.setDirectory(true);
 
         Module root = dirs.stream().filter(e -> e.getParentModuleId() == null).findFirst().get();
-        rootElement.setId(root.getModuleId());
+        rootElement.setModuleId(root.getModuleId());
 
         files.forEach(file -> {
             if (filesByParentMap.get(file.getParentModuleId()) == null) {
@@ -64,22 +62,24 @@ public class ModuleElementContext {
             return;
         }
         List<ModuleElement> child = new ArrayList<>();
-        if (directoriesByParentMap.get(element.getId()) != null) {
-            directoriesByParentMap.get(element.getId()).forEach(e -> {
+        if (directoriesByParentMap.get(element.getModuleId()) != null) {
+            directoriesByParentMap.get(element.getModuleId()).forEach(e -> {
                 ModuleElement item = new ModuleElement();
                 item.setDirectory(true);
+                item.setParentModuleId(element.getParentModuleId());
                 item.setName(e.getName());
-                item.setId(e.getModuleId());
+                item.setModuleId(e.getModuleId());
                 child.add(item);
             });
         }
 
-        if (filesByParentMap.get(element.getId()) != null) {
-            filesByParentMap.get(element.getId()).forEach(e -> {
+        if (filesByParentMap.get(element.getModuleId()) != null) {
+            filesByParentMap.get(element.getModuleId()).forEach(e -> {
                 ModuleElement item = new ModuleElement();
                 item.setDirectory(false);
+                item.setParentModuleId(element.getParentModuleId());
                 item.setName(e.getName());
-                item.setId(e.getModuleId());
+                item.setModuleId(e.getModuleId());
                 item.setVersionNum(e.getVersionNum());
                 item.setNamespaceUri(e.getNamespaceUri());
                 item.setNamespaceId(e.getNamespaceId());

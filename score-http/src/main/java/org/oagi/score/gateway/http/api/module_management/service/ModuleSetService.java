@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.module_management.service;
 
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
+import org.oagi.score.repo.api.module.ModuleWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.service.module.ModuleElementContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,20 @@ public class ModuleSetService {
         ModuleSetReadRepository repository = scoreRepositoryFactory.createModuleSetReadRepository();
         ModuleElementContext context = new ModuleElementContext(repository, request.getModuleSetId());
         return context.getRootElement();
+    }
+
+    @Transactional
+    public CreateModuleResponse createModule(CreateModuleRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().createModule(request);
+    }
+
+    @Transactional
+    public UpdateModuleResponse updateModule(UpdateModuleRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().updateModule(request);
+    }
+
+    @Transactional
+    public DeleteModuleResponse deleteModule(DeleteModuleRequest request) {
+        return scoreRepositoryFactory.createModuleWriteRepository().deleteModule(request);
     }
 }

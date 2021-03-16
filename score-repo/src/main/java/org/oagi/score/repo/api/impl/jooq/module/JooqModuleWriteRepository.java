@@ -60,16 +60,13 @@ public class JooqModuleWriteRepository
             request.setNamespaceId(releaseNamespaceId);
         }
 
-        ModuleRecord parent = null;
-        if (request.getParentModuleId() != null) {
-            parent = dslContext().selectFrom(MODULE)
-                    .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
-        }
+        ModuleRecord parent = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
 
-        String path = parent != null ? parent.getPath() + MODULE_PATH_SEPARATOR + request.getName() : request.getName();
+        String path = parent.getPath().length() > 0 ? parent.getPath() + MODULE_PATH_SEPARATOR + request.getName() : request.getName();
 
         ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
-                .set(MODULE.PARENT_MODULE_ID, parent != null ? parent.getModuleId() : null)
+                .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
                 .set(MODULE.PATH, path)
                 .set(MODULE.TYPE, request.getModuleType().name())
                 .set(MODULE.NAME, request.getName())
@@ -146,7 +143,7 @@ public class JooqModuleWriteRepository
             moduleRecord.setLastUpdatedBy(requesterUserId);
             moduleRecord.setLastUpdateTimestamp(timestamp);
             moduleRecord.update();
-            if (nameChanged && moduleRecord.getType().equals(ModuleType.DIRECTORY)) {
+            if (nameChanged && moduleRecord.getType().equals(ModuleType.DIRECTORY.name())) {
                 broadcastModulePath(moduleRecord.getModuleId(), tokens);
             }
         }
@@ -170,11 +167,20 @@ public class JooqModuleWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) throws ScoreDataAccessException {
         ULong moduleId = ULong.valueOf(request.getModuleId());
-        deleteModule(moduleId);
+        deleteModule(moduleId, true);
         return new DeleteModuleResponse();
     }
 
-    private void deleteModule(ULong moduleId) {
+    private void deleteModule(ULong moduleId, boolean isDirectory) {
+        if (isDirectory) {
+            List<ModuleRecord> moduleRecordList = dslContext().selectFrom(MODULE)
+                    .where(MODULE.PARENT_MODULE_ID.eq(moduleId))
+                    .fetch();
+
+            moduleRecordList.forEach(e -> {
+                deleteModule(e.getModuleId(), ModuleType.valueOf(e.getType()).equals(ModuleType.DIRECTORY));
+            });
+        }
         dslContext().delete(MODULE_ACC_MANIFEST).where(MODULE_ACC_MANIFEST.MODULE_ID.eq(moduleId)).execute();
         dslContext().delete(MODULE_ASCCP_MANIFEST).where(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
         dslContext().delete(MODULE_BCCP_MANIFEST).where(MODULE_BCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
@@ -189,7 +195,7 @@ public class JooqModuleWriteRepository
 
     private void broadcastModulePath(ULong parentModuleId, List<String> tokens) {
         List<ModuleRecord> moduleRecordList = dslContext().selectFrom(MODULE)
-                .where(and(MODULE.PARENT_MODULE_ID.eq(parentModuleId), MODULE.TYPE.eq(ModuleType.DIRECTORY.name())))
+                .where(MODULE.PARENT_MODULE_ID.eq(parentModuleId))
                 .fetch();
 
         moduleRecordList.forEach(e -> {
