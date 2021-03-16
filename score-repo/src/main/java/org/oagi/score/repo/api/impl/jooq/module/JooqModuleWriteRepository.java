@@ -5,8 +5,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
-import org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
@@ -48,16 +46,11 @@ public class JooqModuleWriteRepository
         }
 
         // If a `namespaceId` parameter does not define in the request, overrides it by releases' one.
-        if (request.getNamespaceId() == null && request.getModuleSetId() != null) {
-            BigInteger releaseNamespaceId = dslContext().selectDistinct(RELEASE.NAMESPACE_ID)
-                    .from(RELEASE)
-                    .join(MODULE_SET_RELEASE).on(RELEASE.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                    .where(and(
-                            MODULE_SET_RELEASE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())),
-                            MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1)
-                    ))
-                    .fetchOneInto(BigInteger.class);
-            request.setNamespaceId(releaseNamespaceId);
+        if (request.getNamespaceId() == null) {
+            BigInteger namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
+                    .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(BigInteger.class);
+            request.setNamespaceId(namespaceId);
+
         }
 
         ModuleRecord parent = dslContext().selectFrom(MODULE)
@@ -206,83 +199,104 @@ public class JooqModuleWriteRepository
     }
 
     @Override
-    public void copyModuleDir(CopyModuleDirRequest request) throws ScoreDataAccessException {
-        ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
-        LocalDateTime timestamp = LocalDateTime.now();
-
-        ModuleSetRecord moduleSetRecord = dslContext().selectFrom(MODULE_SET)
-                .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).fetchOne();
-
-//        if (moduleSetRecord == null) {
-//            throw new IllegalArgumentException("Can not found ModuleSet");
-//        }
-//
-//        ModuleDirRecord moduleDirRecord = dslContext().selectFrom(MODULE_DIR)
-//                .where(MODULE_DIR.MODULE_DIR_ID.eq(ULong.valueOf(request.getModuleDirId()))).fetchOne();
-//
-//        if (moduleDirRecord == null) {
-//            throw new IllegalArgumentException("Can not found ModuleDir");
-//        }
-//        ULong inserted = copyModuleDir(requesterUserId, moduleDirRecord, ULong.valueOf(request.getCopyPosDirId()), moduleSetRecord, timestamp);
-//
-//        if (hasDuplicateName(request.getCopyPosDirId(), moduleDirRecord.getName())) {
-//            UpdateModuleDirRequest moduleDirRequest = new UpdateModuleDirRequest(requester);
-//            moduleDirRequest.setModuleDirId(inserted.toBigInteger());
-//            moduleDirRequest.setName(moduleDirRecord.getName() + " (" + ScoreGuidUtils.randomGuid().substring(0, 4) + ")");
-//            updateModuleDir(moduleDirRequest);
-//        }
-    }
-
-    @Override
     public void copyModule(CopyModuleRequest request) throws ScoreDataAccessException {
-
         ScoreUser requester = request.getRequester();
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))).fetchOne();
+                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getTargetModuleId()))).fetchOne();
 
-        String name = moduleRecord.getName();
+        ModuleRecord parent = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
 
-        if (hasDuplicateName(request.getCopyPosDirId(), moduleRecord.getName())) {
-            name = moduleRecord.getName() + " (" + ScoreGuidUtils.randomGuid().substring(0, 4) + ")";
+        if (hasDuplicateName(request.getParentModuleId(), moduleRecord.getName())) {
+            copyOverWriteModule(moduleRecord, parent, requesterUserId, timestamp);
+        } else {
+            copyInsertModule(moduleRecord, parent, requesterUserId, timestamp);
         }
+    }
 
-        ULong insertedModuleId = dslContext().insertInto(MODULE)
-                .set(MODULE.PARENT_MODULE_ID, ULong.valueOf(request.getCopyPosDirId()))
-                .set(MODULE.NAME, name)
-                .set(MODULE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                .set(MODULE.NAMESPACE_ID, moduleRecord.getNamespaceId())
-                .set(MODULE.VERSION_NUM, moduleRecord.getVersionNum())
+    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp) {
+        String path;
+        if (parent.getPath().length() == 0) {
+            path = target.getName();
+        } else {
+            path = parent.getPath() + MODULE_PATH_SEPARATOR + target.getName();
+        }
+        ModuleRecord inserted = dslContext().insertInto(MODULE)
+                .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
+                .set(MODULE.NAME, target.getName())
+                .set(MODULE.TYPE, target.getType())
+                .set(MODULE.PATH, path)
+                .set(MODULE.MODULE_SET_ID, parent.getModuleSetId())
+                .set(MODULE.NAMESPACE_ID, target.getNamespaceId())
+                .set(MODULE.VERSION_NUM, target.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
                 .set(MODULE.OWNER_USER_ID, requesterUserId)
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning().fetchOne().getModuleId();
+                .returning().fetchOne();
+
+        if (target.getType().equals(ModuleType.DIRECTORY.name())) {
+            dslContext().selectFrom(MODULE)
+                    .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                    .fetchStream().forEach(e -> {
+                copyInsertModule(e, inserted, requesterUserId, timestamp);
+            });
+        }
     }
 
-    private void copyModuleAndAssign(ULong requesterId, ULong prevModuleDirId, ULong nextModuleDirId, ULong moduleSetId, LocalDateTime timestamp) {
-        getModuleByParent(prevModuleDirId).forEach(m -> {
-            ULong insertedModuleId = dslContext().insertInto(MODULE)
-                    .set(MODULE.PARENT_MODULE_ID, nextModuleDirId)
-                    .set(MODULE.NAME, m.getName())
-                    .set(MODULE.NAMESPACE_ID, m.getNamespaceId())
-                    .set(MODULE.VERSION_NUM, m.getVersionNum())
-                    .set(MODULE.CREATED_BY, requesterId)
-                    .set(MODULE.OWNER_USER_ID, requesterId)
-                    .set(MODULE.LAST_UPDATED_BY, requesterId)
-                    .set(MODULE.CREATION_TIMESTAMP, timestamp)
-                    .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .returning().fetchOne().getModuleId();
-        });
-    }
+    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp) {
+        ModuleRecord duplicated = dslContext().selectFrom(MODULE).where(and(
+                MODULE.PARENT_MODULE_ID.eq(parent.getModuleId()),
+                MODULE.NAME.eq(target.getName())
+        )).fetchOne();
+
+        if (duplicated.getType().equals(ModuleType.FILE.name())) {
+            if (target.getType().equals(ModuleType.FILE.name())) {
+                duplicated.setVersionNum(target.getVersionNum());
+                duplicated.setNamespaceId(target.getNamespaceId());
+                duplicated.setLastUpdatedBy(requesterUserId);
+                duplicated.setLastUpdateTimestamp(timestamp);
+                duplicated.update();
+            } else {
+                duplicated.setVersionNum(target.getVersionNum());
+                duplicated.setNamespaceId(target.getNamespaceId());
+                duplicated.setLastUpdatedBy(requesterUserId);
+                duplicated.setLastUpdateTimestamp(timestamp);
+                duplicated.setType(ModuleType.DIRECTORY.name());
+                duplicated.update();
+
+                dslContext().selectFrom(MODULE)
+                        .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                        .fetchStream().forEach(e -> {
+                    copyInsertModule(e, duplicated, requesterUserId, timestamp);
+                });
+            }
+        } else {
+            if (target.getType().equals(ModuleType.FILE.name())) {
+                DeleteModuleRequest deleteModuleRequest = new DeleteModuleRequest();
+                deleteModuleRequest.setModuleId(duplicated.getModuleId().toBigInteger());
+                deleteModule(deleteModuleRequest);
+                copyInsertModule(target, parent, requesterUserId, timestamp);
+            } else {
+                duplicated.setVersionNum(target.getVersionNum());
+                duplicated.setNamespaceId(target.getNamespaceId());
+                duplicated.setLastUpdatedBy(requesterUserId);
+                duplicated.setLastUpdateTimestamp(timestamp);
+                duplicated.update();
+
+                dslContext().selectFrom(MODULE)
+                        .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                        .fetchStream().forEach(e -> {
+                    copyOverWriteModule(e, duplicated, requesterUserId, timestamp);
+                });
+            }
 
 
-    private List<ModuleRecord> getModuleByParent(ULong parentModuleId) {
-        return dslContext().selectFrom(MODULE).where(MODULE.PARENT_MODULE_ID.eq(parentModuleId)).fetch();
+        }
     }
 
     private boolean hasDuplicateName(BigInteger parentModuleId, String name) {

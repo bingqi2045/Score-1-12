@@ -110,28 +110,6 @@ public class ModuleSetController {
         service.discardModuleSet(request);
     }
 
-    @RequestMapping(value = "/module_set/{id}/module/{moduleId}/unassign", method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void unassignModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                               @PathVariable("id") BigInteger moduleSetId,
-                                               @PathVariable("moduleId") BigInteger moduleId) {
-        DeleteModuleSetAssignmentRequest request = new DeleteModuleSetAssignmentRequest(sessionService.asScoreUser(user));
-        request.setModuleId(moduleId);
-        request.setModuleSetId(moduleSetId);
-        service.unassignModule(request);
-    }
-
-    @RequestMapping(value = "/module_set/{id}/module_dir/{moduleDirId}/unassign", method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void unassignModuleDir(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                               @PathVariable("id") BigInteger moduleSetId,
-                               @PathVariable("moduleDirId") BigInteger moduleDirId) {
-        DeleteModuleSetAssignmentRequest request = new DeleteModuleSetAssignmentRequest(sessionService.asScoreUser(user));
-        request.setModuleDirId(moduleDirId);
-        request.setModuleSetId(moduleSetId);
-        service.unassignModule(request);
-    }
-
     @RequestMapping(value = "/module_set/{id}/modules", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleElement getModuleSetModules(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -178,5 +156,18 @@ public class ModuleSetController {
         DeleteModuleRequest request = new DeleteModuleRequest(sessionService.asScoreUser(user));
         request.setModuleId(moduleId);
         service.deleteModule(request);
+    }
+
+    @RequestMapping(value = "/module_set/{id}/module/{parentModuleId}/copy", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void copyModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                           @PathVariable("id") BigInteger moduleSetId,
+                           @PathVariable("parentModuleId") BigInteger parentModuleId,
+                           @RequestBody ModuleElement moduleElement) {
+        CopyModuleRequest request = new CopyModuleRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetId);
+        request.setParentModuleId(parentModuleId);
+        request.setTargetModuleId(moduleElement.getModuleId());
+        service.copyModule(request);
     }
 }

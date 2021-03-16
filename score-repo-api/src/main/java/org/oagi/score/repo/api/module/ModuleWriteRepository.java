@@ -16,7 +16,5 @@ public interface ModuleWriteRepository {
     DeleteModuleResponse deleteModule(
             DeleteModuleRequest request) throws ScoreDataAccessException;
 
-    void copyModuleDir(CopyModuleDirRequest request) throws ScoreDataAccessException;
-
     void copyModule(CopyModuleRequest request) throws ScoreDataAccessException;
 }

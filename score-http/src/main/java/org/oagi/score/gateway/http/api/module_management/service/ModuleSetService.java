@@ -65,4 +65,9 @@ public class ModuleSetService {
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) {
         return scoreRepositoryFactory.createModuleWriteRepository().deleteModule(request);
     }
+
+    @Transactional
+    public void copyModule(CopyModuleRequest request) {
+        scoreRepositoryFactory.createModuleWriteRepository().copyModule(request);
+    }
 }

@@ -9,7 +9,7 @@ public class CopyModuleRequest extends Request {
 
     private BigInteger moduleSetId;
 
-    private BigInteger moduleId;
+    private BigInteger targetModuleId;
 
     public BigInteger getModuleSetId() {
         return moduleSetId;
@@ -19,22 +19,25 @@ public class CopyModuleRequest extends Request {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getModuleId() {
-        return moduleId;
+    public BigInteger getTargetModuleId() {
+        return targetModuleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
-        this.moduleId = moduleId;
+    public void setTargetModuleId(BigInteger targetModuleId) {
+        this.targetModuleId = targetModuleId;
     }
 
-    public BigInteger getCopyPosDirId() {
-        return copyPosDirId;
+    public BigInteger getParentModuleId() {
+        return parentModuleId;
     }
 
-    public void setCopyPosDirId(BigInteger copyPosDirId) {
-        this.copyPosDirId = copyPosDirId;
+    public void setParentModuleId(BigInteger parentModuleId) {
+        this.parentModuleId = parentModuleId;
     }
 
-    private BigInteger copyPosDirId;
+    private BigInteger parentModuleId;
 
+    public CopyModuleRequest(ScoreUser requester) {
+        super(requester);
+    }
 }

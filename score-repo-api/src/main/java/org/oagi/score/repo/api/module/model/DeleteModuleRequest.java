@@ -30,4 +30,7 @@ public class DeleteModuleRequest extends Request {
     public DeleteModuleRequest(ScoreUser requester) {
         super(requester);
     }
+
+    public DeleteModuleRequest() {
+    }
 }
