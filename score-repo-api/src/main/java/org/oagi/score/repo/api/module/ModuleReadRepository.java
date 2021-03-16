@@ -9,15 +9,7 @@ import java.util.List;
 
 public interface ModuleReadRepository {
 
-    GetModuleResponse getModule(
-            GetModuleRequest request) throws ScoreDataAccessException;
-
     GetModuleListResponse getModuleList(
             GetModuleListRequest request) throws ScoreDataAccessException;
-
-    List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException;
-
-    GetModuleElementResponse getModuleElements(
-            GetModuleElementRequest request) throws ScoreDataAccessException;
 
 }

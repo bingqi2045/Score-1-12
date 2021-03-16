@@ -43,16 +43,6 @@ public class ModuleController {
         return moduleService.getModule(user, moduleId);
     }
 
-    @RequestMapping(value = "/modules", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ModuleElement getModuleElement(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                          @RequestParam(name = "moduleSetId", required = false) BigInteger moduleSetId,
-                                          @RequestParam(name = "parentModuleDirId", required = false) BigInteger parentModuleDirId) {
-        GetModuleElementRequest request = new GetModuleElementRequest(sessionService.asScoreUser(user));
-        request.setModuleSetId(moduleSetId);
-        return moduleService.getModuleElements(request);
-    }
-
     @RequestMapping(value = "/module", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateModuleResponse createModule(@AuthenticationPrincipal AuthenticatedPrincipal user,

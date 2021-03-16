@@ -170,4 +170,13 @@ public class ModuleSetController {
         service.unassignModule(request);
     }
 
+    @RequestMapping(value = "/module_set/{id}/modules", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleElement getModuleSetModules(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                             @PathVariable("id") BigInteger moduleSetId) {
+        GetModuleElementRequest request = new GetModuleElementRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetId);
+        return service.getModuleSetModules(request);
+    }
+
 }

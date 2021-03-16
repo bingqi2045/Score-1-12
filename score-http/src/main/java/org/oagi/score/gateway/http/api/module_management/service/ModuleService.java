@@ -82,12 +82,6 @@ public class ModuleService {
                 .fetchOneInto(Module.class);
         return module;
     }
-    
-    public ModuleElement getModuleElements(GetModuleElementRequest request) {
-        ModuleReadRepository repository = scoreRepositoryFactory.createModuleReadRepository();
-        ModuleElementContext context = new ModuleElementContext(request.getRequester(), repository, request.getModuleSetId(), null);
-        return context.getRootElement();
-    }
 
     @Transactional
     public CreateModuleResponse createModule(CreateModuleRequest request) {

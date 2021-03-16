@@ -1,8 +1,11 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.module.ModuleReadRepository;
+import org.oagi.score.repo.api.module.ModuleSetReadRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.service.module.ModuleElementContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,5 +48,11 @@ public class ModuleSetService {
     @Transactional
     public DeleteModuleSetAssignmentResponse unassignModule(DeleteModuleSetAssignmentRequest request) {
         return scoreRepositoryFactory.createModuleSetWriteRepository().unassignModule(request);
+    }
+
+    public ModuleElement getModuleSetModules(GetModuleElementRequest request) {
+        ModuleSetReadRepository repository = scoreRepositoryFactory.createModuleSetReadRepository();
+        ModuleElementContext context = new ModuleElementContext(repository, request.getModuleSetId());
+        return context.getRootElement();
     }
 }

@@ -1,6 +1,6 @@
 package org.oagi.score.service.module;
 
-import org.oagi.score.repo.api.module.ModuleReadRepository;
+import org.oagi.score.repo.api.module.ModuleSetReadRepository;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -13,67 +13,45 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toMap;
 
 public class ModuleElementContext {
-    private Map<BigInteger, Module> allModuleDirMap;
-    private Map<BigInteger, Module> currentModuleDirMap;
-    private Map<BigInteger, List<Module>> currentModuleDirByParentMap;
-    private Map<BigInteger, List<Module>> moduleByModuleDirMap;
+    private Map<BigInteger, List<Module>> filesByParentMap;
+    private Map<BigInteger, List<Module>> directoriesByParentMap;
 
     private ModuleElement rootElement;
 
 
-    public ModuleElementContext(ScoreUser requester, ModuleReadRepository repository, BigInteger moduleSetId, BigInteger moduleDirId) {
-        GetModuleListRequest request = new GetModuleListRequest(requester);
-        List<Module> modules = repository.getAllModules(request);
+    public ModuleElementContext(ModuleSetReadRepository repository, BigInteger moduleSetId) {
+        List<Module> modules = repository.getAllModules(moduleSetId);
         List<Module> files = modules.stream().filter(e -> e.getType().equals(ModuleType.FILE.name())).collect(Collectors.toList());
         List<Module> dirs = modules.stream().filter(e -> e.getType().equals(ModuleType.DIRECTORY.name())).collect(Collectors.toList());
-        allModuleDirMap = dirs.stream().collect(toMap(Module::getModuleId, Function.identity()));
 
-        currentModuleDirMap = new HashMap<>();
-        currentModuleDirByParentMap = new HashMap<>();
-        moduleByModuleDirMap = new HashMap<>();
+        filesByParentMap = new HashMap<>();
+        directoriesByParentMap = new HashMap<>();
 
         rootElement = new ModuleElement();
         rootElement.setDirectory(true);
 
-        if (moduleDirId != null) {
-            rootElement.setId(moduleDirId);
-        } else {
-            Module root = dirs.stream().filter(e -> e.getParentModuleId() == null).findFirst().get();
-            rootElement.setId(root.getParentModuleId());
-        }
+        Module root = dirs.stream().filter(e -> e.getParentModuleId() == null).findFirst().get();
+        rootElement.setId(root.getModuleId());
 
-        request.setModuleSetId(moduleSetId);
-
-
-        files.forEach(e -> addCurrentModuleDirMap(this.allModuleDirMap.get(e.getParentModuleId())));
-
-        currentModuleDirMap.values().forEach(e -> {
-            if (e.getParentModuleId() == null) {
-                return;
-            }
-            List<Module> child = currentModuleDirByParentMap.get(e.getParentModuleId());
-            if (child == null) {
-                List<Module> newChild = new ArrayList<>();
-                newChild.add(e);
-                currentModuleDirByParentMap.put(e.getParentModuleId(), newChild);
+        files.forEach(file -> {
+            if (filesByParentMap.get(file.getParentModuleId()) == null) {
+                List<Module> childFiles = new ArrayList<>();
+                childFiles.add(file);
+                filesByParentMap.put(file.getParentModuleId(), childFiles);
             } else {
-                child.add(e);
-                currentModuleDirByParentMap.put(e.getParentModuleId(), child);
+                filesByParentMap.get(file.getParentModuleId()).add(file);
             }
         });
 
-        files.forEach(e -> {
-            List<Module> child = moduleByModuleDirMap.get(e.getParentModuleId());
-            if (child == null) {
-                List<Module> newChild = new ArrayList<>();
-                newChild.add(e);
-                moduleByModuleDirMap.put(e.getParentModuleId(), newChild);
+        dirs.forEach(dir -> {
+            if (directoriesByParentMap.get(dir.getParentModuleId()) == null) {
+                List<Module> childDirs = new ArrayList<>();
+                childDirs.add(dir);
+                directoriesByParentMap.put(dir.getParentModuleId(), childDirs);
             } else {
-                child.add(e);
-                moduleByModuleDirMap.put(e.getParentModuleId(), child);
+                directoriesByParentMap.get(dir.getParentModuleId()).add(dir);
             }
         });
 
@@ -81,32 +59,23 @@ public class ModuleElementContext {
 
     }
 
-    private void addCurrentModuleDirMap(Module module) {
-        if (this.currentModuleDirMap.get(module.getParentModuleId()) == null) {
-            this.currentModuleDirMap.put(module.getParentModuleId(), module);
-            if (module.getParentModuleId() != null) {
-                addCurrentModuleDirMap(this.allModuleDirMap.get(module.getParentModuleId()));
-            }
-        }
-    }
-
     private void build(ModuleElement element) {
         if (!element.isDirectory()) {
             return;
         }
         List<ModuleElement> child = new ArrayList<>();
-        if (currentModuleDirByParentMap.get(element.getId()) != null) {
-            currentModuleDirByParentMap.get(element.getId()).forEach(e -> {
+        if (directoriesByParentMap.get(element.getId()) != null) {
+            directoriesByParentMap.get(element.getId()).forEach(e -> {
                 ModuleElement item = new ModuleElement();
                 item.setDirectory(true);
                 item.setName(e.getName());
-                item.setId(e.getParentModuleId());
+                item.setId(e.getModuleId());
                 child.add(item);
             });
         }
 
-        if (moduleByModuleDirMap.get(element.getId()) != null) {
-            moduleByModuleDirMap.get(element.getId()).forEach(e -> {
+        if (filesByParentMap.get(element.getId()) != null) {
+            filesByParentMap.get(element.getId()).forEach(e -> {
                 ModuleElement item = new ModuleElement();
                 item.setDirectory(false);
                 item.setName(e.getName());

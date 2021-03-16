@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetWriteRepository;
 import org.oagi.score.repo.api.module.model.ModuleSet;
@@ -12,12 +13,11 @@ import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 
-import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
@@ -63,6 +63,24 @@ public class JooqModuleSetWriteRepository
         moduleSet.setLastUpdatedBy(requester);
         moduleSet.setLastUpdateTimestamp(
                 Date.from(moduleSetRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
+
+        ULong namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
+                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(ULong.class);
+
+        dslContext().insertInto(MODULE)
+                .setNull(MODULE.PARENT_MODULE_ID)
+                .set(MODULE.PATH, "")
+                .set(MODULE.TYPE, ModuleType.DIRECTORY.name())
+                .set(MODULE.NAME, "")
+                .set(MODULE.MODULE_SET_ID, moduleSetRecord.getModuleSetId())
+                .set(MODULE.NAMESPACE_ID, namespaceId)
+                .setNull(MODULE.VERSION_NUM)
+                .set(MODULE.CREATED_BY, requesterUserId)
+                .set(MODULE.OWNER_USER_ID, requesterUserId)
+                .set(MODULE.LAST_UPDATED_BY, requesterUserId)
+                .set(MODULE.CREATION_TIMESTAMP, timestamp)
+                .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .execute();
 
         return new CreateModuleSetResponse(moduleSet);
     }

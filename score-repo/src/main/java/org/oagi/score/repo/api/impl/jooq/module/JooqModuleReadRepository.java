@@ -74,21 +74,6 @@ public class JooqModuleReadRepository
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public GetModuleResponse getModule(GetModuleRequest request) throws ScoreDataAccessException {
-        Module module = null;
-
-        BigInteger moduleId = request.getModuleId();
-        if (!isNull(moduleId)) {
-            module = (Module) select()
-                    .where(MODULE.MODULE_ID.eq(ULong.valueOf(moduleId)))
-                    .fetchOne(mapper());
-        }
-
-        return new GetModuleResponse(module);
-    }
-
-    @Override
-    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetModuleListResponse getModuleList(GetModuleListRequest request) throws ScoreDataAccessException {
         Collection<Condition> conditions = getConditions(request);
 
@@ -179,52 +164,5 @@ public class JooqModuleReadRepository
                 .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(MODULE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(MODULE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
-    }
-
-    @Override
-    public GetModuleElementResponse getModuleElements(GetModuleElementRequest request) throws ScoreDataAccessException {
-
-
-        List<Condition> moduleDirConditions = new ArrayList();
-
-        SelectOnConditionStep stepModule = selectModuleElement();
-
-        List<Condition> moduleConditions = new ArrayList();
-
-        moduleConditions.add(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())));
-
-        List<ModuleElement> elements = stepModule.where(moduleConditions).fetch(record -> {
-            ModuleElement moduleElement = new ModuleElement();
-            moduleElement.setDirectory(false);
-            moduleElement.setId(record.get(MODULE.MODULE_ID).toBigInteger());
-            moduleElement.setName(record.get(MODULE.NAME));
-            moduleElement.setPath(record.get(MODULE.PATH));
-            moduleElement.setNamespaceId(record.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
-            moduleElement.setNamespaceUri(record.get(NAMESPACE.URI));
-            return moduleElement;
-        });
-
-        GetModuleElementResponse response = new GetModuleElementResponse();
-        response.setElements(elements);
-        return response;
-    }
-
-    @Override
-    public List<Module> getAllModules(GetModuleListRequest request) throws ScoreDataAccessException {
-        return dslContext().select(
-                    MODULE.MODULE_ID,
-                    MODULE.PARENT_MODULE_ID,
-                    MODULE.PATH,
-                    MODULE.TYPE,
-                    MODULE.NAME,
-                    MODULE.VERSION_NUM,
-                    MODULE.NAMESPACE_ID,
-                    NAMESPACE.URI,
-                    MODULE.CREATION_TIMESTAMP,
-                    MODULE.LAST_UPDATE_TIMESTAMP)
-                    .from(MODULE)
-                    .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
-                    .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
-                    .fetch(mapper());
     }
 }
