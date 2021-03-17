@@ -43,6 +43,9 @@ public class SchemaModule {
     }
 
     public boolean hasInclude(SchemaModule schemaModule) {
+        if (this.equals(schemaModule)) {
+            return true;
+        }
         if (this.includeModules.indexOf(schemaModule) > -1) {
             return true;
         }
@@ -55,6 +58,9 @@ public class SchemaModule {
     }
 
     private boolean hasImport(SchemaModule schemaModule) {
+        if (this.equals(schemaModule)) {
+            return true;
+        }
         if (this.importModules.indexOf(schemaModule) > -1) {
             return true;
         }
@@ -180,9 +186,6 @@ public class SchemaModule {
                 }
                 if (cur.hasInclude(next)) {
                     includeModules.remove(next);
-                } else if (next.hasInclude(cur)) {
-                    includeModules.remove(cur);
-                    break;
                 }
             }
         }
@@ -192,9 +195,9 @@ public class SchemaModule {
                 if (cur.equals(next)) {
                     continue;
                 }
-                if (cur.hasInclude(next)) {
+                if (cur.hasImport(next)) {
                     importModules.remove(next);
-                } else if (next.hasInclude(cur)) {
+                } else if (next.hasImport(cur)) {
                     importModules.remove(cur);
                     break;
                 }

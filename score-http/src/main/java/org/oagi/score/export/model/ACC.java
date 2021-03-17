@@ -67,7 +67,7 @@ public abstract class ACC implements Component {
     }
 
     public String getGuid() {
-        return acc.getGuid();
+        return GUID_PREFIX + acc.getGuid();
     }
 
     public String getTypeName() {

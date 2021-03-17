@@ -17,6 +17,6 @@ public class ScoreModule {
     String path;
 
     public String getModulePath() {
-        return this.path + '\\' + this.name;
+        return this.path;
     }
 }

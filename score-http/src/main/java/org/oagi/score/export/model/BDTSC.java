@@ -48,7 +48,7 @@ public class BDTSC implements Component {
     }
 
     public String getGuid() {
-        return dtSc.getGuid();
+        return GUID_PREFIX + dtSc.getGuid();
     }
 
     public DtScRecord getBdtSc() {
