@@ -484,7 +484,7 @@ public class XMLExportSchemaModuleVisitor {
                 attributeElement.setAttribute("use", useVal);
             }
 
-            attributeElement.setAttribute("id", dtSc.getGuid());
+            attributeElement.setAttribute("id", bdtSimpleContent.GUID_PREFIX + dtSc.getGuid());
 
             if (!schemaModule.getPath().contains("Meta")) {
                 setDocumentationForBdtSc(attributeElement, bdtSimpleContent, dtSc);
@@ -891,7 +891,7 @@ public class XMLExportSchemaModuleVisitor {
                         attributeElement.setAttribute("use", useVal);
                     }
 
-                    attributeElement.setAttribute("id", bcc.getGuid());
+                    attributeElement.setAttribute("id", guidPrefix + bcc.getGuid());
                     if (bcc.getIsNillable() == 1) {
                         attributeElement.setAttribute("nillable", "true");
                     }
