@@ -168,7 +168,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         ACC_MANIFEST.as("acc_manifest_target").ACC_MANIFEST_ID,
-                        MODULE_ACC_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -180,6 +180,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(ACC_MANIFEST.as("acc_manifest_target")).on(and(
                                 ACC.as("acc_target").ACC_ID.eq(ACC_MANIFEST.as("acc_manifest_target").ACC_ID),
                                 ACC_MANIFEST.as("acc_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -195,7 +197,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         ASCCP_MANIFEST.as("asccp_manifest_target").ASCCP_MANIFEST_ID,
-                        MODULE_ASCCP_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -207,6 +209,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(ASCCP_MANIFEST.as("asccp_manifest_target")).on(and(
                                 ASCCP.as("asccp_target").ASCCP_ID.eq(ASCCP_MANIFEST.as("asccp_manifest_target").ASCCP_ID),
                                 ASCCP_MANIFEST.as("asccp_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -222,7 +226,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         BCCP_MANIFEST.as("bccp_manifest_target").BCCP_MANIFEST_ID,
-                        MODULE_BCCP_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -234,6 +238,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(BCCP_MANIFEST.as("bccp_manifest_target")).on(and(
                                 BCCP.as("bccp_target").BCCP_ID.eq(BCCP_MANIFEST.as("bccp_manifest_target").BCCP_ID),
                                 BCCP_MANIFEST.as("bccp_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -249,7 +255,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         CODE_LIST_MANIFEST.as("code_list_manifest_target").CODE_LIST_MANIFEST_ID,
-                        MODULE_CODE_LIST_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -261,6 +267,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(CODE_LIST_MANIFEST.as("code_list_manifest_target")).on(and(
                                 CODE_LIST.as("code_list_target").CODE_LIST_ID.eq(CODE_LIST_MANIFEST.as("code_list_manifest_target").CODE_LIST_ID),
                                 CODE_LIST_MANIFEST.as("code_list_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -276,7 +284,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         AGENCY_ID_LIST_MANIFEST.as("agency_id_list_manifest_target").AGENCY_ID_LIST_MANIFEST_ID,
-                        MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -288,6 +296,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(AGENCY_ID_LIST_MANIFEST.as("agency_id_list_manifest_target")).on(and(
                                 AGENCY_ID_LIST.as("agency_id_list_target").AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.as("agency_id_list_manifest_target").AGENCY_ID_LIST_ID),
                                 AGENCY_ID_LIST_MANIFEST.as("agency_id_list_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -325,7 +335,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         XBT_MANIFEST.as("xbt_manifest_target").XBT_MANIFEST_ID,
-                        MODULE_XBT_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -337,6 +347,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(XBT_MANIFEST.as("xbt_manifest_target")).on(and(
                                 XBT.as("xbt_target").XBT_ID.eq(XBT_MANIFEST.as("xbt_manifest_target").XBT_ID),
                                 XBT_MANIFEST.as("xbt_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
@@ -352,7 +364,7 @@ public class JooqModuleSetReleaseWriteRepository
                 .select(dslContext().select(
                         inline(moduleSetReleaseRecord.getModuleSetReleaseId()),
                         DT_MANIFEST.as("dt_manifest_target").DT_MANIFEST_ID,
-                        MODULE_DT_MANIFEST.MODULE_ID,
+                        MODULE.as("target_module").MODULE_ID,
                         inline(requesterUserId),
                         inline(timestamp),
                         inline(requesterUserId),
@@ -364,6 +376,8 @@ public class JooqModuleSetReleaseWriteRepository
                         .join(DT_MANIFEST.as("dt_manifest_target")).on(and(
                                 DT.as("dt_target").DT_ID.eq(DT_MANIFEST.as("dt_manifest_target").DT_ID),
                                 DT_MANIFEST.as("dt_manifest_target").RELEASE_ID.eq(releaseId)))
+                        .join(MODULE).on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                        .join(MODULE.as("target_module")).on(and(MODULE.PATH.eq(MODULE.as("target_module").PATH), MODULE.as("target_module").MODULE_SET_ID.eq(moduleSetReleaseRecord.getModuleSetId())))
                         .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(baseModuleSetReleaseId)))
                 .execute();
 
