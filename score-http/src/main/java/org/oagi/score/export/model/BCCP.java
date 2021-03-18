@@ -15,7 +15,7 @@ public class BCCP implements Component {
     }
 
     public String getGuid() {
-        return bccp.getGuid();
+        return GUID_PREFIX + bccp.getGuid();
     }
 
     public String getName() {

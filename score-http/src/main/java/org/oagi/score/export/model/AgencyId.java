@@ -25,7 +25,7 @@ public class AgencyId implements Component {
 
     @Override
     public String getGuid() {
-        return agencyIdList.getGuid();
+        return GUID_PREFIX + agencyIdList.getGuid();
     }
 
     public String getEnumGuid() {

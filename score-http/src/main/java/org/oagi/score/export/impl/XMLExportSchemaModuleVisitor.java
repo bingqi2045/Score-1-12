@@ -179,7 +179,7 @@ public class XMLExportSchemaModuleVisitor {
         if (schemaCodeList.getEnumTypeGuid() != null) {
             Element codeListElement = new Element("simpleType", XSD_NS);
             codeListElement.setAttribute("name", name + "EnumerationType");
-            codeListElement.setAttribute("id", schemaCodeList.getEnumTypeGuid());
+            codeListElement.setAttribute("id", schemaCodeList.GUID_PREFIX + schemaCodeList.getEnumTypeGuid());
 
             addRestriction(codeListElement, schemaCodeList.getValues());
             rootElement.addContent(codeListElement);
@@ -782,6 +782,8 @@ public class XMLExportSchemaModuleVisitor {
 
         List<SeqKeyRecord> seqKeys = coreComponentService.getCoreComponents(
                 accComplexType.getAccManifest().getAccManifestId(), importedDataProvider);
+
+        String guidPrefix = "oagis-id-";
         // for ASCC or BCC (Sequence Key != 0)
         for (SeqKeyRecord seqKey : seqKeys) {
             if (seqKey.getAsccManifestId() != null) {
@@ -793,7 +795,7 @@ public class XMLExportSchemaModuleVisitor {
                     anyElement.setAttribute("namespace", "##any");
                     anyElement.setAttribute("processContents", "strict");
                     setCardinalities(anyElement, ascc.getCardinalityMin(), ascc.getCardinalityMax());
-                    anyElement.setAttribute("id", ascc.getGuid());
+                    anyElement.setAttribute("id", guidPrefix + ascc.getGuid());
 
                     sequenceElement.addContent(anyElement);
 
@@ -808,7 +810,7 @@ public class XMLExportSchemaModuleVisitor {
                         Element groupElement = new Element("group", XSD_NS);
 
                         groupElement.setAttribute("ref", Utility.toCamelCase(asccp.getPropertyTerm()));
-                        groupElement.setAttribute("id", ascc.getGuid());
+                        groupElement.setAttribute("id", guidPrefix + ascc.getGuid());
                         setCardinalities(groupElement, ascc.getCardinalityMin(), ascc.getCardinalityMax());
 
                         sequenceElement.addContent(groupElement);
@@ -823,7 +825,7 @@ public class XMLExportSchemaModuleVisitor {
                             element.setAttribute("type", Utility.toCamelCase(asccp.getDen().substring((asccp.getPropertyTerm() + ". ").length())) + "Type");
                         }
 
-                        element.setAttribute("id", ascc.getGuid());
+                        element.setAttribute("id", guidPrefix + ascc.getGuid());
                         setCardinalities(element, ascc.getCardinalityMin(), ascc.getCardinalityMax());
 
                         sequenceElement.addContent(element);
@@ -841,7 +843,7 @@ public class XMLExportSchemaModuleVisitor {
                     Element element = new Element("element", XSD_NS);
 
                     element.setAttribute("ref", Utility.toCamelCase(bccp.getPropertyTerm()));
-                    element.setAttribute("id", bcc.getGuid());
+                    element.setAttribute("id", guidPrefix + bcc.getGuid());
                     setCardinalities(element, bcc.getCardinalityMin(), bcc.getCardinalityMax());
 
                     sequenceElement.addContent(element);
@@ -889,7 +891,7 @@ public class XMLExportSchemaModuleVisitor {
                         attributeElement.setAttribute("use", useVal);
                     }
 
-                    attributeElement.setAttribute("id", bcc.getGuid());
+                    attributeElement.setAttribute("id", guidPrefix + bcc.getGuid());
                     if (bcc.getIsNillable() == 1) {
                         attributeElement.setAttribute("nillable", "true");
                     }

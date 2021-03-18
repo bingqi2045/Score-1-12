@@ -68,7 +68,7 @@ public class BDTSimpleType extends AbstractBDTSimple {
     }
 
     public String getGuid() {
-        return dataType.getGuid();
+        return GUID_PREFIX + dataType.getGuid();
     }
 
     public String getBaseDTName() {

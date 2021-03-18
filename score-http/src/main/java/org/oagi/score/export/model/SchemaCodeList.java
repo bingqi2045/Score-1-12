@@ -6,6 +6,8 @@ import java.util.List;
 
 public class SchemaCodeList {
 
+    public String GUID_PREFIX = "oagis-id-";
+
     private String guid;
 
     private String name;
@@ -17,7 +19,7 @@ public class SchemaCodeList {
     private SchemaCodeList baseCodeList;
 
     public String getGuid() {
-        return guid;
+        return GUID_PREFIX + guid;
     }
 
     public void setGuid(String guid) {
