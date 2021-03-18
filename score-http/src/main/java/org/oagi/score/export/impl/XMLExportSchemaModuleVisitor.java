@@ -484,7 +484,7 @@ public class XMLExportSchemaModuleVisitor {
                 attributeElement.setAttribute("use", useVal);
             }
 
-            attributeElement.setAttribute("id", bdtSimpleContent.GUID_PREFIX + dtSc.getGuid());
+            attributeElement.setAttribute("id", dtSc.getGuid());
 
             if (!schemaModule.getPath().contains("Meta")) {
                 setDocumentationForBdtSc(attributeElement, bdtSimpleContent, dtSc);

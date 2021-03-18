@@ -198,6 +198,54 @@ public class DefaultExportContextBuilder {
                 }
             } else {
                 bdtSimple = new BDTSimpleContent(bdt, baseDataType, isDefaultBDT, dtScList, importedDataProvider);
+                dtScList.forEach(dtScRecord -> {
+                    List<BdtScPriRestriRecord> bdtScPriRestriList =
+                            importedDataProvider.findBdtScPriRestriListByDtScId(dtScRecord.getDtScId());
+
+                    List<BdtScPriRestriRecord> codeListBdtScPriRestri =
+                            bdtScPriRestriList.stream()
+                                    .filter(e -> e.getCodeListId() != null)
+                                    .collect(Collectors.toList());
+                    if (codeListBdtScPriRestri.size() > 1) {
+                        throw new IllegalStateException();
+                    }
+
+                    if (codeListBdtScPriRestri.isEmpty()) {
+                        List<BdtScPriRestriRecord> agencyIdBdtScPriRestri =
+                                bdtScPriRestriList.stream()
+                                        .filter(e -> e.getAgencyIdListId() != null)
+                                        .collect(Collectors.toList());
+                        if (agencyIdBdtScPriRestri.size() > 1) {
+                            throw new IllegalStateException();
+                        }
+
+                        if (agencyIdBdtScPriRestri.isEmpty()) {
+                            List<BdtScPriRestriRecord> defaultBdtScPriRestri =
+                                    bdtScPriRestriList.stream()
+                                            .filter(e -> e.getIsDefault() == 1)
+                                            .collect(Collectors.toList());
+                            if (defaultBdtScPriRestri.isEmpty() || defaultBdtScPriRestri.size() > 1) {
+                                throw new IllegalStateException();
+                            }
+
+                            CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMap =
+                                    importedDataProvider.findCdtScAwdPriXpsTypeMap(defaultBdtScPriRestri.get(0).getCdtScAwdPriXpsTypeMapId());
+                            XbtRecord xbt = importedDataProvider.findXbt(cdtScAwdPriXpsTypeMap.getXbtId());
+                            ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
+                            if (xbtModuleCCID != null) {
+                                addDependency(schemaModule, moduleMap.get(xbtModuleCCID.getModuleId()));
+                            }
+                        } else {
+                            AgencyIdListRecord agencyIdList = importedDataProvider.findAgencyIdList(agencyIdBdtScPriRestri.get(0).getAgencyIdListId());
+                            ModuleCCID agencyIdListModuleCCID = importedDataProvider.findModuleAgencyIdList(agencyIdList.getAgencyIdListId());
+                            addDependency(schemaModule, moduleMap.get(agencyIdListModuleCCID.getModuleId()));
+                        }
+                    } else {
+                        CodeListRecord codeList = importedDataProvider.findCodeList(codeListBdtScPriRestri.get(0).getCodeListId());
+                        ModuleCCID codeListModuleCCID = importedDataProvider.findModuleCodeList(codeList.getCodeListId());
+                        addDependency(schemaModule, moduleMap.get(codeListModuleCCID.getModuleId()));
+                    }
+                });
             }
 
             schemaModule.addBDTSimple(bdtSimple);
@@ -259,11 +307,25 @@ public class DefaultExportContextBuilder {
             }
             schemaModule.addACC(ACC.newInstance(acc, accManifest, importedDataProvider));
 
+            if (acc.getBasedAccId() != null) {
+                AccRecord basedAcc = importedDataProvider.findACC(acc.getBasedAccId());
+                ModuleCCID basedAccModuleCCID = importedDataProvider.findModuleAcc(basedAcc.getAccId());
+                if (basedAccModuleCCID != null) {
+                    addDependency(schemaModule, moduleMap.get(basedAccModuleCCID.getModuleId()));
+                }
+            }
+
             importedDataProvider.findASCCByFromAccId(acc.getAccId()).forEach(e -> {
                 ModuleCCID asccpModuleCCID = importedDataProvider.findModuleAsccp(e.getToAsccpId());
                 if (asccpModuleCCID != null) {
                     addDependency(schemaModule, moduleMap.get(asccpModuleCCID.getModuleId()));
                 }
+                AsccpRecord asccp = importedDataProvider.findASCCP(e.getToAsccpId());
+                if (asccp.getReusableIndicator() == 0) {
+                    ModuleCCID roleOfAccModuleCCID = importedDataProvider.findModuleAcc(asccp.getRoleOfAccId());
+                    addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleId()));
+                }
+
             });
 
             importedDataProvider.findBCCByFromAccId(acc.getAccId()).forEach(e -> {
