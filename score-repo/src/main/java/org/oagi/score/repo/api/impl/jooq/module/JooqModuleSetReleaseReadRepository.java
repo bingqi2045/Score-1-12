@@ -4,6 +4,7 @@ import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
+import org.oagi.score.repo.api.corecomponent.model.DtType;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
@@ -203,6 +204,7 @@ public class JooqModuleSetReleaseReadRepository
                             MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(ACC.STATE.eq(CcState.Published.name()),
                             ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                            ACC.OBJECT_CLASS_TERM.notEqual("Any Structured Content"),
                             MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
@@ -260,6 +262,7 @@ public class JooqModuleSetReleaseReadRepository
                                 MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(ASCCP.STATE.eq(CcState.Published.name()),
                         ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ASCCP.PROPERTY_TERM.notEqual("Any Property"),
                         MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
@@ -303,6 +306,13 @@ public class JooqModuleSetReleaseReadRepository
 
     @Override
     public List<AssignableNode> getAssignableBCCPByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
+        List<ULong> elementBccpManifestList = dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                .from(BCCP_MANIFEST)
+                .join(BCC_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCC_MANIFEST.TO_BCCP_MANIFEST_ID))
+                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        BCC.ENTITY_TYPE.eq(1)))
+                .fetchInto(ULong.class);
         return dslContext().select(
                 BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.DEN, RELEASE.RELEASE_NUM,
                 BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,
@@ -317,6 +327,7 @@ public class JooqModuleSetReleaseReadRepository
                                 MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(BCCP.STATE.eq(CcState.Published.name()),
                         BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        BCCP_MANIFEST.BCCP_MANIFEST_ID.in(elementBccpManifestList),
                         MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
@@ -374,6 +385,7 @@ public class JooqModuleSetReleaseReadRepository
                                 MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(DT.STATE.eq(CcState.Published.name()),
                         DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        DT.TYPE.notEqual(DtType.Core.name()),
                         MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
@@ -544,7 +556,8 @@ public class JooqModuleSetReleaseReadRepository
                         and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID),
                                 MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID.isNull()))
+                        MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID.isNull(),
+                        XBT.BUILTIN_TYPE.notLike("xsd:%")))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
                     node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID).toBigInteger());

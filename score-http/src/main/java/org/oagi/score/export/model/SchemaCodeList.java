@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SchemaCodeList {
 
-    private String GUID_PREFIX = "oagis-id-";
+    public String GUID_PREFIX = "oagis-id-";
 
     private String guid;
 

@@ -79,7 +79,7 @@ public abstract class ACC implements Component {
     }
 
     public boolean isGroup() {
-        AsccpRecord asccp = importedDataProvider.findASCCPByGuid(getGuid());
+        AsccpRecord asccp = importedDataProvider.findASCCPByGuid(acc.getGuid());
         return asccp != null;
     }
 

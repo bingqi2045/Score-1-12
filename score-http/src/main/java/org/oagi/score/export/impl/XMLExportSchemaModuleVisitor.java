@@ -179,7 +179,7 @@ public class XMLExportSchemaModuleVisitor {
         if (schemaCodeList.getEnumTypeGuid() != null) {
             Element codeListElement = new Element("simpleType", XSD_NS);
             codeListElement.setAttribute("name", name + "EnumerationType");
-            codeListElement.setAttribute("id", schemaCodeList.getEnumTypeGuid());
+            codeListElement.setAttribute("id", schemaCodeList.GUID_PREFIX + schemaCodeList.getEnumTypeGuid());
 
             addRestriction(codeListElement, schemaCodeList.getValues());
             rootElement.addContent(codeListElement);
