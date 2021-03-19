@@ -16,4 +16,6 @@ public interface ModuleSetReadRepository {
             GetModuleSetListRequest request) throws ScoreDataAccessException;
 
     List<Module> getAllModules(BigInteger moduleSetId) throws  ScoreDataAccessException;
+
+    List<Module> getToplevelModules(BigInteger moduleSetId) throws  ScoreDataAccessException;
 }

@@ -1,5 +1,8 @@
 package org.oagi.score.gateway.http.api.module_management.controller;
 
+import net.sf.cglib.asm.$ConstantDynamic;
+import org.oagi.score.gateway.http.api.module_management.data.ModuleSetRequest;
+import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetService;
@@ -80,11 +83,15 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSet createModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @RequestBody ModuleSet moduleSet) {
+                                                   @RequestBody ModuleSetRequest moduleSet) {
         CreateModuleSetRequest request = new CreateModuleSetRequest(sessionService.asScoreUser(user));
         request.setName(moduleSet.getName());
         request.setDescription(moduleSet.getDescription());
+        request.setCreateModuleSetRelease(moduleSet.createModuleSetRelease);
+        request.setTargetModuleSetReleaseId(moduleSet.targetModuleSetReleaseId);
+        request.setTargetReleaseId(moduleSet.targetReleaseId);
         CreateModuleSetResponse response = service.createModuleSet(request);
+
         return response.getModuleSet();
     }
 

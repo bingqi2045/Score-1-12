@@ -67,7 +67,7 @@ public class JooqModuleSetWriteRepository
         ULong namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
                 .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(ULong.class);
 
-        dslContext().insertInto(MODULE)
+        ULong rootModuleSetId = dslContext().insertInto(MODULE)
                 .setNull(MODULE.PARENT_MODULE_ID)
                 .set(MODULE.PATH, "")
                 .set(MODULE.TYPE, ModuleType.DIRECTORY.name())
@@ -80,9 +80,11 @@ public class JooqModuleSetWriteRepository
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .execute();
+                .returning().fetchOne().getModuleId();
 
-        return new CreateModuleSetResponse(moduleSet);
+        CreateModuleSetResponse response = new CreateModuleSetResponse(moduleSet);
+        response.setRootModuleId(rootModuleSetId.toBigInteger());
+        return response;
     }
 
     @Override

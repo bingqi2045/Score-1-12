@@ -4,10 +4,13 @@ import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
 import org.oagi.score.repo.api.module.ModuleWriteRepository;
 import org.oagi.score.repo.api.module.model.*;
+import org.oagi.score.repo.api.module.model.Module;
 import org.oagi.score.service.module.ModuleElementContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,7 +30,30 @@ public class ModuleSetService {
 
     @Transactional
     public CreateModuleSetResponse createModuleSet(CreateModuleSetRequest request) {
-        return scoreRepositoryFactory.createModuleSetWriteRepository().createModuleSet(request);
+        CreateModuleSetResponse response = scoreRepositoryFactory.createModuleSetWriteRepository().createModuleSet(request);
+
+        if (request.isCreateModuleSetRelease()) {
+            GetModuleSetReleaseRequest getModuleSetReleaseRequest = new GetModuleSetReleaseRequest(request.getRequester());
+            getModuleSetReleaseRequest.setModuleSetReleaseId(request.getTargetModuleSetReleaseId());
+            GetModuleSetReleaseResponse getModuleSetReleaseResponse = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(getModuleSetReleaseRequest);
+            List<Module> copyTargetModules = scoreRepositoryFactory.createModuleSetReadRepository().getToplevelModules(getModuleSetReleaseResponse.getModuleSetRelease().getModuleSetId());
+            copyTargetModules.forEach(target -> {
+                CopyModuleRequest copyRequest = new CopyModuleRequest(request.getRequester());
+                copyRequest.setModuleSetId(response.getModuleSet().getModuleSetId());
+                copyRequest.setParentModuleId(response.getRootModuleId());
+                copyRequest.setTargetModuleId(target.getModuleId());
+                copyModule(copyRequest);
+            });
+
+            CreateModuleSetReleaseRequest createModuleSetReleaseRequest = new CreateModuleSetReleaseRequest();
+            createModuleSetReleaseRequest.setRequester(request.getRequester());
+            createModuleSetReleaseRequest.setDefault(false);
+            createModuleSetReleaseRequest.setModuleSetId(response.getModuleSet().getModuleSetId());
+            createModuleSetReleaseRequest.setReleaseId(request.getTargetReleaseId());
+            createModuleSetReleaseRequest.setBaseModuleSetReleaseId(getModuleSetReleaseResponse.getModuleSetRelease().getModuleSetReleaseId());
+            scoreRepositoryFactory.createModuleSetReleaseWriteRepository().createModuleSetRelease(createModuleSetReleaseRequest);
+        }
+        return response;
     }
 
     @Transactional
