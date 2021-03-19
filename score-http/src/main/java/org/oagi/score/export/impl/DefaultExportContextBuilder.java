@@ -1,5 +1,6 @@
 package org.oagi.score.export.impl;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
@@ -309,9 +310,11 @@ public class DefaultExportContextBuilder {
 
             if (acc.getBasedAccId() != null) {
                 AccRecord basedAcc = importedDataProvider.findACC(acc.getBasedAccId());
-                ModuleCCID basedAccModuleCCID = importedDataProvider.findModuleAcc(basedAcc.getAccId());
-                if (basedAccModuleCCID != null) {
-                    addDependency(schemaModule, moduleMap.get(basedAccModuleCCID.getModuleId()));
+                if (basedAcc != null) {
+                    ModuleCCID basedAccModuleCCID = importedDataProvider.findModuleAcc(basedAcc.getAccId());
+                    if (basedAccModuleCCID != null) {
+                        addDependency(schemaModule, moduleMap.get(basedAccModuleCCID.getModuleId()));
+                    }
                 }
             }
 
@@ -321,11 +324,12 @@ public class DefaultExportContextBuilder {
                     addDependency(schemaModule, moduleMap.get(asccpModuleCCID.getModuleId()));
                 }
                 AsccpRecord asccp = importedDataProvider.findASCCP(e.getToAsccpId());
-                if (asccp.getReusableIndicator() == 0) {
+                if (asccp != null && asccp.getReusableIndicator() == 0) {
                     ModuleCCID roleOfAccModuleCCID = importedDataProvider.findModuleAcc(asccp.getRoleOfAccId());
-                    addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleId()));
+                    if (roleOfAccModuleCCID != null) {
+                        addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleId()));
+                    }
                 }
-
             });
 
             importedDataProvider.findBCCByFromAccId(acc.getAccId()).forEach(e -> {

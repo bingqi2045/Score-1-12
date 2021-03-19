@@ -138,6 +138,9 @@ public class JooqModuleSetWriteRepository
             throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
         }
 
+        dslContext().update(MODULE)
+                .setNull(MODULE.PARENT_MODULE_ID)
+                .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
         dslContext().deleteFrom(MODULE)
                 .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
         dslContext().deleteFrom(MODULE_SET)

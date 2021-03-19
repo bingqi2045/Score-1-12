@@ -43,6 +43,7 @@ public class ModuleSetService {
                 copyRequest.setModuleSetId(response.getModuleSet().getModuleSetId());
                 copyRequest.setParentModuleId(response.getRootModuleId());
                 copyRequest.setTargetModuleId(target.getModuleId());
+                copyRequest.setCopySubModules(true);
                 copyModule(copyRequest);
             });
 
