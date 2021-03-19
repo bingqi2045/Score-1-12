@@ -38,7 +38,8 @@ public class ModuleSetService {
             GetModuleSetReleaseResponse getModuleSetReleaseResponse = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(getModuleSetReleaseRequest);
             List<Module> copyTargetModules = scoreRepositoryFactory.createModuleSetReadRepository().getToplevelModules(getModuleSetReleaseResponse.getModuleSetRelease().getModuleSetId());
             copyTargetModules.forEach(target -> {
-                CopyModuleRequest copyRequest = new CopyModuleRequest(request.getRequester());
+                CopyModuleRequest copyRequest = new CopyModuleRequest();
+                copyRequest.setRequester(request.getRequester());
                 copyRequest.setModuleSetId(response.getModuleSet().getModuleSetId());
                 copyRequest.setParentModuleId(response.getRootModuleId());
                 copyRequest.setTargetModuleId(target.getModuleId());

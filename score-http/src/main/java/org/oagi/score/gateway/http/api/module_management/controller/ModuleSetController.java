@@ -170,11 +170,8 @@ public class ModuleSetController {
     public void copyModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
                            @PathVariable("id") BigInteger moduleSetId,
                            @PathVariable("parentModuleId") BigInteger parentModuleId,
-                           @RequestBody ModuleElement moduleElement) {
-        CopyModuleRequest request = new CopyModuleRequest(sessionService.asScoreUser(user));
-        request.setModuleSetId(moduleSetId);
-        request.setParentModuleId(parentModuleId);
-        request.setTargetModuleId(moduleElement.getModuleId());
+                           @RequestBody CopyModuleRequest request) {
+        request.setRequester(sessionService.asScoreUser(user));
         service.copyModule(request);
     }
 }

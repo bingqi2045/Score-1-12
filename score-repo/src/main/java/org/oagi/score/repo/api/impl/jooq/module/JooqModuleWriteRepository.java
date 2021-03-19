@@ -211,13 +211,13 @@ public class JooqModuleWriteRepository
                 .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
 
         if (hasDuplicateName(request.getParentModuleId(), moduleRecord.getName())) {
-            copyOverWriteModule(moduleRecord, parent, requesterUserId, timestamp);
+            copyOverWriteModule(moduleRecord, parent, requesterUserId, timestamp, request.isCopySubModules());
         } else {
-            copyInsertModule(moduleRecord, parent, requesterUserId, timestamp);
+            copyInsertModule(moduleRecord, parent, requesterUserId, timestamp, request.isCopySubModules());
         }
     }
 
-    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp) {
+    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
         String path;
         if (parent.getPath().length() == 0) {
             path = target.getName();
@@ -239,20 +239,28 @@ public class JooqModuleWriteRepository
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .returning().fetchOne();
 
-        if (target.getType().equals(ModuleType.DIRECTORY.name())) {
-            dslContext().selectFrom(MODULE)
-                    .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
-                    .fetchStream().forEach(e -> {
-                copyInsertModule(e, inserted, requesterUserId, timestamp);
-            });
+        if (copySub) {
+            if (target.getType().equals(ModuleType.DIRECTORY.name())) {
+                dslContext().selectFrom(MODULE)
+                        .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                        .fetchStream().forEach(e -> {
+                    copyInsertModule(e, inserted, requesterUserId, timestamp, copySub);
+                });
+            }
         }
+
     }
 
-    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp) {
+    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
         ModuleRecord duplicated = dslContext().selectFrom(MODULE).where(and(
                 MODULE.PARENT_MODULE_ID.eq(parent.getModuleId()),
                 MODULE.NAME.eq(target.getName())
         )).fetchOne();
+
+        if (duplicated == null) {
+            copyInsertModule(target, parent, requesterUserId, timestamp, copySub);
+            return;
+        }
 
         if (duplicated.getType().equals(ModuleType.FILE.name())) {
             if (target.getType().equals(ModuleType.FILE.name())) {
@@ -268,19 +276,22 @@ public class JooqModuleWriteRepository
                 duplicated.setLastUpdateTimestamp(timestamp);
                 duplicated.setType(ModuleType.DIRECTORY.name());
                 duplicated.update();
-
-                dslContext().selectFrom(MODULE)
-                        .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
-                        .fetchStream().forEach(e -> {
-                    copyInsertModule(e, duplicated, requesterUserId, timestamp);
-                });
+                if (copySub) {
+                    dslContext().selectFrom(MODULE)
+                            .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                            .fetchStream().forEach(e -> {
+                        copyInsertModule(e, duplicated, requesterUserId, timestamp, copySub);
+                    });
+                }
             }
         } else {
             if (target.getType().equals(ModuleType.FILE.name())) {
                 DeleteModuleRequest deleteModuleRequest = new DeleteModuleRequest();
                 deleteModuleRequest.setModuleId(duplicated.getModuleId().toBigInteger());
                 deleteModule(deleteModuleRequest);
-                copyInsertModule(target, parent, requesterUserId, timestamp);
+                if (copySub) {
+                    copyInsertModule(target, parent, requesterUserId, timestamp, copySub);
+                }
             } else {
                 duplicated.setVersionNum(target.getVersionNum());
                 duplicated.setNamespaceId(target.getNamespaceId());
@@ -288,14 +299,14 @@ public class JooqModuleWriteRepository
                 duplicated.setLastUpdateTimestamp(timestamp);
                 duplicated.update();
 
-                dslContext().selectFrom(MODULE)
-                        .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
-                        .fetchStream().forEach(e -> {
-                    copyOverWriteModule(e, duplicated, requesterUserId, timestamp);
-                });
+                if (copySub) {
+                    dslContext().selectFrom(MODULE)
+                            .where(MODULE.PARENT_MODULE_ID.eq(target.getModuleId()))
+                            .fetchStream().forEach(e -> {
+                        copyOverWriteModule(e, duplicated, requesterUserId, timestamp, copySub);
+                    });
+                }
             }
-
-
         }
     }
 

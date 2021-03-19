@@ -11,6 +11,16 @@ public class CopyModuleRequest extends Request {
 
     private BigInteger targetModuleId;
 
+    public boolean isCopySubModules() {
+        return copySubModules;
+    }
+
+    public void setCopySubModules(boolean copySubModules) {
+        this.copySubModules = copySubModules;
+    }
+
+    private boolean copySubModules;
+
     public BigInteger getModuleSetId() {
         return moduleSetId;
     }
@@ -37,7 +47,19 @@ public class CopyModuleRequest extends Request {
 
     private BigInteger parentModuleId;
 
-    public CopyModuleRequest(ScoreUser requester) {
-        super(requester);
+    public CopyModuleRequest() {
+        super();
     }
+
+    @Override
+    public ScoreUser getRequester() {
+        return requester;
+    }
+
+    @Override
+    public void setRequester(ScoreUser requester) {
+        this.requester = requester;
+    }
+
+    private ScoreUser requester;
 }
