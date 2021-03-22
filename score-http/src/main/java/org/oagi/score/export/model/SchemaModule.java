@@ -43,18 +43,24 @@ public class SchemaModule {
     }
 
     public boolean hasInclude(SchemaModule schemaModule) {
-        if (this.equals(schemaModule)) {
-            return true;
-        }
-        if (this.includeModules.indexOf(schemaModule) > -1) {
-            return true;
-        }
-        for (SchemaModule include : this.includeModules) {
-            if (include.hasInclude(schemaModule)) {
+        try {
+            if (this.equals(schemaModule)) {
                 return true;
             }
+            if (this.includeModules.indexOf(schemaModule) > -1) {
+                return true;
+            }
+            for (SchemaModule include : this.includeModules) {
+                if (include.hasInclude(schemaModule)) {
+                    return true;
+                }
+            }
+            return false;
+
+        } catch (StackOverflowError e) {
+            throw new IllegalArgumentException("Circular reference found, can not export schema.");
         }
-        return false;
+
     }
 
     private boolean hasImport(SchemaModule schemaModule) {
