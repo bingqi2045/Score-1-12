@@ -836,10 +836,10 @@ public class XMLExportSchemaModuleVisitor {
             } else {
                 BccManifestRecord bccManifest = importedDataProvider.findBCCManifest(seqKey.getBccManifestId());
                 BccRecord bcc = importedDataProvider.findBCC(bccManifest.getBccId());
-                BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
-                BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
 
-                if (bcc.getSeqKey() > 0) {
+                if (bcc.getEntityType() == 1) {
+                    BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
+                    BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
                     Element element = new Element("element", XSD_NS);
 
                     element.setAttribute("ref", Utility.toCamelCase(bccp.getPropertyTerm()));
@@ -870,7 +870,6 @@ public class XMLExportSchemaModuleVisitor {
             }
         }
 
-        // for BCCP (Sequence Key == 0)
         for (SeqKeyRecord seqKey : seqKeys) {
             if (seqKey.getBccManifestId() != null) {
                 BccManifestRecord bccManifest = importedDataProvider.findBCCManifest(seqKey.getBccManifestId());
@@ -879,7 +878,7 @@ public class XMLExportSchemaModuleVisitor {
                 BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
                 DtRecord  bdt = importedDataProvider.findDT(bccp.getBdtId());
 
-                if (bcc.getSeqKey() == 0) {
+                if (bcc.getEntityType() == 0) {
                     Element attributeElement = new Element("attribute", XSD_NS);
 
                     attributeElement.setAttribute("name", Utility.toLowerCamelCase(bccp.getPropertyTerm()));
@@ -996,9 +995,7 @@ public class XMLExportSchemaModuleVisitor {
 
     
     public File endSchemaModule(SchemaModule schemaModule) throws Exception {
-        if (this.rootElement.getContent().isEmpty()) {
-            return null;
-        }
+
 
         FileUtils.forceMkdir(this.moduleFile.getParentFile());
 

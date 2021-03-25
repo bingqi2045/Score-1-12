@@ -1,6 +1,5 @@
 package org.oagi.score.export.impl;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
@@ -79,21 +78,20 @@ public class DefaultExportContextBuilder {
     }
 
     private void createAgencyIdList(Map<ULong, SchemaModule> moduleMap) {
-
-        for (AgencyIdListRecord agencyIdList : importedDataProvider.findAgencyIdList()) {
+        importedDataProvider.findAgencyIdList().forEach(agencyIdList -> {
             List<AgencyIdListValueRecord> agencyIdListValues =
                     importedDataProvider.findAgencyIdListValueByOwnerListId(agencyIdList.getAgencyIdListId());
 
             ModuleCCID moduleCCID = importedDataProvider.findModuleAgencyIdList(agencyIdList.getAgencyIdListId());
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addAgencyId(new AgencyId(agencyIdList, agencyIdListValues));
-        }
+        });
     }
 
     private void createCodeLists(Map<ULong, SchemaModule> moduleMap) {
         List<CodeListRecord> codeLists = importedDataProvider.findCodeList();
         Map<ULong, SchemaCodeList> schemaCodeListMap = new HashMap();
-        for (CodeListRecord codeList : codeLists) {
+        codeLists.forEach(codeList-> {
             SchemaCodeList schemaCodeList = new SchemaCodeList();
             schemaCodeList.setGuid(codeList.getGuid());
             schemaCodeList.setName(codeList.getName());
@@ -105,15 +103,15 @@ public class DefaultExportContextBuilder {
 
             ModuleCCID moduleCCID = importedDataProvider.findModuleCodeList(codeList.getCodeListId());
             if (moduleCCID == null) {
-                continue;
+                return;
             }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addCodeList(schemaCodeList);
 
             schemaCodeListMap.put(codeList.getCodeListId(), schemaCodeList);
-        }
+        });
 
-        for (CodeListRecord codeList : codeLists) {
+        codeLists.forEach(codeList-> {
             if (codeList.getBasedCodeListId() != null) {
                 SchemaCodeList schemaCodeList = schemaCodeListMap.get(codeList.getCodeListId());
                 SchemaCodeList baseSchemaCodeList = schemaCodeListMap.get(codeList.getBasedCodeListId());
@@ -129,32 +127,32 @@ public class DefaultExportContextBuilder {
                 addDependency(moduleMap.get(codeListModuleCCID.getModuleId()),
                         moduleMap.get(baseCodeListModuleCCID.getModuleId()));
             }
-        }
+        });
     }
 
     private void createXBTs(Map<ULong, SchemaModule> moduleMap) {
         List<XbtRecord> xbtList = importedDataProvider.findXbt();
-        for (XbtRecord xbt : xbtList) {
+        xbtList.forEach(xbt-> {
             ModuleCCID moduleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
             if (moduleCCID == null) {
-                continue;
+                return;
             }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addXBTSimpleType(new XBTSimpleType(xbt, importedDataProvider.findXbt(xbt.getSubtypeOfXbtId())));
-        }
+        });
     }
 
     private void createBDT(Map<ULong, SchemaModule> moduleMap) {
         List<DtRecord> bdtList = importedDataProvider.findDT().stream()
                 .filter(e -> !e.getType().equals("Core")).collect(Collectors.toList());
-        for (DtRecord bdt : bdtList) {
+        bdtList.forEach(bdt->{
             if (bdt.getBasedDtId() == null) {
                 throw new IllegalStateException();
             }
             DtRecord baseDataType = importedDataProvider.findDT(bdt.getBasedDtId());
             ModuleCCID moduleCCID = importedDataProvider.findModuleDt(bdt.getDtId());
             if (moduleCCID == null) {
-                continue;
+                return;
             }
 
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
@@ -250,12 +248,11 @@ public class DefaultExportContextBuilder {
             }
 
             schemaModule.addBDTSimple(bdtSimple);
-        }
+        });
     }
 
     private void createBCCP(Map<ULong, SchemaModule> moduleMap) {
-        for (BccpRecord bccp : importedDataProvider.findBCCP()) {
-
+        importedDataProvider.findBCCP().forEach(bccp-> {
             List<BccRecord> bccList = importedDataProvider.findBCCByToBccpId(bccp.getBccpId());
             if (isAvailable(bccList)) {
                 DtRecord bdt = importedDataProvider.findDT(bccp.getBdtId());
@@ -277,7 +274,7 @@ public class DefaultExportContextBuilder {
                 }
                 addDependency(schemaModule, moduleMap.get(dtModuleCCID.getModuleId()));
             }
-        }
+        });
     }
 
     private boolean isAvailable(List<BccRecord> bccList) {
@@ -292,14 +289,14 @@ public class DefaultExportContextBuilder {
     }
 
     private void createACC(Map<ULong, SchemaModule> moduleMap) {
-        for (AccManifestRecord accManifest : importedDataProvider.findACCManifest()) {
+        importedDataProvider.findACCManifest().forEach(accManifest->{
             AccRecord acc = importedDataProvider.findACC(accManifest.getAccId());
             if (acc.getDen().equals("Any Structured Content. Details")) {
-                continue;
+                return;
             }
             ModuleCCID moduleCCID = importedDataProvider.findModuleAcc(acc.getAccId());
             if (moduleCCID == null) {
-                continue;
+                return;
             }
 
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
@@ -338,33 +335,33 @@ public class DefaultExportContextBuilder {
                     addDependency(schemaModule, moduleMap.get(bccpModuleCCID.getModuleId()));
                 }
             });
-        }
+        });
     }
 
     private void createASCCP(Map<ULong, SchemaModule> moduleMap) {
-        for (AsccpManifestRecord asccpManifest : importedDataProvider.findASCCPManifest()) {
+        importedDataProvider.findASCCPManifest().forEach(asccpManifest -> {
             AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
             if (asccp.getReusableIndicator() == 0) {
-                continue;
+                return;
             }
 
             if (asccp.getDen().equals(ANY_ASCCP_DEN)) {
-                continue;
+                return;
             }
             ModuleCCID moduleCCID = importedDataProvider.findModuleAsccp(asccp.getAsccpId());
 
             if (moduleCCID == null) {
-                continue;
+                return;
             }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addASCCP(ASCCP.newInstance(asccp, asccpManifest, importedDataProvider));
 
             ModuleCCID roleOfAccModuleCCID = importedDataProvider.findModuleAcc(asccp.getRoleOfAccId());
             if (roleOfAccModuleCCID == null) {
-                continue;
+                return;
             }
             addDependency(schemaModule, moduleMap.get(roleOfAccModuleCCID.getModuleId()));
-        }
+        });
     }
 
     private void createBlobContents(Map<ULong, SchemaModule> moduleMap) {
