@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 
@@ -22,7 +23,7 @@ public class ModuleRepository {
                 MODULE.MODULE_ID, MODULE.NAME, MODULE.NAMESPACE_ID, MODULE.VERSION_NUM, MODULE.PATH)
                 .from(MODULE_SET_RELEASE)
                 .join(MODULE).on(MODULE_SET_RELEASE.MODULE_SET_ID.eq(MODULE.MODULE_SET_ID))
-                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .where(and(MODULE.TYPE.eq("FILE"), MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId)))
                 .fetchInto(ScoreModule.class);
     }
 }
