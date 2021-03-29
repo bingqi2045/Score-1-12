@@ -163,6 +163,11 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             throw new IllegalArgumentException("It only allows to discard the release for developers.");
         }
 
+        if (dslContext.selectFrom(MODULE_SET_RELEASE)
+                .where(MODULE_SET_RELEASE.RELEASE_ID.eq(releaseRecord.getReleaseId())).fetch().size() > 0) {
+            throw new IllegalArgumentException("This release is being used by module set release.");
+        }
+
         releaseRecord.delete();
     }
 
@@ -1285,6 +1290,12 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 }
             } else if (toCcState == Candidate) {
                 updateCCStates(user, fromCcState, toCcState, timestamp);
+
+                if (dslContext.selectFrom(MODULE_SET_RELEASE)
+                        .where(MODULE_SET_RELEASE.RELEASE_ID.eq(releaseRecord.getReleaseId())).fetch().size() > 0) {
+                    throw new IllegalArgumentException("This release is being used by module set release. Discard module set release first.");
+                }
+
                 dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.SEQ_KEY_ID)
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
