@@ -1291,9 +1291,19 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             } else if (toCcState == Candidate) {
                 updateCCStates(user, fromCcState, toCcState, timestamp);
 
-                if (dslContext.selectFrom(MODULE_SET_RELEASE)
-                        .where(MODULE_SET_RELEASE.RELEASE_ID.eq(releaseRecord.getReleaseId())).fetch().size() > 0) {
-                    throw new IllegalArgumentException("This release is being used by module set release. Discard module set release first.");
+                List<ULong> moduleSetReleases = dslContext.select(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
+                        .from(MODULE_SET_RELEASE)
+                        .where(MODULE_SET_RELEASE.RELEASE_ID.eq(releaseRecord.getReleaseId())).fetchInto(ULong.class);
+
+                if (moduleSetReleases.size() > 0) {
+                    dslContext.deleteFrom(MODULE_ACC_MANIFEST).where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_ASCCP_MANIFEST).where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_BCCP_MANIFEST).where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_DT_MANIFEST).where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_CODE_LIST_MANIFEST).where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_AGENCY_ID_LIST_MANIFEST).where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_XBT_MANIFEST).where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
+                    dslContext.deleteFrom(MODULE_BLOB_CONTENT_MANIFEST).where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
                 }
 
                 dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.SEQ_KEY_ID)
