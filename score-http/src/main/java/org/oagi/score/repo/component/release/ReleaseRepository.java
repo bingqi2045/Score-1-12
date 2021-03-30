@@ -165,7 +165,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
         if (dslContext.selectFrom(MODULE_SET_RELEASE)
                 .where(MODULE_SET_RELEASE.RELEASE_ID.eq(releaseRecord.getReleaseId())).fetch().size() > 0) {
-            throw new IllegalArgumentException("This release is being used by module set release.");
+            throw new IllegalArgumentException("It cannot be discarded because there are dependent module set releases.");
         }
 
         releaseRecord.delete();
