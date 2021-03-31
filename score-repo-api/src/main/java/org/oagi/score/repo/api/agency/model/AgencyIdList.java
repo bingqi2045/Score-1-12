@@ -3,13 +3,43 @@ package org.oagi.score.repo.api.agency.model;
 import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.corecomponent.model.CoreComponent;
-import org.oagi.score.repo.api.corecomponent.model.OagisComponentType;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 
 public class AgencyIdList extends Auditable implements CoreComponent, Serializable {
+
+    public BigInteger getAgencyIdListManifestId() {
+        return agencyIdListManifestId;
+    }
+
+    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+        this.agencyIdListManifestId = agencyIdListManifestId;
+    }
+
+    public String getReleaseNum() {
+        return releaseNum;
+    }
+
+    public void setReleaseNum(String releaseNum) {
+        this.releaseNum = releaseNum;
+    }
+
+    private String releaseNum;
+
+    private String revisionNum;
+
+    public String getRevisionNum() {
+        return revisionNum;
+    }
+
+    public void setRevisionNum(String revisionNum) {
+        this.revisionNum = revisionNum;
+    }
+
+    private BigInteger agencyIdListManifestId;
 
     private BigInteger agencyIdListId;
 
@@ -40,6 +70,26 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     private BigInteger prevAgencyIdListId;
 
     private BigInteger nextAgencyIdListId;
+
+    public AgencyIdList getPrev() {
+        return prev;
+    }
+
+    public void setPrev(AgencyIdList prev) {
+        this.prev = prev;
+    }
+
+    private AgencyIdList prev;
+
+    public List<AgencyIdListValue> getValues() {
+        return values;
+    }
+
+    public void setValues(List<AgencyIdListValue> values) {
+        this.values = values;
+    }
+
+    private List<AgencyIdListValue> values;
 
     public BigInteger getAgencyIdListId() {
         return agencyIdListId;

@@ -1,5 +1,7 @@
 package org.oagi.score.repo.api;
 
+import org.oagi.score.repo.api.agency.AgencyIdListReadRepository;
+import org.oagi.score.repo.api.agency.AgencyIdListWriteRepository;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
@@ -44,4 +46,6 @@ public interface ScoreRepositoryFactory {
     ModuleSetReleaseReadRepository createModuleSetReleaseReadRepository() throws ScoreDataAccessException;
     ModuleSetReleaseWriteRepository createModuleSetReleaseWriteRepository() throws ScoreDataAccessException;
 
+    AgencyIdListReadRepository createAgencyIdListReadRepository() throws  ScoreDataAccessException;
+    AgencyIdListWriteRepository createAgencyIdListWriteRepository() throws  ScoreDataAccessException;
 }

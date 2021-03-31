@@ -19,6 +19,16 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private String name;
 
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
+
+    private String definition;
+
     private BigInteger ownerAgencyIdListId;
 
     private ScoreUser owner;
