@@ -1,20 +1,33 @@
 package org.oagi.score.gateway.http.api.agency_id_management.controller;
 
+import org.oagi.score.gateway.http.api.agency_id_management.data.CreateAgencyIdListRequest;
 import org.oagi.score.gateway.http.api.agency_id_management.data.SimpleAgencyIdListValue;
+import org.oagi.score.gateway.http.api.agency_id_management.data.UpdateAgencyIdListListRequest;
 import org.oagi.score.gateway.http.api.agency_id_management.service.AgencyIdService;
+import org.oagi.score.gateway.http.api.cc_management.data.CcCreateResponse;
+import org.oagi.score.gateway.http.api.cc_management.data.CcUpdateStateListRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.agency.model.AgencyIdList;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListRequest;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
+import org.oagi.score.repo.api.base.SortDirection;
+import org.oagi.score.repo.api.corecomponent.model.CcState;
+import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.BieState;
+import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class AgencyIdController {
@@ -42,18 +55,70 @@ public class AgencyIdController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetAgencyIdListListResponse getAgencyIdListList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                            @RequestParam(name = "states", required = false) String states,
+                                                           @RequestParam(name = "name", required = false) String name,
+                                                           @RequestParam(name = "definition", required = false) String definition,
+                                                           @RequestParam(name = "module", required = false) String module,
+                                                           @RequestParam(name = "deprecated", required = false) String deprecated,
                                                            @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
                                                            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                            @RequestParam(name = "updateStart", required = false) String updateStart,
                                                            @RequestParam(name = "updateEnd", required = false) String updateEnd,
-                                                           @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
+                                                           @RequestParam(name = "releaseId", required = true) BigInteger releaseId,
                                                            @RequestParam(name = "sortActive") String sortActive,
                                                            @RequestParam(name = "sortDirection") String sortDirection,
                                                            @RequestParam(name = "pageIndex") int pageIndex,
                                                            @RequestParam(name = "pageSize") int pageSize) {
         GetAgencyIdListListRequest request = new GetAgencyIdListListRequest(sessionService.asScoreUser(user));
         request.setReleaseId(releaseId);
+        request.setName(name);
+        request.setDefinition(definition);
+        request.setModule(module);
+        if (deprecated != null) {
+            request.setDeprecated(deprecated.equals("true"));
+        }
+
+        request.setStates(StringUtils.hasLength(states) ?
+                Arrays.asList(states.split(",")).stream()
+                        .map(e -> CcState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
+        request.setOwnerLoginIds(!StringUtils.hasLength(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(!StringUtils.hasLength(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+
+        if (StringUtils.hasLength(updateStart)) {
+            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
+        }
+        if (StringUtils.hasLength(updateEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(updateEnd));
+            calendar.add(Calendar.DATE, 1);
+            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
+        }
+
+        request.setSortActive(sortActive);
+        request.setSortDirection(SortDirection.valueOf(sortDirection.toUpperCase()));
+        request.setPageIndex(pageIndex);
+        request.setPageSize(pageSize);
         return service.getAgencyIdListList(request);
     }
 
+    @RequestMapping(value = "/agency_id_list", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcCreateResponse createAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                               @RequestBody CreateAgencyIdListRequest request) {
+        CcCreateResponse ccCreateResponse = new CcCreateResponse();
+        ccCreateResponse.setManifestId(
+                service.createAgencyIdList(sessionService.asScoreUser(user), request.getReleaseId()));
+        return  ccCreateResponse;
+    }
+
+    @RequestMapping(value = "/agency_id_list/delete", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteAgencyIdLists(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                               @RequestBody UpdateAgencyIdListListRequest request) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestList()) {
+            service.updateAgencyIdListState(requester, agencyIdListManifestId, CcState.Deleted);
+        }
+    }
 }

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
@@ -52,6 +53,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.STATE,
                 RELEASE.RELEASE_NUM,
                 LOG.REVISION_NUM,
+                MODULE.PATH,
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
@@ -65,10 +67,15 @@ public class JooqAgencyIdListReadRepository
                 .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
                 .join(RELEASE).on(RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID))
                 .join(LOG).on(AGENCY_ID_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .join(NAMESPACE).on(AGENCY_ID_LIST.NAMESPACE_ID.eq(NAMESPACE.NAMESPACE_ID))
                 .join(APP_USER.as("creator")).on(AGENCY_ID_LIST.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
                 .join(APP_USER.as("owner")).on(AGENCY_ID_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(AGENCY_ID_LIST.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
+                .join(APP_USER.as("updater")).on(AGENCY_ID_LIST.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .leftJoin(MODULE_AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
+                .leftJoin(MODULE_SET_RELEASE).on(
+                        and(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID),
+                            MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1),
+                            MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)))
+                .leftJoin(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID));
     }
 
     private RecordMapper<Record, AgencyIdList> mapper() {
@@ -80,10 +87,14 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setEnumTypeGuid(e.get(AGENCY_ID_LIST.ENUM_TYPE_GUID));
             agencyIdList.setName(e.get(AGENCY_ID_LIST.NAME));
             agencyIdList.setListId(e.get(AGENCY_ID_LIST.LIST_ID));
-            agencyIdList.setAgencyIdListValueId(e.get(AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID).toBigInteger());
+            if (e.get(AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID) != null) {
+                agencyIdList.setAgencyIdListValueId(e.get(AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID).toBigInteger());
+            }
             agencyIdList.setVersionId(e.get(AGENCY_ID_LIST.VERSION_ID));
             agencyIdList.setDefinition(e.get(AGENCY_ID_LIST.DEFINITION));
-            agencyIdList.setNamespaceId(e.get(AGENCY_ID_LIST.NAMESPACE_ID).toBigInteger());
+            if (e.get(AGENCY_ID_LIST.NAMESPACE_ID) != null) {
+                agencyIdList.setNamespaceId(e.get(AGENCY_ID_LIST.NAMESPACE_ID).toBigInteger());
+            }
             agencyIdList.setOwner(new ScoreUser(
                     e.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
                     e.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
@@ -103,6 +114,7 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setState(CcState.valueOf(e.get(AGENCY_ID_LIST.STATE)));
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
+            agencyIdList.setModulePath(e.get(MODULE.PATH));
             return agencyIdList;
         };
     }
@@ -149,6 +161,29 @@ public class JooqAgencyIdListReadRepository
 
         if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), AGENCY_ID_LIST.NAME));
+        }
+
+        if (StringUtils.hasLength(request.getModule())) {
+            conditions.addAll(contains(request.getModule(), MODULE.PATH));
+        }
+
+        if (StringUtils.hasLength(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), AGENCY_ID_LIST.DEFINITION));
+        }
+
+        if (request.getStates().size() > 0) {
+            conditions.add(AGENCY_ID_LIST.STATE.in(request.getStates()));
+        }
+
+        if (!request.getOwnerLoginIds().isEmpty()) {
+            conditions.add(APP_USER.as("owner").LOGIN_ID.in(
+                    new HashSet<>(request.getOwnerLoginIds()).stream()
+                            .filter(e -> StringUtils.hasLength(e)).map(e -> trim(e)).collect(Collectors.toList())
+            ));
+        }
+
+        if (request.getDeprecated() != null) {
+            conditions.add(AGENCY_ID_LIST.IS_DEPRECATED.eq(request.getDeprecated() ? (byte) 1:0));
         }
 
         if (!request.getUpdaterUsernameList().isEmpty()) {

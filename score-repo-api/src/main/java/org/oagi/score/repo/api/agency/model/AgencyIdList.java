@@ -35,6 +35,16 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         return revisionNum;
     }
 
+    public String getModulePath() {
+        return modulePath;
+    }
+
+    public void setModulePath(String modulePath) {
+        this.modulePath = modulePath;
+    }
+
+    public String modulePath;
+
     public void setRevisionNum(String revisionNum) {
         this.revisionNum = revisionNum;
     }

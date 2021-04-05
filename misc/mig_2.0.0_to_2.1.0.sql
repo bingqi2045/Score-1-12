@@ -119,3 +119,5 @@ ALTER TABLE `module_xbt_manifest` MODIFY COLUMN `module_id` bigint(20) unsigned 
 DROP TABLE `module_dir`;
 DROP TABLE `module_dep`;
 DROP TABLE `module_set_assignment`;
+
+UPDATE `agency_id_list` SET `agency_id_list`.`enum_type_guid`  = REPLACE(`agency_id_list`.`enum_type_guid`, 'oagis-id-', '');
