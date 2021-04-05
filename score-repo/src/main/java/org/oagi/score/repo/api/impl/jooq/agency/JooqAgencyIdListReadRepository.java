@@ -40,6 +40,7 @@ public class JooqAgencyIdListReadRepository
     private SelectOnConditionStep select() {
         return dslContext().select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST.GUID,
                 AGENCY_ID_LIST.ENUM_TYPE_GUID,
                 AGENCY_ID_LIST.NAME,
@@ -115,6 +116,10 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
             agencyIdList.setModulePath(e.get(MODULE.PATH));
+            if (e.get(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID) != null) {
+                agencyIdList.setPrevAgencyIdListId(e.get(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+            }
+
             return agencyIdList;
         };
     }

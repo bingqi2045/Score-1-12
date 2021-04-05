@@ -165,4 +165,22 @@ public class AgencyIdController {
         String toState = request.get("toState");
         service.updateAgencyIdListState(requester, manifestId, CcState.valueOf(toState));
     }
+
+    @RequestMapping(value = "/agency_id_list/{manifestId}/revision",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void reviseAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                        @PathVariable("manifestId") BigInteger manifestId) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        service.reviseAgencyIdList(requester, manifestId);
+    }
+
+    @RequestMapping(value = "/agency_id_list/{manifestId}/cancel",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void cancelAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                   @PathVariable("manifestId") BigInteger manifestId) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        service.cancelAgencyIdList(requester, manifestId);
+    }
 }

@@ -53,6 +53,9 @@ public class AgencyIdService {
                         sessionService.getAppUser(agencyIdList.getOwner().getUserId()),
                         agencyIdList.getState().name(), isWorkingRelease).name()
         );
+        if (agencyIdList.getPrevAgencyIdListId() != null) {
+            agencyIdList.setPrev(scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdList(agencyIdList.getPrevAgencyIdListId()));
+        }
         return agencyIdList;
     }
 
@@ -78,5 +81,15 @@ public class AgencyIdService {
     @Transactional
     public void transferOwnership(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().transferOwnerShipAgencyIdList(user, agencyIdListManifestId, targetLoginId);
+    }
+
+    @Transactional
+    public void reviseAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) {
+        scoreRepositoryFactory.createAgencyIdListWriteRepository().reviseAgencyIdList(user, agencyIdListManifestId);
+    }
+
+    @Transactional
+    public void cancelAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) {
+        scoreRepositoryFactory.createAgencyIdListWriteRepository().cancelAgencyIdList(user, agencyIdListManifestId);
     }
 }
