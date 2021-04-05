@@ -19,6 +19,7 @@ import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
@@ -48,7 +49,7 @@ public class AgencyIdController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AgencyIdList getAgencyIdListDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                               @PathVariable("id") BigInteger manifestId) {
-        return service.getAgencyIdListDetail(manifestId);
+        return service.getAgencyIdListDetail(sessionService.asScoreUser(user), manifestId);
     }
 
     @RequestMapping(value = "/agency_id_list", method = RequestMethod.GET,
@@ -117,8 +118,51 @@ public class AgencyIdController {
     public void deleteAgencyIdLists(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                @RequestBody UpdateAgencyIdListListRequest request) {
         ScoreUser requester = sessionService.asScoreUser(user);
-        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestList()) {
+        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
             service.updateAgencyIdListState(requester, agencyIdListManifestId, CcState.Deleted);
         }
+    }
+
+    @RequestMapping(value = "/agency_id_list/restore", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void restoreAgencyIdLists(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                    @RequestBody UpdateAgencyIdListListRequest request) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
+            service.updateAgencyIdListState(requester, agencyIdListManifestId, CcState.WIP);
+        }
+    }
+
+    @RequestMapping(value = "/agency_id_list/{manifestId}/transfer_ownership",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @RequestBody Map<String, String> request) {
+        String targetLoginId = request.get("targetLoginId");
+        ScoreUser requester = sessionService.asScoreUser(user);
+        service.transferOwnership(requester, manifestId, targetLoginId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/agency_id_list/{manifestId}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public AgencyIdList updateAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                           @PathVariable("manifestId") BigInteger manifestId,
+                                           @RequestBody AgencyIdList agencyIdList) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        return service.updateAgencyIdListProperty(requester, agencyIdList);
+    }
+
+    @RequestMapping(value = "/agency_id_list/{manifestId}/state",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateAgencyIdListState(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                           @PathVariable("manifestId") BigInteger manifestId,
+                                           @RequestBody Map<String, String> request) {
+        ScoreUser requester = sessionService.asScoreUser(user);
+        String toState = request.get("toState");
+        service.updateAgencyIdListState(requester, manifestId, CcState.valueOf(toState));
     }
 }

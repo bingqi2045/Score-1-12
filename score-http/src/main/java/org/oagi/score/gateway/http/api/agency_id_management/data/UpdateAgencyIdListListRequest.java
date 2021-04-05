@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class UpdateAgencyIdListListRequest {
-    public List<BigInteger> agencyIdListManifestList;
+    public List<BigInteger> agencyIdListManifestIds;
 }

@@ -122,7 +122,56 @@ public class JooqAgencyIdListWriteRepository
     }
 
     @Override
-    public void transferOwnerShipAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) throws ScoreDataAccessException {
+    public void transferOwnerShipAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) throws ScoreDataAccessException {
+        ULong userId = ULong.valueOf(user.getUserId());
+        LocalDateTime timestamp = LocalDateTime.now();
+        ULong targetUserId = dslContext().selectFrom(APP_USER).where(APP_USER.LOGIN_ID.eq(targetLoginId)).fetchOne().getAppUserId();
+
+
+        AgencyIdListManifestRecord agencyIdListManifestRecord = dslContext().selectFrom(AGENCY_ID_LIST_MANIFEST)
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(
+                        ULong.valueOf(agencyIdListManifestId)
+                ))
+                .fetchOne();
+
+        AgencyIdListRecord agencyIdListRecord = dslContext().selectFrom(AGENCY_ID_LIST)
+                .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(agencyIdListRecord.getState()))) {
+            throw new IllegalArgumentException("Only the code list in 'WIP' state can be modified.");
+        }
+
+        if (!agencyIdListRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the code list by the owner.");
+        }
+
+        agencyIdListRecord.setOwnerUserId(targetUserId);
+        agencyIdListRecord.setLastUpdatedBy(userId);
+        agencyIdListRecord.setLastUpdateTimestamp(timestamp);
+        agencyIdListRecord.update(AGENCY_ID_LIST.OWNER_USER_ID, AGENCY_ID_LIST.LAST_UPDATED_BY, AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP);
+
+        for (AgencyIdListValueManifestRecord agencyIdListValueManifest : dslContext().selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                .fetch()) {
+
+            AgencyIdListValueRecord agencyIdListValueRecord = dslContext().selectFrom(AGENCY_ID_LIST_VALUE)
+                    .where(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(agencyIdListValueManifest.getAgencyIdListValueId()))
+                    .fetchOne();
+
+            agencyIdListValueRecord.setOwnerUserId(targetUserId);
+            agencyIdListValueRecord.update(AGENCY_ID_LIST_VALUE.OWNER_USER_ID);
+        }
+
+        LogRecord logRecord =
+                insertAgencyIdListLog(
+                        agencyIdListManifestRecord,
+                        agencyIdListRecord, agencyIdListManifestRecord.getLogId(),
+                        LogAction.Modified,
+                        userId, timestamp);
+
+        agencyIdListManifestRecord.setLogId(logRecord.getLogId());
+        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
     }
 
     @Override

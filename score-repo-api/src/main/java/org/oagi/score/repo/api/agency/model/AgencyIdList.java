@@ -81,6 +81,16 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private BigInteger nextAgencyIdListId;
 
+    public String getAccess() {
+        return access;
+    }
+
+    public void setAccess(String access) {
+        this.access = access;
+    }
+
+    private String access;
+
     public AgencyIdList getPrev() {
         return prev;
     }
