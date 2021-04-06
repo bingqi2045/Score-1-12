@@ -202,7 +202,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<UniqueKey<AgencyIdListRecord>> getKeys() {
-        return Arrays.<UniqueKey<AgencyIdListRecord>>asList(Keys.KEY_AGENCY_ID_LIST_PRIMARY, Keys.KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK1, Keys.KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK2);
+        return Arrays.<UniqueKey<AgencyIdListRecord>>asList(Keys.KEY_AGENCY_ID_LIST_PRIMARY);
     }
 
     @Override

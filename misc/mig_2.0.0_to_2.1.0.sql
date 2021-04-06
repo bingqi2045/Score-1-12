@@ -123,3 +123,12 @@ DROP TABLE `module_set_assignment`;
 UPDATE `agency_id_list` SET `agency_id_list`.`enum_type_guid`  = REPLACE(`agency_id_list`.`enum_type_guid`, ''oagis-id-'', '''');
 
 ALTER TABLE `agency_id_list` DROP INDEX `agency_id_list_uk2`, DROP INDEX `agency_id_list_uk1`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `agency_id_list_value_manifest_id` bigint(20) unsigned DEFAULT NULL AFTER `agency_id_list_id`,
+ADD CONSTRAINT `agency_id_list_value_manifest_id_fk` FOREIGN KEY (`agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+UPDATE
+	`agency_id_list_manifest`
+	JOIN `agency_id_list` ON `agency_id_list_manifest`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`
+	JOIN `agency_id_list_value_manifest` ON `agency_id_list`.`agency_id_list_value_id` = `agency_id_list_value_manifest`.`agency_id_list_value_id` AND `agency_id_list_value_manifest`.`release_id` = `agency_id_list_manifest`.`release_id`
+SET
+	`agency_id_list_manifest`.`agency_id_list_value_manifest_id` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_id`;

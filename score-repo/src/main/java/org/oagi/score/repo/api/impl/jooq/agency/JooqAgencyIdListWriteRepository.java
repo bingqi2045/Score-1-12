@@ -349,12 +349,17 @@ public class JooqAgencyIdListWriteRepository
                         LogAction.Revised,
                         userId, timestamp);
 
-        ULong responseAgencyIdListManifestId;
         agencyIdListManifestRecord.setAgencyIdListId(nextAgencyIdListRecord.getAgencyIdListId());
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
         agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID, AGENCY_ID_LIST_MANIFEST.LOG_ID);
 
-        responseAgencyIdListManifestId = agencyIdListManifestRecord.getAgencyIdListManifestId();
+        if (agencyIdListManifestRecord.getAgencyIdListValueManifestId() != null) {
+            nextAgencyIdListRecord.setAgencyIdListValueId(dslContext().select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
+                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListValueManifestId()))
+                    .fetchOneInto(ULong.class));
+            nextAgencyIdListRecord.update(AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID);
+        }
 
         // #1094 keep update BIE's code list id
         updateBIEAgencyIdListId(agencyIdListManifestRecord.getReleaseId().toBigInteger(),
