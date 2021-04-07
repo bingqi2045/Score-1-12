@@ -63,6 +63,16 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private BigInteger agencyIdListValueId;
 
+    public BigInteger getAgencyIdListValueManifestId() {
+        return agencyIdListValueManifestId;
+    }
+
+    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+        this.agencyIdListValueManifestId = agencyIdListValueManifestId;
+    }
+
+    private BigInteger agencyIdListValueManifestId;
+
     private String versionId;
 
     private BigInteger baseAgencyIdListId;

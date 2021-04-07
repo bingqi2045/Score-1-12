@@ -150,7 +150,19 @@ public class JooqAgencyIdListWriteRepository
         agencyIdListRecord.setIsDeprecated((byte) (agencyIdList.isDeprecated() ? 1 : 0));
         agencyIdListRecord.setLastUpdatedBy(userId);
         agencyIdListRecord.setLastUpdateTimestamp(timestamp);
-        agencyIdListRecord.update(AGENCY_ID_LIST.NAME,
+
+        if (agencyIdList.getAgencyIdListValueManifestId() != null) {
+            AgencyIdListValueManifestRecord agencyIdListValueManifestRecord = dslContext()
+                    .selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(agencyIdList.getAgencyIdListValueManifestId()))).fetchOne();
+            agencyIdListRecord.setAgencyIdListValueId(agencyIdListValueManifestRecord.getAgencyIdListValueId());
+            agencyIdListManifestRecord.setAgencyIdListValueManifestId(agencyIdListValueManifestRecord.getAgencyIdListValueManifestId());
+        } else {
+            agencyIdListRecord.setAgencyIdListValueId(null);
+            agencyIdListManifestRecord.setAgencyIdListValueManifestId(null);
+        }
+
+        agencyIdListRecord.update(AGENCY_ID_LIST.NAME, AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID,
                 AGENCY_ID_LIST.VERSION_ID, AGENCY_ID_LIST.LIST_ID, AGENCY_ID_LIST.NAMESPACE_ID,
                 AGENCY_ID_LIST.DEFINITION, AGENCY_ID_LIST.IS_DEPRECATED,
                 AGENCY_ID_LIST.LAST_UPDATED_BY, AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP);
@@ -163,8 +175,9 @@ public class JooqAgencyIdListWriteRepository
                         LogAction.Modified,
                         userId, timestamp);
 
+
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
-        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
+        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID);
 
         return agencyIdList;
     }
@@ -396,6 +409,9 @@ public class JooqAgencyIdListWriteRepository
                 agencyIdListRecord.getAgencyIdListId().toBigInteger(),
                 agencyIdListRecord.getPrevAgencyIdListId().toBigInteger());
 
+        agencyIdListRecord.setAgencyIdListValueId(null);
+        agencyIdListRecord.update(AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID);
+
         discardLogAgencyIdListValues(agencyIdListManifestRecord, agencyIdListRecord);
 
         // unlink prev AGENCY_ID_LIST
@@ -408,17 +424,21 @@ public class JooqAgencyIdListWriteRepository
                 .where(LOG.LOG_ID.eq(agencyIdListManifestRecord.getLogId()))
                 .fetchOneInto(String.class);
 
-        dslContext().update(AGENCY_ID_LIST_MANIFEST)
-                .setNull(AGENCY_ID_LIST_MANIFEST.LOG_ID)
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
-                .execute();
+        agencyIdListManifestRecord.setLogId(null);
+        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
 
         LogRecord logRecord = revertToStableStateByReference(reference);
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
-        dslContext().update(AGENCY_ID_LIST_MANIFEST)
-                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, logRecord.getLogId())
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
-                .execute();
+        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
+
+        if (prevAgencyIdListRecord.getAgencyIdListValueId() != null) {
+            agencyIdListManifestRecord.setAgencyIdListValueManifestId(
+                    dslContext().select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                            .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                            .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(agencyIdListManifestRecord.getReleaseId()),
+                                    AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(prevAgencyIdListRecord.getAgencyIdListValueId())
+                            )).fetchOneInto(ULong.class));
+        }
 
         // delete current AGENCY_ID_LIST
         agencyIdListRecord.delete();
@@ -730,10 +750,12 @@ public class JooqAgencyIdListWriteRepository
                         .collect(Collectors.toMap(AgencyIdListValueManifestRecord::getAgencyIdListValueId, Function.identity()));
 
         for (AgencyIdListValueRecord agencyIdListValueRecord : agencyIdListValueRecordMapByValue.values()) {
+            if (agencyIdListRecord.getAgencyIdListValueId().equals(agencyIdListValueRecord.getAgencyIdListValueId())) {
+                throw new IllegalArgumentException("The agency id list value in use can not be delete.");
+            }
             agencyIdListValueManifestRecordMapById.get(
                     agencyIdListValueRecord.getAgencyIdListValueId()
             ).delete();
-
             agencyIdListValueRecord.delete();
         }
     }

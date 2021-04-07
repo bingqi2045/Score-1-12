@@ -1,8 +1,6 @@
 package org.oagi.score.repo.api.agency.model;
 
 import org.oagi.score.repo.api.base.Auditable;
-import org.oagi.score.repo.api.corecomponent.CcManifest;
-import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.corecomponent.model.CoreComponent;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
@@ -11,7 +9,7 @@ import java.math.BigInteger;
 
 public class AgencyIdListValue extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger agencyIdListValueId;
+    private BigInteger agencyIdListValueManifestId;
 
     private String guid;
 
@@ -41,15 +39,15 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     @Override
     public BigInteger getId() {
-        return agencyIdListValueId;
+        return agencyIdListValueManifestId;
     }
 
-    public BigInteger getAgencyIdListValueId() {
-        return agencyIdListValueId;
+    public BigInteger getAgencyIdListValueManifestId() {
+        return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueId(BigInteger agencyIdListValueId) {
-        this.agencyIdListValueId = agencyIdListValueId;
+    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+        this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
     public String getGuid() {

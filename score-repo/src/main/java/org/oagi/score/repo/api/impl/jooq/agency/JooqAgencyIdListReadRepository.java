@@ -41,11 +41,13 @@ public class JooqAgencyIdListReadRepository
         return dslContext().select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.GUID,
                 AGENCY_ID_LIST.ENUM_TYPE_GUID,
                 AGENCY_ID_LIST.NAME,
                 AGENCY_ID_LIST.LIST_ID,
                 AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID,
+                AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                 AGENCY_ID_LIST.VERSION_ID,
                 AGENCY_ID_LIST.BASED_AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.DEFINITION,
@@ -76,7 +78,8 @@ public class JooqAgencyIdListReadRepository
                         and(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID),
                             MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1),
                             MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)))
-                .leftJoin(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID));
+                .leftJoin(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                .leftJoin(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID));
     }
 
     private RecordMapper<Record, AgencyIdList> mapper() {
@@ -116,8 +119,12 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
             agencyIdList.setModulePath(e.get(MODULE.PATH));
-            if (e.get(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID) != null) {
-                agencyIdList.setPrevAgencyIdListId(e.get(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+            if (e.get(AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID) != null) {
+                agencyIdList.setPrevAgencyIdListId(e.get(AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID).toBigInteger());
+            }
+
+            if (e.get(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID) != null) {
+                agencyIdList.setAgencyIdListValueManifestId(e.get(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID).toBigInteger());
             }
 
             return agencyIdList;
@@ -244,8 +251,31 @@ public class JooqAgencyIdListReadRepository
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public AgencyIdList getAgencyIdListById(BigInteger agencyIdListId) throws ScoreDataAccessException {
+        AgencyIdList agencyIdList = dslContext().select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST.GUID,
+                AGENCY_ID_LIST.ENUM_TYPE_GUID,
+                AGENCY_ID_LIST.NAME,
+                AGENCY_ID_LIST.LIST_ID,
+                AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID,
+                AGENCY_ID_LIST.VERSION_ID,
+                AGENCY_ID_LIST.BASED_AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST.DEFINITION,
+                AGENCY_ID_LIST.NAMESPACE_ID,
+                AGENCY_ID_LIST.IS_DEPRECATED,
+                AGENCY_ID_LIST.STATE)
+                .from(AGENCY_ID_LIST)
+                .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
+                .fetchOneInto(AgencyIdList.class);
+
+        return agencyIdList;
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public List<AgencyIdListValue> getAgencyIdListValueList(BigInteger agencyIdListManifestId) throws ScoreDataAccessException {
-        return dslContext().select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
+        return dslContext().select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                 AGENCY_ID_LIST_VALUE.GUID,
                 AGENCY_ID_LIST_VALUE.NAME,
                 AGENCY_ID_LIST_VALUE.VALUE,
@@ -256,7 +286,7 @@ public class JooqAgencyIdListReadRepository
                 .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(agencyIdListManifestId)))
         .fetch(e -> {
             AgencyIdListValue agencyIdListValue = new AgencyIdListValue();
-            agencyIdListValue.setAgencyIdListValueId(e.get(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID).toBigInteger());
+            agencyIdListValue.setAgencyIdListValueManifestId(e.get(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID).toBigInteger());
             agencyIdListValue.setDeprecated(e.get(AGENCY_ID_LIST_VALUE.IS_DEPRECATED) == 1);
             agencyIdListValue.setGuid(e.get(AGENCY_ID_LIST_VALUE.GUID));
             agencyIdListValue.setValue(e.get(AGENCY_ID_LIST_VALUE.VALUE));
