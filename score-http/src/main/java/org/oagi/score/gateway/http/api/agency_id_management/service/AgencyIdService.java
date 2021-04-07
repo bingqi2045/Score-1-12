@@ -15,10 +15,12 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.AccessPrivilege;
 import org.oagi.score.service.log.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +56,7 @@ public class AgencyIdService {
                         agencyIdList.getState().name(), isWorkingRelease).name()
         );
         if (agencyIdList.getPrevAgencyIdListId() != null) {
-            agencyIdList.setPrev(scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdList(agencyIdList.getPrevAgencyIdListId()));
+            agencyIdList.setPrev(scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdListById(agencyIdList.getPrevAgencyIdListId()));
         }
         return agencyIdList;
     }
@@ -76,6 +78,12 @@ public class AgencyIdService {
     @Transactional
     public void updateAgencyIdListState(ScoreUser user, BigInteger agencyIdListManifestId, CcState toState) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().updateAgencyIdListState(user, agencyIdListManifestId, toState);
+    }
+
+    @Transactional
+    public void updateAgencyIdListState(AuthenticatedPrincipal user, LocalDateTime timestamp, BigInteger agencyIdListManifestId, String state) {
+        scoreRepositoryFactory.createAgencyIdListWriteRepository().updateAgencyIdListState(sessionService.asScoreUser(user),
+                agencyIdListManifestId, CcState.valueOf(state));
     }
 
     @Transactional

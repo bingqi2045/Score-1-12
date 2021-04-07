@@ -269,6 +269,15 @@ public class JooqAgencyIdListReadRepository
                 .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
                 .fetchOneInto(AgencyIdList.class);
 
+        agencyIdList.setValues(dslContext().select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
+                AGENCY_ID_LIST_VALUE.GUID,
+                AGENCY_ID_LIST_VALUE.NAME,
+                AGENCY_ID_LIST_VALUE.VALUE,
+                AGENCY_ID_LIST_VALUE.DEFINITION,
+                AGENCY_ID_LIST_VALUE.IS_DEPRECATED)
+                .from(AGENCY_ID_LIST_VALUE)
+                .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
+                .fetchInto(AgencyIdListValue.class));
         return agencyIdList;
     }
 
