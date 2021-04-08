@@ -93,7 +93,10 @@ public class CodeListWriteRepository {
             }
             codeList.setAgencyId(dslContext.select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID)
                     .from(AGENCY_ID_LIST_VALUE)
-                    .where(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName))
+                    .join(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                    .where(and(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName),
+                            AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
                     .fetchOneInto(ULong.class));
             codeList.setVersionId("1");
             if (user.isDeveloper()) {
