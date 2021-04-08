@@ -38,6 +38,9 @@ public class AgencyIdService {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private LogRepository logRepository;
+
     public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues() {
         return dslContext.select(Tables.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
                 Tables.AGENCY_ID_LIST_VALUE.NAME)

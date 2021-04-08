@@ -1,6 +1,8 @@
 package org.oagi.score.repo.api.impl.jooq.agency;
 
+import com.google.gson.Gson;
 import org.jooq.DSLContext;
+import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.agency.AgencyIdListWriteRepository;
@@ -20,10 +22,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,15 +53,15 @@ public class JooqAgencyIdListWriteRepository
         agencyIdListRecord.setOwnerUserId(ULong.valueOf(user.getUserId()));
         agencyIdListRecord.setLastUpdatedBy(ULong.valueOf(user.getUserId()));
         agencyIdListRecord.setLastUpdateTimestamp(timestamp);
-        agencyIdListRecord.setAgencyIdListId(dslContext().insertInto(AGENCY_ID_LIST).set(agencyIdListRecord)
-                .returning(AGENCY_ID_LIST.AGENCY_ID_LIST_ID).fetchOne().getAgencyIdListId());
+        agencyIdListRecord = dslContext().insertInto(AGENCY_ID_LIST).set(agencyIdListRecord)
+                .returning().fetchOne();
 
         AgencyIdListManifestRecord agencyIdListManifestRecord = new AgencyIdListManifestRecord();
         agencyIdListManifestRecord.setAgencyIdListId(agencyIdListRecord.getAgencyIdListId());
         agencyIdListManifestRecord.setReleaseId(ULong.valueOf(releaseId));
-        agencyIdListManifestRecord.setAgencyIdListManifestId(dslContext().insertInto(AGENCY_ID_LIST_MANIFEST)
-                .set(agencyIdListManifestRecord).returning(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
-                .fetchOne().getAgencyIdListManifestId());
+        agencyIdListManifestRecord = dslContext().insertInto(AGENCY_ID_LIST_MANIFEST)
+                .set(agencyIdListManifestRecord).returning()
+                .fetchOne();
 
         LogRecord logRecord = insertAgencyIdListLog(agencyIdListManifestRecord, agencyIdListRecord, null, LogAction.Added, ULong.valueOf(user.getUserId()), timestamp);
 
@@ -581,8 +580,8 @@ public class JooqAgencyIdListWriteRepository
                 ))
                 .fetch();
 
-//        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(agencyIdListManifestRecord, agencyIdListRecord,
-//                agencyIdListValueManifestRecords, agencyIdListValueRecords)));
+        logRecord.setSnapshot(JSON.valueOf(serialize(agencyIdListManifestRecord, agencyIdListRecord,
+                agencyIdListValueManifestRecords, agencyIdListValueRecords)));
         logRecord.setReference(agencyIdListRecord.getGuid());
         logRecord.setCreatedBy(requesterId);
         logRecord.setCreationTimestamp(timestamp);
@@ -599,6 +598,90 @@ public class JooqAgencyIdListWriteRepository
         }
 
         return logRecord;
+    }
+
+    private String serialize(AgencyIdListManifestRecord agencyIdListManifestRecord, AgencyIdListRecord agencyIdListRecord,
+                            List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords, List<AgencyIdListValueRecord> agencyIdListValueRecords) {
+        Map<String, Object> properties = new HashMap();
+
+        properties.put("component", "agencyIdList");
+        properties.put("guid", agencyIdListRecord.getGuid());
+        properties.put("enumTypeGuid", agencyIdListRecord.getEnumTypeGuid());
+        if (agencyIdListRecord.getAgencyIdListValueId() != null) {
+            AgencyIdListValueRecord agencyIdListValueRecord = dslContext().selectFrom(AGENCY_ID_LIST_VALUE)
+                    .where(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(agencyIdListRecord.getAgencyIdListValueId()))
+                    .fetchOptional().orElse(null);
+            Map<String, Object> userProperties = new HashMap();
+            userProperties.put("guid", agencyIdListValueRecord.getGuid());
+            userProperties.put("name", agencyIdListValueRecord.getName());
+            properties.put("agencyIdListValue", userProperties);
+
+        }
+        properties.put("name", agencyIdListRecord.getName());
+        properties.put("listId", agencyIdListRecord.getListId());
+        properties.put("versionId", agencyIdListRecord.getVersionId());
+        properties.put("definition", agencyIdListRecord.getDefinition());
+        properties.put("state", agencyIdListRecord.getState());
+        properties.put("deprecated", (byte) 1 == agencyIdListRecord.getIsDeprecated());
+
+        if (agencyIdListRecord.getBasedAgencyIdListId() != null) {
+            AgencyIdListRecord based = dslContext().selectFrom(AGENCY_ID_LIST)
+                    .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(agencyIdListRecord.getBasedAgencyIdListId()))
+                    .fetchOptional().orElse(null);
+            Map<String, Object> userProperties = new HashMap();
+            userProperties.put("guid", based.getGuid());
+            userProperties.put("name", based.getName());
+            userProperties.put("listId", based.getListId());
+            userProperties.put("versionId", based.getVersionId());
+            properties.put("basedAgencyIdList", userProperties);
+        }
+
+        AppUserRecord userRecord = dslContext().selectFrom(APP_USER)
+                .where(APP_USER.APP_USER_ID.eq(agencyIdListRecord.getOwnerUserId()))
+                .fetchOptional().orElse(null);
+
+        Map<String, Object> ownerProperties = new HashMap();
+        ownerProperties.put("username", userRecord.getLoginId());
+        ownerProperties.put("roles", Arrays.asList(((byte) 1 == userRecord.getIsDeveloper()) ?
+                "developer" : "end-user"));
+        properties.put("ownerUser", ownerProperties);
+
+        if (agencyIdListRecord.getNamespaceId() != null) {
+            NamespaceRecord namespaceRecord = dslContext().selectFrom(NAMESPACE)
+                    .where(NAMESPACE.NAMESPACE_ID.eq(agencyIdListRecord.getNamespaceId()))
+                    .fetchOptional().orElse(null);
+
+            Map<String, Object> userProperties = new HashMap();
+            userProperties.put("uri", namespaceRecord.getUri());
+            userProperties.put("standard", (byte) 1 == namespaceRecord.getIsStdNmsp());
+            properties.put("namespace", userProperties);
+        }
+
+        List<Map<String, Object>> values = new ArrayList();
+        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
+                Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
+        for (AgencyIdListValueManifestRecord agencyIdListValueManifestRecord : agencyIdListValueManifestRecords) {
+            AgencyIdListValueRecord agencyIdListValueRecord = agencyIdListValueRecordMap.get(agencyIdListValueManifestRecord.getAgencyIdListValueId());
+            values.add(serialize(agencyIdListValueManifestRecord, agencyIdListValueRecord));
+        }
+        properties.put("values", values);
+
+        Gson gson = new Gson();
+        return gson.toJson(properties, HashMap.class);
+    }
+
+    private Map<String, Object> serialize(AgencyIdListValueManifestRecord agencyIdListValueManifestRecord,
+                                          AgencyIdListValueRecord agencyIdListValueRecord) {
+        Map<String, Object> properties = new HashMap();
+
+        properties.put("component", "agencyIdListValue");
+        properties.put("guid", agencyIdListValueRecord.getGuid());
+        properties.put("value", agencyIdListValueRecord.getValue());
+        properties.put("name", agencyIdListValueRecord.getName());
+        properties.put("definition", agencyIdListValueRecord.getDefinition());
+        properties.put("deprecated", (byte) 1 == agencyIdListValueRecord.getIsDeprecated());
+
+        return properties;
     }
 
     public ModifyAgencyIdListValuesRepositoryResponse modifyAgencyIdListValues(ModifyAgencyIdListValuesRepositoryRequest request) {
