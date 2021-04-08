@@ -15,10 +15,8 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -54,6 +52,8 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.NAMESPACE_ID,
                 AGENCY_ID_LIST.IS_DEPRECATED,
                 AGENCY_ID_LIST.STATE,
+                AGENCY_ID_LIST.CREATION_TIMESTAMP,
+                AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP,
                 RELEASE.RELEASE_NUM,
                 LOG.REVISION_NUM,
                 MODULE.PATH,
@@ -119,6 +119,8 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
             agencyIdList.setModulePath(e.get(MODULE.PATH));
+            agencyIdList.setCreationTimestamp(Date.from(e.get(AGENCY_ID_LIST.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+            agencyIdList.setLastUpdateTimestamp(Date.from(e.get(AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             if (e.get(AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID) != null) {
                 agencyIdList.setPrevAgencyIdListId(e.get(AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID).toBigInteger());
             }
