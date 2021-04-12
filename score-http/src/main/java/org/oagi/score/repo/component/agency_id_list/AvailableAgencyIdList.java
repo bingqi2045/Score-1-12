@@ -11,5 +11,5 @@ public class AvailableAgencyIdList {
     private BigInteger agencyIdListManifestId;
     private BigInteger basedAgencyIdListManifestId;
     private String agencyIdListName;
-
+    private String versionId;
 }

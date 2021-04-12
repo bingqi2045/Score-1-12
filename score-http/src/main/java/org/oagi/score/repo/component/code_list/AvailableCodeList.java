@@ -14,5 +14,6 @@ public class AvailableCodeList {
     private BigInteger basedCodeListManifestId;
     private String codeListName;
     private String state;
+    private String versionId;
 
 }
