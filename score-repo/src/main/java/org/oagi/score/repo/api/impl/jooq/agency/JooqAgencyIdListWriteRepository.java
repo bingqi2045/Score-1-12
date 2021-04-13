@@ -51,6 +51,7 @@ public class JooqAgencyIdListWriteRepository
         agencyIdListRecord.setCreatedBy(ULong.valueOf(user.getUserId()));
         agencyIdListRecord.setCreationTimestamp(timestamp);
         agencyIdListRecord.setOwnerUserId(ULong.valueOf(user.getUserId()));
+        agencyIdListRecord.setListId(ScoreGuidUtils.randomGuid());
         agencyIdListRecord.setLastUpdatedBy(ULong.valueOf(user.getUserId()));
         agencyIdListRecord.setLastUpdateTimestamp(timestamp);
         agencyIdListRecord = dslContext().insertInto(AGENCY_ID_LIST).set(agencyIdListRecord)

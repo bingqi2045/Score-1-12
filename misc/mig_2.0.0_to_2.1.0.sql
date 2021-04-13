@@ -132,3 +132,10 @@ UPDATE
 	JOIN `agency_id_list_value_manifest` ON `agency_id_list`.`agency_id_list_value_id` = `agency_id_list_value_manifest`.`agency_id_list_value_id` AND `agency_id_list_value_manifest`.`release_id` = `agency_id_list_manifest`.`release_id`
 SET
 	`agency_id_list_manifest`.`agency_id_list_value_manifest_id` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list`
+ADD COLUMN `remark` varchar(225) DEFAULT NULL COMMENT 'Usage information about the agency id list.' AFTER `definition`,
+ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list''s DEFINITION.' AFTER `definition`;
+
+ALTER TABLE `agency_id_list_value`
+ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list value''s DEFINITION.' AFTER `definition`;

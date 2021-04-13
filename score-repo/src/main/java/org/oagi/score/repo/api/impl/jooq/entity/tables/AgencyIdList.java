@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -94,6 +94,16 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
      * The column <code>oagi.agency_id_list.definition</code>. Description of the agency identification list.
      */
     public final TableField<AgencyIdListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB, this, "Description of the agency identification list.");
+
+    /**
+     * The column <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list's DEFINITION.
+     */
+    public final TableField<AgencyIdListRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(100), this, "This is typically a URL which indicates the source of the agency id list's DEFINITION.");
+
+    /**
+     * The column <code>oagi.agency_id_list.remark</code>. Usage information about the agency id list.
+     */
+    public final TableField<AgencyIdListRecord, String> REMARK = createField(DSL.name("remark"), SQLDataType.VARCHAR(225), this, "Usage information about the agency id list.");
 
     /**
      * The column <code>oagi.agency_id_list.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
@@ -273,11 +283,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row22<ULong, String, String, String, String, ULong, String, ULong, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }
