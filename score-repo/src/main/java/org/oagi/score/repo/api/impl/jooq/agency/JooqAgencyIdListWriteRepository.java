@@ -111,6 +111,7 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValue.setName(e.getName());
             agencyIdListValue.setValue(e.getValue());
             agencyIdListValue.setDefinition(e.getDefinition());
+            agencyIdListValue.setDefinitionSource(e.getDefinitionSource());
             agencyIdListValue.setDeprecated(e.isDeprecated());
 
             if (agencyIdListValue.isLocked()) {
@@ -147,6 +148,8 @@ public class JooqAgencyIdListWriteRepository
         agencyIdListRecord.setListId(agencyIdList.getListId());
         agencyIdListRecord.setNamespaceId((agencyIdList.getNamespaceId() != null) ? ULong.valueOf(agencyIdList.getNamespaceId()) : null);
         agencyIdListRecord.setDefinition(agencyIdList.getDefinition());
+        agencyIdListRecord.setDefinitionSource(agencyIdList.getDefinitionSource());
+        agencyIdListRecord.setRemark(agencyIdList.getRemark());
         agencyIdListRecord.setIsDeprecated((byte) (agencyIdList.isDeprecated() ? 1 : 0));
         agencyIdListRecord.setLastUpdatedBy(userId);
         agencyIdListRecord.setLastUpdateTimestamp(timestamp);
@@ -164,8 +167,8 @@ public class JooqAgencyIdListWriteRepository
 
         agencyIdListRecord.update(AGENCY_ID_LIST.NAME, AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID,
                 AGENCY_ID_LIST.VERSION_ID, AGENCY_ID_LIST.LIST_ID, AGENCY_ID_LIST.NAMESPACE_ID,
-                AGENCY_ID_LIST.DEFINITION, AGENCY_ID_LIST.IS_DEPRECATED,
-                AGENCY_ID_LIST.LAST_UPDATED_BY, AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP);
+                AGENCY_ID_LIST.DEFINITION, AGENCY_ID_LIST.DEFINITION_SOURCE, AGENCY_ID_LIST.REMARK,
+                AGENCY_ID_LIST.IS_DEPRECATED, AGENCY_ID_LIST.LAST_UPDATED_BY, AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
         LogRecord logRecord =
@@ -622,6 +625,8 @@ public class JooqAgencyIdListWriteRepository
         properties.put("listId", agencyIdListRecord.getListId());
         properties.put("versionId", agencyIdListRecord.getVersionId());
         properties.put("definition", agencyIdListRecord.getDefinition());
+        properties.put("definitionSource", agencyIdListRecord.getDefinitionSource());
+        properties.put("remark", agencyIdListRecord.getRemark());
         properties.put("state", agencyIdListRecord.getState());
         properties.put("deprecated", (byte) 1 == agencyIdListRecord.getIsDeprecated());
 
@@ -680,6 +685,7 @@ public class JooqAgencyIdListWriteRepository
         properties.put("value", agencyIdListValueRecord.getValue());
         properties.put("name", agencyIdListValueRecord.getName());
         properties.put("definition", agencyIdListValueRecord.getDefinition());
+        properties.put("definitionSource", agencyIdListValueRecord.getDefinitionSource());
         properties.put("deprecated", (byte) 1 == agencyIdListValueRecord.getIsDeprecated());
 
         return properties;
@@ -754,6 +760,7 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValueRecord.setName(agencyIdListValue.getName());
             agencyIdListValueRecord.setValue(agencyIdListValue.getValue());
             agencyIdListValueRecord.setDefinition(agencyIdListValue.getDefinition());
+            agencyIdListValueRecord.setDefinitionSource(agencyIdListValue.getDefinitionSource());
             agencyIdListValueRecord.setCreatedBy(userId);
             agencyIdListValueRecord.setOwnerUserId(userId);
             agencyIdListValueRecord.setLastUpdatedBy(userId);
@@ -803,13 +810,14 @@ public class JooqAgencyIdListWriteRepository
 
             agencyIdListValueRecord.setName(agencyIdListValue.getName());
             agencyIdListValueRecord.setDefinition(agencyIdListValue.getDefinition());
+            agencyIdListValueRecord.setDefinitionSource(agencyIdListValue.getDefinitionSource());
             agencyIdListValueRecord.setIsDeprecated((byte) (agencyIdListValue.isDeprecated() ? 1 : 0));
             agencyIdListValueRecord.setLastUpdatedBy(userId);
             agencyIdListValueRecord.setLastUpdateTimestamp(timestamp);
 
             agencyIdListValueRecord.update(
-                    AGENCY_ID_LIST_VALUE.NAME,
-                    AGENCY_ID_LIST_VALUE.DEFINITION, AGENCY_ID_LIST_VALUE.IS_DEPRECATED,
+                    AGENCY_ID_LIST_VALUE.NAME, AGENCY_ID_LIST_VALUE.IS_DEPRECATED,
+                    AGENCY_ID_LIST_VALUE.DEFINITION, AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
                     AGENCY_ID_LIST_VALUE.LAST_UPDATED_BY, AGENCY_ID_LIST_VALUE.LAST_UPDATE_TIMESTAMP);
         }
     }

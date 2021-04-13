@@ -135,7 +135,8 @@ SET
 
 ALTER TABLE `agency_id_list`
 ADD COLUMN `remark` varchar(225) DEFAULT NULL COMMENT 'Usage information about the agency id list.' AFTER `definition`,
-ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list''s DEFINITION.' AFTER `definition`;
+ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list''s DEFINITION.' AFTER `definition`,
+MODIFY COLUMN `list_id` varchar(100) DEFAULT NULL COMMENT 'This is a business or standard identification assigned to the agency identification list.';
 
 ALTER TABLE `agency_id_list_value`
 ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list value''s DEFINITION.' AFTER `definition`;

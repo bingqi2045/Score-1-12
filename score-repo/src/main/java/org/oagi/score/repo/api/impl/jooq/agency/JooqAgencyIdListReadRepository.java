@@ -49,6 +49,8 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.VERSION_ID,
                 AGENCY_ID_LIST.BASED_AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.DEFINITION,
+                AGENCY_ID_LIST.DEFINITION_SOURCE,
+                AGENCY_ID_LIST.REMARK,
                 AGENCY_ID_LIST.NAMESPACE_ID,
                 AGENCY_ID_LIST.IS_DEPRECATED,
                 AGENCY_ID_LIST.STATE,
@@ -96,6 +98,8 @@ public class JooqAgencyIdListReadRepository
             }
             agencyIdList.setVersionId(e.get(AGENCY_ID_LIST.VERSION_ID));
             agencyIdList.setDefinition(e.get(AGENCY_ID_LIST.DEFINITION));
+            agencyIdList.setDefinitionSource(e.get(AGENCY_ID_LIST.DEFINITION_SOURCE));
+            agencyIdList.setRemark(e.get(AGENCY_ID_LIST.REMARK));
             if (e.get(AGENCY_ID_LIST.NAMESPACE_ID) != null) {
                 agencyIdList.setNamespaceId(e.get(AGENCY_ID_LIST.NAMESPACE_ID).toBigInteger());
             }
@@ -264,6 +268,8 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.VERSION_ID,
                 AGENCY_ID_LIST.BASED_AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.DEFINITION,
+                AGENCY_ID_LIST.DEFINITION_SOURCE,
+                AGENCY_ID_LIST.REMARK,
                 AGENCY_ID_LIST.NAMESPACE_ID,
                 AGENCY_ID_LIST.IS_DEPRECATED,
                 AGENCY_ID_LIST.STATE)
@@ -276,6 +282,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST_VALUE.NAME,
                 AGENCY_ID_LIST_VALUE.VALUE,
                 AGENCY_ID_LIST_VALUE.DEFINITION,
+                AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
                 AGENCY_ID_LIST_VALUE.IS_DEPRECATED)
                 .from(AGENCY_ID_LIST_VALUE)
                 .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
@@ -291,6 +298,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST_VALUE.NAME,
                 AGENCY_ID_LIST_VALUE.VALUE,
                 AGENCY_ID_LIST_VALUE.DEFINITION,
+                AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
                 AGENCY_ID_LIST_VALUE.IS_DEPRECATED)
                 .from(AGENCY_ID_LIST_VALUE)
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID))
@@ -303,6 +311,7 @@ public class JooqAgencyIdListReadRepository
             agencyIdListValue.setValue(e.get(AGENCY_ID_LIST_VALUE.VALUE));
             agencyIdListValue.setName(e.get(AGENCY_ID_LIST_VALUE.NAME));
             agencyIdListValue.setDefinition(e.get(AGENCY_ID_LIST_VALUE.DEFINITION));
+            agencyIdListValue.setDefinitionSource(e.get(AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE));
             return agencyIdListValue;
         });
     }

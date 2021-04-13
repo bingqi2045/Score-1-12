@@ -79,6 +79,26 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private String definition;
 
+    private String definitionSource;
+
+    private String remark;
+
+    public String getDefinitionSource() {
+        return definitionSource;
+    }
+
+    public void setDefinitionSource(String definitionSource) {
+        this.definitionSource = definitionSource;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
     private BigInteger namespaceId;
 
     private ScoreUser owner;

@@ -73,7 +73,7 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     /**
      * The column <code>oagi.agency_id_list.list_id</code>. This is a business or standard identification assigned to the agency identification list.
      */
-    public final TableField<AgencyIdListRecord, String> LIST_ID = createField(DSL.name("list_id"), SQLDataType.VARCHAR(10), this, "This is a business or standard identification assigned to the agency identification list.");
+    public final TableField<AgencyIdListRecord, String> LIST_ID = createField(DSL.name("list_id"), SQLDataType.VARCHAR(100), this, "This is a business or standard identification assigned to the agency identification list.");
 
     /**
      * The column <code>oagi.agency_id_list.agency_id_list_value_id</code>. This is the identification of the agency or organization which developed and/or maintains the list. Theoretically, this can be modeled as a self-reference foreign key, but it is not implemented at this point.

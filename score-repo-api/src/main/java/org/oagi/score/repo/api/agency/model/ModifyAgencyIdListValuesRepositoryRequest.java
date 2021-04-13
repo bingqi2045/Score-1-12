@@ -32,6 +32,16 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
         private String name;
         private String definition;
 
+        public String getDefinitionSource() {
+            return definitionSource;
+        }
+
+        public void setDefinitionSource(String definitionSource) {
+            this.definitionSource = definitionSource;
+        }
+
+        private String definitionSource;
+
         private boolean deprecated;
         private boolean used;
         private boolean locked;
