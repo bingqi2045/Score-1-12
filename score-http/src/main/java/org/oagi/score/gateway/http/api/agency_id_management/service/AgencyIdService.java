@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.agency_id_management.service;
 
 import org.jooq.DSLContext;
 import org.oagi.score.export.model.AgencyId;
+import org.oagi.score.gateway.http.api.agency_id_management.data.CreateAgencyIdListRequest;
 import org.oagi.score.gateway.http.api.agency_id_management.data.SimpleAgencyIdListValue;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
@@ -69,8 +70,8 @@ public class AgencyIdService {
     }
 
     @Transactional
-    public BigInteger createAgencyIdList(ScoreUser user, BigInteger releaseId) {
-        return scoreRepositoryFactory.createAgencyIdListWriteRepository().createAgencyIdList(user, releaseId);
+    public BigInteger createAgencyIdList(ScoreUser user, CreateAgencyIdListRequest request) {
+        return scoreRepositoryFactory.createAgencyIdListWriteRepository().createAgencyIdList(user, request.getReleaseId(), request.getBasedAgencyIdListManifestId());
     }
 
     @Transactional

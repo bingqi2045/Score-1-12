@@ -109,7 +109,7 @@ public class AgencyIdController {
                                                @RequestBody CreateAgencyIdListRequest request) {
         CcCreateResponse ccCreateResponse = new CcCreateResponse();
         ccCreateResponse.setManifestId(
-                service.createAgencyIdList(sessionService.asScoreUser(user), request.getReleaseId()));
+                service.createAgencyIdList(sessionService.asScoreUser(user), request));
         return  ccCreateResponse;
     }
 

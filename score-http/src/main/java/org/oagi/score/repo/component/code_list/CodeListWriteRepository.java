@@ -71,6 +71,7 @@ public class CodeListWriteRepository {
             codeList.setName(basedCodeListRecord.getName());
             codeList.setAgencyId(basedCodeListRecord.getAgencyId());
             codeList.setVersionId(basedCodeListRecord.getVersionId());
+            codeList.setBasedCodeListId(basedCodeListRecord.getCodeListId());
             if (user.isDeveloper()) {
                 codeList.setExtensibleIndicator(basedCodeListRecord.getExtensibleIndicator());
             } else {
