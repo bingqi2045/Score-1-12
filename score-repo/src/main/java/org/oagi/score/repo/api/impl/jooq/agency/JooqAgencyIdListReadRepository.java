@@ -273,7 +273,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.DEFINITION_SOURCE,
                 AGENCY_ID_LIST.REMARK,
                 AGENCY_ID_LIST.NAMESPACE_ID,
-                AGENCY_ID_LIST.IS_DEPRECATED,
+                AGENCY_ID_LIST.IS_DEPRECATED.as("deprecated"),
                 AGENCY_ID_LIST.STATE)
                 .from(AGENCY_ID_LIST)
                 .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
