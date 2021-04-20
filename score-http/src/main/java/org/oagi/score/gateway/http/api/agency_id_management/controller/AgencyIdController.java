@@ -1,11 +1,8 @@
 package org.oagi.score.gateway.http.api.agency_id_management.controller;
 
-import org.oagi.score.gateway.http.api.agency_id_management.data.CreateAgencyIdListRequest;
-import org.oagi.score.gateway.http.api.agency_id_management.data.SimpleAgencyIdListValue;
-import org.oagi.score.gateway.http.api.agency_id_management.data.UpdateAgencyIdListListRequest;
+import org.oagi.score.gateway.http.api.agency_id_management.data.*;
 import org.oagi.score.gateway.http.api.agency_id_management.service.AgencyIdService;
 import org.oagi.score.gateway.http.api.cc_management.data.CcCreateResponse;
-import org.oagi.score.gateway.http.api.cc_management.data.CcUpdateStateListRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.agency.model.AgencyIdList;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListRequest;
@@ -13,10 +10,6 @@ import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
 import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.user.model.ScoreUser;
-import org.oagi.score.service.common.data.AccessPrivilege;
-import org.oagi.score.service.common.data.BieState;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,10 +32,10 @@ public class AgencyIdController {
     @Autowired
     private SessionService sessionService;
 
-    @RequestMapping(value = "/simple_agency_id_list_values", method = RequestMethod.GET,
+    @RequestMapping(value = "/simple_agency_id_list_values/{releaseId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues() {
-        return service.getSimpleAgencyIdListValues();
+    public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues(@PathVariable("releaseId") BigInteger releaseId) {
+        return service.getSimpleAgencyIdListValues(releaseId);
     }
 
     @RequestMapping(value = "/agency_id_list/{id}", method = RequestMethod.GET,
@@ -182,5 +175,39 @@ public class AgencyIdController {
                                    @PathVariable("manifestId") BigInteger manifestId) {
         ScoreUser requester = sessionService.asScoreUser(user);
         service.cancelAgencyIdList(requester, manifestId);
+    }
+
+    @RequestMapping(value = "/agency_id_list/check_uniqueness", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkUniqueness(
+            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
+            @RequestParam(name = "listId") String listId,
+            @RequestParam(name = "agencyId", required = false) Long agencyId,
+            @RequestParam(name = "versionId") String versionId) {
+
+        SameAgencyIdListParams params = new SameAgencyIdListParams();
+        params.setReleaseId(releaseId);
+        params.setAgencyIdListManifestId(agencyIdListManifestId);
+        params.setListId(listId);
+        params.setAgencyId(agencyId);
+        params.setVersionId(versionId);
+
+        return service.hasSameAgencyIdList(params);
+    }
+
+    @RequestMapping(value = "/agency_id_list/check_name_uniqueness", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkNameUniqueness(
+            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
+            @RequestParam(name = "agencyIdListName") String agencyIdListName) {
+
+        SameNameAgencyIdListParams params = new SameNameAgencyIdListParams();
+        params.setReleaseId(releaseId);
+        params.setAgencyIdListManifestId(agencyIdListManifestId);
+        params.setAgencyIdListName(agencyIdListName);
+
+        return service.hasSameNameAgencyIdList(params);
     }
 }

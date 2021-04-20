@@ -1,8 +1,12 @@
 package org.oagi.score.gateway.http.api.agency_id_management.service;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.score.export.model.AgencyId;
 import org.oagi.score.gateway.http.api.agency_id_management.data.CreateAgencyIdListRequest;
+import org.oagi.score.gateway.http.api.agency_id_management.data.SameAgencyIdListParams;
+import org.oagi.score.gateway.http.api.agency_id_management.data.SameNameAgencyIdListParams;
 import org.oagi.score.gateway.http.api.agency_id_management.data.SimpleAgencyIdListValue;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
@@ -22,9 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.jooq.impl.DSL.and;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.AGENCY_ID_LIST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,10 +51,13 @@ public class AgencyIdService {
     @Autowired
     private LogRepository logRepository;
 
-    public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues() {
+    public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues(BigInteger releaseId) {
         return dslContext.select(Tables.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
                 Tables.AGENCY_ID_LIST_VALUE.NAME)
                 .from(Tables.AGENCY_ID_LIST_VALUE)
+                .join(Tables.AGENCY_ID_LIST_VALUE_MANIFEST).on(and(Tables.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(Tables.AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID),
+                        Tables.AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(Tables.APP_USER).on(and(Tables.AGENCY_ID_LIST_VALUE.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID), Tables.APP_USER.IS_DEVELOPER.eq((byte) 1)))
                 .fetchStreamInto(SimpleAgencyIdListValue.class)
                 .sorted(Comparator.comparing(SimpleAgencyIdListValue::getName))
                 .collect(Collectors.toList());
@@ -103,5 +115,46 @@ public class AgencyIdService {
     @Transactional
     public void cancelAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().cancelAgencyIdList(user, agencyIdListManifestId);
+    }
+
+    public boolean hasSameAgencyIdList(SameAgencyIdListParams params) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(and(
+                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
+        ));
+
+        if (params.getAgencyIdListManifestId() != null) {
+            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getAgencyIdListManifestId())));
+        }
+        conditions.add(and(
+                AGENCY_ID_LIST.LIST_ID.eq(params.getListId()),
+                params.getAgencyId() == null ? AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.isNull() :
+                AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.eq(ULong.valueOf(params.getAgencyId())),
+                AGENCY_ID_LIST.VERSION_ID.eq(params.getVersionId())
+        ));
+
+        return dslContext.selectCount()
+                .from(AGENCY_ID_LIST_MANIFEST)
+                .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .where(conditions).fetchOneInto(Integer.class) > 0;
+    }
+
+    public boolean hasSameNameAgencyIdList(SameNameAgencyIdListParams params) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(and(
+                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
+        ));
+
+        if (params.getAgencyIdListManifestId() != null) {
+            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getAgencyIdListManifestId())));
+        }
+        conditions.add(AGENCY_ID_LIST.NAME.eq(params.getAgencyIdListName()));
+
+        return dslContext.selectCount()
+                .from(AGENCY_ID_LIST_MANIFEST)
+                .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .where(conditions).fetchOneInto(Integer.class) > 0;
     }
 }

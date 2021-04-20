@@ -29,6 +29,16 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private String releaseNum;
 
+    public BigInteger getReleaseId() {
+        return releaseId;
+    }
+
+    public void setReleaseId(BigInteger releaseId) {
+        this.releaseId = releaseId;
+    }
+
+    private BigInteger releaseId;
+
     private String revisionNum;
 
     public String getRevisionNum() {

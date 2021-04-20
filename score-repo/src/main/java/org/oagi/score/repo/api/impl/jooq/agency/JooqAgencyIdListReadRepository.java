@@ -57,6 +57,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.CREATION_TIMESTAMP,
                 AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP,
                 RELEASE.RELEASE_NUM,
+                RELEASE.RELEASE_ID,
                 LOG.REVISION_NUM,
                 MODULE.PATH,
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
@@ -121,6 +122,7 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setDeprecated(e.get(AGENCY_ID_LIST.IS_DEPRECATED) == 1);
             agencyIdList.setState(CcState.valueOf(e.get(AGENCY_ID_LIST.STATE)));
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
+            agencyIdList.setReleaseId(e.get(RELEASE.RELEASE_ID).toBigInteger());
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
             agencyIdList.setModulePath(e.get(MODULE.PATH));
             agencyIdList.setCreationTimestamp(Date.from(e.get(AGENCY_ID_LIST.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
