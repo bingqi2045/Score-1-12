@@ -285,7 +285,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST_VALUE.VALUE,
                 AGENCY_ID_LIST_VALUE.DEFINITION,
                 AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
-                AGENCY_ID_LIST_VALUE.IS_DEPRECATED)
+                AGENCY_ID_LIST_VALUE.IS_DEPRECATED.as("deprecated"))
                 .from(AGENCY_ID_LIST_VALUE)
                 .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
                 .fetchInto(AgencyIdListValue.class));
