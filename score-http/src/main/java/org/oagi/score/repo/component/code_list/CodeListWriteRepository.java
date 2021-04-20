@@ -96,7 +96,10 @@ public class CodeListWriteRepository {
                     .from(AGENCY_ID_LIST_VALUE)
                     .join(AGENCY_ID_LIST_VALUE_MANIFEST)
                     .on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                    .join(APP_USER)
+                    .on(AGENCY_ID_LIST_VALUE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                     .where(and(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName),
+                            APP_USER.IS_DEVELOPER.eq((byte) 1),
                             AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
                     .fetchOneInto(ULong.class));
             codeList.setVersionId("1");
