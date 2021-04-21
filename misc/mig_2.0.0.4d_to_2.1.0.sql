@@ -140,3 +140,65 @@ MODIFY COLUMN `list_id` varchar(100) DEFAULT NULL COMMENT 'This is a business or
 
 ALTER TABLE `agency_id_list_value`
 ADD COLUMN `definition_source` varchar(100) DEFAULT NULL COMMENT 'This is typically a URL which indicates the source of the agency id list value DEFINITION.' AFTER `definition`;
+
+-- migrate developer code list to do not use based code list id
+-- update bdt_pri_restri
+UPDATE
+    `bdt_pri_restri`
+    JOIN (SELECT
+            `code_list`.`code_list_id` AS `code_list_id`, `base`.`code_list_id` AS `new_id`
+          FROM
+            `code_list`
+            JOIN `code_list` AS `base` ON `code_list`.`based_code_list_id` = `base`.`code_list_id`
+            JOIN `app_user` ON `code_list`.`owner_user_id` = `app_user`.`app_user_id` AND `app_user`.`is_developer` = 1) AS `temp`
+    ON `bdt_pri_restri`.`code_list_id` = `temp`.`code_list_id`
+SET
+    `bdt_pri_restri`.`code_list_id` = `temp`.`new_id`;
+-- update bdt_pri_restri_sc
+UPDATE
+    `bdt_sc_pri_restri`
+    JOIN (SELECT
+            `code_list`.`code_list_id` AS `code_list_id`, `base`.`code_list_id` AS `new_id`
+          FROM
+            `code_list`
+            JOIN `code_list` AS `base` ON `code_list`.`based_code_list_id` = `base`.`code_list_id`
+            JOIN `app_user` ON `code_list`.`owner_user_id` = `app_user`.`app_user_id` AND `app_user`.`is_developer` = 1) AS `temp`
+    ON `bdt_sc_pri_restri`.`code_list_id` = `temp`.`code_list_id`
+SET
+    `bdt_sc_pri_restri`.`code_list_id` = `temp`.`new_id`;
+-- update bbie
+UPDATE
+    `bbie`
+    JOIN (SELECT
+            `code_list`.`code_list_id` AS `code_list_id`, `base`.`code_list_id` AS `new_id`
+          FROM
+            `code_list`
+            JOIN `code_list` AS `base` ON `code_list`.`based_code_list_id` = `base`.`code_list_id`
+            JOIN `app_user` ON `code_list`.`owner_user_id` = `app_user`.`app_user_id` AND `app_user`.`is_developer` = 1) AS `temp`
+    ON `bbie`.`code_list_id` = `temp`.`code_list_id`
+SET
+    `bbie`.`code_list_id` = `temp`.`new_id`;
+-- update bbie_sc
+UPDATE
+    `bbie_sc`
+    JOIN (SELECT
+            `code_list`.`code_list_id` AS `code_list_id`, `base`.`code_list_id` AS `new_id`
+          FROM
+            `code_list`
+            JOIN `code_list` AS `base` ON `code_list`.`based_code_list_id` = `base`.`code_list_id`
+            JOIN `app_user` ON `code_list`.`owner_user_id` = `app_user`.`app_user_id` AND `app_user`.`is_developer` = 1) AS `temp`
+    ON `bbie_sc`.`code_list_id` = `temp`.`code_list_id`
+SET
+    `bbie_sc`.`code_list_id` = `temp`.`new_id`;
+
+-- set deprecate code_list_manifest/code_list
+UPDATE
+    `code_list_manifest`
+    JOIN `code_list` ON `code_list_manifest`.`code_list_id` = `code_list`.`code_list_id`
+    JOIN `app_user` ON `code_list`.`owner_user_id` = `app_user`.`app_user_id` AND `app_user`.`is_developer` = 1
+SET
+    `code_list_manifest`.`based_code_list_manifest_id` = NULL,
+    `code_list`.`based_code_list_id` = NULL,
+    `code_list`.`is_deprecated` = 1
+WHERE
+    `code_list_manifest`.`based_code_list_manifest_id` IS NOT NULL;
