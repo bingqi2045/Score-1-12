@@ -943,10 +943,28 @@ public class BieUpliftingService {
                 if (bbie.getBdtPriRestriId() != null) {
                     DtManifest targetDtManifest = targetCcDocument.getDtManifest(toBccpManifest.getBdtManifestId());
                     Dt targetDt = targetCcDocument.getDt(targetDtManifest);
-                    BdtPriRestri targetDefaultBdtPriRestri =
+                    BdtPriRestri targetDefaultBdtPriRestri;
+                    if ("Date Time".equals(targetDt.getDataTypeTerm())) {
+                        targetDefaultBdtPriRestri =
+                                targetCcDocument.getBdtPriRestriList(targetDt).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("date time"))
+                                        .findFirst().get();
+                    } else if ("Date".equals(targetDt.getDataTypeTerm())) {
+                        targetDefaultBdtPriRestri =
+                                targetCcDocument.getBdtPriRestriList(targetDt).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("date"))
+                                        .findFirst().get();
+                    } else if ("time".equals(targetDt.getDataTypeTerm())) {
+                        targetDefaultBdtPriRestri =
+                                targetCcDocument.getBdtPriRestriList(targetDt).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("time"))
+                                        .findFirst().get();
+                    } else {
+                        targetDefaultBdtPriRestri =
                             targetCcDocument.getBdtPriRestriList(targetDt).stream()
                                     .filter(e -> e.isDefault())
                                     .findFirst().get();
+                    }
                     targetBbie.setBdtPriRestriId(targetDefaultBdtPriRestri.getBdtPriRestriId());
                 }
                 targetBbie.setCodeListId(bbie.getCodeListId());
@@ -1088,10 +1106,29 @@ public class BieUpliftingService {
                 // TODO: finding matched primitive restriction
                 if (bbieSc.getDtScPriRestriId() != null) {
                     DtSc targetDtSc = targetCcDocument.getDtSc(targetDtScManifest);
-                    BdtScPriRestri targetDefaultBdtScPriRestri =
-                            targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
-                                    .filter(e -> e.isDefault())
-                                    .findFirst().get();
+                    BdtScPriRestri targetDefaultBdtScPriRestri;
+                    if ("Date Time".equals(targetDtSc.getRepresentationTerm())) {
+                        targetDefaultBdtScPriRestri =
+                                targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("date time"))
+                                        .findFirst().get();
+                    } else if ("Date".equals(targetDtSc.getRepresentationTerm())) {
+                        targetDefaultBdtScPriRestri =
+                                targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("date"))
+                                        .findFirst().get();
+                    } else if ("time".equals(targetDtSc.getRepresentationTerm())) {
+                        targetDefaultBdtScPriRestri =
+                                targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                        .filter(e -> e.getXbtName().equalsIgnoreCase("time"))
+                                        .findFirst().get();
+                    } else {
+                        targetDefaultBdtScPriRestri =
+                                targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
+                                        .filter(e -> e.isDefault())
+                                        .findFirst().get();
+                    }
+
                     targetBbieSc.setDtScPriRestriId(targetDefaultBdtScPriRestri.getBdtScPriRestriId());
                 }
                 targetBbieSc.setCodeListId(bbieSc.getCodeListId());
