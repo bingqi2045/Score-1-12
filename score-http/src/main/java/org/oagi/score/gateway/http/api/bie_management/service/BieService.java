@@ -202,19 +202,7 @@ public class BieService {
         }
 
         PaginationResponse<BieList> result = bieRepository.selectBieLists()
-                .setPropertyTerm(request.getPropertyTerm())
-                .setBusinessContext(request.getBusinessContext())
-                .setAsccpManifestId(request.getAsccpManifestId())
-                .setExcludePropertyTerms(request.getExcludePropertyTerms())
-                .setExcludeTopLevelAsbiepIds(request.getExcludeTopLevelAsbiepIds())
                 .setIncludeTopLevelAsbiepIds(reusingTopLevelAsbiepIds)
-                .setStates(request.getStates())
-                .setReleaseId(request.getReleaseId())
-                .setOwnerLoginIds(request.getOwnerLoginIds())
-                .setUpdaterLoginIds(request.getUpdaterLoginIds())
-                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
-                .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
-                .setOwnedByDeveloper(request.getOwnedByDeveloper())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
                 .fetchInto(BieList.class);
