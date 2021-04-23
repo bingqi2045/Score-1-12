@@ -32,10 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -185,6 +182,64 @@ public class BieService {
         response.setList(bieLists);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
+        response.setLength(result.getPageCount());
+        return response;
+    }
+
+    public PageResponse<BieList> getUsageOfBieList(AuthenticatedPrincipal user, BieListRequest request) {
+        PageRequest pageRequest = request.getPageRequest();
+        AppUser requester = sessionService.getAppUser(user);
+        PageResponse<BieList> response = new PageResponse();
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+
+        List<BigInteger> reusingTopLevelAsbiepIds = bieRepository.getReusingTopLevelAsbiepIds(request.getUsageTopLevelAsbiepId());
+
+        if (reusingTopLevelAsbiepIds.isEmpty()) {
+            response.setList(Collections.emptyList());
+            response.setLength(0);
+            return response;
+        }
+
+        PaginationResponse<BieList> result = bieRepository.selectBieLists()
+                .setPropertyTerm(request.getPropertyTerm())
+                .setBusinessContext(request.getBusinessContext())
+                .setAsccpManifestId(request.getAsccpManifestId())
+                .setExcludePropertyTerms(request.getExcludePropertyTerms())
+                .setExcludeTopLevelAsbiepIds(request.getExcludeTopLevelAsbiepIds())
+                .setIncludeTopLevelAsbiepIds(reusingTopLevelAsbiepIds)
+                .setStates(request.getStates())
+                .setReleaseId(request.getReleaseId())
+                .setOwnerLoginIds(request.getOwnerLoginIds())
+                .setUpdaterLoginIds(request.getUpdaterLoginIds())
+                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
+                .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
+                .setOwnedByDeveloper(request.getOwnedByDeveloper())
+                .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
+                .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
+                .fetchInto(BieList.class);
+
+        List<BieList> bieLists = result.getResult();
+        bieLists.forEach(bieList -> {
+
+            GetBusinessContextListRequest getBusinessContextListRequest =
+                    new GetBusinessContextListRequest(authenticationService.asScoreUser(user))
+                            .withTopLevelAsbiepIdList(Arrays.asList(bieList.getTopLevelAsbiepId()))
+                            .withName(request.getBusinessContext());
+
+            getBusinessContextListRequest.setPageIndex(-1);
+            getBusinessContextListRequest.setPageSize(-1);
+
+            GetBusinessContextListResponse getBusinessContextListResponse = businessContextService
+                    .getBusinessContextList(getBusinessContextListRequest);
+
+            bieList.setBusinessContexts(getBusinessContextListResponse.getResults());
+            bieList.setAccess(
+                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), bieList.getState())
+            );
+        });
+
+        response.setList(bieLists);
         response.setLength(result.getPageCount());
         return response;
     }

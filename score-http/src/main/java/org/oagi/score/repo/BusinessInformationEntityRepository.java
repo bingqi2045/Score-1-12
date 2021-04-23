@@ -476,6 +476,15 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
+        public SelectBieListArguments setIncludeTopLevelAsbiepIds(List<BigInteger> includeTopLevelAsbiepIds) {
+            if (!includeTopLevelAsbiepIds.isEmpty()) {
+                conditions.add(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(
+                        includeTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ));
+            }
+            return this;
+        }
+
         public SelectBieListArguments setStates(List<BieState> states) {
             if (!states.isEmpty()) {
                 conditions.add(TOP_LEVEL_ASBIEP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
@@ -731,6 +740,17 @@ public class BusinessInformationEntityRepository {
                 .where(and(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccp_id)),
                         ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
+    }
+
+    public List<BigInteger> getReusingTopLevelAsbiepIds(BigInteger reusedTopLevelAsbiepId) {
+        return dslContext.select(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID)
+                .from(ASBIE)
+                .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                .where(and(
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(reusedTopLevelAsbiepId))
+                ))
+                .fetchInto(BigInteger.class);
     }
 
 }
