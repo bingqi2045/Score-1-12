@@ -954,7 +954,7 @@ public class BieUpliftingService {
                                 targetCcDocument.getBdtPriRestriList(targetDt).stream()
                                         .filter(e -> e.getXbtName().equalsIgnoreCase("date"))
                                         .findFirst().get();
-                    } else if ("time".equals(targetDt.getDataTypeTerm())) {
+                    } else if ("Time".equals(targetDt.getDataTypeTerm())) {
                         targetDefaultBdtPriRestri =
                                 targetCcDocument.getBdtPriRestriList(targetDt).stream()
                                         .filter(e -> e.getXbtName().equalsIgnoreCase("time"))
@@ -1117,7 +1117,7 @@ public class BieUpliftingService {
                                 targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
                                         .filter(e -> e.getXbtName().equalsIgnoreCase("date"))
                                         .findFirst().get();
-                    } else if ("time".equals(targetDtSc.getRepresentationTerm())) {
+                    } else if ("Time".equals(targetDtSc.getRepresentationTerm())) {
                         targetDefaultBdtScPriRestri =
                                 targetCcDocument.getBdtScPriRestriList(targetDtSc).stream()
                                         .filter(e -> e.getXbtName().equalsIgnoreCase("time"))
