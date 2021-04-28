@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
+import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.impl.security.AccessControlScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleReadRepository;

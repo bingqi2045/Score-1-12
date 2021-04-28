@@ -14,6 +14,16 @@ public class CodeList implements CoreComponent, Serializable {
 
     private String versionId;
 
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
+    }
+
+    private String listId;
+
     private BigInteger agnecyId;
 
     private BigInteger prevCodeListId;
