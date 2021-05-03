@@ -29,23 +29,27 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, CodeList> getCodeListMap(BigInteger releaseId) throws ScoreDataAccessException {
-        List<CodeList> codeListRecords = dslContext()
+    public List<CodeList> getCodeListList(BigInteger releaseId) throws ScoreDataAccessException {
+        return dslContext()
                 .select(CODE_LIST.CODE_LIST_ID,
                         CODE_LIST.GUID,
                         CODE_LIST.NAME,
                         CODE_LIST.LIST_ID,
                         CODE_LIST.VERSION_ID,
+                        CODE_LIST_MANIFEST.as("based_clm").CODE_LIST_ID.as("based_code_list_id"),
                         CODE_LIST.AGENCY_ID,
+                        AGENCY_ID_LIST_VALUE.NAME.as("agencyName"),
                         CODE_LIST.PREV_CODE_LIST_ID,
                         CODE_LIST.NEXT_CODE_LIST_ID)
                 .from(CODE_LIST)
                 .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .leftOuterJoin(CODE_LIST_MANIFEST.as("based_clm")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based_clm").CODE_LIST_MANIFEST_ID))
+                .join(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(
+                        and(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)),
+                        AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID))
                 .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .fetchInto(CodeList.class);
-
-        return codeListRecords.stream()
-                .collect(Collectors.toMap(CodeList::getCodeListId, Function.identity()));
     }
 
     @Override

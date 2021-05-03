@@ -451,8 +451,8 @@ public class BieUpliftingService {
         private Map<BigInteger, List<Association>> abieTargetAssociationsMap = new HashMap();
         private Map<BigInteger, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
 
-        private Map<BigInteger, CodeList> sourceCodeListMap = new HashMap();
-        private Map<BigInteger, CodeList> targetCodeListMap = new HashMap();
+        private List<CodeList> sourceCodeListList;
+        private List<CodeList> targetCodeListList;
 
         private Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap = new HashMap();
         private Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = new HashMap();
@@ -474,8 +474,8 @@ public class BieUpliftingService {
                             BieUpliftingCustomMappingTable customMappingTable,
                             BieDocument sourceBieDocument, CcDocument targetCcDocument,
                             BigInteger targetAsccpManifestId,
-                            Map<BigInteger, CodeList> sourceCodeListMap,
-                            Map<BigInteger, CodeList> targetCodeListMap,
+                            List<CodeList> sourceCodeListList,
+                            List<CodeList> targetCodeListList,
                             Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap,
                             Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap,
                             Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap,
@@ -497,8 +497,8 @@ public class BieUpliftingService {
             this.bbieMap = new HashMap();
             this.bbieScList = new ArrayList();
 
-            this.sourceCodeListMap = sourceCodeListMap;
-            this.targetCodeListMap = targetCodeListMap;
+            this.sourceCodeListList = sourceCodeListList;
+            this.targetCodeListList = targetCodeListList;
             this.sourceBdtPriRestriMap = sourceBdtPriRestriMap;
             this.targetBdtPriRestriBdtIdMap = targetBdtPriRestriBdtIdMap;
             this.sourceBdtScPriRestriMap = sourceBdtScPriRestriMap;
@@ -973,7 +973,7 @@ public class BieUpliftingService {
 
                 setValueDomain(bbie, targetBbie, toBccpManifest.getBdtManifestId(),
                         sourceBdtPriRestriMap, targetBdtPriRestriBdtIdMap,
-                        sourceCodeListMap, targetCodeListMap);
+                        sourceCodeListList, targetCodeListList);
 
                 WrappedBbie upliftingBbie = new WrappedBbie();
                 upliftingBbie.setFromAbie(abieIdToAbieMap.get(bbie.getFromAbieId()));
@@ -1112,7 +1112,7 @@ public class BieUpliftingService {
 
                 setValueDomain(bbieSc, targetBbieSc, targetDtScManifest.getDtScManifestId(),
                         sourceBdtScPriRestriMap, targetBdtScPriRestriBdtScIdMap,
-                        sourceCodeListMap, targetCodeListMap);
+                        sourceCodeListList, targetCodeListList);
 
                 WrappedBbieSc upliftingBbieSc = new WrappedBbieSc();
                 upliftingBbieSc.setBbie(this.bbieMap.get(bbieSc.getBbieId()));
@@ -1127,8 +1127,8 @@ public class BieUpliftingService {
                                     BigInteger dtManifestId,
                                     Map<BigInteger, BdtPriRestri> sourceMap,
                                     Map<BigInteger, List<BdtPriRestri>> targetMap,
-                                    Map<BigInteger, CodeList> codeListSourceMap,
-                                    Map<BigInteger, CodeList> codeListTargetMap) {
+                                    List<CodeList> codeListSourceList,
+                                    List<CodeList> codeListTargetList) {
 
             BdtPriRestri targetDefaultBdtPriRestri;
             DtManifest targetDtManifest = targetCcDocument.getDtManifest(dtManifestId);
@@ -1142,28 +1142,21 @@ public class BieUpliftingService {
                     targetBbie.setBdtPriRestriId(sourceBbie.getBdtPriRestriId());
                 }
             } else if (sourceBbie.getCodeListId() != null) {
-                List<BdtPriRestri> availableCodeList = availableBdtPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
-                if (availableCodeList.size() > 0) {
-                    for (BdtPriRestri restri : availableCodeList) {
-                        if (restri.getCodeListId().equals(sourceBbie.getCodeListId())) {
-                            targetBbie.setCodeListId(sourceBbie.getCodeListId());
+                CodeList codeList = codeListSourceList.stream().filter(e -> e.getCodeListId().equals(sourceBbie.getCodeListId())).findAny().orElse(null);
+                List<BdtPriRestri> availableCodeListBdtPriRestri = availableBdtPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
+                if (availableCodeListBdtPriRestri.size() > 0) {
+                    for (BdtPriRestri restri : availableCodeListBdtPriRestri) {
+                        List<CodeList> availableCodeLists = availableCodeListByCodeListId(restri.getCodeListId(), targetCodeListList);
+                        for (CodeList cl: availableCodeLists) {
+                            if (cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())) {
+                                targetBbie.setCodeListId(cl.getCodeListId());
+                            }
                         }
                     }
                 } else {
-                    CodeList sourceCodeList = codeListSourceMap.get(sourceBbie.getCodeListId());
-                    CodeList targetCodeList = codeListTargetMap.get(sourceBbie.getCodeListId());
-                    if (targetCodeList != null) {
-                        targetBbie.setCodeListId(sourceBbie.getCodeListId());
-                    } else {
-                        List<CodeList> foundByListId = codeListTargetMap.values().stream().filter(e -> e.getListId().equals(sourceCodeList.getListId())).collect(Collectors.toList());
-                        if (!foundByListId.isEmpty()) {
-                            targetBbie.setCodeListId(foundByListId.get(0).getCodeListId());
-                        } else {
-                            List<CodeList> foundByName = codeListTargetMap.values().stream().filter(e -> e.getName().equals(sourceCodeList.getName())).collect(Collectors.toList());
-                            if (!foundByName.isEmpty()) {
-                                targetBbie.setCodeListId(foundByName.get(0).getCodeListId());
-                            }
-                        }
+                    CodeList found = targetCodeListList.stream().filter(cl -> cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())).findAny().orElse(null);
+                    if (found != null) {
+                        targetBbie.setCodeListId(found.getCodeListId());
                     }
                 }
             } else if (sourceBbie.getAgencyIdListId() != null) {
@@ -1205,8 +1198,8 @@ public class BieUpliftingService {
                                     BigInteger dtScManifestId,
                                     Map<BigInteger, BdtScPriRestri> sourceMap,
                                     Map<BigInteger, List<BdtScPriRestri>> targetMap,
-                                    Map<BigInteger, CodeList> codeListSourceMap,
-                                    Map<BigInteger, CodeList> codeListTargetMap) {
+                                    List<CodeList> codeListSourceList,
+                                    List<CodeList> codeListTargetList) {
 
             BdtScPriRestri targetDefaultBdtScPriRestri;
             DtScManifest targetDtScManifest = targetCcDocument.getDtScManifest(dtScManifestId);
@@ -1219,28 +1212,21 @@ public class BieUpliftingService {
                     targetBbieSc.setDtScPriRestriId(sourceBbieSc.getDtScPriRestriId());
                 }
             } else if (sourceBbieSc.getCodeListId() != null) {
-                List<BdtScPriRestri> availableCodeList = availableBdtScPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
-                if (availableCodeList.size() > 0) {
-                    for (BdtScPriRestri restri : availableCodeList) {
-                        if (restri.getCodeListId().equals(sourceBbieSc.getCodeListId())) {
-                            targetBbieSc.setCodeListId(sourceBbieSc.getCodeListId());
+                CodeList codeList = codeListSourceList.stream().filter(e -> e.getCodeListId().equals(sourceBbieSc.getCodeListId())).findAny().orElse(null);
+                List<BdtScPriRestri> availableCodeListBdtPriRestri = availableBdtScPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
+                if (availableCodeListBdtPriRestri.size() > 0) {
+                    for (BdtScPriRestri restri : availableCodeListBdtPriRestri) {
+                        List<CodeList> availableCodeLists = availableCodeListByCodeListId(restri.getCodeListId(), targetCodeListList);
+                        for (CodeList cl: availableCodeLists) {
+                            if (cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())) {
+                                targetBbieSc.setCodeListId(cl.getCodeListId());
+                            }
                         }
                     }
                 } else {
-                    CodeList sourceCodeList = codeListSourceMap.get(sourceBbieSc.getCodeListId());
-                    CodeList targetCodeList = codeListTargetMap.get(sourceBbieSc.getCodeListId());
-                    if (targetCodeList != null) {
-                        targetBbieSc.setCodeListId(sourceBbieSc.getCodeListId());
-                    } else {
-                        List<CodeList> foundByListId = codeListTargetMap.values().stream().filter(e -> e.getListId().equals(sourceCodeList.getListId())).collect(Collectors.toList());
-                        if (!foundByListId.isEmpty()) {
-                            targetBbieSc.setCodeListId(foundByListId.get(0).getCodeListId());
-                        } else {
-                            List<CodeList> foundByName = codeListTargetMap.values().stream().filter(e -> e.getName().equals(sourceCodeList.getName())).collect(Collectors.toList());
-                            if (!foundByName.isEmpty()) {
-                                targetBbieSc.setCodeListId(foundByName.get(0).getCodeListId());
-                            }
-                        }
+                    CodeList found = targetCodeListList.stream().filter(cl -> cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())).findAny().orElse(null);
+                    if (found != null) {
+                        targetBbieSc.setCodeListId(found.getCodeListId());
                     }
                 }
             } else if (sourceBbieSc.getAgencyIdListId() != null) {
@@ -1302,8 +1288,8 @@ public class BieUpliftingService {
         BigInteger targetReleaseId = targetCcDocument.getAsccpManifest(targetAsccpManifestId).getReleaseId();
 
         ValueDomainReadRepository valueDomainReadRepository = scoreRepositoryFactory.createValueDomainReadRepository();
-        Map<BigInteger, CodeList> sourceCodeListMap = valueDomainReadRepository.getCodeListMap(sourceReleaseId);
-        Map<BigInteger, CodeList> targetCodeListMap = valueDomainReadRepository.getCodeListMap(targetReleaseId);
+        List<CodeList> sourceCodeListList = valueDomainReadRepository.getCodeListList(sourceReleaseId);
+        List<CodeList> targetCodeListList = valueDomainReadRepository.getCodeListList(targetReleaseId);
 
         // TODO: AGENCY_ID_LIST
 //        Map<BigInteger, AgencyIdList> sourceAgencyIdListMap = valueDomainReadRepository.getAgencyIdListMap(sourceRelease.getReleaseId());
@@ -1318,7 +1304,7 @@ public class BieUpliftingService {
         BieUpliftingHandler upliftingHandler =
                 new BieUpliftingHandler(request.getRequester(), bizCtxIds, customMappingTable,
                         sourceBieDocument, targetCcDocument, targetAsccpManifestId,
-                        sourceCodeListMap, targetCodeListMap,
+                        sourceCodeListList, targetCodeListList,
                         sourceBdtPriRestriMap, targetBdtPriRestriBdtIdMap,
                         sourceBdtScPriRestriMap, targetBdtScPriRestriBdtScIdMap);
         BigInteger targetTopLevelAsbiepId = upliftingHandler.uplift();
@@ -1350,8 +1336,8 @@ public class BieUpliftingService {
                         .withAsccpManifestId(request.getTargetAsccpManifestId()))
                 .getCcPackage());
         ValueDomainReadRepository valueDomainReadRepository = scoreRepositoryFactory.createValueDomainReadRepository();
-        Map<BigInteger, CodeList> sourceCodeListMap = valueDomainReadRepository.getCodeListMap(sourceRelease.getReleaseId());
-        Map<BigInteger, CodeList> targetCodeListMap = valueDomainReadRepository.getCodeListMap(request.getTargetReleaseId());
+        List<CodeList> sourceCodeListList = valueDomainReadRepository.getCodeListList(sourceRelease.getReleaseId());
+        List<CodeList> targetCodeListList = valueDomainReadRepository.getCodeListList(request.getTargetReleaseId());
 
         // TODO: AGENCY_ID_LIST
 //        Map<BigInteger, AgencyIdList> sourceAgencyIdListMap = valueDomainReadRepository.getAgencyIdListMap(sourceRelease.getReleaseId());
@@ -1389,7 +1375,8 @@ public class BieUpliftingService {
                         validation.setMessage(checkBdtPriRestriIdMappable(bbie.getBdtPriRestriId(), dtManifest.getDtId(), sourceBdtPriRestriMap, targetBdtPriRestriBdtIdMap));
                         validation.setValid(validation.getMessage().isEmpty());
                     } else if (bbie.getCodeListId() != null) {
-                        validation.setMessage(checkBdtCodeListIdMappable(sourceCodeListMap.get(bbie.getCodeListId()), dtManifest.getDtId(), targetBdtPriRestriBdtIdMap, targetCodeListMap));
+                        CodeList sourceCodeList = sourceCodeListList.stream().filter(codeList -> codeList.getCodeListId().equals(bbie.getCodeListId())).findFirst().orElse(null);
+                        validation.setMessage(checkBdtCodeListIdMappable(sourceCodeList, dtManifest.getDtId(), targetBdtPriRestriBdtIdMap, targetCodeListList));
                         validation.setValid(validation.getMessage().isEmpty());
                     } else {
                         // TODO: AGENCY_ID_LIST
@@ -1411,7 +1398,8 @@ public class BieUpliftingService {
                         validation.setMessage(checkBdtScPriRestriIdMappable(bbieSc.getDtScPriRestriId(), dtScManifest.getDtScId(), sourceBdtScPriRestriMap, targetBdtScPriRestriBdtScIdMap));
                         validation.setValid(validation.getMessage().isEmpty());
                     } else if (bbieSc.getCodeListId() != null) {
-                        validation.setMessage(checkBdtScCodeListIdMappable(sourceCodeListMap.get(bbieSc.getCodeListId()), dtScManifest.getDtScId(), targetBdtScPriRestriBdtScIdMap, targetCodeListMap));
+                        CodeList sourceCodeList = sourceCodeListList.stream().filter(codeList -> codeList.getCodeListId().equals(bbieSc.getCodeListId())).findFirst().orElse(null);
+                        validation.setMessage(checkBdtScCodeListIdMappable(sourceCodeList, dtScManifest.getDtScId(), targetBdtScPriRestriBdtScIdMap, targetCodeListList));
                         validation.setValid(validation.getMessage().isEmpty());
                     } else {
                         // TODO: AGENCY_ID_LIST
@@ -1437,7 +1425,7 @@ public class BieUpliftingService {
         if (!availableBdtPriRestriList.isEmpty() && availableBdtPriRestriList.stream().anyMatch(e -> e.getBdtPriRestriId().equals(source.getBdtPriRestriId()))) {
             return "";
         }
-        return "Primitive value '" + source.getXbtName() + "' is not mapped, will be mapped to default primitive value.";
+        return "Primitive value '" + source.getXbtName() + "' is not allowed in the target node. Uplifted node will use its default primitive in the domain value restriction.";
     }
 
     private String checkBdtScPriRestriIdMappable(BigInteger bdtScPriRestriId,
@@ -1450,70 +1438,84 @@ public class BieUpliftingService {
         if (!availableBdtScPriRestriList.isEmpty() && availableBdtScPriRestriList.stream().anyMatch(e -> e.getBdtScPriRestriId().equals(source.getBdtScPriRestriId()))) {
             return "";
         }
-        return "Primitive value '" + source.getXbtName() + "' is not mapped, will be mapped to default primitive value.";
+        return "Primitive value '" + source.getXbtName() + "' is not allowed in the target node. Uplifted node will use its default primitive in the domain value restriction.";
+    }
+
+    private List<CodeList> availableCodeListByCodeListId(BigInteger codeListId, List<CodeList> codeListMap) {
+        if (codeListId == null) {
+            return Collections.emptyList();
+        }
+
+        List<CodeList> availableCodeLists = codeListMap.stream().filter(codeList -> codeList.getCodeListId().equals(codeListId)).collect(Collectors.toList());
+
+        List<BigInteger> basedCodeListIds = availableCodeLists.stream().map(CodeList::getBasedCodeListId).collect(Collectors.toList());
+
+        List<CodeList> associatedCodeLists = codeListMap.stream().filter(codeList -> basedCodeListIds.contains(codeList.getCodeListId())).collect(Collectors.toList());
+
+        List<CodeList> mergedCodeLists = new ArrayList();
+        mergedCodeLists.addAll(availableCodeLists);
+        for (CodeList associatedCodeList : associatedCodeLists) {
+            mergedCodeLists.addAll(
+                    availableCodeListByCodeListId(
+                            associatedCodeList.getCodeListId(), codeListMap)
+            );
+        }
+        // #1094: Add Code list which is base availableCodeLists
+        List<CodeList> baseCodeLists = codeListMap.stream().filter(codeList -> codeListId.equals(codeList.getBasedCodeListId())).collect(Collectors.toList());
+
+        mergedCodeLists.addAll(baseCodeLists);
+        return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
     private String checkBdtCodeListIdMappable(CodeList codeList,
                                            BigInteger targetBdtId,
                                            Map<BigInteger, List<BdtPriRestri>> targetMap,
-                                           Map<BigInteger, CodeList> targeCodeListMap) {
+                                           List<CodeList> targetCodeListList) {
         
         List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetBdtId);
-        List<BdtPriRestri> availableCodeList = availableBdtPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
+        List<BdtPriRestri> availableCodeListBdtPriRestri = availableBdtPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
 
-        if (availableCodeList.size() > 0) {
-            for (BdtPriRestri restri : availableCodeList) {
-                if (restri.getCodeListId().equals(codeList.getCodeListId())) {
-                    return "";
+        if (availableCodeListBdtPriRestri.size() > 0) {
+            for (BdtPriRestri restri : availableCodeListBdtPriRestri) {
+                List<CodeList> availableCodeLists = availableCodeListByCodeListId(restri.getCodeListId(), targetCodeListList);
+                for (CodeList cl: availableCodeLists) {
+                    if (cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())) {
+                        return "";
+                    }
                 }
             }
-            return "Code List '" + codeList.getName() + "' is not mapped, will be mapped to default primitive value.";
         } else {
-            CodeList mapped = targeCodeListMap.get(codeList.getCodeListId());
-            if (mapped != null) {
+            boolean found = targetCodeListList.stream().anyMatch(cl -> cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName()));
+            if (found) {
                 return "";
             }
-            List<CodeList> foundByListId = targeCodeListMap.values().stream().filter(e -> e.getListId().equals(codeList.getListId())).collect(Collectors.toList());
-            if (!foundByListId.isEmpty()) {
-                return "The system found mapped Code List '" + foundByListId.get(0).getName() + "' by list id.";
-            }
-            List<CodeList> foundByName = targeCodeListMap.values().stream().filter(e -> e.getName().equals(codeList.getName())).collect(Collectors.toList());
-            if (!foundByName.isEmpty()) {
-                return "The system found mapped Code List '" + foundByName.get(0).getName() + "' by name.";
-            }
-            return "Code List '" + codeList.getName() + "' is not mapped, will be mapped to default primitive value.";
         }
+        return "Code List '" + codeList.getName() + "' is not allowed in the target node or the system cannot find the exact match code list in the target release, uplifted node will use is  default primitive in the domain value restriction.";
     }
 
     private String checkBdtScCodeListIdMappable(CodeList codeList,
                                            BigInteger targetBdtScId,
                                            Map<BigInteger, List<BdtScPriRestri>> targetMap,
-                                           Map<BigInteger, CodeList> targeCodeListMap) {
+                                           List<CodeList> targetCodeListList) {
 
         List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetBdtScId);
-        List<BdtScPriRestri> availableCodeList = availableBdtScPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
+        List<BdtScPriRestri> availableCodeListBdtScPriRestri = availableBdtScPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
 
-        if (availableCodeList.size() > 0) {
-            for (BdtScPriRestri restri : availableCodeList) {
-                if (restri.getCodeListId().equals(codeList.getCodeListId())) {
-                    return "";
+        if (availableCodeListBdtScPriRestri.size() > 0) {
+            for (BdtScPriRestri restri : availableCodeListBdtScPriRestri) {
+                List<CodeList> availableCodeLists = availableCodeListByCodeListId(restri.getCodeListId(), targetCodeListList);
+                for (CodeList cl: availableCodeLists) {
+                    if (cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName())) {
+                        return "";
+                    }
                 }
             }
-            return "Code List '" + codeList.getName() + "' is not mapped, will be mapped to default primitive value.";
         } else {
-            CodeList mapped = targeCodeListMap.get(codeList.getCodeListId());
-            if (mapped != null) {
+            boolean found = targetCodeListList.stream().anyMatch(cl -> cl.getName().equals(codeList.getName()) && cl.getListId().equals(codeList.getListId()) && cl.getAgencyName().equals(codeList.getAgencyName()));
+            if (found) {
                 return "";
             }
-            List<CodeList> foundByListId = targeCodeListMap.values().stream().filter(e -> e.getListId().equals(codeList.getListId())).collect(Collectors.toList());
-            if (!foundByListId.isEmpty()) {
-                return "The system found mapped Code List '" + foundByListId.get(0).getName() + "' by list id.";
-            }
-            List<CodeList> foundByName = targeCodeListMap.values().stream().filter(e -> e.getName().equals(codeList.getName())).collect(Collectors.toList());
-            if (!foundByName.isEmpty()) {
-                return "The system found mapped Code List '" + foundByName.get(0).getName() + "' by name.";
-            }
-            return "Code List '" + codeList.getName() + "' is not mapped, will be mapped to default primitive value.";
         }
+        return "Code List '" + codeList.getName() + "' is not allowed in the target node or the system cannot find the exact match code list in the target release, uplifted node will use is  default primitive in the domain value restriction.";
     }
 }

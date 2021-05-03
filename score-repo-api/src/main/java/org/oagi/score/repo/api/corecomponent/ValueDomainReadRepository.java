@@ -11,7 +11,7 @@ import java.util.Map;
 
 public interface ValueDomainReadRepository {
 
-    Map<BigInteger, CodeList> getCodeListMap(
+    List<CodeList> getCodeListList(
             BigInteger ReleaseId) throws ScoreDataAccessException;
 
     Map<BigInteger, BdtPriRestri> getBdtPriRestriMap(
