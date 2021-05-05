@@ -1138,8 +1138,9 @@ public class BieUpliftingService {
             List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetDt.getDtId());
 
             if (sourceBbie.getBdtPriRestriId() != null) {
-                if (!availableBdtPriRestriList.isEmpty() && availableBdtPriRestriList.stream().anyMatch(e -> e.getBdtPriRestriId().equals(source.getBdtPriRestriId()))) {
-                    targetBbie.setBdtPriRestriId(sourceBbie.getBdtPriRestriId());
+                BdtPriRestri matched = availableBdtPriRestriList.stream().filter(e -> e.getXbtId().equals(source.getXbtId())).findFirst().orElse(null);
+                if (!availableBdtPriRestriList.isEmpty() && matched != null) {
+                    targetBbie.setBdtPriRestriId(matched.getBdtPriRestriId());
                 }
             } else if (sourceBbie.getCodeListId() != null) {
                 CodeList codeList = codeListSourceList.stream().filter(e -> e.getCodeListId().equals(sourceBbie.getCodeListId())).findAny().orElse(null);
@@ -1208,8 +1209,9 @@ public class BieUpliftingService {
             List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetDtSc.getDtScId());
 
             if (sourceBbieSc.getDtScPriRestriId() != null) {
-                if (!availableBdtScPriRestriList.isEmpty() && availableBdtScPriRestriList.stream().anyMatch(e -> e.getBdtScPriRestriId().equals(source.getBdtScPriRestriId()))) {
-                    targetBbieSc.setDtScPriRestriId(sourceBbieSc.getDtScPriRestriId());
+                BdtScPriRestri matched = availableBdtScPriRestriList.stream().filter(e -> e.getXbtId().equals(source.getXbtId())).findFirst().orElse(null);
+                if (!availableBdtScPriRestriList.isEmpty() && matched != null) {
+                    targetBbieSc.setDtScPriRestriId(matched.getBdtScPriRestriId());
                 }
             } else if (sourceBbieSc.getCodeListId() != null) {
                 CodeList codeList = codeListSourceList.stream().filter(e -> e.getCodeListId().equals(sourceBbieSc.getCodeListId())).findAny().orElse(null);
@@ -1422,7 +1424,7 @@ public class BieUpliftingService {
         BdtPriRestri source = sourceMap.get(bdtPriRestriId);
         List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetBdtId);
 
-        if (!availableBdtPriRestriList.isEmpty() && availableBdtPriRestriList.stream().anyMatch(e -> e.getBdtPriRestriId().equals(source.getBdtPriRestriId()))) {
+        if (!availableBdtPriRestriList.isEmpty() && availableBdtPriRestriList.stream().anyMatch(e -> e.getXbtId().equals(source.getXbtId()))) {
             return "";
         }
         return "Primitive value '" + source.getXbtName() + "' is not allowed in the target node. Uplifted node will use its default primitive in the domain value restriction.";
@@ -1435,7 +1437,7 @@ public class BieUpliftingService {
         BdtScPriRestri source = sourceMap.get(bdtScPriRestriId);
         List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetBdtScId);
 
-        if (!availableBdtScPriRestriList.isEmpty() && availableBdtScPriRestriList.stream().anyMatch(e -> e.getBdtScPriRestriId().equals(source.getBdtScPriRestriId()))) {
+        if (!availableBdtScPriRestriList.isEmpty() && availableBdtScPriRestriList.stream().anyMatch(e -> e.getXbtId().equals(source.getXbtId()))) {
             return "";
         }
         return "Primitive value '" + source.getXbtName() + "' is not allowed in the target node. Uplifted node will use its default primitive in the domain value restriction.";
