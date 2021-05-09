@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 import org.jooq.*;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
+import org.oagi.score.service.bie.BieReuseReport;
 import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
@@ -731,6 +732,43 @@ public class BieRepository {
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOneInto(Integer.class);
         return OagisComponentType.valueOf(oagisComponentType);
+    }
+
+    public List<BieReuseReport> getBieReuseReport() {
+        return dslContext.select(
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.as("reusingTopLevelAsbiepId"), 
+                TOP_LEVEL_ASBIEP.STATE.as("reusingState"),
+                ASCCP.as("reusing_asccp").PROPERTY_TERM.as("reusingPropertyTerm"),
+                ABIE.as("reusing_abie").GUID.as("reusingGuid"),
+                APP_USER.as("reusing_app_user").LOGIN_ID.as("reusingOwner"),
+                TOP_LEVEL_ASBIEP.VERSION.as("reusingVersion"),
+                TOP_LEVEL_ASBIEP.STATUS.as("reusingStatus"),
+                
+                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").TOP_LEVEL_ASBIEP_ID.as("reusedTopLevelAsbiepId"),
+                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").STATE.as("reusedState"),
+                ASCCP.as("reused_asccp").PROPERTY_TERM.as("reusedPropertyTerm"),
+                ABIE.as("reused_abie").GUID.as("reusedGuid"),
+                APP_USER.as("reused_app_user").LOGIN_ID.as("reusedOwner"),
+                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").VERSION.as("reusedVersion"),
+                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").STATUS.as("reusedStatus"))
+                .from(TOP_LEVEL_ASBIEP)
+                .join(ASBIE).on(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID))
+                .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                .join(TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep")).on(TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID))
+                
+                .join(ASBIEP.as("reusing_asbiep")).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.as("reusing_asbiep").ASBIEP_ID))
+                .join(ABIE.as("reusing_abie")).on(ASBIEP.as("reusing_asbiep").ROLE_OF_ABIE_ID.eq(ABIE.as("reusing_abie").ABIE_ID))
+                .join(ASCCP_MANIFEST.as("reusing_asccp_manifest")).on(ASBIEP.as("reusing_asbiep").BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("reusing_asccp_manifest").ASCCP_MANIFEST_ID))
+                .join(ASCCP.as("reusing_asccp")).on(ASCCP_MANIFEST.as("reusing_asccp_manifest").ASCCP_ID.eq(ASCCP.as("reusing_asccp").ASCCP_ID))
+                .join(APP_USER.as("reusing_app_user")).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.as("reusing_app_user").APP_USER_ID))
+
+                .join(ASBIEP.as("reused_asbiep")).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.as("reused_asbiep").ASBIEP_ID))
+                .join(ABIE.as("reused_abie")).on(ASBIEP.as("reused_asbiep").ROLE_OF_ABIE_ID.eq(ABIE.as("reused_abie").ABIE_ID))
+                .join(ASCCP_MANIFEST.as("reused_asccp_manifest")).on(ASBIEP.as("reused_asbiep").BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("reused_asccp_manifest").ASCCP_MANIFEST_ID))
+                .join(ASCCP.as("reused_asccp")).on(ASCCP_MANIFEST.as("reused_asccp_manifest").ASCCP_ID.eq(ASCCP.as("reused_asccp").ASCCP_ID))
+                .join(APP_USER.as("reused_app_user")).on(TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").OWNER_USER_ID.eq(APP_USER.as("reused_app_user").APP_USER_ID))
+                .where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID))
+                .fetchInto(BieReuseReport.class);
     }
 
 }
