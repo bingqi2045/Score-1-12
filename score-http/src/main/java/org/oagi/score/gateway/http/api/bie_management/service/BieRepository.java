@@ -750,7 +750,10 @@ public class BieRepository {
                 ABIE.as("reused_abie").GUID.as("reusedGuid"),
                 APP_USER.as("reused_app_user").LOGIN_ID.as("reusedOwner"),
                 TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").VERSION.as("reusedVersion"),
-                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").STATUS.as("reusedStatus"))
+                TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").STATUS.as("reusedStatus"),
+
+                RELEASE.RELEASE_NUM)
+
                 .from(TOP_LEVEL_ASBIEP)
                 .join(ASBIE).on(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID))
                 .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
@@ -762,11 +765,11 @@ public class BieRepository {
                 .join(ASCCP.as("reusing_asccp")).on(ASCCP_MANIFEST.as("reusing_asccp_manifest").ASCCP_ID.eq(ASCCP.as("reusing_asccp").ASCCP_ID))
                 .join(APP_USER.as("reusing_app_user")).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.as("reusing_app_user").APP_USER_ID))
 
-                .join(ASBIEP.as("reused_asbiep")).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.as("reused_asbiep").ASBIEP_ID))
-                .join(ABIE.as("reused_abie")).on(ASBIEP.as("reused_asbiep").ROLE_OF_ABIE_ID.eq(ABIE.as("reused_abie").ABIE_ID))
-                .join(ASCCP_MANIFEST.as("reused_asccp_manifest")).on(ASBIEP.as("reused_asbiep").BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("reused_asccp_manifest").ASCCP_MANIFEST_ID))
+                .join(ABIE.as("reused_abie")).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.as("reused_abie").ABIE_ID))
+                .join(ASCCP_MANIFEST.as("reused_asccp_manifest")).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("reused_asccp_manifest").ASCCP_MANIFEST_ID))
                 .join(ASCCP.as("reused_asccp")).on(ASCCP_MANIFEST.as("reused_asccp_manifest").ASCCP_ID.eq(ASCCP.as("reused_asccp").ASCCP_ID))
                 .join(APP_USER.as("reused_app_user")).on(TOP_LEVEL_ASBIEP.as("reused_top_level_asbiep").OWNER_USER_ID.eq(APP_USER.as("reused_app_user").APP_USER_ID))
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(ASCCP_MANIFEST.as("reusing_asccp_manifest").RELEASE_ID))
                 .where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID))
                 .fetchInto(BieReuseReport.class);
     }

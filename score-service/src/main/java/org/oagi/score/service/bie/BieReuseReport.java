@@ -21,4 +21,6 @@ public class BieReuseReport {
     private String reusedOwner;
     private String reusedVersion;
     private String reusedStatus;
+
+    private String releaseNum;
 }
