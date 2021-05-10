@@ -15,9 +15,13 @@ import org.oagi.score.repo.api.impl.jooq.bie.JooqBieReadRepository;
 import org.oagi.score.repo.api.impl.jooq.bie.JooqBieWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.*;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.*;
+import org.oagi.score.repo.api.impl.jooq.message.JooqMessageReadRepository;
+import org.oagi.score.repo.api.impl.jooq.message.JooqMessageWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.module.*;
 import org.oagi.score.repo.api.impl.jooq.release.JooqReleaseReadRepository;
 import org.oagi.score.repo.api.impl.jooq.user.JooqScoreUserReadRepository;
+import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.module.*;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
@@ -137,5 +141,15 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
     @Override
     public ModuleSetReleaseWriteRepository createModuleSetReleaseWriteRepository() throws ScoreDataAccessException {
         return new JooqModuleSetReleaseWriteRepository(this.dslContext);
+    }
+
+    @Override
+    public MessageReadRepository createMessageReadRepository() throws ScoreDataAccessException {
+        return new JooqMessageReadRepository(this.dslContext);
+    }
+
+    @Override
+    public MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException {
+        return new JooqMessageWriteRepository(this.dslContext);
     }
 }

@@ -11,6 +11,8 @@ import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.module.*;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.security.AccessControl;
@@ -179,5 +181,15 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public ModuleSetReleaseWriteRepository createModuleSetReleaseWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createModuleSetReleaseWriteRepository(), ModuleSetReleaseWriteRepository.class);
+    }
+
+    @Override
+    public MessageReadRepository createMessageReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createMessageReadRepository(), MessageReadRepository.class);
+    }
+
+    @Override
+    public MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createMessageWriteRepository(), MessageWriteRepository.class);
     }
 }

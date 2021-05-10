@@ -16,6 +16,7 @@ CREATE TABLE `message` (
     `sender_id` bigint(20) unsigned NOT NULL COMMENT 'The user who created this record.',
     `recipient_id` bigint(20) unsigned NOT NULL COMMENT 'The user who is a target to possess this record.',
     `body` mediumtext COMMENT 'A body of the message.',
+    `body_content_type` varchar(50) NOT NULL DEFAULT 'text/plain' COMMENT 'A content type of the body',
     `is_read` tinyint(1) DEFAULT '0' COMMENT 'An indicator whether this record is read or not.',
     `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
     PRIMARY KEY (`message_id`),

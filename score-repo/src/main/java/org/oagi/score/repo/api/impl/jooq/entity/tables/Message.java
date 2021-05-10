@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -68,6 +68,11 @@ public class Message extends TableImpl<MessageRecord> {
      * The column <code>oagi.message.body</code>. A body of the message.
      */
     public final TableField<MessageRecord, String> BODY = createField(DSL.name("body"), SQLDataType.CLOB, this, "A body of the message.");
+
+    /**
+     * The column <code>oagi.message.body_content_type</code>. A content type of the body
+     */
+    public final TableField<MessageRecord, String> BODY_CONTENT_TYPE = createField(DSL.name("body_content_type"), SQLDataType.VARCHAR(50).nullable(false).defaultValue(DSL.inline("text/plain", SQLDataType.VARCHAR)), this, "A content type of the body");
 
     /**
      * The column <code>oagi.message.is_read</code>. An indicator whether this record is read or not.
@@ -181,11 +186,11 @@ public class Message extends TableImpl<MessageRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, String, Byte, LocalDateTime> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<ULong, ULong, ULong, String, String, Byte, LocalDateTime> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

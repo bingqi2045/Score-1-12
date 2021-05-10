@@ -9,6 +9,8 @@ import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.module.*;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
@@ -47,5 +49,8 @@ public interface ScoreRepositoryFactory {
 
     ModuleSetReleaseReadRepository createModuleSetReleaseReadRepository() throws ScoreDataAccessException;
     ModuleSetReleaseWriteRepository createModuleSetReleaseWriteRepository() throws ScoreDataAccessException;
+
+    MessageReadRepository createMessageReadRepository() throws ScoreDataAccessException;
+    MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException;
 
 }
