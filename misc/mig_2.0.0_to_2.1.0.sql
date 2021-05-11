@@ -26,3 +26,9 @@ CREATE TABLE `message` (
     CONSTRAINT `message_recipient_id_fk` FOREIGN KEY (`recipient_id`) REFERENCES `app_user` (`app_user_id`),
     CONSTRAINT `message_sender_id_fk` FOREIGN KEY (`sender_id`) REFERENCES `app_user` (`app_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- REPLACE 'XMLSchemaBuiltinType_1' to 'XMLSchemaBuiltinType_1_patterns' and DELETE 'XMLSchemaBuiltinType_1'
+UPDATE `module_xbt_manifest` SET `module_set_assignment_id` = (SELECT `module_set_assignment`.`module_set_assignment_id` FROM `module` JOIN `module_set_assignment` ON `module`.`module_id` = `module_set_assignment`.`module_id` WHERE `module`.`name` = 'XMLSchemaBuiltinType_1_patterns')	WHERE `module_set_assignment_id` = (SELECT `module_set_assignment`.`module_set_assignment_id` FROM `module` JOIN `module_set_assignment` ON `module`.`module_id` = `module_set_assignment`.`module_id` WHERE `module`.`name` = 'XMLSchemaBuiltinType_1');
+UPDATE `module_dep` SET  `depending_module_set_assignment_id` = (SELECT `module_set_assignment`.`module_set_assignment_id` FROM `module` JOIN `module_set_assignment` ON `module`.`module_id` = `module_set_assignment`.`module_id` WHERE `module`.`name` = 'XMLSchemaBuiltinType_1_patterns') WHERE `depending_module_set_assignment_id` = (SELECT `module_set_assignment`.`module_set_assignment_id` FROM `module` JOIN `module_set_assignment` ON `module`.`module_id` = `module_set_assignment`.`module_id` WHERE `module`.`name` = 'XMLSchemaBuiltinType_1');
+DELETE FROM `module_set_assignment` WHERE `module_set_assignment`.`module_id` = (SELECT `module`.`module_id` FROM `module` WHERE `module`.`name` = 'XMLSchemaBuiltinType_1');
