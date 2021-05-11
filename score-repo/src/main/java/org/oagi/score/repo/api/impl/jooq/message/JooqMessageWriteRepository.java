@@ -33,6 +33,7 @@ public class JooqMessageWriteRepository
             MessageRecord message = new MessageRecord();
             message.setSenderId(ULong.valueOf(sender.getUserId()));
             message.setRecipientId(ULong.valueOf(recipient.getUserId()));
+            message.setSubject(request.getSubject());
             message.setBody(request.getBody());
             message.setBodyContentType(request.getBodyContentType());
             message.setIsRead((byte) 0);

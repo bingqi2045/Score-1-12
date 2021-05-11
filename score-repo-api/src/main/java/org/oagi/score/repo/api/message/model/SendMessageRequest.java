@@ -14,6 +14,7 @@ public class SendMessageRequest extends Request {
     public static String MARKDOWN_CONTENT_TYPE = "text/markdown";
 
     private Set<ScoreUser> recipients = new HashSet();
+    private String subject;
     private String body;
     private String bodyContentType = DEFAULT_BODY_CONTENT_TYPE;
 
@@ -31,6 +32,19 @@ public class SendMessageRequest extends Request {
 
     public SendMessageRequest withRecipient(ScoreUser recipient) {
         addRecipient(recipient);
+        return this;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public SendMessageRequest withSubject(String subject) {
+        setSubject(subject);
         return this;
     }
 

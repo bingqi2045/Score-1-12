@@ -27,7 +27,8 @@ public class JooqMessageReadRepository
     public GetMessageResponse getMessage(GetMessageRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
         Record message = dslContext().select(MESSAGE.RECIPIENT_ID,
-                MESSAGE.BODY, MESSAGE.BODY_CONTENT_TYPE, MESSAGE.CREATION_TIMESTAMP, MESSAGE.IS_READ,
+                MESSAGE.SUBJECT, MESSAGE.BODY, MESSAGE.BODY_CONTENT_TYPE,
+                MESSAGE.CREATION_TIMESTAMP, MESSAGE.IS_READ,
                 APP_USER.APP_USER_ID, APP_USER.LOGIN_ID, APP_USER.IS_DEVELOPER)
                 .from(MESSAGE)
                 .join(APP_USER).on(MESSAGE.SENDER_ID.eq(APP_USER.APP_USER_ID))
@@ -52,6 +53,7 @@ public class JooqMessageReadRepository
                 message.get(APP_USER.APP_USER_ID).toBigInteger(),
                 message.get(APP_USER.LOGIN_ID),
                 (byte) 1 == message.get(APP_USER.IS_DEVELOPER) ? DEVELOPER : END_USER),
+                message.get(MESSAGE.SUBJECT),
                 message.get(MESSAGE.BODY), message.get(MESSAGE.BODY_CONTENT_TYPE),
                 message.get(MESSAGE.CREATION_TIMESTAMP));
     }

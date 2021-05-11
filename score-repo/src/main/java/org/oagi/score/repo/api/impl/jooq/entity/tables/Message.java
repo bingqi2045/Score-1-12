@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -63,6 +63,11 @@ public class Message extends TableImpl<MessageRecord> {
      * The column <code>oagi.message.recipient_id</code>. The user who is a target to possess this record.
      */
     public final TableField<MessageRecord, ULong> RECIPIENT_ID = createField(DSL.name("recipient_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The user who is a target to possess this record.");
+
+    /**
+     * The column <code>oagi.message.subject</code>. A subject of the message
+     */
+    public final TableField<MessageRecord, String> SUBJECT = createField(DSL.name("subject"), SQLDataType.CLOB, this, "A subject of the message");
 
     /**
      * The column <code>oagi.message.body</code>. A body of the message.
@@ -186,11 +191,11 @@ public class Message extends TableImpl<MessageRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, String, String, Byte, LocalDateTime> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, String, String, String, Byte, LocalDateTime> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

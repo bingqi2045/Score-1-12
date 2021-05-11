@@ -1,8 +1,6 @@
 package org.oagi.score.gateway.http.api.bie_management.service;
 
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Result;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
@@ -10,6 +8,9 @@ import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.score.gateway.http.api.bie_management.data.BieList;
 import org.oagi.score.gateway.http.api.bie_management.data.BieListRequest;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.message.model.SendMessageRequest;
+import org.oagi.score.repo.api.message.model.SendMessageResponse;
 import org.oagi.score.service.common.data.*;
 import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -26,6 +27,7 @@ import org.oagi.score.repository.ABIERepository;
 import org.oagi.score.repository.BizCtxRepository;
 import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.businesscontext.BusinessContextService;
+import org.oagi.score.service.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,9 @@ public class BieService {
 
     @Autowired
     private BusinessContextService businessContextService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Autowired
     private DSLContext dslContext;
@@ -247,7 +252,7 @@ public class BieService {
         }
 
         /*
-         * Issue #772
+         * Issue #772, #1010
          */
         ensureProperDeleteBieRequest(requester, topLevelAsbiepIds);
 
@@ -287,6 +292,78 @@ public class BieService {
                 throw new DataAccessForbiddenException("Only allowed to delete the BIE by the owner.");
             }
         }
+
+        // Issue #1010
+        int failureCount = 0;
+        StringBuilder failureMessageBody = new StringBuilder();
+        for (ULong topLevelAsbiepId : topLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())) {
+            List<String> reusedTopLevelAsbiepGuidList = dslContext.selectDistinct(ASBIEP.GUID)
+                    .from(ASBIE)
+                    .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                    .where(and(
+                            ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId),
+                            ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
+                    ))
+                    .fetchStreamInto(String.class).collect(Collectors.toList());
+
+            if (!reusedTopLevelAsbiepGuidList.isEmpty()) {
+                failureCount += 1;
+                Record source = selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(topLevelAsbiepId);
+                failureMessageBody.append("\n---\n[**")
+                        .append(source.get(ASCCP.PROPERTY_TERM))
+                        .append("**](")
+                        .append("/profile_bie/").append(source.get(ASBIEP.GUID))
+                        .append(") cannot be discarded due to the referential integrity violation by following BIEs:")
+                        .append("\n\n");
+                selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepGuidList(reusedTopLevelAsbiepGuidList)
+                        .fetchStream().forEach(target -> {
+                    failureMessageBody.append("- [")
+                            .append(target.get(ASCCP.PROPERTY_TERM))
+                            .append("](")
+                            .append("/profile_bie/").append(target.get(ASBIEP.GUID))
+                            .append(")")
+                            .append("\n");
+                });
+            }
+        }
+
+        if (failureCount > 0) { // i.e. failed?
+            SendMessageRequest sendMessageRequest = new SendMessageRequest(
+                    sessionService.getScoreSystemUser())
+                    .withRecipient(sessionService.asScoreUser(requester))
+                    .withSubject("Failed to discard BIE" + ((failureCount > 1) ? "s" : ""))
+                    .withBody(failureMessageBody.toString())
+                    .withBodyContentType(SendMessageRequest.MARKDOWN_CONTENT_TYPE);
+
+            messageService.asyncSendMessage(sendMessageRequest);
+            throw new DataAccessForbiddenException(sendMessageRequest.getSubject());
+        }
+    }
+
+    private Record2<String, String> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(
+            ULong topLevelAsbiepId) {
+        return dslContext.select(ASCCP.PROPERTY_TERM, ASBIEP.GUID)
+                .from(TOP_LEVEL_ASBIEP)
+                .join(ASBIEP).on(and(
+                        TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID),
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
+                ))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
+                .fetchOne();
+    }
+
+    private SelectConditionStep<Record2<String, String>> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepGuidList(
+            List<String> topLevelAsbiepGuidList) {
+        Condition cond = (topLevelAsbiepGuidList.size() == 1) ?
+                ASBIEP.GUID.eq(topLevelAsbiepGuidList.get(0)) :
+                ASBIEP.GUID.in(topLevelAsbiepGuidList);
+        return dslContext.select(ASCCP.PROPERTY_TERM, ASBIEP.GUID)
+                .from(ASBIEP)
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(cond);
     }
 
     @Transactional
