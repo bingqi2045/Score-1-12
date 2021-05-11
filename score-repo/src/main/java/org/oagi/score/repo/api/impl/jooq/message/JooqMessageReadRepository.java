@@ -1,14 +1,22 @@
 package org.oagi.score.repo.api.impl.jooq.message;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.model.GetCountOfUnreadMessagesRequest;
+import org.oagi.score.repo.api.message.model.GetCountOfUnreadMessagesResponse;
 import org.oagi.score.repo.api.message.model.GetMessageRequest;
 import org.oagi.score.repo.api.message.model.GetMessageResponse;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MESSAGE;
@@ -56,6 +64,29 @@ public class JooqMessageReadRepository
                 message.get(MESSAGE.SUBJECT),
                 message.get(MESSAGE.BODY), message.get(MESSAGE.BODY_CONTENT_TYPE),
                 message.get(MESSAGE.CREATION_TIMESTAMP));
+    }
+
+    @Override
+    public GetCountOfUnreadMessagesResponse getCountOfUnreadMessages(
+            GetCountOfUnreadMessagesRequest request) throws ScoreDataAccessException {
+        ScoreUser requester = request.getRequester();
+        List<Condition> conds = new ArrayList();
+        conds.add(MESSAGE.RECIPIENT_ID.eq(ULong.valueOf(requester.getUserId())));
+        conds.add(MESSAGE.IS_READ.eq((byte) 0));
+
+        List<ULong> senderUserIds =
+                request.getSenders().stream().map(e -> ULong.valueOf(e.getUserId())).collect(Collectors.toList());
+        if (!senderUserIds.isEmpty()) {
+            conds.add(senderUserIds.size() == 1 ?
+                    MESSAGE.SENDER_ID.eq(senderUserIds.get(0)) :
+                    MESSAGE.SENDER_ID.in(senderUserIds));
+        }
+
+        int countOfUnreadMessages = dslContext().selectCount()
+                .from(MESSAGE)
+                .where(conds)
+                .fetchOptionalInto(Integer.class).orElse(0);
+        return new GetCountOfUnreadMessagesResponse(countOfUnreadMessages);
     }
 
 }
