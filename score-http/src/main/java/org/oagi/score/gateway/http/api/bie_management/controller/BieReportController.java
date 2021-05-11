@@ -8,6 +8,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,14 @@ public class BieReportController {
     @RequestMapping(value = "/profile_bie/reuse_report", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BieReuseReport> findTargetAsccpManifest(@AuthenticationPrincipal AuthenticatedPrincipal user) {
-        return bieRepository.getBieReuseReport();
+        return bieRepository.getBieReuseReport(null);
+    }
+
+    @RequestMapping(value = "/profile_bie/reuse_report/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BieReuseReport> findTargetAsccpManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                        @PathVariable("id") BigInteger reusedTopLevelAsbiepId) {
+        return bieRepository.getBieReuseReport(reusedTopLevelAsbiepId);
     }
 
 }

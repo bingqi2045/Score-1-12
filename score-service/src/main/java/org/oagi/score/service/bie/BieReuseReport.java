@@ -13,6 +13,8 @@ public class BieReuseReport {
     private String reusingOwner;
     private String reusingVersion;
     private String reusingStatus;
+    private String path;
+    private String displayPath;
 
     private BigInteger reusedTopLevelAsbiepId;
     private String reusedState;
