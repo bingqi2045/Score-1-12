@@ -3,18 +3,14 @@ package org.oagi.score.service.message;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.message.MessageReadRepository;
 import org.oagi.score.repo.api.message.MessageWriteRepository;
-import org.oagi.score.repo.api.message.model.GetCountOfUnreadMessagesRequest;
-import org.oagi.score.repo.api.message.model.SendMessageRequest;
-import org.oagi.score.repo.api.message.model.SendMessageResponse;
+import org.oagi.score.repo.api.message.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +30,12 @@ public class MessageService {
         MessageReadRepository messageReadRepository = scoreRepositoryFactory.createMessageReadRepository();
         return messageReadRepository.getCountOfUnreadMessages(new GetCountOfUnreadMessagesRequest(requester))
                 .getCountOfUnreadMessages();
+    }
+
+    @Transactional // This transaction should be not a read-only to mark the message as read.
+    public GetMessageResponse getMessage(ScoreUser requester, BigInteger messageId) {
+        MessageReadRepository messageReadRepository = scoreRepositoryFactory.createMessageReadRepository();
+        return messageReadRepository.getMessage(new GetMessageRequest(requester, messageId));
     }
 
     @Async

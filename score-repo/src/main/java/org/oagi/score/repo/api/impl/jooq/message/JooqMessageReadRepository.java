@@ -57,10 +57,10 @@ public class JooqMessageReadRepository
                     .execute();
         }
 
-        return new GetMessageResponse(new ScoreUser(
-                message.get(APP_USER.APP_USER_ID).toBigInteger(),
-                message.get(APP_USER.LOGIN_ID),
-                (byte) 1 == message.get(APP_USER.IS_DEVELOPER) ? DEVELOPER : END_USER),
+        return new GetMessageResponse(request.getMessageId(),
+                new ScoreUser(message.get(APP_USER.APP_USER_ID).toBigInteger(),
+                        message.get(APP_USER.LOGIN_ID),
+                        (byte) 1 == message.get(APP_USER.IS_DEVELOPER) ? DEVELOPER : END_USER),
                 message.get(MESSAGE.SUBJECT),
                 message.get(MESSAGE.BODY), message.get(MESSAGE.BODY_CONTENT_TYPE),
                 message.get(MESSAGE.CREATION_TIMESTAMP));

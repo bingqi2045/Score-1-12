@@ -297,32 +297,36 @@ public class BieService {
         int failureCount = 0;
         StringBuilder failureMessageBody = new StringBuilder();
         for (ULong topLevelAsbiepId : topLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())) {
-            List<String> reusedTopLevelAsbiepGuidList = dslContext.selectDistinct(ASBIEP.GUID)
+            List<ULong> reusedTopLevelAsbiepList = dslContext.selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                     .from(ASBIE)
                     .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                    .join(TOP_LEVEL_ASBIEP).on(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                     .where(and(
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId),
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
                     ))
-                    .fetchStreamInto(String.class).collect(Collectors.toList());
+                    .fetchInto(ULong.class);
 
-            if (!reusedTopLevelAsbiepGuidList.isEmpty()) {
+            if (!reusedTopLevelAsbiepList.isEmpty()) {
                 failureCount += 1;
                 Record source = selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(topLevelAsbiepId);
                 failureMessageBody.append("\n---\n[**")
                         .append(source.get(ASCCP.PROPERTY_TERM))
                         .append("**](")
-                        .append("/profile_bie/").append(source.get(ASBIEP.GUID))
+                        .append("/profile_bie/edit/").append(topLevelAsbiepId)
+                        .append(") (")
+                        .append(source.get(ASBIEP.GUID))
                         .append(") cannot be discarded due to the referential integrity violation by following BIEs:")
                         .append("\n\n");
-                selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepGuidList(reusedTopLevelAsbiepGuidList)
+                selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepIdList(reusedTopLevelAsbiepList)
                         .fetchStream().forEach(target -> {
                     failureMessageBody.append("- [")
                             .append(target.get(ASCCP.PROPERTY_TERM))
                             .append("](")
-                            .append("/profile_bie/").append(target.get(ASBIEP.GUID))
-                            .append(")")
-                            .append("\n");
+                            .append("/profile_bie/edit/").append(target.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                            .append(") (")
+                            .append(target.get(ASBIEP.GUID))
+                            .append(")\n");
                 });
             }
         }
@@ -354,13 +358,14 @@ public class BieService {
                 .fetchOne();
     }
 
-    private SelectConditionStep<Record2<String, String>> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepGuidList(
-            List<String> topLevelAsbiepGuidList) {
+    private SelectConditionStep<Record3<ULong, String, String>> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepIdList(
+            List<ULong> topLevelAsbiepGuidList) {
         Condition cond = (topLevelAsbiepGuidList.size() == 1) ?
-                ASBIEP.GUID.eq(topLevelAsbiepGuidList.get(0)) :
-                ASBIEP.GUID.in(topLevelAsbiepGuidList);
-        return dslContext.select(ASCCP.PROPERTY_TERM, ASBIEP.GUID)
-                .from(ASBIEP)
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepGuidList.get(0)) :
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepGuidList);
+        return dslContext.select(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID, ASCCP.PROPERTY_TERM, ASBIEP.GUID)
+                .from(TOP_LEVEL_ASBIEP)
+                .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .where(cond);
