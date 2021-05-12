@@ -35,7 +35,11 @@ public class MessageService {
     @Transactional // This transaction should be not a read-only to mark the message as read.
     public GetMessageResponse getMessage(ScoreUser requester, BigInteger messageId) {
         MessageReadRepository messageReadRepository = scoreRepositoryFactory.createMessageReadRepository();
-        return messageReadRepository.getMessage(new GetMessageRequest(requester, messageId));
+        GetMessageResponse response = messageReadRepository.getMessage(new GetMessageRequest(requester, messageId));
+        Map<String, String> properties = new HashMap();
+        properties.put("messageId", messageId.toString());
+        simpMessagingTemplate.convertAndSend("/topic/message/" + requester.getUsername(), properties);
+        return response;
     }
 
     @Async
