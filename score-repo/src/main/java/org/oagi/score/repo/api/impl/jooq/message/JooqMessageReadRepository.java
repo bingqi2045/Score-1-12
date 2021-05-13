@@ -1,25 +1,23 @@
 package org.oagi.score.repo.api.impl.jooq.message;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.SelectJoinStep;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.message.MessageReadRepository;
-import org.oagi.score.repo.api.message.model.GetCountOfUnreadMessagesRequest;
-import org.oagi.score.repo.api.message.model.GetCountOfUnreadMessagesResponse;
-import org.oagi.score.repo.api.message.model.GetMessageRequest;
-import org.oagi.score.repo.api.message.model.GetMessageResponse;
+import org.oagi.score.repo.api.message.model.*;
+import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MESSAGE;
+import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 
@@ -64,6 +62,109 @@ public class JooqMessageReadRepository
                 message.get(MESSAGE.SUBJECT),
                 message.get(MESSAGE.BODY), message.get(MESSAGE.BODY_CONTENT_TYPE),
                 message.get(MESSAGE.CREATION_TIMESTAMP));
+    }
+
+    private SelectOnConditionStep select() {
+        return dslContext().select(
+                MESSAGE.MESSAGE_ID,
+                MESSAGE.SUBJECT,
+                MESSAGE.CREATION_TIMESTAMP,
+                MESSAGE.IS_READ,
+                APP_USER.as("sender").APP_USER_ID.as("sender_user_id"),
+                APP_USER.as("sender").LOGIN_ID.as("sender_login_id"),
+                APP_USER.as("sender").IS_DEVELOPER.as("sender_is_developer"))
+                .from(MESSAGE)
+                .join(APP_USER.as("sender")).on(MESSAGE.SENDER_ID.eq(APP_USER.as("sender").APP_USER_ID));
+    }
+
+    private RecordMapper<Record, MessageList> mapper() {
+        return record -> {
+            MessageList messageList = new MessageList();
+            messageList.setMessageId(record.get(MESSAGE.MESSAGE_ID).toBigInteger());
+            messageList.setSubject(record.get(MESSAGE.SUBJECT));
+            messageList.setRead(record.get(MESSAGE.IS_READ) == (byte) 1);
+            messageList.setSender(new ScoreUser(
+                    record.get(APP_USER.as("sender").APP_USER_ID.as("sender_user_id")).toBigInteger(),
+                    record.get(APP_USER.as("sender").LOGIN_ID.as("sender_login_id")),
+                    (byte) 1 == record.get(APP_USER.as("sender").IS_DEVELOPER.as("sender_is_developer")) ? DEVELOPER : END_USER
+            ));
+            messageList.setTimestamp(
+                    Date.from(record.get(MESSAGE.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+            return messageList;
+        };
+    }
+
+    private Collection<Condition> getConditions(GetMessageListRequest request) {
+        List<Condition> conditions = new ArrayList();
+
+        if (!request.getSenderUsernameList().isEmpty()) {
+            conditions.add(APP_USER.as("sender").LOGIN_ID.in(
+                    new HashSet<>(request.getSenderUsernameList()).stream()
+                            .filter(e -> StringUtils.hasLength(e)).map(e -> trim(e)).collect(Collectors.toList())
+            ));
+        }
+        if (request.getCreateStartDate() != null) {
+            conditions.add(MESSAGE.CREATION_TIMESTAMP.greaterOrEqual(request.getCreateStartDate()));
+        }
+        if (request.getCreateEndDate() != null) {
+            conditions.add(MESSAGE.CREATION_TIMESTAMP.lessThan(request.getCreateEndDate()));
+        }
+
+        return conditions;
+    }
+
+    private SortField getSortField(GetMessageListRequest request) {
+        if (!StringUtils.hasLength(request.getSortActive())) {
+            return null;
+        }
+
+        Field field;
+        switch (trim(request.getSortActive()).toLowerCase()) {
+            case "sender":
+                field = APP_USER.as("sender").LOGIN_ID;
+                break;
+
+            case "timestamp":
+                field = MESSAGE.CREATION_TIMESTAMP;
+                break;
+
+            default:
+                return null;
+        }
+
+        return (request.getSortDirection() == ASC) ? field.asc() : field.desc();
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public GetMessageListResponse getMessageList(GetMessageListRequest request) throws ScoreDataAccessException {
+        Collection<Condition> conditions = getConditions(request);
+
+        SelectConditionStep conditionStep = select().where(conditions);
+        SortField sortField = getSortField(request);
+        int length = dslContext().fetchCount(conditionStep);
+        SelectFinalStep finalStep;
+        if (sortField == null) {
+            if (request.isPagination()) {
+                finalStep = conditionStep.limit(request.getPageOffset(), request.getPageSize());
+            } else {
+                finalStep = conditionStep;
+            }
+        } else {
+            if (request.isPagination()) {
+                finalStep = conditionStep.orderBy(sortField)
+                        .limit(request.getPageOffset(), request.getPageSize());
+            } else {
+                finalStep = conditionStep.orderBy(sortField);
+            }
+        }
+
+        return new GetMessageListResponse(
+                finalStep.fetch(mapper()),
+                request.getPageIndex(),
+                request.getPageSize(),
+                length
+        );
     }
 
     @Override

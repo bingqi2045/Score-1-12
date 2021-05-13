@@ -1,6 +1,7 @@
 package org.oagi.score.service.message;
 
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListResponse;
 import org.oagi.score.repo.api.message.MessageReadRepository;
 import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.message.model.*;
@@ -55,5 +56,13 @@ public class MessageService {
             }
             return response;
         });
+    }
+
+    public GetMessageListResponse getMessageList(GetMessageListRequest request) {
+        GetMessageListResponse response =
+                scoreRepositoryFactory.createMessageReadRepository()
+                        .getMessageList(request);
+
+        return response;
     }
 }
