@@ -9,8 +9,10 @@ import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.score.gateway.http.api.bie_management.data.BieList;
 import org.oagi.score.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.bie.BieReadRepository;
+import org.oagi.score.repo.api.bie.model.GetReuseBieListRequest;
 import org.oagi.score.repo.api.message.model.SendMessageRequest;
-import org.oagi.score.repo.api.message.model.SendMessageResponse;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.*;
 import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -64,6 +66,9 @@ public class BieService {
 
     @Autowired
     private BusinessContextService businessContextService;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     @Autowired
     private MessageService messageService;
@@ -272,7 +277,7 @@ public class BieService {
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
 
-    private void ensureProperDeleteBieRequest(AuthenticatedPrincipal requester, List<BigInteger> topLevelAsbiepIds) {
+    private void ensureProperDeleteBieRequest(AuthenticatedPrincipal prinpical, List<BigInteger> topLevelAsbiepIds) {
         Result<Record2<String, ULong>> result =
                 dslContext.select(TOP_LEVEL_ASBIEP.STATE, TOP_LEVEL_ASBIEP.OWNER_USER_ID)
                         .from(TOP_LEVEL_ASBIEP)
@@ -281,7 +286,8 @@ public class BieService {
                         ))
                         .fetch();
 
-        BigInteger requesterUserId = sessionService.userId(requester);
+        ScoreUser requester = sessionService.asScoreUser(prinpical);
+        BigInteger requesterUserId = requester.getUserId();
         for (Record2<String, ULong> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
             if (bieState == BieState.Production) {
@@ -296,21 +302,17 @@ public class BieService {
         // Issue #1010
         int failureCount = 0;
         StringBuilder failureMessageBody = new StringBuilder();
-        for (ULong topLevelAsbiepId : topLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())) {
-            List<ULong> reusedTopLevelAsbiepList = dslContext.selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
-                    .from(ASBIE)
-                    .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
-                    .join(TOP_LEVEL_ASBIEP).on(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
-                    .where(and(
-                            ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId),
-                            ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
-                    ))
-                    .fetchInto(ULong.class);
+        BieReadRepository bieReadRepository = scoreRepositoryFactory.createBieReadRepository();
+        for (BigInteger topLevelAsbiepId : topLevelAsbiepIds) {
+            List<org.oagi.score.repo.api.bie.model.TopLevelAsbiep> reusedTopLevelAsbiepList =
+                    bieReadRepository.getReuseBieList(new GetReuseBieListRequest(requester)
+                            .withTopLevelAsbiepId(topLevelAsbiepId, true))
+                            .getTopLevelAsbiepList();
 
             if (!reusedTopLevelAsbiepList.isEmpty()) {
                 failureCount += 1;
-                Record source = selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(topLevelAsbiepId);
-                failureMessageBody.append("\n---\n[**")
+                Record source = selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+                failureMessageBody = failureMessageBody.append("\n---\n[**")
                         .append(source.get(ASCCP.PROPERTY_TERM))
                         .append("**](")
                         .append("/profile_bie/edit/").append(topLevelAsbiepId)
@@ -318,33 +320,33 @@ public class BieService {
                         .append(source.get(ASBIEP.GUID))
                         .append(") cannot be discarded due to the referential integrity violation by following BIEs:")
                         .append("\n\n");
-                selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepIdList(reusedTopLevelAsbiepList)
-                        .fetchStream().forEach(target -> {
-                    failureMessageBody.append("- [")
-                            .append(target.get(ASCCP.PROPERTY_TERM))
+                for (org.oagi.score.repo.api.bie.model.TopLevelAsbiep target : reusedTopLevelAsbiepList) {
+                    failureMessageBody = failureMessageBody.append("- [")
+                            .append(target.getPropertyTerm())
                             .append("](")
-                            .append("/profile_bie/edit/").append(target.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                            .append("/profile_bie/edit/").append(target.getTopLevelAsbiepId())
                             .append(") (")
-                            .append(target.get(ASBIEP.GUID))
+                            .append(target.getGuid())
                             .append(")\n");
-                });
+                }
             }
         }
 
         if (failureCount > 0) { // i.e. failed?
             SendMessageRequest sendMessageRequest = new SendMessageRequest(
                     sessionService.getScoreSystemUser())
-                    .withRecipient(sessionService.asScoreUser(requester))
+                    .withRecipient(requester)
                     .withSubject("Failed to discard BIE" + ((failureCount > 1) ? "s" : ""))
                     .withBody(failureMessageBody.toString())
                     .withBodyContentType(SendMessageRequest.MARKDOWN_CONTENT_TYPE);
 
-            messageService.asyncSendMessage(sendMessageRequest);
-            throw new DataAccessForbiddenException(sendMessageRequest.getSubject());
+            BigInteger errorMessageId = messageService.asyncSendMessage(sendMessageRequest).join()
+                    .getMessageIds().values().iterator().next();
+            throw new DataAccessForbiddenException(sendMessageRequest.getSubject(), errorMessageId);
         }
     }
 
-    private Record2<String, String> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(
+    public Record2<String, String> selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(
             ULong topLevelAsbiepId) {
         return dslContext.select(ASCCP.PROPERTY_TERM, ASBIEP.GUID)
                 .from(TOP_LEVEL_ASBIEP)
