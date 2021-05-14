@@ -3,15 +3,15 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 import org.jooq.*;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
-import org.oagi.score.service.bie.BieReuseReport;
-import org.oagi.score.service.common.data.BieState;
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.bie.BieReuseReport;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -20,10 +20,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.concat;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository

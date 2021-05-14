@@ -1,15 +1,15 @@
 package org.oagi.score.gateway.http.api.bie_management.controller;
 
-import org.oagi.score.service.common.data.BieState;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.gateway.http.api.bie_management.data.BieList;
 import org.oagi.score.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.DeleteBieListRequest;
 import org.oagi.score.gateway.http.api.bie_management.service.BieService;
+import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
+import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.service.common.data.AccessPrivilege;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -2,11 +2,11 @@ package org.oagi.score.repo;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.BieState;
-import org.oagi.score.service.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.service.common.data.AccessPrivilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
-import static org.oagi.score.service.common.data.BieState.*;
 import static org.oagi.score.gateway.http.helper.Utility.sha256;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.bie.model.BieState.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
