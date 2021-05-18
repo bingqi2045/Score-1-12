@@ -193,6 +193,13 @@ public class BieEditService implements InitializingBean {
         return treeController.getDetail(node);
     }
 
+    public boolean hasReuseBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+        BieReadRepository bieReadRepository = scoreRepositoryFactory.createBieReadRepository();
+        return !bieReadRepository.getReuseBieList(new GetReuseBieListRequest(sessionService.asScoreUser(user))
+                        .withTopLevelAsbiepId(topLevelAsbiepId, true))
+                        .getTopLevelAsbiepList().isEmpty();
+    }
+
     private void ensureReusingRelationships(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BieState state) {
         // Issue #1010
         BieReadRepository bieReadRepository = scoreRepositoryFactory.createBieReadRepository();

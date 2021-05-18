@@ -51,40 +51,6 @@ public class BieEditController {
     public BieEditNode getRootNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                    @PathVariable("id") BigInteger topLevelAsbiepId) {
         BieEditAbieNode rootNode = service.getRootNode(user, topLevelAsbiepId);
-        BieState state = rootNode.getTopLevelAsbiepState();
-        rootNode.setTopLevelAsbiepState(state);
-
-        BigInteger userId = sessionService.userId(user);
-        AccessPrivilege accessPrivilege = AccessPrivilege.Prohibited;
-        switch (state) {
-            case Initiating:
-                accessPrivilege = AccessPrivilege.Unprepared;
-                break;
-
-            case WIP:
-                if (rootNode.getOwnerUserId().equals(userId)) {
-                    accessPrivilege = AccessPrivilege.CanEdit;
-                } else {
-                    accessPrivilege = AccessPrivilege.Prohibited;
-                }
-                break;
-
-            case QA:
-                if (rootNode.getOwnerUserId().equals(userId)) {
-                    accessPrivilege = AccessPrivilege.CanMove;
-                } else {
-                    accessPrivilege = AccessPrivilege.CanView;
-                }
-
-                break;
-
-            case Production:
-                accessPrivilege = AccessPrivilege.CanView;
-                break;
-        }
-
-        rootNode.setAccess(accessPrivilege.name());
-
         return rootNode;
     }
 
