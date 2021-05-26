@@ -965,6 +965,7 @@ public class JooqCcReadRepository
         ULong nextAsccpManifestId = null;
         while (nextAsccpManifestId == null) {
             Record record = dslContext().select(
+                    ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
                     ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID,
                     ASCCP_MANIFEST.RELEASE_ID)
                     .from(ASCCP_MANIFEST)
@@ -974,16 +975,11 @@ public class JooqCcReadRepository
                 break;
             }
 
-            nextAsccpManifestId = record.get(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
             if (record.get(ASCCP_MANIFEST.RELEASE_ID).toBigInteger().equals(nextReleaseId)) {
-                break;
-            } else {
-                if (nextAsccpManifestId != null) {
-                    asccpManifestId = nextAsccpManifestId.toBigInteger();
-                } else {
-                    break;
-                }
+                nextAsccpManifestId = record.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID);
             }
+
+            asccpManifestId = record.get(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID).toBigInteger();
         }
 
         return new FindNextAsccpManifestResponse((nextAsccpManifestId != null) ? nextAsccpManifestId.toBigInteger() : null);
