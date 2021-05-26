@@ -120,8 +120,6 @@ DROP TABLE `module_dir`;
 DROP TABLE `module_dep`;
 DROP TABLE `module_set_assignment`;
 
-UPDATE `agency_id_list` SET `agency_id_list`.`enum_type_guid`  = REPLACE(`agency_id_list`.`enum_type_guid`, 'oagis-id-', '');
-
 ALTER TABLE `agency_id_list` DROP INDEX `agency_id_list_uk2`, DROP INDEX `agency_id_list_uk1`;
 
 ALTER TABLE `agency_id_list_manifest` ADD COLUMN `agency_id_list_value_manifest_id` bigint(20) unsigned DEFAULT NULL AFTER `agency_id_list_id`,
