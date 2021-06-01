@@ -8,6 +8,7 @@
 INSERT INTO `app_user` (`app_user_id`, `login_id`, `password`, `name`, `organization`, `is_developer`, `is_enabled`)
 VALUES (0, 'sysadm', '', 'System', 'System', 1, 1)
 ON DUPLICATE KEY UPDATE `app_user_id` = 0, `login_id` = 'sysadm', `password` = '', `name` = 'System', `organization` = 'System', `is_developer` = 1, `is_enabled` = 1;
+UPDATE `app_user` SET `app_user_id` = 0 WHERE `login_id` = 'sysadm';
 
 -- Add `message` table.
 DROP TABLE IF EXISTS `message`;
