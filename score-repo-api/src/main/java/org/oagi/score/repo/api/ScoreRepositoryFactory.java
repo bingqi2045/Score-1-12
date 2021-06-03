@@ -8,8 +8,11 @@ import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
+import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.module.*;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
@@ -35,6 +38,8 @@ public interface ScoreRepositoryFactory {
     CcReadRepository createCcReadRepository() throws ScoreDataAccessException;
     CodeListReadRepository createCodeListReadRepository() throws ScoreDataAccessException;
 
+    ValueDomainReadRepository createValueDomainReadRepository() throws ScoreDataAccessException;
+
     BieReadRepository createBieReadRepository() throws ScoreDataAccessException;
     BieWriteRepository createBieWriteRepository() throws ScoreDataAccessException;
 
@@ -48,4 +53,8 @@ public interface ScoreRepositoryFactory {
 
     AgencyIdListReadRepository createAgencyIdListReadRepository() throws  ScoreDataAccessException;
     AgencyIdListWriteRepository createAgencyIdListWriteRepository() throws  ScoreDataAccessException;
+
+    MessageReadRepository createMessageReadRepository() throws ScoreDataAccessException;
+    MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException;
+
 }

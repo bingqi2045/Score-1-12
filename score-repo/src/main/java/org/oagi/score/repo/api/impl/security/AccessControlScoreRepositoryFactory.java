@@ -10,8 +10,11 @@ import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
+import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.message.MessageReadRepository;
+import org.oagi.score.repo.api.message.MessageWriteRepository;
 import org.oagi.score.repo.api.module.*;
 import org.oagi.score.repo.api.release.ReleaseReadRepository;
 import org.oagi.score.repo.api.security.AccessControl;
@@ -138,6 +141,11 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     }
 
     @Override
+    public ValueDomainReadRepository createValueDomainReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createValueDomainReadRepository(), ValueDomainReadRepository.class);
+    }
+
+    @Override
     public BieReadRepository createBieReadRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createBieReadRepository(), BieReadRepository.class);
     }
@@ -180,5 +188,15 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public AgencyIdListWriteRepository createAgencyIdListWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createAgencyIdListWriteRepository(), AgencyIdListWriteRepository.class);
+    }
+
+    @Override
+    public MessageReadRepository createMessageReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createMessageReadRepository(), MessageReadRepository.class);
+    }
+
+    @Override
+    public MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createMessageWriteRepository(), MessageWriteRepository.class);
     }
 }
