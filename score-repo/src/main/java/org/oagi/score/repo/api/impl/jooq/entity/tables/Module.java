@@ -175,28 +175,53 @@ In the history record, this should always be the user who is editing the entity 
         return Arrays.<ForeignKey<ModuleRecord, ?>>asList(Keys.MODULE_MODULE_SET_ID_FK, Keys.MODULE_PARENT_MODULE_ID_FK, Keys.MODULE_NAMESPACE_ID_FK, Keys.MODULE_CREATED_BY_FK, Keys.MODULE_LAST_UPDATED_BY_FK, Keys.MODULE_OWNER_USER_ID_FK);
     }
 
+    private transient ModuleSet _moduleSet;
+    private transient Module _module;
+    private transient Namespace _namespace;
+    private transient AppUser _moduleCreatedByFk;
+    private transient AppUser _moduleLastUpdatedByFk;
+    private transient AppUser _moduleOwnerUserIdFk;
+
     public ModuleSet moduleSet() {
-        return new ModuleSet(this, Keys.MODULE_MODULE_SET_ID_FK);
+        if (_moduleSet == null)
+            _moduleSet = new ModuleSet(this, Keys.MODULE_MODULE_SET_ID_FK);
+
+        return _moduleSet;
     }
 
     public Module module() {
-        return new Module(this, Keys.MODULE_PARENT_MODULE_ID_FK);
+        if (_module == null)
+            _module = new Module(this, Keys.MODULE_PARENT_MODULE_ID_FK);
+
+        return _module;
     }
 
     public Namespace namespace() {
-        return new Namespace(this, Keys.MODULE_NAMESPACE_ID_FK);
+        if (_namespace == null)
+            _namespace = new Namespace(this, Keys.MODULE_NAMESPACE_ID_FK);
+
+        return _namespace;
     }
 
     public AppUser moduleCreatedByFk() {
-        return new AppUser(this, Keys.MODULE_CREATED_BY_FK);
+        if (_moduleCreatedByFk == null)
+            _moduleCreatedByFk = new AppUser(this, Keys.MODULE_CREATED_BY_FK);
+
+        return _moduleCreatedByFk;
     }
 
     public AppUser moduleLastUpdatedByFk() {
-        return new AppUser(this, Keys.MODULE_LAST_UPDATED_BY_FK);
+        if (_moduleLastUpdatedByFk == null)
+            _moduleLastUpdatedByFk = new AppUser(this, Keys.MODULE_LAST_UPDATED_BY_FK);
+
+        return _moduleLastUpdatedByFk;
     }
 
     public AppUser moduleOwnerUserIdFk() {
-        return new AppUser(this, Keys.MODULE_OWNER_USER_ID_FK);
+        if (_moduleOwnerUserIdFk == null)
+            _moduleOwnerUserIdFk = new AppUser(this, Keys.MODULE_OWNER_USER_ID_FK);
+
+        return _moduleOwnerUserIdFk;
     }
 
     @Override

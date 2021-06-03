@@ -96,9 +96,9 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     public final TableField<AgencyIdListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB, this, "Description of the agency identification list.");
 
     /**
-     * The column <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list's DEFINITION.
+     * The column <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list DEFINITION.
      */
-    public final TableField<AgencyIdListRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(100), this, "This is typically a URL which indicates the source of the agency id list's DEFINITION.");
+    public final TableField<AgencyIdListRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(100), this, "This is typically a URL which indicates the source of the agency id list DEFINITION.");
 
     /**
      * The column <code>oagi.agency_id_list.remark</code>. Usage information about the agency id list.

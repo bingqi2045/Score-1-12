@@ -147,24 +147,45 @@ public class ModuleXbtManifest extends TableImpl<ModuleXbtManifestRecord> {
         return Arrays.<ForeignKey<ModuleXbtManifestRecord, ?>>asList(Keys.MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK, Keys.MODULE_XBT_MANIFEST_MODULE_ID_FK, Keys.MODULE_XBT_MANIFEST_CREATED_BY_FK, Keys.MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK);
     }
 
+    private transient ModuleSetRelease _moduleSetRelease;
+    private transient XbtManifest _xbtManifest;
+    private transient Module _module;
+    private transient AppUser _moduleXbtManifestCreatedByFk;
+    private transient AppUser _moduleXbtManifestLastUpdatedByFk;
+
     public ModuleSetRelease moduleSetRelease() {
-        return new ModuleSetRelease(this, Keys.MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK);
+        if (_moduleSetRelease == null)
+            _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK);
+
+        return _moduleSetRelease;
     }
 
     public XbtManifest xbtManifest() {
-        return new XbtManifest(this, Keys.MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK);
+        if (_xbtManifest == null)
+            _xbtManifest = new XbtManifest(this, Keys.MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK);
+
+        return _xbtManifest;
     }
 
     public Module module() {
-        return new Module(this, Keys.MODULE_XBT_MANIFEST_MODULE_ID_FK);
+        if (_module == null)
+            _module = new Module(this, Keys.MODULE_XBT_MANIFEST_MODULE_ID_FK);
+
+        return _module;
     }
 
     public AppUser moduleXbtManifestCreatedByFk() {
-        return new AppUser(this, Keys.MODULE_XBT_MANIFEST_CREATED_BY_FK);
+        if (_moduleXbtManifestCreatedByFk == null)
+            _moduleXbtManifestCreatedByFk = new AppUser(this, Keys.MODULE_XBT_MANIFEST_CREATED_BY_FK);
+
+        return _moduleXbtManifestCreatedByFk;
     }
 
     public AppUser moduleXbtManifestLastUpdatedByFk() {
-        return new AppUser(this, Keys.MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK);
+        if (_moduleXbtManifestLastUpdatedByFk == null)
+            _moduleXbtManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK);
+
+        return _moduleXbtManifestLastUpdatedByFk;
     }
 
     @Override

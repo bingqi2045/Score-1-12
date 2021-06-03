@@ -158,6 +158,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
 
     private transient Release _release;
     private transient AgencyIdList _agencyIdList;
+    private transient AgencyIdListValueManifest _agencyIdListValueManifest;
     private transient AgencyIdListManifest _agencyIdListManifestBasedAgencyIdListManifestIdFk;
     private transient Log _log;
     private transient AgencyIdListManifest _agencyIdListReplacementAgencyIdListManifestIdFk;
@@ -179,7 +180,10 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     }
 
     public AgencyIdListValueManifest agencyIdListValueManifest() {
-        return new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
+        if (_agencyIdListValueManifest == null)
+            _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
+
+        return _agencyIdListValueManifest;
     }
 
     public AgencyIdListManifest agencyIdListManifestBasedAgencyIdListManifestIdFk() {

@@ -151,14 +151,14 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list's DEFINITION.
+     * Setter for <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list DEFINITION.
      */
     public void setDefinitionSource(String value) {
         set(9, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list's DEFINITION.
+     * Getter for <code>oagi.agency_id_list.definition_source</code>. This is typically a URL which indicates the source of the agency id list DEFINITION.
      */
     public String getDefinitionSource() {
         return (String) get(9);
