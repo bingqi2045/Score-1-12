@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
-public class DtReadRepository {
+public class BdtReadRepository {
     
     @Autowired
     private DSLContext dslContext;

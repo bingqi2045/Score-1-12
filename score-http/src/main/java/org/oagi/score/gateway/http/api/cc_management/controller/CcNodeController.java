@@ -55,6 +55,14 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
+    @RequestMapping(value = "/core_component/bdt/{manifestId:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNode getBdtNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                              @PathVariable("manifestId") BigInteger manifestId) {
+        return service.getBdtNode(user, manifestId);
+    }
+
     @RequestMapping(value = "/core_component",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -241,6 +249,9 @@ public class CcNodeController {
             case BCCP:
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
                 return service.getBccpNodeDetail(user, bccpNode);
+            case BDT:
+                CcBdtNode bdtNode = convertValue(data, CcBdtNode.class);
+                return service.getBdtNodeDetail(user, bdtNode);
             case BDT_SC:
                 CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
                 return service.getBdtScNodeDetail(user, bdtScNode);
@@ -327,6 +338,17 @@ public class CcNodeController {
         return resp;
     }
 
+    @RequestMapping(value = "/core_component/bdt", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcCreateResponse createBdt(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                       @RequestBody CcBdtCreateRequest request) {
+        BigInteger manifestId = service.createBdt(user, request);
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
+    }
+
     @RequestMapping(value = "/core_component/acc/extension", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createAccExtensionComponent(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -350,6 +372,8 @@ public class CcNodeController {
                 return service.getAsccpNodeRevision(user, manifestId);
             case BCCP:
                 return service.getBccpNodeRevision(user, manifestId);
+            case BDT:
+                return service.getBdtNodeRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
         }

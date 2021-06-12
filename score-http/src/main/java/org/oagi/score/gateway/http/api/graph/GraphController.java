@@ -43,6 +43,10 @@ public class GraphController {
                 graph = graphService.getBccpGraph(id);
                 break;
 
+            case "bdt":
+                graph = graphService.getBdtGraph(id);
+                break;
+
             case "top_level_asbiep":
                 graph = graphService.getBieGraph(user, id);
                 break;

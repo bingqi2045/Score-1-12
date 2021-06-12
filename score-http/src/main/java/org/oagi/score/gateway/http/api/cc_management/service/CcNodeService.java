@@ -3,6 +3,10 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.component.dt.BdtWriteRepository;
+import org.oagi.score.repo.component.dt.CreateBdtRepositoryRequest;
+import org.oagi.score.repo.component.dt.CreateBdtRepositoryResponse;
+import org.oagi.score.repo.component.dt.CreatedBdtEvent;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.common.data.CcState;
@@ -61,6 +65,9 @@ public class CcNodeService extends EventHandler {
     private BccpWriteRepository bccpWriteRepository;
 
     @Autowired
+    private BdtWriteRepository bdtWriteRepository;
+
+    @Autowired
     private AsccWriteRepository asccWriteRepository;
 
     @Autowired
@@ -85,6 +92,10 @@ public class CcNodeService extends EventHandler {
 
     public CcBccpNode getBccpNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getBccpNodeByBccpManifestId(user, manifestId);
+    }
+
+    public CcBdtNode getBdtNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+        return repository.getBdtNodeByBdtManifestId(user, manifestId);
     }
 
     @Transactional
@@ -152,6 +163,10 @@ public class CcNodeService extends EventHandler {
         return repository.getBccpNodeDetail(user, bccpNode);
     }
 
+    public CcBdtNodeDetail getBdtNodeDetail(AuthenticatedPrincipal user, CcBdtNode bdtNode) {
+        return repository.getBdtNodeDetail(user, bdtNode);
+    }
+
     public CcBdtScNodeDetail getBdtScNodeDetail(AuthenticatedPrincipal user, CcBdtScNode bdtScNode) {
         return repository.getBdtScNodeDetail(user, bdtScNode);
     }
@@ -210,6 +225,21 @@ public class CcNodeService extends EventHandler {
         fireEvent(new CreatedBccpEvent());
 
         return repositoryResponse.getBccpManifestId();
+    }
+
+    @Transactional
+    public BigInteger createBdt(AuthenticatedPrincipal user, CcBdtCreateRequest request) {
+        isPublishedRelease(request.getReleaseId());
+        CreateBdtRepositoryRequest repositoryRequest =
+                new CreateBdtRepositoryRequest(user,
+                        request.getBdtManifestId(), request.getReleaseId());
+
+        CreateBdtRepositoryResponse repositoryResponse =
+                bdtWriteRepository.createBdt(repositoryRequest);
+
+        fireEvent(new CreatedBdtEvent());
+
+        return repositoryResponse.getBdtManifestId();
     }
 
     @Transactional
@@ -797,6 +827,21 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
+    public CcRevisionResponse getBdtNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+        CcBdtNode bdtNode = getBdtNode(user, manifestId);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.BDT);
+        CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
+        if (lastPublishedCcId != null) {
+            DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(lastPublishedCcId));
+            ccRevisionResponse.setCcId(bdtRecord.getDtId().longValue());
+            ccRevisionResponse.setType(CcType.BCCP.toString());
+            ccRevisionResponse.setIsDeprecated(bdtRecord.getIsDeprecated() == 1);
+            ccRevisionResponse.setName(bdtRecord.getDataTypeTerm());
+            ccRevisionResponse.setHasBaseCc(bdtRecord.getBasedDtId() != null);
+        }
+        return ccRevisionResponse;
+    }
+
     public CcRevisionResponse getAsccpNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
         BigInteger lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), CcType.ASCCP);
@@ -871,7 +916,15 @@ public class CcNodeService extends EventHandler {
                 return getLastPublishedCcId(bccpRecord.getPrevBccpId().toBigInteger(), CcType.BCCP);
 
             case BDT:
-                return null;
+                DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(ccId));
+                if (bdtRecord.getState().equals(CcState.Published.name()) ||
+                        bdtRecord.getState().equals(CcState.Production.name())) {
+                    return ccId;
+                }
+                if (bdtRecord.getPrevDtId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(bdtRecord.getPrevDtId().toBigInteger(), CcType.BDT);
 
             case BDT_SC:
                 return null;

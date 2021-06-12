@@ -5,10 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.code_list.CodeListReadRepository;
 import org.oagi.score.repo.component.graph.CodeListGraphContext;
 import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
@@ -81,6 +78,18 @@ public class GraphService {
         CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
         return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(bccpManifest), false);
+    }
+
+    public Graph getBdtGraph(BigInteger bdtManifestId) {
+        DtManifestRecord bdtManifest =
+                coreComponentRepository.getBdtManifestByManifestId(ULong.valueOf(bdtManifestId));
+        if (bdtManifest == null) {
+            throw new IllegalArgumentException();
+        }
+
+        CoreComponentGraphContext coreComponentGraphContext =
+                graphContextRepository.buildGraphContext(bdtManifest);
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(bdtManifest), false);
     }
 
     public Graph getBieGraph(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {

@@ -7,6 +7,7 @@ import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Record5;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.common.data.CcState;
@@ -119,6 +120,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private ULong dtManifestId;
         private String dataTypeTerm;
         private String qualifier;
+        private String den;
         private String State;
         private ULong releaseId;
         private ULong prevDtManifestId;
@@ -260,7 +262,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         }).stream()
                         .collect(groupingBy(BccManifest::getFromAccManifestId));
         dtManifestMap =
-                dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.STATE,
+                dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.DEN, DT.STATE,
                         DT_MANIFEST.RELEASE_ID, DT_MANIFEST.PREV_DT_MANIFEST_ID)
                         .from(DT_MANIFEST)
                         .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
@@ -269,6 +271,7 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(DT_MANIFEST.DT_MANIFEST_ID),
                                 record.get(DT.DATA_TYPE_TERM),
                                 record.get(DT.QUALIFIER),
+                                record.get(DT.DEN),
                                 record.get(DT.STATE),
                                 record.get(DT_MANIFEST.RELEASE_ID),
                                 record.get(DT_MANIFEST.PREV_DT_MANIFEST_ID)
@@ -403,6 +406,17 @@ public class CoreComponentGraphContext implements GraphContext {
                 res.get(BCCP.GUID), record.getReleaseId(), record.getPrevBccpManifestId()));
     }
 
+    public Node toNode(DtManifestRecord record) {
+        Record5<String, String, String, String, String> res =
+                dslContext.select(DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.STATE, DT.GUID, DT.DEN)
+                        .from(DT)
+                        .where(DT.DT_ID.eq(record.getDtId()))
+                        .fetchOne();
+        return toNode(new DtManifest(record.getDtManifestId(),
+                res.get(DT.DATA_TYPE_TERM), res.get(DT.QUALIFIER), res.get(DT.DEN), res.get(DT.STATE),
+                record.getReleaseId(), record.getPrevDtManifestId()));
+    }
+
     public Collection<Node> getNodes() {
         Set<Node> nodes = new HashSet();
 
@@ -495,6 +509,7 @@ public class CoreComponentGraphContext implements GraphContext {
         node.setPrevManifestId(dtManifest.getPrevDtManifestId());
         node.put("state", dtManifest.getState());
         node.put("dataTypeTerm", dtManifest.getDataTypeTerm());
+        node.put("den", dtManifest.getDen());
         node.put("qualifier", dtManifest.getQualifier());
         return node;
     }

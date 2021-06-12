@@ -61,7 +61,7 @@ import org.oagi.score.repo.component.bdt_sc_pri_restri.BdtScPriRestriReadReposit
 import org.oagi.score.repo.component.code_list.AvailableCodeList;
 import org.oagi.score.repo.component.code_list.CodeListReadRepository;
 import org.oagi.score.repo.component.dt.BdtNode;
-import org.oagi.score.repo.component.dt.DtReadRepository;
+import org.oagi.score.repo.component.dt.BdtReadRepository;
 import org.oagi.score.repo.component.top_level_asbiep.TopLevelAsbiepWriteRepository;
 import org.oagi.score.repo.component.top_level_asbiep.UpdateTopLevelAsbiepRequest;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
@@ -514,7 +514,7 @@ public class BieEditService implements InitializingBean {
     }
 
     @Autowired
-    private DtReadRepository bdtReadRepository;
+    private BdtReadRepository bdtReadRepository;
 
     public BdtNode getBdtDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
                                 BigInteger dtManifestId) {
