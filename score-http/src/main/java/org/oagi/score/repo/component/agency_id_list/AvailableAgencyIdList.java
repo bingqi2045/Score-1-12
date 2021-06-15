@@ -12,4 +12,6 @@ public class AvailableAgencyIdList {
     private BigInteger basedAgencyIdListManifestId;
     private String agencyIdListName;
     private String versionId;
+    private String state;
+    private boolean isDeprecated;
 }

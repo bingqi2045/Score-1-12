@@ -15,5 +15,6 @@ public class AvailableCodeList {
     private String codeListName;
     private String state;
     private String versionId;
+    private boolean isDeprecated;
 
 }
