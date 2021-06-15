@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
@@ -44,8 +43,7 @@ public class CcNodeRepository {
     @Autowired
     private UserRepository userRepository;
 
-    private SelectOnConditionStep<Record15<ULong, String, String, ULong, Integer, String, String, String, ULong,
-            UInteger, UInteger, ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
+    private SelectOnConditionStep<Record16<ULong, String, String, ULong, Integer, String, String, Byte, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                 ACC.ACC_ID,
                 ACC.GUID,
@@ -54,6 +52,7 @@ public class CcNodeRepository {
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE,
+                ACC.IS_DEPRECATED,
                 ACC.TYPE.as("accType"),
                 ACC_MANIFEST.LOG_ID,
                 LOG.REVISION_NUM,
