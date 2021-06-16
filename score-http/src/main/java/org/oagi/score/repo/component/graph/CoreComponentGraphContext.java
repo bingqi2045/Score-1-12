@@ -4,19 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
-import org.oagi.score.service.common.data.BCCEntityType;
-import org.oagi.score.service.common.data.OagisComponentType;
-import org.oagi.score.service.common.data.CcState;
-import org.oagi.score.gateway.http.api.graph.Node;
+import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
+import org.oagi.score.gateway.http.api.graph.data.Graph;
+import org.oagi.score.gateway.http.api.graph.data.Node;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
+import org.oagi.score.service.common.data.BCCEntityType;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,7 @@ public class CoreComponentGraphContext implements GraphContext {
     private ULong releaseId;
 
     private Map<ULong, AccManifest> accManifestMap;
+    private Map<ULong, List<AccManifest>> accManifestMapByBasedAccManifestId;
     private Map<ULong, AsccpManifest> asccpManifestMap;
     private Map<ULong, BccpManifest> bccpManifestMap;
     private Map<ULong, List<AsccManifest>> asccManifestMap;
@@ -148,26 +152,31 @@ public class CoreComponentGraphContext implements GraphContext {
         this.dslContext = dslContext;
         this.releaseId = ULong.valueOf(releaseId);
 
-        accManifestMap =
-                dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
-                        ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE, ACC.GUID,
-                        ACC.IS_DEPRECATED, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
-                        .from(ACC_MANIFEST)
-                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                        .where(ACC_MANIFEST.RELEASE_ID.eq(this.releaseId))
-                        .fetch(record -> new AccManifest(
-                                record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
-                                record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
-                                record.get(ACC.OBJECT_CLASS_TERM),
-                                record.get(ACC.DEN),
-                                OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)),
-                                record.get(ACC.STATE),
-                                record.get(ACC.GUID),
-                                record.get(ACC.IS_DEPRECATED),
-                                record.get(ACC_MANIFEST.RELEASE_ID),
-                                record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
-                        )).stream()
-                        .collect(Collectors.toMap(AccManifest::getAccManifestId, Function.identity()));
+        List<AccManifest> accManifestList = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
+                ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE, ACC.GUID,
+                ACC.IS_DEPRECATED, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .where(ACC_MANIFEST.RELEASE_ID.eq(this.releaseId))
+                .fetch(record -> new AccManifest(
+                        record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
+                        record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
+                        record.get(ACC.OBJECT_CLASS_TERM),
+                        record.get(ACC.DEN),
+                        OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)),
+                        record.get(ACC.STATE),
+                        record.get(ACC.GUID),
+                        record.get(ACC.IS_DEPRECATED),
+                        record.get(ACC_MANIFEST.RELEASE_ID),
+                        record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
+                ));
+
+        accManifestMap = accManifestList.stream()
+                .collect(Collectors.toMap(AccManifest::getAccManifestId, Function.identity()));
+        accManifestMapByBasedAccManifestId = accManifestList.stream()
+                .filter(e -> e.getBasedAccManifestId() != null)
+                .collect(groupingBy(AccManifest::getBasedAccManifestId));
+
         asccpManifestMap =
                 dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                         ASCCP.PROPERTY_TERM, ASCCP.STATE, ASCCP.GUID, ASCCP.IS_DEPRECATED,
@@ -309,6 +318,38 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID)
                         )).stream()
                         .collect(groupingBy(DtScManifest::getOwnerDtManifestId));
+    }
+
+    public FindUsagesResponse findUsages(Node node) {
+        FindUsagesResponse response = new FindUsagesResponse();
+        response.setRootNodeKey(node.getKey());
+
+        Graph graph = new Graph();
+        graph.addNode(node);
+
+        Queue<Node> queue = new LinkedBlockingQueue();
+        queue.offer(node);
+
+        while (!queue.isEmpty()) {
+            Node currentNode = queue.poll();
+            switch (currentNode.getType()) {
+                case ACC:
+                    List<Node> accUsages = accManifestMapByBasedAccManifestId.getOrDefault(
+                            currentNode.getManifestId(), Collections.emptyList())
+                            .stream().map(e -> toNode(e)).collect(Collectors.toList());
+
+                    accUsages.forEach(_node -> {
+                        graph.addNode(_node);
+                    });
+                    graph.addEdges(currentNode, accUsages);
+
+                    queue.addAll(accUsages);
+                    break;
+            }
+        }
+
+        response.setGraph(graph);
+        return response;
     }
 
     @Override

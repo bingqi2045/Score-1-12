@@ -1,7 +1,13 @@
-package org.oagi.score.gateway.http.api.graph;
+package org.oagi.score.gateway.http.api.graph.controller;
 
+import org.oagi.score.gateway.http.api.graph.data.FindUsagesRequest;
+import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
+import org.oagi.score.gateway.http.api.graph.data.Graph;
+import org.oagi.score.gateway.http.api.graph.service.GraphService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -20,6 +26,20 @@ public class GraphController {
 
     @Autowired
     private GraphService graphService;
+
+    @RequestMapping(value = "/graphs/find_usages/{type}/{id:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public FindUsagesResponse findUsages(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                         @PathVariable("type") String type,
+                                         @PathVariable("id") BigInteger manifestId) {
+
+        FindUsagesRequest request = new FindUsagesRequest();
+        request.setType(type);
+        request.setManifestId(manifestId);
+
+        return graphService.findUsages(request);
+    }
 
     @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
             method = RequestMethod.GET,
@@ -81,8 +101,8 @@ public class GraphController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                        @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                        @PathVariable("targetReleaseId") BigInteger targetReleaseId) {
+                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                              @PathVariable("targetReleaseId") BigInteger targetReleaseId) {
 
         AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);
         Graph graph;

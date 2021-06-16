@@ -1,7 +1,11 @@
-package org.oagi.score.gateway.http.api.graph;
+package org.oagi.score.gateway.http.api.graph.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.graph.data.FindUsagesRequest;
+import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
+import org.oagi.score.gateway.http.api.graph.data.Graph;
+import org.oagi.score.gateway.http.api.graph.data.Node;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
@@ -11,16 +15,19 @@ import org.oagi.score.repo.component.graph.CodeListGraphContext;
 import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
 import org.oagi.score.repo.component.graph.GraphContext;
 import org.oagi.score.repo.component.graph.GraphContextRepository;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,6 +50,20 @@ public class GraphService {
 
     @Autowired
     private DSLContext dslContext;
+
+    public FindUsagesResponse findUsages(FindUsagesRequest request) {
+        CoreComponentGraphContext ccGraphContext;
+        switch (request.getType().toUpperCase()) {
+            case "ACC":
+                AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
+                        .fetchOne();
+                ccGraphContext = new CoreComponentGraphContext(dslContext, accManifestRecord.getReleaseId().toBigInteger());
+                return ccGraphContext.findUsages(ccGraphContext.toNode(accManifestRecord));
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
 
     public Graph getAccGraph(BigInteger accManifestId) {
         AccManifestRecord accManifest =
@@ -99,7 +120,7 @@ public class GraphService {
     }
 
     public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger targetReleaseId) {
-        return  bieRepository.getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(topLevelAsbiepId, targetReleaseId);
+        return bieRepository.getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(topLevelAsbiepId, targetReleaseId);
     }
 
     public Graph getCodeListGraph(BigInteger codeListManifestId) {
@@ -118,7 +139,7 @@ public class GraphService {
         Queue<Node> manifestQueue = new LinkedList<>();
         manifestQueue.add(root);
 
-        Graph graph = new Graph(dslContext);
+        Graph graph = new Graph();
 
         while (!manifestQueue.isEmpty()) {
             Node node = manifestQueue.poll();

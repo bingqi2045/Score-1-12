@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.graph;
+package org.oagi.score.gateway.http.api.graph.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -16,18 +16,12 @@ public class Graph {
 
     @XmlTransient
     @JsonIgnore
-    private transient DSLContext dslContext;
-
-    @XmlTransient
-    @JsonIgnore
     private transient Map<Node.NodeType, List<ULong>> nodeManifestIds = new HashMap();
 
     private Map<String, Node> nodes = new LinkedHashMap();
     private Map<String, Edge> edges = new LinkedHashMap();
 
-    public Graph(DSLContext dslContext) {
-        this.dslContext = dslContext;
-
+    public Graph() {
         Arrays.asList(Node.NodeType.values()).stream().forEach(e -> {
             nodeManifestIds.put(e, new ArrayList());
         });
@@ -111,6 +105,13 @@ public class Graph {
     public void merge(Graph other) {
         this.nodes.putAll(other.nodes);
         this.edges.putAll(other.edges);
+    }
+
+    public Graph copy() {
+        Graph copied = new Graph();
+        copied.edges = new HashMap(this.edges);
+        copied.nodes = new HashMap(this.nodes);
+        return copied;
     }
 
 }

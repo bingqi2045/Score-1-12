@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.graph;
+package org.oagi.score.gateway.http.api.graph.data;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

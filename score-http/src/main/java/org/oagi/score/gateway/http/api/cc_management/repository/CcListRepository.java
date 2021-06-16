@@ -2,13 +2,16 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
-import org.oagi.score.service.common.data.*;
 import org.oagi.score.data.Release;
-import org.oagi.score.gateway.http.api.cc_management.data.*;
+import org.oagi.score.gateway.http.api.cc_management.data.CcId;
+import org.oagi.score.gateway.http.api.cc_management.data.CcList;
+import org.oagi.score.gateway.http.api.cc_management.data.CcListRequest;
+import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
 import org.oagi.score.repo.component.release.ReleaseRepository;
+import org.oagi.score.service.common.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -22,9 +25,8 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.service.common.data.OagisComponentType.*;
-import static org.oagi.score.gateway.http.helper.Utility.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.common.data.OagisComponentType.*;
 
 @Repository
 public class CcListRepository {
@@ -282,61 +284,6 @@ public class CcListRepository {
             }
         }
 
-        if (request.getFindUsages() != null) {
-            CcId findUsages = request.getFindUsages();
-            Set<ULong> usages = new HashSet();
-            switch (CcType.valueOf(findUsages.getType())) {
-                case ACC:
-                    usages.addAll(
-                            dslContext.selectDistinct(ACC_MANIFEST.ACC_MANIFEST_ID)
-                                    .from(ACC_MANIFEST)
-                                    .where(and(
-                                            ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-
-                case ASCCP:
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID)
-                                    .from(ASCCP_MANIFEST)
-                                    .where(and(
-                                            ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID)
-                                    .from(ASCC_MANIFEST)
-                                    .where(and(
-                                            ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-
-                case BCCP:
-                    usages.addAll(
-                            dslContext.selectDistinct(BCC_MANIFEST.FROM_ACC_MANIFEST_ID)
-                                    .from(BCC_MANIFEST)
-                                    .where(and(
-                                            BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-            }
-            if (!usages.isEmpty()) {
-                conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(usages));
-            }
-        }
-
         return dslContext.select(
                 inline("ACC").as("type"),
                 ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
@@ -413,39 +360,6 @@ public class CcListRepository {
         }
         if (request.getUpdateEndDate() != null) {
             conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
-        }
-
-        if (request.getFindUsages() != null) {
-            CcId findUsages = request.getFindUsages();
-            Set<ULong> usages = new HashSet();
-            switch (CcType.valueOf(findUsages.getType())) {
-                case ACC:
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                                    .from(ASCC_MANIFEST)
-                                    .where(and(
-                                            ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-
-                case ASCCP:
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                                    .from(ASCC_MANIFEST)
-                                    .where(and(
-                                            ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-            }
-            if (!usages.isEmpty()) {
-                conditions.add(ASCC_MANIFEST.ASCC_MANIFEST_ID.in(usages));
-            }
         }
 
         return dslContext.select(
@@ -530,39 +444,6 @@ public class CcListRepository {
         }
         if (request.getUpdateEndDate() != null) {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
-        }
-
-        if (request.getFindUsages() != null) {
-            CcId findUsages = request.getFindUsages();
-            Set<ULong> usages = new HashSet();
-            switch (CcType.valueOf(findUsages.getType())) {
-                case ACC:
-                    usages.addAll(
-                            dslContext.selectDistinct(BCC_MANIFEST.BCC_MANIFEST_ID)
-                                    .from(BCC_MANIFEST)
-                                    .where(and(
-                                            BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-
-                case BCCP:
-                    usages.addAll(
-                            dslContext.selectDistinct(BCC_MANIFEST.BCC_MANIFEST_ID)
-                                    .from(BCC_MANIFEST)
-                                    .where(and(
-                                            BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-            }
-            if (!usages.isEmpty()) {
-                conditions.add(BCC_MANIFEST.BCC_MANIFEST_ID.in(usages));
-            }
         }
 
         return dslContext.select(
@@ -655,38 +536,6 @@ public class CcListRepository {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notIn(Arrays.asList(SemanticGroup.getValue(), UserExtensionGroup.getValue())));
         }
 
-        if (request.getFindUsages() != null) {
-            CcId findUsages = request.getFindUsages();
-            Set<ULong> usages = new HashSet();
-            switch (CcType.valueOf(findUsages.getType())) {
-                case ACC:
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
-                                    .from(ASCCP_MANIFEST)
-                                    .where(and(
-                                            ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-
-                    usages.addAll(
-                            dslContext.selectDistinct(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID)
-                                    .from(ASCC_MANIFEST)
-                                    .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                                    .where(and(
-                                            ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-            }
-            if (!usages.isEmpty()) {
-                conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(usages));
-            }
-        }
-
         return dslContext.select(
                 inline("ASCCP").as("type"),
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
@@ -766,28 +615,6 @@ public class CcListRepository {
         }
         if (request.getUpdateEndDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
-        }
-
-        if (request.getFindUsages() != null) {
-            CcId findUsages = request.getFindUsages();
-            Set<ULong> usages = new HashSet();
-            switch (CcType.valueOf(findUsages.getType())) {
-                case ACC:
-                    usages.addAll(
-                            dslContext.selectDistinct(BCC_MANIFEST.TO_BCCP_MANIFEST_ID)
-                                    .from(BCC_MANIFEST)
-                                    .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                                    .where(and(
-                                            BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(findUsages.getManifestId()))
-                                    ))
-                                    .fetchInto(ULong.class)
-                    );
-                    break;
-            }
-            if (!usages.isEmpty()) {
-                conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(usages));
-            }
         }
 
         return dslContext.select(
