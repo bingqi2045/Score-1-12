@@ -24,8 +24,7 @@ import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
@@ -302,10 +301,28 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
+        int usedBieCount = dslContext.selectCount().from(ASBIE)
+                .where(ASBIE.BASED_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).fetchOne(0, int.class);
+
+        if (usedBieCount > 0) {
+            throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be deleted.");
+        }
+
         // delete from Tables
         seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
+        dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID)
+                .where(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).execute();
+        dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
+                .where(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).execute();
         asccManifestRecord.delete();
-        asccRecord.delete();
+        if (dslContext.selectCount().from(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne(0, int.class) == 0 ) {
+            dslContext.update(ASCC).setNull(ASCC.NEXT_ASCC_ID)
+                    .where(ASCC.NEXT_ASCC_ID.eq(asccRecord.getAsccId())).execute();
+            dslContext.update(ASCC).setNull(ASCC.PREV_ASCC_ID)
+                    .where(ASCC.PREV_ASCC_ID.eq(asccRecord.getAsccId())).execute();
+            asccRecord.delete();
+        }
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,

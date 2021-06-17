@@ -21,10 +21,9 @@ import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.service.common.data.BCCEntityType.Attribute;
 import static org.oagi.score.service.common.data.BCCEntityType.Element;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BCCP;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BCCP_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
@@ -306,10 +305,29 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
+        int usedBieCount = dslContext.selectCount().from(BBIE)
+                .where(BBIE.BASED_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).fetchOne(0, int.class);
+
+        if (usedBieCount > 0) {
+            throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be deleted.");
+        }
+
         // delete from Tables
         seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
+        dslContext.update(BCC_MANIFEST).setNull(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID)
+                .where(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).execute();
+        dslContext.update(BCC_MANIFEST).setNull(BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
+                .where(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).execute();
         bccManifestRecord.delete();
-        bccRecord.delete();
+
+        if (dslContext.selectCount().from(BCC_MANIFEST)
+                .where(BCC_MANIFEST.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne(0, int.class) == 0) {
+            dslContext.update(BCC).setNull(BCC.NEXT_BCC_ID)
+                    .where(BCC.NEXT_BCC_ID.eq(bccRecord.getBccId())).execute();
+            dslContext.update(BCC).setNull(BCC.PREV_BCC_ID)
+                    .where(BCC.PREV_BCC_ID.eq(bccRecord.getBccId())).execute();
+            bccRecord.delete();
+        }
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
