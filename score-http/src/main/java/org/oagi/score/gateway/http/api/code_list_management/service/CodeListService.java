@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.code_list_management.service;
 import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.service.common.data.CcState;
@@ -12,10 +13,6 @@ import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueRecord;
 import org.oagi.score.repo.component.code_list.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,7 +47,7 @@ public class CodeListService extends EventHandler {
     @Autowired
     private CodeListWriteRepository codeListWriteRepository;
 
-    private SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.GUID,
@@ -81,13 +78,23 @@ public class CodeListService extends EventHandler {
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
                 .leftJoin(MODULE_CODE_LIST_MANIFEST)
-                .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
+                .on(and(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID), MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE)
                 .on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID));
     }
 
     public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
-        SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> step = getSelectOnConditionStep();
+
+        ULong defaultModuleSetReleaseId = null;
+        ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
+                .fetchOne();
+
+        if (defaultModuleSetRelease != null) {
+            defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
+        }
+
+        SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> step = getSelectOnConditionStep(defaultModuleSetReleaseId);
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));

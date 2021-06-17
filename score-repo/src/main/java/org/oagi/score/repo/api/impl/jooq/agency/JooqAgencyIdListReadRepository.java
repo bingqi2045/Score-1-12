@@ -10,6 +10,7 @@ import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -35,7 +36,7 @@ public class JooqAgencyIdListReadRepository
         super(dslContext);
     }
 
-    private SelectOnConditionStep select() {
+    private SelectOnConditionStep select(ULong defaultModuleSetReleaseId) {
         return dslContext().select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
@@ -76,11 +77,8 @@ public class JooqAgencyIdListReadRepository
                 .join(APP_USER.as("creator")).on(AGENCY_ID_LIST.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
                 .join(APP_USER.as("owner")).on(AGENCY_ID_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(AGENCY_ID_LIST.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
-                .leftJoin(MODULE_AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
-                .leftJoin(MODULE_SET_RELEASE).on(
-                        and(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID),
-                            MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1),
-                            MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)))
+                .leftJoin(MODULE_AGENCY_ID_LIST_MANIFEST)
+                .on(and(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID), MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(defaultModuleSetReleaseId)))
                 .leftJoin(MODULE).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID));
     }
@@ -146,7 +144,16 @@ public class JooqAgencyIdListReadRepository
 
         SelectConditionStep conditionStep;
 
-        conditionStep = select().where(conditions);
+        ULong defaultModuleSetReleaseId = null;
+        ModuleSetReleaseRecord defaultModuleSetRelease = dslContext().selectFrom(MODULE_SET_RELEASE)
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
+                .fetchOne();
+
+        if (defaultModuleSetRelease != null) {
+            defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
+        }
+
+        conditionStep = select(defaultModuleSetReleaseId).where(conditions);
 
         SortField sortField = getSortField(request);
         int length = dslContext().fetchCount(conditionStep);
@@ -247,7 +254,7 @@ public class JooqAgencyIdListReadRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public AgencyIdList getAgencyIdList(BigInteger agencyIdListManifestId) throws ScoreDataAccessException {
-        AgencyIdList agencyIdList = (AgencyIdList) select()
+        AgencyIdList agencyIdList = (AgencyIdList) select(null)
                 .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(agencyIdListManifestId)))
                 .fetchOne(mapper());
         if (agencyIdList == null) {
