@@ -5,6 +5,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -346,5 +347,92 @@ public class BccWriteRepository {
                 (bccManifestRecord.getSeqKeyId() != null) ? bccManifestRecord.getSeqKeyId().toBigInteger() : null,
                 bccManifestRecord.getBccManifestId().toBigInteger());
         return seqKeyHandler;
+    }
+
+    public RefactorBccRepositoryResponse refactor(RefactorBccRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getBccManifestId())
+                ))
+                .fetchOne();
+
+        BccRecord bccRecord = dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                .fetchOne();
+
+        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId()))
+                .fetchOne();
+
+        AccRecord prevAccRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(prevAccManifestRecord.getAccId()))
+                .fetchOne();
+
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        String bccpDen = dslContext.select(BCCP.DEN)
+                .from(BCCP_MANIFEST)
+                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                .fetchOneInto(String.class);
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be refactored.");
+        }
+
+        if (!accRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        // getDuplicatedBccList(ULong.valueOf(request.getAccManifestId()), bccManifestRecord.getReleaseId());
+
+        int usedBieCount = dslContext.selectCount().from(BBIE)
+                .where(BBIE.BASED_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).fetchOne(0, int.class);
+
+        if (usedBieCount > 0) {
+            throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
+        }
+
+        if (false) {
+            throw new IllegalArgumentException("There's duplicated association exist.");
+        }
+
+        // delete from Tables
+        seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
+        bccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
+        bccManifestRecord.update(BCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+
+        seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(MoveTo.LAST);
+
+        bccRecord.setLastUpdatedBy(userId);
+        bccRecord.setLastUpdateTimestamp(timestamp);
+        bccRecord.setFromAccId(accRecord.getAccId());
+        bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpDen);
+        bccRecord.update(BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP,
+                BCC.FROM_ACC_ID, BCC.DEN);
+
+        upsertLogIntoAccAndAssociations(
+                accRecord, accManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
+
+        upsertLogIntoAccAndAssociations(
+                prevAccRecord, prevAccManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
+
+        return new RefactorBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
 }

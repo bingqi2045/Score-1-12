@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
+import com.sun.xml.xsom.impl.scd.Iterators;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
@@ -34,6 +35,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
@@ -989,6 +991,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new CancelRevisionAccEvent());
     }
 
+
     @Transactional
     public CreateOagisBodResponse createOagisBod(AuthenticatedPrincipal user,
                                                  CreateOagisBodRequest request) {
@@ -1134,6 +1137,30 @@ public class CcNodeService extends EventHandler {
             throw new IllegalStateException("'" + release.getState() + "' Release cannot be modified.");
         }
         return true;
+    }
+
+    @Transactional
+    public void refactorAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, BigInteger destinationAccManifestId) {
+        RefactorAsccRepositoryRequest request
+                = new RefactorAsccRepositoryRequest(user, asccManifestId, destinationAccManifestId);
+        asccWriteRepository.refactor(request);
+
+        fireEvent(new RefactorAsccEvent());
+    }
+
+    @Transactional
+    public void refactorBcc(AuthenticatedPrincipal user, BigInteger bccManifestId, BigInteger destinationAccManifestId) {
+        RefactorBccRepositoryRequest request
+                = new RefactorBccRepositoryRequest(user, bccManifestId, destinationAccManifestId);
+        bccWriteRepository.refactor(request);
+
+        fireEvent(new RefactorBccEvent());
+    }
+
+    public List<CcList> getBaseAccList(AuthenticatedPrincipal user, BigInteger accManifestId) {
+
+        AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
+        return accReadRepository.getBaseAccList(accManifestRecord.getAccManifestId().toBigInteger(), accManifestRecord.getReleaseId().toBigInteger());
     }
 }
 

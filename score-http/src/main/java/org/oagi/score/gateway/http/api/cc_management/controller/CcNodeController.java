@@ -17,10 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class CcNodeController {
@@ -425,4 +422,38 @@ public class CcNodeController {
         CreateOagisVerbResponse response = service.createOagisVerb(user, request);
         return response;
     }
+
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base_acc_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CcList> baseAccList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                    @PathVariable("manifestId") BigInteger manifestId) {
+
+        return service.getBaseAccList(user, manifestId);
+    }
+
+    @RequestMapping(value = "/core_component/{type}/refactor",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNodeUpdateResponse refactorAssociation(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                               @PathVariable("type") String type,
+                                               @RequestBody CcRefactorRequest request) {
+
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
+        resp.setType(CcType.valueOf(type.toUpperCase()));
+
+        switch (resp.getType()) {
+            case BCC:
+                service.refactorBcc(user, request.getTargetManifestId(), request.getDestinationManifestId());
+                break;
+            case ASCC:
+                service.refactorAscc(user, request.getTargetManifestId(), request.getDestinationManifestId());
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return resp;
+    }
+
+
 }

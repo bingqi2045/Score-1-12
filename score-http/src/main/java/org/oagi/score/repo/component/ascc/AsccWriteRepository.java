@@ -5,6 +5,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.service.common.data.CcState;
@@ -20,7 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -341,5 +349,90 @@ public class AsccWriteRepository {
                 (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
                 asccManifestRecord.getAsccManifestId().toBigInteger());
         return seqKeyHandler;
+    }
+
+    public RefactorAsccRepositoryResponse refactor(RefactorAsccRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAsccManifestId())
+                ))
+                .fetchOne();
+
+        AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                .fetchOne();
+
+        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccManifestRecord.getFromAccManifestId()))
+                .fetchOne();
+
+        AccRecord prevAccRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(prevAccManifestRecord.getAccId()))
+                .fetchOne();
+
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        String asccpDen = dslContext.select(ASCCP.DEN)
+                .from(ASCCP_MANIFEST)
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                .fetchOneInto(String.class);
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be refactored.");
+        }
+
+        if (!accRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        int usedBieCount = dslContext.selectCount().from(ASBIE)
+                .where(ASBIE.BASED_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).fetchOne(0, int.class);
+
+        if (usedBieCount > 0) {
+            throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
+        }
+
+        if (false) {
+            throw new IllegalArgumentException("There's duplicated association exist.");
+        }
+
+        // delete from Tables
+        seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
+        asccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
+        asccManifestRecord.update(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+
+        seqKeyHandler(request.getUser(), asccManifestRecord).moveTo(MoveTo.LAST);
+
+        asccRecord.setLastUpdatedBy(userId);
+        asccRecord.setLastUpdateTimestamp(timestamp);
+        asccRecord.setFromAccId(accRecord.getAccId());
+        asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + asccpDen);
+        asccRecord.update(ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP,
+                ASCC.FROM_ACC_ID, ASCC.DEN);
+
+        upsertLogIntoAccAndAssociations(
+                accRecord, accManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
+
+        upsertLogIntoAccAndAssociations(
+                prevAccRecord, prevAccManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
+
+        return new RefactorAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
     }
 }
