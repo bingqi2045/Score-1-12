@@ -19,6 +19,9 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -403,9 +406,7 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
         }
 
-        if (false) {
-            throw new IllegalArgumentException("There's duplicated association exist.");
-        }
+        this.checkDuplicate(bccManifestRecord, accManifestRecord.getAccManifestId());
 
         // delete from Tables
         seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
@@ -435,4 +436,63 @@ public class BccWriteRepository {
 
         return new RefactorBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
+
+    private void checkDuplicate(BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+        List<AccManifestRecord> accList = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(bccManifestRecord.getReleaseId())).fetch();
+
+        Map<ULong, AccManifestRecord> accMap = accList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<ULong, List<AccManifestRecord>> baseAccMap = accList.stream().filter(e -> e.getBasedAccManifestId() != null)
+                .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
+
+        List<BccManifestRecord> bccList = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(bccManifestRecord.getReleaseId())).fetch();
+
+        Map<ULong, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
+                .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
+
+        List<ULong> accManifestList = new ArrayList<>();
+
+        AccManifestRecord targetAccManifestRecord = accMap.get(targetAccManifestId);
+
+        accManifestList.add(targetAccManifestId);
+
+        while (targetAccManifestRecord.getBasedAccManifestId() != null) {
+            accManifestList.add(targetAccManifestRecord.getBasedAccManifestId());
+            targetAccManifestRecord = accMap.get(targetAccManifestRecord.getBasedAccManifestId());
+        }
+
+        Set<ULong> result = new HashSet<>();
+
+        for (ULong cur : accManifestList) {
+            result.addAll(getBaseAccManifestId(cur, baseAccMap));
+        }
+
+        Set<BccManifestRecord> bccResult = new HashSet<>();
+
+        for (ULong acc : result) {
+            bccResult.addAll(
+                    fromAccBccMap.getOrDefault(acc, Collections.emptyList())
+                            .stream()
+                            .filter(bcc -> bcc.getToBccpManifestId().equals(bccManifestRecord.getToBccpManifestId())
+                                    && !bcc.getBccManifestId().equals(bccManifestRecord.getBccManifestId()))
+                            .collect(Collectors.toList()));
+        }
+
+        if (bccResult.size() > 0) {
+            throw new IllegalArgumentException("Unable to refactor. " + bccResult.size() + " duplicate association(s) exist in the derived ACC");
+        }
+    }
+
+    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
+        List<ULong> result = new ArrayList<>();
+        result.add(accManifestId);
+        if (baseAccMap.containsKey(accManifestId)) {
+            baseAccMap.get(accManifestId).forEach(e -> {
+                result.addAll(getBaseAccManifestId(e.getAccManifestId(), baseAccMap));
+            });
+        }
+        return result;
+    }
+
 }

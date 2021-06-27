@@ -4,29 +4,25 @@ import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.corecomponent.seqkey.MoveTo;
-import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -324,7 +320,7 @@ public class AsccWriteRepository {
                 .where(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).execute();
         asccManifestRecord.delete();
         if (dslContext.selectCount().from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne(0, int.class) == 0 ) {
+                .where(ASCC_MANIFEST.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne(0, int.class) == 0) {
             dslContext.update(ASCC).setNull(ASCC.NEXT_ASCC_ID)
                     .where(ASCC.NEXT_ASCC_ID.eq(asccRecord.getAsccId())).execute();
             dslContext.update(ASCC).setNull(ASCC.PREV_ASCC_ID)
@@ -396,6 +392,7 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
+
         int usedBieCount = dslContext.selectCount().from(ASBIE)
                 .where(ASBIE.BASED_ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId())).fetchOne(0, int.class);
 
@@ -403,9 +400,7 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
         }
 
-        if (false) {
-            throw new IllegalArgumentException("There's duplicated association exist.");
-        }
+        this.checkDuplicate(asccManifestRecord, accManifestRecord.getAccManifestId());
 
         // delete from Tables
         seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
@@ -434,5 +429,63 @@ public class AsccWriteRepository {
         );
 
         return new RefactorAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
+    }
+
+    private void checkDuplicate(AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
+        List<AccManifestRecord> accList = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(asccManifestRecord.getReleaseId())).fetch();
+
+        Map<ULong, AccManifestRecord> accMap = accList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<ULong, List<AccManifestRecord>> baseAccMap = accList.stream().filter(e -> e.getBasedAccManifestId() != null)
+                .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
+
+        List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(asccManifestRecord.getReleaseId())).fetch();
+
+        Map<ULong, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
+                .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
+
+        List<ULong> accManifestList = new ArrayList<>();
+
+        AccManifestRecord targetAccManifestRecord = accMap.get(targetAccManifestId);
+
+        accManifestList.add(targetAccManifestId);
+
+        while (targetAccManifestRecord.getBasedAccManifestId() != null) {
+            accManifestList.add(targetAccManifestRecord.getBasedAccManifestId());
+            targetAccManifestRecord = accMap.get(targetAccManifestRecord.getBasedAccManifestId());
+        }
+
+        Set<ULong> result = new HashSet<>();
+
+        for (ULong cur : accManifestList) {
+            result.addAll(getBaseAccManifestId(cur, baseAccMap));
+        }
+
+        Set<AsccManifestRecord> asccResult = new HashSet<>();
+
+        for (ULong acc : result) {
+            asccResult.addAll(
+                    fromAccAsccMap.getOrDefault(acc, Collections.emptyList())
+                            .stream()
+                            .filter(ascc -> ascc.getToAsccpManifestId().equals(asccManifestRecord.getToAsccpManifestId())
+                                    && !ascc.getAsccManifestId().equals(asccManifestRecord.getAsccManifestId()))
+                            .collect(Collectors.toList()));
+        }
+
+        if (asccResult.size() > 0) {
+            throw new IllegalArgumentException("Unable to refactor. " + asccResult.size() + " duplicate association(s) exist in the derived ACC");
+        }
+    }
+
+    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
+        List<ULong> result = new ArrayList<>();
+        result.add(accManifestId);
+        if (baseAccMap.containsKey(accManifestId)) {
+            baseAccMap.get(accManifestId).forEach(e -> {
+                result.addAll(getBaseAccManifestId(e.getAccManifestId(), baseAccMap));
+            });
+        }
+        return result;
     }
 }
