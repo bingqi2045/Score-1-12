@@ -46,10 +46,12 @@ public class Graph {
 
     public Edge addEdges(Node source, List<Node> children) {
         String sourceKey = source.getKey();
+        Edge edge;
         if (edges.containsKey(sourceKey)) {
-            return edges.get(sourceKey);
+            edge = edges.get(sourceKey);
+        } else {
+            edge = new Edge();
         }
-        Edge edge = new Edge();
         children.stream().forEach(e -> {
             edge.addTarget(e.getKey());
         });

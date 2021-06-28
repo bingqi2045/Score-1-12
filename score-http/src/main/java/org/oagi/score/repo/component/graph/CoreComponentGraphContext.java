@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -35,6 +36,7 @@ public class CoreComponentGraphContext implements GraphContext {
     private Map<ULong, AccManifest> accManifestMap;
     private Map<ULong, List<AccManifest>> accManifestMapByBasedAccManifestId;
     private Map<ULong, AsccpManifest> asccpManifestMap;
+    private Map<ULong, List<AsccpManifest>> asccpManifestMapByRoleOfAccManifestId;
     private Map<ULong, BccpManifest> bccpManifestMap;
     private Map<ULong, List<AsccManifest>> asccManifestMap;
     private Map<ULong, List<BccManifest>> bccManifestMap;
@@ -177,7 +179,7 @@ public class CoreComponentGraphContext implements GraphContext {
                 .filter(e -> e.getBasedAccManifestId() != null)
                 .collect(groupingBy(AccManifest::getBasedAccManifestId));
 
-        asccpManifestMap =
+        List<AsccpManifest> asccpManifestList =
                 dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                         ASCCP.PROPERTY_TERM, ASCCP.STATE, ASCCP.GUID, ASCCP.IS_DEPRECATED,
                         ASCCP_MANIFEST.RELEASE_ID, ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID)
@@ -193,8 +195,12 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(ASCCP.IS_DEPRECATED),
                                 record.get(ASCCP_MANIFEST.RELEASE_ID),
                                 record.get(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID)
-                        )).stream()
-                        .collect(Collectors.toMap(AsccpManifest::getAsccpManifestId, Function.identity()));
+                        ));
+        asccpManifestMap = asccpManifestList.stream()
+                .collect(Collectors.toMap(AsccpManifest::getAsccpManifestId, Function.identity()));
+        asccpManifestMapByRoleOfAccManifestId = asccpManifestList.stream()
+                .collect(groupingBy(AsccpManifest::getRoleOfAccManifestId));
+
         bccpManifestMap =
                 dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP_MANIFEST.BDT_MANIFEST_ID,
                         BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE, BCCP.GUID, BCCP.IS_DEPRECATED,
@@ -327,25 +333,37 @@ public class CoreComponentGraphContext implements GraphContext {
         Graph graph = new Graph();
         graph.addNode(node);
 
-        Queue<Node> queue = new LinkedBlockingQueue();
-        queue.offer(node);
+        if (node.getType() == Node.NodeType.ACC) {
+            Queue<Node> queue = new LinkedBlockingQueue();
+            queue.offer(node);
 
-        while (!queue.isEmpty()) {
-            Node currentNode = queue.poll();
-            switch (currentNode.getType()) {
-                case ACC:
-                    List<Node> accUsages = accManifestMapByBasedAccManifestId.getOrDefault(
-                            currentNode.getManifestId(), Collections.emptyList())
-                            .stream().map(e -> toNode(e)).collect(Collectors.toList());
+            while (!queue.isEmpty()) {
+                Node currentNode = queue.poll();
+                switch (currentNode.getType()) {
+                    case ACC:
+                        List<Node> accUsages = accManifestMapByBasedAccManifestId.getOrDefault(
+                                currentNode.getManifestId(), Collections.emptyList())
+                                .stream().map(e -> toNode(e)).collect(Collectors.toList());
 
-                    accUsages.forEach(_node -> {
-                        graph.addNode(_node);
-                    });
-                    graph.addEdges(currentNode, accUsages);
+                        accUsages.forEach(_node -> {
+                            graph.addNode(_node);
+                        });
 
-                    queue.addAll(accUsages);
-                    break;
+                        graph.addEdges(currentNode, accUsages);
+                        queue.addAll(accUsages);
+
+                        break;
+                }
             }
+
+            List<Node> asccpUsages = asccpManifestMapByRoleOfAccManifestId.getOrDefault(
+                    node.getManifestId(), Collections.emptyList())
+                    .stream().map(e -> toNode(e)).collect(Collectors.toList());
+
+            asccpUsages.forEach(_node -> {
+                graph.addNode(_node);
+            });
+            graph.addEdges(node, asccpUsages);
         }
 
         response.setGraph(graph);

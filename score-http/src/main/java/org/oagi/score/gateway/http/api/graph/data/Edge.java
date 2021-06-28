@@ -13,10 +13,14 @@ public class Edge {
     private List<String> targets = new ArrayList();
 
     public void addTarget(String target) {
-        targets.add(target);
+        if (!targets.contains(target)) {
+            targets.add(target);
+        }
     }
 
     public void addTarget(int index, String target) {
-        targets.add(index, target);
+        if (!targets.contains(target)) {
+            targets.add(index, target);
+        }
     }
 }
