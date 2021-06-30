@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -53,16 +53,33 @@ public class GraphService {
 
     public FindUsagesResponse findUsages(FindUsagesRequest request) {
         CoreComponentGraphContext ccGraphContext;
+        Node node;
         switch (request.getType().toUpperCase()) {
             case "ACC":
                 AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                         .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
                         .fetchOne();
                 ccGraphContext = new CoreComponentGraphContext(dslContext, accManifestRecord.getReleaseId().toBigInteger());
-                return ccGraphContext.findUsages(ccGraphContext.toNode(accManifestRecord));
+                node = ccGraphContext.toNode(accManifestRecord);
+                break;
+            case "ASCCP":
+                AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
+                        .fetchOne();
+                ccGraphContext = new CoreComponentGraphContext(dslContext, asccpManifestRecord.getReleaseId().toBigInteger());
+                node = ccGraphContext.toNode(asccpManifestRecord);
+                break;
+            case "BCCP":
+                BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
+                        .fetchOne();
+                ccGraphContext = new CoreComponentGraphContext(dslContext, bccpManifestRecord.getReleaseId().toBigInteger());
+                node = ccGraphContext.toNode(bccpManifestRecord);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
+        return ccGraphContext.findUsages(node);
     }
 
     public Graph getAccGraph(BigInteger accManifestId) {

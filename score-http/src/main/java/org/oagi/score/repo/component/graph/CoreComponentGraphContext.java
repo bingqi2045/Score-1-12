@@ -35,6 +35,8 @@ public class CoreComponentGraphContext implements GraphContext {
 
     private Map<ULong, AccManifest> accManifestMap;
     private Map<ULong, List<AccManifest>> accManifestMapByBasedAccManifestId;
+    private Map<ULong, Set<AccManifest>> accManifestMapByToAsccpManifestId;
+    private Map<ULong, Set<AccManifest>> accManifestMapByToBccpManifestId;
     private Map<ULong, AsccpManifest> asccpManifestMap;
     private Map<ULong, List<AsccpManifest>> asccpManifestMapByRoleOfAccManifestId;
     private Map<ULong, BccpManifest> bccpManifestMap;
@@ -220,7 +222,8 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID)
                         )).stream()
                         .collect(Collectors.toMap(BccpManifest::getBccpManifestId, Function.identity()));
-        asccManifestMap =
+
+        List<AsccManifest> asccManifestList =
                 dslContext.select(
                         ASCC_MANIFEST.ASCC_MANIFEST_ID,
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
@@ -250,9 +253,20 @@ public class CoreComponentGraphContext implements GraphContext {
                                     seqKeyId.toBigInteger(),
                                     (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
                                     (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
-                        }).stream()
-                        .collect(groupingBy(AsccManifest::getFromAccManifestId));
-        bccManifestMap =
+                        });
+        asccManifestMap = asccManifestList.stream()
+                .collect(groupingBy(AsccManifest::getFromAccManifestId));
+        accManifestMapByToAsccpManifestId = new HashMap();
+        for (AsccManifest asccManifest : asccManifestList) {
+            ULong toAsccpManifestId = asccManifest.getToAsccpManifestId();
+            Set<AccManifest> accManifests = accManifestMapByToAsccpManifestId.get(toAsccpManifestId);
+            if (accManifests == null) {
+                accManifests = new HashSet();
+                accManifestMapByToAsccpManifestId.put(toAsccpManifestId, accManifests);
+            }
+            accManifests.add(accManifestMap.get(asccManifest.getFromAccManifestId()));
+        }
+        List<BccManifest> bccManifestList =
                 dslContext.select(
                         BCC_MANIFEST.BCC_MANIFEST_ID,
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
@@ -283,8 +297,19 @@ public class CoreComponentGraphContext implements GraphContext {
                                     seqKeyId.toBigInteger(),
                                     (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
                                     (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
-                        }).stream()
-                        .collect(groupingBy(BccManifest::getFromAccManifestId));
+                        });
+        bccManifestMap = bccManifestList.stream()
+                .collect(groupingBy(BccManifest::getFromAccManifestId));
+        accManifestMapByToBccpManifestId = new HashMap();
+        for (BccManifest bccManifest : bccManifestList) {
+            ULong toBccpManifestId = bccManifest.getToBccpManifestId();
+            Set<AccManifest> accManifests = accManifestMapByToBccpManifestId.get(toBccpManifestId);
+            if (accManifests == null) {
+                accManifests = new HashSet();
+                accManifestMapByToBccpManifestId.put(toBccpManifestId, accManifests);
+            }
+            accManifests.add(accManifestMap.get(bccManifest.getFromAccManifestId()));
+        }
         dtManifestMap =
                 dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.DEN, DT.STATE,
                         DT.IS_DEPRECATED, DT_MANIFEST.RELEASE_ID, DT_MANIFEST.PREV_DT_MANIFEST_ID)
@@ -364,6 +389,28 @@ public class CoreComponentGraphContext implements GraphContext {
                 graph.addNode(_node);
             });
             graph.addEdges(node, asccpUsages);
+        }
+
+        else if (node.getType() == Node.NodeType.ASCCP) {
+            List<Node> asccpUsages = accManifestMapByToAsccpManifestId.getOrDefault(
+                    node.getManifestId(), Collections.emptySet())
+                    .stream().map(e -> toNode(e)).collect(Collectors.toList());
+
+            asccpUsages.forEach(_node -> {
+                graph.addNode(_node);
+            });
+            graph.addEdges(node, asccpUsages);
+        }
+
+        else if (node.getType() == Node.NodeType.BCCP) {
+            List<Node> bccpUsages = accManifestMapByToBccpManifestId.getOrDefault(
+                    node.getManifestId(), Collections.emptySet())
+                    .stream().map(e -> toNode(e)).collect(Collectors.toList());
+
+            bccpUsages.forEach(_node -> {
+                graph.addNode(_node);
+            });
+            graph.addEdges(node, bccpUsages);
         }
 
         response.setGraph(graph);
