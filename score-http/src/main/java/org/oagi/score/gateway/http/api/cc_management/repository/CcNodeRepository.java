@@ -1248,4 +1248,14 @@ public class CcNodeRepository {
                         .fetchOneInto(String.class)
         );
     }
+
+    public CcState getDtState(BigInteger manifestId) {
+        return CcState.valueOf(
+                dslContext.select(DT.STATE)
+                        .from(DT)
+                        .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(String.class)
+        );
+    }
 }

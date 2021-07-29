@@ -255,6 +255,27 @@ public class LogRepository {
         return logRecord;
     }
 
+    public LogRecord revertToStableState(DtManifestRecord dtManifestRecord) {
+        String reference = dslContext.select(LOG.REFERENCE)
+                .from(LOG)
+                .where(LOG.LOG_ID.eq(dtManifestRecord.getLogId()))
+                .fetchOneInto(String.class);
+
+        dslContext.update(DT_MANIFEST)
+                .setNull(DT_MANIFEST.LOG_ID)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
+        LogRecord logRecord = revertToStableStateByReference(reference);
+        dtManifestRecord.setLogId(logRecord.getLogId());
+        dslContext.update(DT_MANIFEST)
+                .set(DT_MANIFEST.LOG_ID, logRecord.getLogId())
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
+        return logRecord;
+    }
+
     public LogRecord revertToStableState(CodeListManifestRecord codeListManifestRecord) {
         String reference = dslContext.select(LOG.REFERENCE)
                 .from(LOG)

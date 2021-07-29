@@ -141,6 +141,11 @@ public class CcNodeController {
                         service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
+            case BDT:
+                resp.setManifestId(
+                        service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                );
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -177,6 +182,11 @@ public class CcNodeController {
             case BCCP:
                 resp.setManifestId(
                         service.makeNewRevisionForBccp(user, manifestId)
+                );
+                break;
+            case BDT:
+                resp.setManifestId(
+                        service.makeNewRevisionForDt(user, manifestId)
                 );
                 break;
             default:
@@ -395,6 +405,9 @@ public class CcNodeController {
                 break;
             case BCCP:
                 service.cancelRevisionBccp(user, manifestId);
+                break;
+            case BDT:
+                service.cancelRevisionDt(user, manifestId);
                 break;
             default:
                 throw new UnsupportedOperationException();

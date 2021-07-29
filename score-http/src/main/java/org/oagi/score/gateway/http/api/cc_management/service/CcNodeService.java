@@ -1,13 +1,26 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
-import com.sun.xml.xsom.impl.scd.Iterators;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.component.dt.BdtWriteRepository;
-import org.oagi.score.repo.component.dt.CreateBdtRepositoryRequest;
-import org.oagi.score.repo.component.dt.CreateBdtRepositoryResponse;
-import org.oagi.score.repo.component.dt.CreatedBdtEvent;
+import org.oagi.score.repo.component.bccp.CancelRevisionBccpEvent;
+import org.oagi.score.repo.component.bccp.CancelRevisionBccpRepositoryRequest;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryResponse;
+import org.oagi.score.repo.component.bccp.DeletedBccpEvent;
+import org.oagi.score.repo.component.bccp.RevisedBccpEvent;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpOwnerRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdatedBccpBdtEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpStateEvent;
+import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.common.data.CcState;
@@ -35,7 +48,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
@@ -67,7 +79,7 @@ public class CcNodeService extends EventHandler {
     private BccpWriteRepository bccpWriteRepository;
 
     @Autowired
-    private BdtWriteRepository bdtWriteRepository;
+    private DtWriteRepository dtWriteRepository;
 
     @Autowired
     private AsccWriteRepository asccWriteRepository;
@@ -237,7 +249,7 @@ public class CcNodeService extends EventHandler {
                         request.getBdtManifestId(), request.getReleaseId());
 
         CreateBdtRepositoryResponse repositoryResponse =
-                bdtWriteRepository.createBdt(repositoryRequest);
+                dtWriteRepository.createBdt(repositoryRequest);
 
         fireEvent(new CreatedBdtEvent());
 
@@ -727,6 +739,25 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
+    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState toState) {
+        CcState fromState = repository.getDtState(dtManifestId);
+        return updateDtState(user, dtManifestId, fromState, toState);
+    }
+
+    @Transactional
+    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState fromState, CcState toState) {
+        UpdateDtStateRepositoryRequest repositoryRequest =
+                new UpdateDtStateRepositoryRequest(user, dtManifestId, fromState, toState);
+
+        UpdateDtStateRepositoryResponse repositoryResponse =
+                dtWriteRepository.updateDtState(repositoryRequest);
+
+        fireEvent(new UpdatedDtStateEvent());
+
+        return repositoryResponse.getDtManifestId();
+    }
+
+    @Transactional
     public BigInteger makeNewRevisionForAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
         ReviseAccRepositoryRequest repositoryRequest =
                 new ReviseAccRepositoryRequest(user, accManifestId);
@@ -763,6 +794,19 @@ public class CcNodeService extends EventHandler {
         fireEvent(new RevisedBccpEvent());
 
         return repositoryResponse.getBccpManifestId();
+    }
+
+    @Transactional
+    public BigInteger makeNewRevisionForDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        ReviseDtRepositoryRequest repositoryRequest =
+                new ReviseDtRepositoryRequest(user, dtManifestId);
+
+        ReviseDtRepositoryResponse repositoryResponse =
+                dtWriteRepository.reviseDt(repositoryRequest);
+
+        fireEvent(new RevisedDtEvent());
+
+        return repositoryResponse.getDtManifestId();
     }
 
     public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
@@ -971,6 +1015,15 @@ public class CcNodeService extends EventHandler {
         bccpWriteRepository.cancelRevisionBccp(request);
 
         fireEvent(new CancelRevisionBccpEvent());
+    }
+
+    @Transactional
+    public void cancelRevisionDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        CancelRevisionDtRepositoryRequest request
+                = new CancelRevisionDtRepositoryRequest(user, dtManifestId);
+        dtWriteRepository.cancelRevisionDt(request);
+
+        fireEvent(new CancelRevisionDtEvent());
     }
 
     @Transactional
