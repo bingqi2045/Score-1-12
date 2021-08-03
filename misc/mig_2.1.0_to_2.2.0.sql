@@ -205,3 +205,7 @@ ALTER TABLE `dt_sc` ADD COLUMN `prev_dt_sc_id` bigint(20) unsigned DEFAULT NULL 
                  ADD COLUMN `next_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
                  ADD CONSTRAINT `dt_sc_prev_dt_sc_id_fk` FOREIGN KEY (`prev_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
                  ADD CONSTRAINT `dt_sc_next_dt_sc_id_fk` FOREIGN KEY (`next_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+
+-- add six_digit_id to `dt`
+ALTER TABLE `dt` ADD COLUMN `six_digit_id` varchar(45) DEFAULT NULL COMMENT 'The six number suffix comes from the UN/CEFACT XML Schema NDR.' AFTER `qualifier`;
+UPDATE `dt` SET `six_digit_id` = REPLACE(REPLACE(`den`, CONCAT(`data_type_term`, '_'), ''), '. Type', '') WHERE `den` REGEXP '_[0-9|A-Z]+';
