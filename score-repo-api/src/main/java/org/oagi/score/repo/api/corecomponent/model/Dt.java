@@ -14,19 +14,19 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
 
     private DtType type;
 
-    private String versionNum;
-
     private String dataTypeTerm;
 
     private String qualifier;
+
+    private String representationTerm;
+
+    private String sixDigitId;
 
     private String den;
 
     private String definition;
 
     private String definitionSource;
-
-    private String contentComponentDen;
 
     private String contentComponentDefinition;
 
@@ -74,14 +74,6 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
         this.type = type;
     }
 
-    public String getVersionNum() {
-        return versionNum;
-    }
-
-    public void setVersionNum(String versionNum) {
-        this.versionNum = versionNum;
-    }
-
     public String getDataTypeTerm() {
         return dataTypeTerm;
     }
@@ -122,12 +114,20 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
         this.definitionSource = definitionSource;
     }
 
-    public String getContentComponentDen() {
-        return contentComponentDen;
+    public String getRepresentationTerm() {
+        return representationTerm;
     }
 
-    public void setContentComponentDen(String contentComponentDen) {
-        this.contentComponentDen = contentComponentDen;
+    public void setRepresentationTerm(String representationTerm) {
+        this.representationTerm = representationTerm;
+    }
+
+    public String getSixDigitId() {
+        return sixDigitId;
+    }
+
+    public void setSixDigitId(String sixDigitId) {
+        this.sixDigitId = sixDigitId;
     }
 
     public String getContentComponentDefinition() {

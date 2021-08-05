@@ -88,14 +88,15 @@ public class DtWriteRepository {
         }
 
         if (basedBdt.getQualifier() != null) {
-            bdt.setDen(basedBdt.getQualifier() + "_ " + basedBdt.getDen());
-            bdt.setContentComponentDen(basedBdt.getQualifier() + "_ " + basedBdt.getContentComponentDen());
+            bdt.setQualifier(basedBdt.getQualifier() + "_ Qualifier");
+            bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
+
         } else {
-            bdt.setDen(basedBdt.getDen());
-            bdt.setContentComponentDen(basedBdt.getContentComponentDen());
+            bdt.setQualifier("Qualifier");
+            bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
         }
 
-        bdt.setVersionNum("1.0");
+        bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);

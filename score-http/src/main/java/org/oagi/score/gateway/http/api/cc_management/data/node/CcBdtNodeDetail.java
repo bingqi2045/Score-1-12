@@ -17,13 +17,13 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private BigInteger manifestId;
     private String guid;
     private String dtType;
-    private String versionNum;
     private String dataTypeTerm;
+    private String representationTerm;
+    private String sixDigitId;
     private String qualifier;
     private BigInteger basedBdtId;
     private BigInteger basedBdtManifestId;
     private String basedBdtDen;
-    private String contentComponentDen;
     private String contentComponentDefinition;
     private boolean commonlyUsed;
     private String den;

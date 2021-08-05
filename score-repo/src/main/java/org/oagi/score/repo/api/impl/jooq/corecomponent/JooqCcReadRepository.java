@@ -678,13 +678,13 @@ public class JooqCcReadRepository
                 DT.DT_ID,
                 DT.GUID,
                 DT.TYPE,
-                DT.VERSION_NUM,
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
+                DT.REPRESENTATION_TERM,
+                DT.SIX_DIGIT_ID,
                 DT.DEN,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
-                DT.CONTENT_COMPONENT_DEN,
                 DT.CONTENT_COMPONENT_DEFINITION,
                 DT.NAMESPACE_ID,
                 DT.STATE,
@@ -715,13 +715,13 @@ public class JooqCcReadRepository
             dt.setDtId(record.get(DT.DT_ID).toBigInteger());
             dt.setGuid(record.get(DT.GUID));
             dt.setType(DtType.valueOf(record.get(DT.TYPE)));
-            dt.setVersionNum(record.get(DT.VERSION_NUM));
             dt.setDataTypeTerm(record.get(DT.DATA_TYPE_TERM));
             dt.setQualifier(record.get(DT.QUALIFIER));
+            dt.setRepresentationTerm(record.get(DT.REPRESENTATION_TERM));
+            dt.setSixDigitId(record.get(DT.SIX_DIGIT_ID));
             dt.setDen(record.get(DT.DEN));
             dt.setDefinition(record.get(DT.DEFINITION));
             dt.setDefinitionSource(record.get(DT.DEFINITION_SOURCE));
-            dt.setContentComponentDen(record.get(DT.CONTENT_COMPONENT_DEN));
             dt.setContentComponentDefinition(record.get(DT.CONTENT_COMPONENT_DEFINITION));
             if (record.get(DT.NAMESPACE_ID) != null) {
                 dt.setNamespaceId(record.get(DT.NAMESPACE_ID).toBigInteger());

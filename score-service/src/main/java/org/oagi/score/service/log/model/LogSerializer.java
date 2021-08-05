@@ -321,13 +321,13 @@ public class LogSerializer {
         properties.put("component", "dt");
         properties.put("guid", dtRecord.getGuid());
         properties.put("type", DTType.valueOf(dtRecord.getType()).name());
-        properties.put("versionNum", dtRecord.getVersionNum());
+        properties.put("representationTerm", dtRecord.getRepresentationTerm());
         properties.put("dataTypeTerm", dtRecord.getDataTypeTerm());
         properties.put("qualifier", dtRecord.getQualifier());
         properties.put("definition", dtRecord.getDefinition());
         properties.put("definitionSource", dtRecord.getDefinitionSource());
         properties.put("contentComponentDefinition", dtRecord.getContentComponentDefinition());
-        properties.put("revisionDoc", dtRecord.getRevisionDoc());
+        properties.put("sixDigitId", dtRecord.getSixDigitId());
         properties.put("state", dtRecord.getState());
         properties.put("deprecated", (byte) 1 == dtRecord.getIsDeprecated());
 
