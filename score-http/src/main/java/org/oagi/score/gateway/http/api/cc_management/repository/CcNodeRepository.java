@@ -677,7 +677,6 @@ public class CcNodeRepository {
                 DT.DT_ID.as("bdtId"),
                 DT_MANIFEST.DT_MANIFEST_ID.as("manifestId"),
                 DT.GUID,
-                DT.TYPE.as("dtType"),
                 DT.REPRESENTATION_TERM,
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,

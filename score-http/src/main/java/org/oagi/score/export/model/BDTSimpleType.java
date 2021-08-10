@@ -81,7 +81,7 @@ public class BDTSimpleType extends AbstractBDTSimple {
     }
 
     public boolean isBaseDT_CDT() {
-        return "Core" == baseDataType.getType();
+        return baseDataType.getDtId().longValue() <= 23;
     }
 
     public int count_BDT_PRI_RESTRI() {

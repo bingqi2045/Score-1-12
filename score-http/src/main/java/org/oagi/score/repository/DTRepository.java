@@ -22,7 +22,6 @@ public class DTRepository implements ScoreRepository<DT> {
         return dslContext.select(
                 Tables.DT.DT_ID,
                 Tables.DT.GUID,
-                Tables.DT.TYPE,
                 Tables.DT.DATA_TYPE_TERM,
                 Tables.DT.REPRESENTATION_TERM,
                 Tables.DT.QUALIFIER,

@@ -50,157 +50,143 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     }
 
     /**
-     * Setter for <code>oagi.dt.type</code>. This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.
-     */
-    public void setType(String value) {
-        set(2, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.type</code>. This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.
-     */
-    public String getType() {
-        return (String) get(2);
-    }
-
-    /**
      * Setter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public void setDataTypeTerm(String value) {
-        set(3, value);
+        set(2, value);
     }
 
     /**
      * Getter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public String getDataTypeTerm() {
-        return (String) get(3);
+        return (String) get(2);
     }
 
     /**
      * Setter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs". 
      */
     public void setQualifier(String value) {
-        set(4, value);
+        set(3, value);
     }
 
     /**
      * Getter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs". 
      */
     public String getQualifier() {
-        return (String) get(4);
+        return (String) get(3);
     }
 
     /**
      * Setter for <code>oagi.dt.representation_term</code>.
      */
     public void setRepresentationTerm(String value) {
-        set(5, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>oagi.dt.representation_term</code>.
      */
     public String getRepresentationTerm() {
-        return (String) get(5);
+        return (String) get(4);
     }
 
     /**
      * Setter for <code>oagi.dt.six_digit_id</code>. The six number suffix comes from the UN/CEFACT XML Schema NDR.
      */
     public void setSixDigitId(String value) {
-        set(6, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.dt.six_digit_id</code>. The six number suffix comes from the UN/CEFACT XML Schema NDR.
      */
     public String getSixDigitId() {
-        return (String) get(6);
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.dt.based_dt_id</code>. Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.
      */
     public void setBasedDtId(ULong value) {
-        set(7, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>oagi.dt.based_dt_id</code>. Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.
      */
     public ULong getBasedDtId() {
-        return (ULong) get(7);
+        return (ULong) get(6);
     }
 
     /**
      * Setter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public void setDen(String value) {
-        set(8, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public String getDen() {
-        return (String) get(8);
+        return (String) get(7);
     }
 
     /**
      * Setter for <code>oagi.dt.definition</code>. Description of the data type.
      */
     public void setDefinition(String value) {
-        set(9, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.dt.definition</code>. Description of the data type.
      */
     public String getDefinition() {
-        return (String) get(9);
+        return (String) get(8);
     }
 
     /**
      * Setter for <code>oagi.dt.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public void setDefinitionSource(String value) {
-        set(10, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.dt.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public String getDefinitionSource() {
-        return (String) get(10);
+        return (String) get(9);
     }
 
     /**
      * Setter for <code>oagi.dt.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
      */
     public void setNamespaceId(ULong value) {
-        set(11, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.dt.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
      */
     public ULong getNamespaceId() {
-        return (ULong) get(11);
+        return (ULong) get(10);
     }
 
     /**
      * Setter for <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
      */
     public void setContentComponentDefinition(String value) {
-        set(12, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
      */
     public String getContentComponentDefinition() {
-        return (String) get(12);
+        return (String) get(11);
     }
 
     /**
@@ -209,7 +195,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
-        set(13, value);
+        set(12, value);
     }
 
     /**
@@ -218,35 +204,35 @@ State change can't be undone. But the history record can still keep the records 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
-        return (String) get(13);
+        return (String) get(12);
     }
 
     /**
      * Setter for <code>oagi.dt.commonly_used</code>. This is a flag to indicate commonly used DT(s) by BCCPs.
      */
     public void setCommonlyUsed(Byte value) {
-        set(14, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.dt.commonly_used</code>. This is a flag to indicate commonly used DT(s) by BCCPs.
      */
     public Byte getCommonlyUsed() {
-        return (Byte) get(14);
+        return (Byte) get(13);
     }
 
     /**
      * Setter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public void setCreatedBy(ULong value) {
-        set(15, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(15);
+        return (ULong) get(14);
     }
 
     /**
@@ -255,7 +241,7 @@ State change can't be undone. But the history record can still keep the records 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
@@ -264,21 +250,21 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(16);
+        return (ULong) get(15);
     }
 
     /**
      * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
-        set(17, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(17);
+        return (ULong) get(16);
     }
 
     /**
@@ -287,7 +273,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
@@ -296,7 +282,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(18);
+        return (LocalDateTime) get(17);
     }
 
     /**
@@ -305,7 +291,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
@@ -314,63 +300,63 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(19);
+        return (LocalDateTime) get(18);
     }
 
     /**
      * Setter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(20, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(20);
+        return (Byte) get(19);
     }
 
     /**
      * Setter for <code>oagi.dt.replacement_dt_id</code>. This refers to a replacement if the record is deprecated.
      */
     public void setReplacementDtId(ULong value) {
-        set(21, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.dt.replacement_dt_id</code>. This refers to a replacement if the record is deprecated.
      */
     public ULong getReplacementDtId() {
-        return (ULong) get(21);
+        return (ULong) get(20);
     }
 
     /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtId(ULong value) {
-        set(22, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtId() {
-        return (ULong) get(22);
+        return (ULong) get(21);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtId(ULong value) {
-        set(23, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtId() {
-        return (ULong) get(23);
+        return (ULong) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -396,12 +382,11 @@ The value of this column in the latest history record should be the same as that
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String type, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, ULong basedDtId, String den, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, ULong basedDtId, String den, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         setDtId(dtId);
         setGuid(guid);
-        setType(type);
         setDataTypeTerm(dataTypeTerm);
         setQualifier(qualifier);
         setRepresentationTerm(representationTerm);

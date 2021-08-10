@@ -62,11 +62,6 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
-     * The column <code>oagi.dt.type</code>. This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.
-     */
-    public final TableField<DtRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(64).nullable(false), this, "This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.");
-
-    /**
      * The column <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public final TableField<DtRecord, String> DATA_TYPE_TERM = createField(DSL.name("data_type_term"), SQLDataType.VARCHAR(45), this, "This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. ");

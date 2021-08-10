@@ -232,6 +232,7 @@ UPDATE dt SET den = concat(IF(qualifier is null, '', concat(qualifier, '_ ')) ,d
 
 ALTER TABLE `dt` DROP FOREIGN KEY `dt_previous_version_dt_id_fk`,
 DROP COLUMN `version_num`,
+DROP COLUMN `type`,
 DROP COLUMN `previous_version_dt_id`,
 DROP COLUMN `origin_den`,
 DROP COLUMN `content_component_den`,

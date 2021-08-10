@@ -52,7 +52,7 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/bdt/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/dt/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getBdtNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -141,7 +141,7 @@ public class CcNodeController {
                         service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
-            case BDT:
+            case DT:
                 resp.setManifestId(
                         service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
@@ -184,7 +184,7 @@ public class CcNodeController {
                         service.makeNewRevisionForBccp(user, manifestId)
                 );
                 break;
-            case BDT:
+            case DT:
                 resp.setManifestId(
                         service.makeNewRevisionForDt(user, manifestId)
                 );
@@ -256,10 +256,10 @@ public class CcNodeController {
             case BCCP:
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
                 return service.getBccpNodeDetail(user, bccpNode);
-            case BDT:
+            case DT:
                 CcBdtNode bdtNode = convertValue(data, CcBdtNode.class);
                 return service.getBdtNodeDetail(user, bdtNode);
-            case BDT_SC:
+            case DT_SC:
                 CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
                 return service.getBdtScNodeDetail(user, bdtScNode);
             default:
@@ -359,7 +359,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/bdt", method = RequestMethod.POST,
+    @RequestMapping(value = "/core_component/dt", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createBdt(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @RequestBody CcBdtCreateRequest request) {
@@ -393,7 +393,7 @@ public class CcNodeController {
                 return service.getAsccpNodeRevision(user, manifestId);
             case BCCP:
                 return service.getBccpNodeRevision(user, manifestId);
-            case BDT:
+            case DT:
                 return service.getBdtNodeRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
@@ -420,7 +420,7 @@ public class CcNodeController {
             case BCCP:
                 service.cancelRevisionBccp(user, manifestId);
                 break;
-            case BDT:
+            case DT:
                 service.cancelRevisionDt(user, manifestId);
                 break;
             default:

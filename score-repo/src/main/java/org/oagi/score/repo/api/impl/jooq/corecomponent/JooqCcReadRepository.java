@@ -677,7 +677,6 @@ public class JooqCcReadRepository
         return dslContext().select(
                 DT.DT_ID,
                 DT.GUID,
-                DT.TYPE,
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
                 DT.REPRESENTATION_TERM,
@@ -714,7 +713,6 @@ public class JooqCcReadRepository
             Dt dt = new Dt();
             dt.setDtId(record.get(DT.DT_ID).toBigInteger());
             dt.setGuid(record.get(DT.GUID));
-            dt.setType(DtType.valueOf(record.get(DT.TYPE)));
             dt.setDataTypeTerm(record.get(DT.DATA_TYPE_TERM));
             dt.setQualifier(record.get(DT.QUALIFIER));
             dt.setRepresentationTerm(record.get(DT.REPRESENTATION_TERM));

@@ -10,7 +10,6 @@ import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.BCCEntityType;
-import org.oagi.score.service.common.data.DTType;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -320,7 +319,6 @@ public class LogSerializer {
 
         properties.put("component", "dt");
         properties.put("guid", dtRecord.getGuid());
-        properties.put("type", DTType.valueOf(dtRecord.getType()).name());
         properties.put("representationTerm", dtRecord.getRepresentationTerm());
         properties.put("dataTypeTerm", dtRecord.getDataTypeTerm());
         properties.put("qualifier", dtRecord.getQualifier());

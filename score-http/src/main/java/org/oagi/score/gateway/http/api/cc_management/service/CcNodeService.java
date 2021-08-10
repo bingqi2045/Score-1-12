@@ -887,7 +887,7 @@ public class CcNodeService extends EventHandler {
 
     public CcRevisionResponse getBdtNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcBdtNode bdtNode = getBdtNode(user, manifestId);
-        BigInteger lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.BDT);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.DT);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(lastPublishedCcId));
@@ -973,7 +973,7 @@ public class CcNodeService extends EventHandler {
                 }
                 return getLastPublishedCcId(bccpRecord.getPrevBccpId().toBigInteger(), CcType.BCCP);
 
-            case BDT:
+            case DT:
                 DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(ccId));
                 if (bdtRecord.getState().equals(CcState.Published.name()) ||
                         bdtRecord.getState().equals(CcState.Production.name())) {
@@ -982,9 +982,9 @@ public class CcNodeService extends EventHandler {
                 if (bdtRecord.getPrevDtId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bdtRecord.getPrevDtId().toBigInteger(), CcType.BDT);
+                return getLastPublishedCcId(bdtRecord.getPrevDtId().toBigInteger(), CcType.DT);
 
-            case BDT_SC:
+            case DT_SC:
                 return null;
 
             case XBT:

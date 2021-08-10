@@ -129,7 +129,6 @@ public class LogSnapshotResolver {
 
         Map<String, Object> userProperties = new HashMap();
         userProperties.put("guid", dtRecord.getGuid());
-        userProperties.put("type", dtRecord.getType());
         userProperties.put("dataTypeTerm", dtRecord.getDataTypeTerm());
         userProperties.put("den", dtRecord.getDen());
         return userProperties;

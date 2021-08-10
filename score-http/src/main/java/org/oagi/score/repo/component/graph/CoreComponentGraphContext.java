@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -479,13 +478,13 @@ public class CoreComponentGraphContext implements GraphContext {
                 DtManifest dtManifest = dtManifestMap.get(node.getLinkedManifestId());
                 return (dtManifest != null) ? Arrays.asList(toNode(dtManifest)) : Collections.emptyList();
 
-            case BDT:
+            case DT:
                 return dtScManifestMap.getOrDefault(node.getManifestId(),
                         dtScManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
                         .stream()
                         .map(e -> toNode(e)).collect(Collectors.toList());
 
-            case BDT_SC:
+            case DT_SC:
             default:
                 return Collections.emptyList();
         }
@@ -626,7 +625,7 @@ public class CoreComponentGraphContext implements GraphContext {
     }
 
     private Node toNode(DtManifest dtManifest) {
-        Node node = Node.toNode(Node.NodeType.BDT, dtManifest.getDtManifestId(),
+        Node node = Node.toNode(Node.NodeType.DT, dtManifest.getDtManifestId(),
                 CcState.valueOf(dtManifest.getState()));
         node.setPrevManifestId(dtManifest.getPrevDtManifestId());
         node.put("state", dtManifest.getState());
@@ -638,7 +637,7 @@ public class CoreComponentGraphContext implements GraphContext {
     }
 
     private Node toNode(DtScManifest dtScManifest) {
-        Node node = Node.toNode(Node.NodeType.BDT_SC, dtScManifest.getDtScManifestId(),
+        Node node = Node.toNode(Node.NodeType.DT_SC, dtScManifest.getDtScManifestId(),
                 CcState.valueOf(dtScManifest.getState()));
         node.setPrevManifestId(dtScManifest.getPrevDtScManifestId());
         node.put("propertyTerm", dtScManifest.getPropertyTerm());

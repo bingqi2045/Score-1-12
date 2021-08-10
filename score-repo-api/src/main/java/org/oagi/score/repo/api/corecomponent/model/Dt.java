@@ -12,8 +12,6 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
 
     private String guid;
 
-    private DtType type;
-
     private String dataTypeTerm;
 
     private String qualifier;
@@ -64,14 +62,6 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
 
     public void setGuid(String guid) {
         this.guid = guid;
-    }
-
-    public DtType getType() {
-        return type;
-    }
-
-    public void setType(DtType type) {
-        this.type = type;
     }
 
     public String getDataTypeTerm() {

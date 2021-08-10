@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
-import org.oagi.score.data.BdtPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.service.common.data.CcState;
 
@@ -11,12 +10,11 @@ import java.util.List;
 @Data
 public class CcBdtNodeDetail implements CcNodeDetail {
 
-    private CcType type = CcType.BDT;
+    private CcType type = CcType.DT;
 
     private BigInteger bdtId = BigInteger.ZERO;
     private BigInteger manifestId;
     private String guid;
-    private String dtType;
     private String dataTypeTerm;
     private String representationTerm;
     private String sixDigitId;

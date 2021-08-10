@@ -1927,7 +1927,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         @Override
         public CcType ccType() {
-            return CcType.BDT_SC;
+            return CcType.DT_SC;
         }
 
         @Override
@@ -1970,7 +1970,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         @Override
         public CcType ccType() {
-            return CcType.BDT;
+            return CcType.DT;
         }
 
         @Override

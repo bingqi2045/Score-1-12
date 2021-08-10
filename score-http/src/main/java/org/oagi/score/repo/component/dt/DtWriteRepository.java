@@ -1,37 +1,23 @@
 package org.oagi.score.repo.component.dt;
 
-import com.google.gson.JsonObject;
 import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.UpdateSetFirstStep;
-import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.component.bcc.UpdateBccPropertiesRepositoryRequest;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
-import org.oagi.score.service.common.data.DTType;
 import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
-import static org.oagi.score.service.common.data.DTType.Core;
 
 @Repository
 public class DtWriteRepository {
@@ -71,21 +57,6 @@ public class DtWriteRepository {
         DtRecord bdt = new DtRecord();
         bdt.setGuid(ScoreGuid.randomGuid());
         bdt.setDataTypeTerm(basedBdt.getDataTypeTerm());
-
-        switch (DTType.valueOf(basedBdt.getType())) {
-            case Core:
-                bdt.setType(DTType.Default.name());
-                break;
-            case Default:
-            case Unqualified:
-                bdt.setType(DTType.Unqualified.name());
-                break;
-            case Qualified:
-                bdt.setType(DTType.Qualified.name());
-                break;
-            default:
-                break;
-        }
 
         if (basedBdt.getQualifier() != null) {
             bdt.setQualifier(basedBdt.getQualifier() + "_ Qualifier");
