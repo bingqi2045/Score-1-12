@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
@@ -13,6 +14,7 @@ import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -801,5 +803,142 @@ public class DtWriteRepository {
         );
 
         return new CreateDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+    }
+
+    public void addDtPrimitiveRestriction(CreatePrimitiveRestrictionRepositoryRequest request) {
+
+        DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .fetchOne();
+
+        List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(dtManifestRecord.getDtId()))
+                .fetch();
+
+        CdtPriRecord cdtPriRecord = dslContext.selectFrom(CDT_PRI)
+                .where(CDT_PRI.NAME.eq(request.getPrimitive()))
+                .fetchOne();
+
+        CdtAwdPriRecord cdtAwdPriRecord = new CdtAwdPriRecord();
+        cdtAwdPriRecord.setCdtId(dtManifestRecord.getDtId());
+        cdtAwdPriRecord.setCdtPriId(cdtPriRecord.getCdtPriId());
+        cdtAwdPriRecord.setIsDefault((byte) 0);
+
+        cdtAwdPriRecord.setCdtAwdPriId(dslContext.insertInto(CDT_AWD_PRI)
+                .set(cdtAwdPriRecord).returning(CDT_AWD_PRI.CDT_AWD_PRI_ID)
+                .fetchOne().getCdtAwdPriId());
+
+        boolean isDefault = bdtPriRestriRecords.size() == 0;
+
+        for (BigInteger xbtManifestId: request.getXbtManifestIdList()) {
+            XbtManifestRecord xbtManifestRecord = dslContext.selectFrom(XBT_MANIFEST)
+                    .where(XBT_MANIFEST.XBT_MANIFEST_ID.eq(ULong.valueOf(xbtManifestId)))
+                    .fetchOne();
+
+            String duplicated = dslContext.select(CDT_PRI.NAME).from(BDT_PRI_RESTRI)
+                    .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                    .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
+                    .join(CDT_AWD_PRI).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
+                    .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                    .where(and(BDT_PRI_RESTRI.BDT_ID.eq(dtManifestRecord.getDtId()),
+                            CDT_PRI.NAME.eq(request.getPrimitive()),
+                            XBT.XBT_ID.eq(xbtManifestRecord.getXbtId())))
+                    .fetchOneInto(String.class);
+
+            if (duplicated != null) {
+                throw new IllegalArgumentException("Duplicated Primitive already exist.");
+            }
+
+            CdtAwdPriXpsTypeMapRecord cdtAwdPriXpsTypeMapRecord = new CdtAwdPriXpsTypeMapRecord();
+            cdtAwdPriXpsTypeMapRecord.setCdtAwdPriId(cdtAwdPriRecord.getCdtAwdPriId());
+            cdtAwdPriXpsTypeMapRecord.setXbtId(xbtManifestRecord.getXbtId());
+
+            cdtAwdPriXpsTypeMapRecord.setCdtAwdPriXpsTypeMapId(dslContext.insertInto(CDT_AWD_PRI_XPS_TYPE_MAP)
+                    .set(cdtAwdPriXpsTypeMapRecord).returning(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID)
+                    .fetchOne().getCdtAwdPriXpsTypeMapId());
+
+            BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+            bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(cdtAwdPriXpsTypeMapRecord.getCdtAwdPriXpsTypeMapId());
+            bdtPriRestriRecord.setBdtId(dtManifestRecord.getDtId());
+
+            if(isDefault) {
+                bdtPriRestriRecord.setIsDefault((byte) 1);
+                isDefault = false;
+            } else {
+                bdtPriRestriRecord.setIsDefault((byte) 0);
+            }
+
+            dslContext.insertInto(BDT_PRI_RESTRI).set(bdtPriRestriRecord).execute();
+        }
+    }
+
+    public void addDtCodeListRestriction(CreateCodeListRestrictionRepositoryRequest request) {
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId())))
+                .fetchOne();
+
+        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
+                .fetchOne();
+
+        DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .fetchOne();
+
+        List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(dtManifestRecord.getDtId()))
+                .fetch();
+
+        BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+
+        if (bdtPriRestriRecords.size() == 0) {
+            bdtPriRestriRecord.setIsDefault((byte) 1);
+        } else {
+            bdtPriRestriRecord.setIsDefault((byte) 0);
+        }
+
+        if (bdtPriRestriRecords.stream().anyMatch(e -> codeListManifestRecord.getCodeListId().equals(e.getCodeListId()))) {
+            throw new IllegalArgumentException("Duplicated Code List already exist.");
+        }
+
+        bdtPriRestriRecord.setCodeListId(codeListManifestRecord.getCodeListId());
+        bdtPriRestriRecord.setBdtId(dtManifestRecord.getDtId());
+        
+        dslContext.insertInto(BDT_PRI_RESTRI).set(bdtPriRestriRecord).execute();
+    }
+
+    public void addDtAgencyIdListRestriction(CreateAgencyIdListRestrictionRepositoryRequest request) {
+        AgencyIdListManifestRecord agencyIdListManifestRecord = dslContext.selectFrom(AGENCY_ID_LIST_MANIFEST)
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getAgencyIdListManifestId())))
+                .fetchOne();
+
+        AgencyIdListRecord agencyIdListRecord = dslContext.selectFrom(AGENCY_ID_LIST)
+                .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
+                .fetchOne();
+
+        DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .fetchOne();
+
+        List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(dtManifestRecord.getDtId()))
+                .fetch();
+
+        BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+
+        if (bdtPriRestriRecords.size() == 0) {
+            bdtPriRestriRecord.setIsDefault((byte) 1);
+        } else {
+            bdtPriRestriRecord.setIsDefault((byte) 0);
+        }
+
+        if (bdtPriRestriRecords.stream().anyMatch(e -> agencyIdListManifestRecord.getAgencyIdListId().equals(e.getAgencyIdListId()))) {
+            throw new IllegalArgumentException("Duplicated Agency Id List already exist.");
+        }
+
+        bdtPriRestriRecord.setAgencyIdListId(agencyIdListManifestRecord.getAgencyIdListId());
+        bdtPriRestriRecord.setBdtId(dtManifestRecord.getDtId());
+
+        dslContext.insertInto(BDT_PRI_RESTRI).set(bdtPriRestriRecord).execute();
     }
 }

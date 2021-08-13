@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.data.Xbt;
 import org.oagi.score.repo.component.bccp.CancelRevisionBccpEvent;
 import org.oagi.score.repo.component.bccp.CancelRevisionBccpRepositoryRequest;
 import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
@@ -48,6 +49,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
@@ -653,6 +655,38 @@ public class CcNodeService extends EventHandler {
         fireEvent(new CreatedDtScEvent());
         return response.getDtScManifestId();
     }
+
+    @Transactional
+    public void addDtRestriction(AuthenticatedPrincipal user, CcCreateRestrictionRequest createRestrictionRequest) {
+
+        if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.Primitive.name())) {
+
+            createRestrictionRequest.getPrimitiveXbtMapList().forEach(e -> {
+                CreatePrimitiveRestrictionRepositoryRequest request =
+                        new CreatePrimitiveRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+                request.setPrimitive(e.getPrimitive());
+                request.setXbtManifestIdList(e.getXbtList().stream().map(Xbt::getManifestId).collect(Collectors.toList()));
+                dtWriteRepository.addDtPrimitiveRestriction(request);
+            });
+
+        } else if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.CodeList.name())) {
+            CreateCodeListRestrictionRepositoryRequest request =
+                    new CreateCodeListRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+            request.setCodeListManifestId(createRestrictionRequest.getCodeListManifestId());
+            dtWriteRepository.addDtCodeListRestriction(request);
+        } else if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.AgencyIdList.name())) {
+            CreateAgencyIdListRestrictionRepositoryRequest request =
+                    new CreateAgencyIdListRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+            request.setAgencyIdListManifestId(createRestrictionRequest.getAgencyIdListManifestId());
+            dtWriteRepository.addDtAgencyIdListRestriction(request);
+        }
+
+        fireEvent(new UpdatedDtEvent());
+    }
+
 
     @Transactional
     public BigInteger updateAccBasedAcc(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger basedAccManifestId) {

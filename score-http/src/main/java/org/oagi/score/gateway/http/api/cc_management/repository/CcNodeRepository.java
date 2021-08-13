@@ -747,11 +747,13 @@ public class CcNodeRepository {
                 if (record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1) {
                     ccBdtPriResri.setDefault(true);
                 }
-                CcXbt xbt = new CcXbt();
-                xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
-                xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
-                xbt.setXbtName(record.get(XBT.NAME));
-                ccBdtPriResri.getXbtList().add(xbt);
+                if (ccBdtPriResri.getType().equals(PrimitiveRestriType.Primitive.toString())) {
+                    CcXbt xbt = new CcXbt();
+                    xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
+                    xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                    xbt.setXbtName(record.get(XBT.NAME));
+                    ccBdtPriResri.getXbtList().add(xbt);
+                }
             } else {
                 CcBdtPriResri ccBdtPriResri = new CcBdtPriResri();
                 ccBdtPriResri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);

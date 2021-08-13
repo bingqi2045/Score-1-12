@@ -310,6 +310,21 @@ public class CcNodeController {
         return response;
     }
 
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/restriction/add",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcBdtNodeDetail addRestriction(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
+                                         @RequestBody CcCreateRestrictionRequest restrictionRequest) {
+
+        CcBdtNode dtNode = new CcBdtNode();
+        dtNode.setManifestId(ownerDtManifestId);
+
+        service.addDtRestriction(user, restrictionRequest);
+
+        return service.getBdtNodeDetail(user, dtNode);
+    }
+
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
