@@ -200,3 +200,18 @@ SET
     `code_list`.`is_deprecated` = 1
 WHERE
     `code_list_manifest`.`based_code_list_manifest_id` IS NOT NULL;
+
+-- Update `openapi30_map` column values in `xbt`
+UPDATE `xbt` SET `openapi30_map` = '{"type":"object"}' WHERE `name` = 'any type';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern":"^(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)$"}' WHERE `name` = 'time';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"normalizedString"}' WHERE `name` = 'normalized string';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"token"}' WHERE `name` = 'token';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"byte"}' WHERE `name` = 'base64 binary';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"binary"}' WHERE `name` = 'hex binary';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"date"}' WHERE `name` = 'xbt date';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string"; "format":"date-time"}' WHERE `name` = 'xbt date hour minute';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string"; "format":"date-time"}' WHERE `name` = 'xbt date hour minute UTC';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string"; "format":"date-time"}' WHERE `name` = 'xbt date hour minute UTC offset';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))$"}' WHERE `name` = 'xbt year week day time';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))Z$"}' WHERE `name` = 'xbt year week day time UTC';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))([\\+|\\-]([0-1][0-9]|2[0-3]):[0-5][0-9])$"}' WHERE `name` = 'xbt year week day time UTC offset';
