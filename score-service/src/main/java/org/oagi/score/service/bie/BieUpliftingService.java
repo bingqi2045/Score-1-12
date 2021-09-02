@@ -225,7 +225,7 @@ public class BieUpliftingService {
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
                 this.listeners.forEach(listener -> {
                     listener.notFoundMatchedAsbie(asbie,
-                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath());
+                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(), asbie.getDefinition());
                 });
 
                 currentSourcePath = sourceAssociation.getPath();
@@ -234,7 +234,7 @@ public class BieUpliftingService {
                 Association targetAssociation = (Association) matchingScore.getTarget();
                 this.listeners.forEach(listener -> {
                     listener.foundBestMatchedAsbie(asbie,
-                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(),
+                            (AsccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(), asbie.getDefinition(),
                             (AsccManifest) targetAssociation.getCcAssociation(), targetAssociation.getPath());
                 });
 
@@ -271,7 +271,7 @@ public class BieUpliftingService {
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
                 this.listeners.forEach(listener -> {
                     listener.notFoundMatchedBbie(bbie,
-                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath());
+                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(), bbie.getDefinition());
                 });
 
                 currentSourcePath = sourceAssociation.getPath();
@@ -280,7 +280,7 @@ public class BieUpliftingService {
                 Association targetAssociation = (Association) matchingScore.getTarget();
                 this.listeners.forEach(listener -> {
                     listener.foundBestMatchedBbie(bbie,
-                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(),
+                            (BccManifest) sourceAssociation.getCcAssociation(), sourceAssociation.getPath(), bbie.getDefinition(),
                             (BccManifest) targetAssociation.getCcAssociation(), targetAssociation.getPath());
                 });
 
@@ -359,7 +359,7 @@ public class BieUpliftingService {
 
             if (matchingScore.getScore() == 0.0d || matchingScore.getTarget() == null) {
                 this.listeners.forEach(listener -> {
-                    listener.notFoundMatchedBbieSc(bbieSc, sourceDtScManifest, sourcePath);
+                    listener.notFoundMatchedBbieSc(bbieSc, sourceDtScManifest, sourcePath, bbieSc.getDefinition());
                 });
             } else {
                 DtScManifest targetDtScManifest = (DtScManifest) matchingScore.getTarget();
@@ -367,7 +367,7 @@ public class BieUpliftingService {
 
                 this.listeners.forEach(listener -> {
                     listener.foundBestMatchedBbieSc(bbieSc,
-                            sourceDtScManifest, sourcePath,
+                            sourceDtScManifest, sourcePath, bbieSc.getDefinition(),
                             targetDtScManifest, targetPath);
                 });
             }
@@ -390,19 +390,20 @@ public class BieUpliftingService {
         }
 
         BieDocument sourceBieDocument = bieReadService.getBieDocument(request.getRequester(), request.getTopLevelAsbiepId());
-        BigInteger targetAsccpManifestId = scoreRepositoryFactory.createCcReadRepository().findNextAsccpManifest(
+        FindNextAsccpManifestResponse findNextAsccpManifestResponse = scoreRepositoryFactory.createCcReadRepository().findNextAsccpManifest(
                 new FindNextAsccpManifestRequest(request.getRequester())
                         .withAsccpManifestId(sourceBieDocument.getRootAsbiep().getBasedAsccpManifestId())
-                        .withNextReleaseId(request.getTargetReleaseId()))
-                .getNextAsccpManifestId();
-        if (targetAsccpManifestId == null) {
+                        .withNextReleaseId(request.getTargetReleaseId()));
+
+        if (findNextAsccpManifestResponse.getNextAsccpManifestId() == null) {
             throw new ScoreDataAccessException("Unable to find the target ASCCP.");
         }
 
-        response.setAsccpManifestId(targetAsccpManifestId);
+        response.setAsccpManifestId(findNextAsccpManifestResponse.getNextAsccpManifestId());
         if (request.isIncludingBieDocument()) {
             response.setBieDocument(sourceBieDocument);
         }
+        response.setReleaseNum(findNextAsccpManifestResponse.getReleaseNum());
         return response;
     }
 
