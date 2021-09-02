@@ -10,6 +10,6 @@ public class CodeListUpliftingResponse {
 
     private BigInteger codeListManifestId;
 
-    private List<String> upliftedValues;
+    private List<String> duplicatedValues;
 
 }

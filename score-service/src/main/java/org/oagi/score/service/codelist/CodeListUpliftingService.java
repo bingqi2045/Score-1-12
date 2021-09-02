@@ -40,7 +40,7 @@ public class CodeListUpliftingService {
 
         CodeListUpliftingResponse response = new CodeListUpliftingResponse();
 
-        response.setUpliftedValues(new ArrayList<>());
+        response.setDuplicatedValues(new ArrayList<>());
 
         ScoreUser requester = request.getRequester();
 
@@ -76,6 +76,12 @@ public class CodeListUpliftingService {
             CodeListManifestRecord targetBasedCodeListManifest = dslContext.selectFrom(CODE_LIST_MANIFEST)
                     .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(sourceBasedCodeListManifestId))
                     .fetchOptional().orElse(null);
+
+            List<String> sourceCodeListValues = dslContext.select(CODE_LIST_VALUE.VALUE)
+                    .from(CODE_LIST_VALUE_MANIFEST)
+                    .join(CODE_LIST_VALUE).on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE.CODE_LIST_VALUE_ID))
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(sourceBasedCodeListManifestId))
+                    .fetchInto(String.class);
 
             // Find a target code list manifest recursively
             while (targetBasedCodeListManifest != null && !targetBasedCodeListManifest.getReleaseId().equals(targetReleaseId)) {
@@ -140,9 +146,9 @@ public class CodeListUpliftingService {
 
             codeListValueList.stream().forEach(e -> {
                 if (basedCodeListValueSet.contains(e.getValue().toLowerCase())) {
+                    response.getDuplicatedValues().add(e.getValue().toLowerCase());
                     return;
                 }
-                response.getUpliftedValues().add(e.getValue().toLowerCase());
 
                 CodeListValueRecord newCodeListValue = copyCodeListValue(e, newCodeList, requester, timestamp);
                 newCodeListValue.setCodeListValueId(
@@ -159,6 +165,12 @@ public class CodeListUpliftingService {
                 dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
                         .set(newCodeListValueManifest)
                         .execute();
+            });
+
+            sourceCodeListValues.forEach(e -> {
+                if (response.getDuplicatedValues().indexOf(e.toLowerCase()) > -1 ) {
+                    response.getDuplicatedValues().remove(response.getDuplicatedValues().indexOf(e.toLowerCase()));
+                }
             });
 
         } else {
