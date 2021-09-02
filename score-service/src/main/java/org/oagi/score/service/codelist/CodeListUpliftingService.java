@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +37,11 @@ public class CodeListUpliftingService {
 
     @Transactional
     public CodeListUpliftingResponse upliftCodeList(CodeListUpliftingRequest request) {
+
+        CodeListUpliftingResponse response = new CodeListUpliftingResponse();
+
+        response.setUpliftedValues(new ArrayList<>());
+
         ScoreUser requester = request.getRequester();
 
         CodeListManifestRecord codeListManifest = dslContext.selectFrom(CODE_LIST_MANIFEST)
@@ -137,6 +142,7 @@ public class CodeListUpliftingService {
                 if (basedCodeListValueSet.contains(e.getValue().toLowerCase())) {
                     return;
                 }
+                response.getUpliftedValues().add(e.getValue().toLowerCase());
 
                 CodeListValueRecord newCodeListValue = copyCodeListValue(e, newCodeList, requester, timestamp);
                 newCodeListValue.setCodeListValueId(
@@ -202,7 +208,6 @@ public class CodeListUpliftingService {
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(newCodeListManifest.getCodeListManifestId()))
                 .execute();
 
-        CodeListUpliftingResponse response = new CodeListUpliftingResponse();
         response.setCodeListManifestId(newCodeListManifest.getCodeListManifestId().toBigInteger());
         return response;
     }
