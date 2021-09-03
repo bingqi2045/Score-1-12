@@ -149,6 +149,7 @@ public class CcListRepository {
             ccList.setLastUpdateTimestamp(Date.from(row.getValue("last_update_timestamp", LocalDateTime.class)
                     .atZone(ZoneId.systemDefault()).toInstant()));
             ccList.setOwner((String) row.getValue("owner"));
+            ccList.setOwnedByDeveloper(row.getValue("owned_by_developer", Byte.class) == 1);
             ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
             ccList.setRevision(row.getValue(LOG.REVISION_NUM).toString());
             ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
@@ -300,6 +301,7 @@ public class CcListRepository {
                 ACC.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
@@ -462,6 +464,7 @@ public class CcListRepository {
                 BCC.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
@@ -552,6 +555,7 @@ public class CcListRepository {
                 ASCCP.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
@@ -633,6 +637,7 @@ public class CcListRepository {
                 BCCP.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
@@ -721,6 +726,7 @@ public class CcListRepository {
                 DT.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
