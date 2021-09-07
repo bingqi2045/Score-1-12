@@ -380,6 +380,7 @@ public class CcListRepository {
                 ASCC.LAST_UPDATE_TIMESTAMP,
                 MODULE.PATH.as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
+                appUserOwner.IS_DEVELOPER.as("owned_by_developer"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
