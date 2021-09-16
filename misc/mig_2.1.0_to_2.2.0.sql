@@ -215,3 +215,61 @@ UPDATE `xbt` SET `openapi30_map` = '{"type":"string"; "format":"date-time"}' WHE
 UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))$"}' WHERE `name` = 'xbt year week day time';
 UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))Z$"}' WHERE `name` = 'xbt year week day time UTC';
 UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "pattern:"^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0123])-[1-7]T((([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](|(\\.[0-9]+)))|(24:00:00))([\\+|\\-]([0-1][0-9]|2[0-3]):[0-5][0-9])$"}' WHERE `name` = 'xbt year week day time UTC offset';
+
+
+-- Alter rest of CC tables
+ALTER TABLE `dt` AUTO_INCREMENT = 1000001;
+ALTER TABLE `dt_manifest` AUTO_INCREMENT = 1000001;
+ALTER TABLE `cdt_awd_pri_xps_type_map` AUTO_INCREMENT = 1000001;
+ALTER TABLE `cdt_sc_awd_pri_xps_type_map` AUTO_INCREMENT = 1000001;
+ALTER TABLE `bdt_pri_restri` AUTO_INCREMENT = 1000001;
+ALTER TABLE `bdt_sc_pri_restri` AUTO_INCREMENT = 1000001;
+ALTER TABLE `cdt_awd_pri` AUTO_INCREMENT = 1000001;
+ALTER TABLE `cdt_sc_awd_pri` AUTO_INCREMENT = 1000001;
+ALTER TABLE `xbt` AUTO_INCREMENT = 1000001;
+ALTER TABLE `xbt_manifest` AUTO_INCREMENT = 1000001;
+ALTER TABLE `agency_id_list` AUTO_INCREMENT = 1000001;
+ALTER TABLE `agency_id_list_manifest` AUTO_INCREMENT = 1000001;
+ALTER TABLE `agency_id_list_value` AUTO_INCREMENT = 1000001;
+ALTER TABLE `agency_id_list_value_manifest` AUTO_INCREMENT = 1000001;
+
+SET foreign_key_checks = 0;
+
+-- Delete old CC data
+DELETE FROM `acc` WHERE `acc`.`acc_id` < 1000001;
+DELETE FROM `acc_manifest` WHERE `acc_manifest`.`acc_manifest_id` < 1000001;
+DELETE FROM `app_user` WHERE `app_user`.`app_user_id` < 1000001;
+DELETE FROM `ascc` WHERE `ascc`.`ascc_id` < 1000001;
+DELETE FROM `ascc_manifest` WHERE `ascc_manifest`.`ascc_manifest_id` < 1000001;
+DELETE FROM `asccp` WHERE `asccp`.`asccp_id` < 1000001;
+DELETE FROM `asccp_manifest` WHERE `asccp_manifest`.`asccp_manifest_id` < 1000001;
+DELETE FROM `bcc` WHERE `bcc`.`bcc_id` < 1000001;
+DELETE FROM `bcc_manifest` WHERE `bcc_manifest`.`bcc_manifest_id` < 1000001;
+DELETE FROM `bccp` WHERE `bccp`.`bccp_id` < 1000001;
+DELETE FROM `bccp_manifest` WHERE `bccp_manifest`.`bccp_manifest_id` < 1000001;
+DELETE FROM `code_list` WHERE `code_list`.`code_list_id` < 1000001;
+DELETE FROM `code_list_manifest` WHERE `code_list_manifest`.`code_list_manifest_id` < 1000001;
+DELETE FROM `code_list_value` WHERE `code_list_value`.`code_list_value_id` < 1000001;
+DELETE FROM `code_list_value_manifest` WHERE `code_list_value_manifest`.`code_list_value_manifest_id` < 1000001;
+DELETE FROM `seq_key` WHERE `seq_key`.`seq_key_id` < 1000001;
+DELETE FROM `namespace` WHERE `namespace`.`namespace_id` < 1000001;
+DELETE FROM `log` WHERE `log`.`log_id` < 1000001;
+
+DELETE FROM `dt` WHERE `dt`.`dt_id` < 1000001;
+DELETE FROM `dt_manifest` WHERE `dt_manifest`.`dt_manifest_id` < 1000001;
+DELETE FROM `dt_sc` WHERE `dt_sc`.`dt_sc_id` < 1000001;
+DELETE FROM `dt_sc_manifest` WHERE `dt_sc_manifest`.`dt_sc_manifest_id` < 1000001;
+DELETE FROM `cdt_awd_pri_xps_type_map` WHERE `cdt_awd_pri_xps_type_map`.`cdt_awd_pri_xps_type_map_id` < 1000001;
+DELETE FROM `cdt_sc_awd_pri_xps_type_map` WHERE `cdt_sc_awd_pri_xps_type_map`.`cdt_sc_awd_pri_xps_type_map_id` < 1000001;
+DELETE FROM `bdt_pri_restri` WHERE `bdt_pri_restri`.`bdt_pri_restri_id` < 1000001;
+DELETE FROM `bdt_sc_pri_restri` WHERE `bdt_sc_pri_restri`.`bdt_sc_pri_restri_id` < 1000001;
+DELETE FROM `cdt_awd_pri` WHERE `cdt_awd_pri`.`cdt_awd_pri_id` < 1000001;
+DELETE FROM `cdt_sc_awd_pri` WHERE `cdt_sc_awd_pri`.`cdt_sc_awd_pri_id` < 1000001;
+DELETE FROM `xbt` WHERE `xbt`.`xbt_id` < 1000001;
+DELETE FROM `xbt_manifest` WHERE `xbt_manifest`.`xbt_manifest_id` < 1000001;
+DELETE FROM `agency_id_list` WHERE `agency_id_list`.`agency_id_list_id` < 1000001;
+DELETE FROM `agency_id_list_manifest` WHERE `agency_id_list_manifest`.`agency_id_list_manifest_id` < 1000001;
+DELETE FROM `agency_id_list_value` WHERE `agency_id_list_value`.`agency_id_list_value_id` < 1000001;
+DELETE FROM `agency_id_list_value_manifest` WHERE `agency_id_list_value_manifest`.`agency_id_list_value_manifest_id` < 1000001;
+DELETE FROM `release` WHERE `release`.`release_id` < 1000001;
+
