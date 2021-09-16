@@ -904,7 +904,11 @@ public class BieUpliftingService {
                 targetAsbie.setUsed(asbie.isUsed());
 
                 WrappedAsbie upliftingAsbie = new WrappedAsbie();
-                upliftingAsbie.setFromAbie(this.abieIdToAbieMap.get(asbie.getFromAbieId()));
+                Abie fromAbie = this.abieIdToAbieMap.get(asbie.getFromAbieId());
+                if (currentTargetPath.contains(fromAbie.getPath())) {
+                    upliftingAsbie.setFromAbie(fromAbie);
+                }
+
                 upliftingAsbie.setAsbie(targetAsbie);
 
                 if(targetAsccMapping != null) {
@@ -986,7 +990,10 @@ public class BieUpliftingService {
                         sourceCodeListList, sourceAgencyIdListList);
 
                 WrappedBbie upliftingBbie = new WrappedBbie();
-                upliftingBbie.setFromAbie(abieIdToAbieMap.get(bbie.getFromAbieId()));
+                Abie fromAbie = this.abieIdToAbieMap.get(bbie.getFromAbieId());
+                if (currentTargetPath.contains(fromAbie.getPath())) {
+                    upliftingBbie.setFromAbie(fromAbie);
+                }
                 upliftingBbie.setBbie(targetBbie);
 
                 this.toBbiepToBbieMap.put(bbie.getToBbiepId(), upliftingBbie);
