@@ -905,7 +905,7 @@ public class BieUpliftingService {
 
                 WrappedAsbie upliftingAsbie = new WrappedAsbie();
                 Abie fromAbie = this.abieIdToAbieMap.get(asbie.getFromAbieId());
-                if (currentTargetPath.contains(fromAbie.getPath())) {
+                if (fromAbie != null && currentTargetPath.contains(fromAbie.getPath())) {
                     upliftingAsbie.setFromAbie(fromAbie);
                 }
 
@@ -991,7 +991,7 @@ public class BieUpliftingService {
 
                 WrappedBbie upliftingBbie = new WrappedBbie();
                 Abie fromAbie = this.abieIdToAbieMap.get(bbie.getFromAbieId());
-                if (currentTargetPath.contains(fromAbie.getPath())) {
+                if (fromAbie != null && currentTargetPath.contains(fromAbie.getPath())) {
                     upliftingBbie.setFromAbie(fromAbie);
                 }
                 upliftingBbie.setBbie(targetBbie);
