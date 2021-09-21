@@ -1,4 +1,6 @@
-FROM tomcat:9-jdk11-adoptopenjdk-openj9
+FROM tomcat:9.0.53-jdk11-corretto
+
+LABEL maintainer="Hakju Oh <hakju.oh@nist.gov>"
 
 ENV DB_HOST localhost
 ENV DB_PORT 3306
@@ -8,10 +10,15 @@ ENV DB_PASSWORD oagi
 ENV REDIS_HOST localhost
 ENV REDIS_PORT 6379
 
-COPY wait-for-it.sh /wait-for-it.sh
+RUN yum -y update
+
 COPY mysql-connector-java-8.0.25.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.25.jar
 
-RUN ["rm", "-rf", "/usr/local/tomcat/webapps/ROOT"]
+RUN rm -rf /usr/local/tomcat/webapps/* && \
+    chgrp -R 0 /usr/local/tomcat/ && \
+    chmod -R g=u /usr/local/tomcat/
+
+USER 1001
 COPY score-http-2.2.0.war /usr/local/tomcat/webapps/ROOT.war
 
 CMD ["catalina.sh", "run"]
