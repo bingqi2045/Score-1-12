@@ -44,7 +44,7 @@ public class DefaultExportContextBuilder {
         createAgencyIdList(moduleMap);
         createCodeLists(moduleMap);
         createXBTs(moduleMap);
-        createBDT(moduleMap);
+        createCDT(moduleMap);
         createBCCP(moduleMap);
         createACC(moduleMap);
         createASCCP(moduleMap);
@@ -142,10 +142,10 @@ public class DefaultExportContextBuilder {
         });
     }
 
-    private void createBDT(Map<ULong, SchemaModule> moduleMap) {
-        List<DtRecord> bdtList = importedDataProvider.findDT().stream()
-                .filter(e -> !e.getType().equals("Core")).collect(Collectors.toList());
-        bdtList.forEach(bdt->{
+    private void createCDT(Map<ULong, SchemaModule> moduleMap) {
+        List<DtRecord> cdtList = importedDataProvider.findDT().stream()
+                .filter(e -> e.getDtId().compareTo(ULong.valueOf(23)) > 0).collect(Collectors.toList());
+        cdtList.forEach(bdt->{
             if (bdt.getBasedDtId() == null) {
                 throw new IllegalStateException();
             }
@@ -168,7 +168,7 @@ public class DefaultExportContextBuilder {
                     importedDataProvider.findDtScByOwnerDtId(bdt.getDtId()).stream()
                             .filter(e -> e.getCardinalityMax() > 0).collect(Collectors.toList());
 
-            boolean isDefaultBDT = bdt.getType().equals("Default");
+            boolean isDefaultBDT = schemaModule.getPath().contains("BusinessDataType_1");
             BDTSimple bdtSimple;
             if (dtScList.isEmpty()) {
                 ULong bdtId = bdt.getDtId();

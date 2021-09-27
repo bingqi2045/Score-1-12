@@ -52,7 +52,7 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/bdt/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/dt/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getBdtNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -141,6 +141,11 @@ public class CcNodeController {
                         service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
+            case DT:
+                resp.setManifestId(
+                        service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                );
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -177,6 +182,11 @@ public class CcNodeController {
             case BCCP:
                 resp.setManifestId(
                         service.makeNewRevisionForBccp(user, manifestId)
+                );
+                break;
+            case DT:
+                resp.setManifestId(
+                        service.makeNewRevisionForDt(user, manifestId)
                 );
                 break;
             default:
@@ -246,10 +256,10 @@ public class CcNodeController {
             case BCCP:
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
                 return service.getBccpNodeDetail(user, bccpNode);
-            case BDT:
+            case DT:
                 CcBdtNode bdtNode = convertValue(data, CcBdtNode.class);
                 return service.getBdtNodeDetail(user, bdtNode);
-            case BDT_SC:
+            case DT_SC:
                 CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
                 return service.getBdtScNodeDetail(user, bdtScNode);
             default:
@@ -284,6 +294,35 @@ public class CcNodeController {
         CcCreateResponse response = new CcCreateResponse();
         response.setManifestId(manifestId);
         return response;
+    }
+
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/append/{targetDtManifestId:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcCreateResponse appendScNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                       @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
+                                       @PathVariable("targetDtManifestId") BigInteger targetDtManifestId) {
+
+        BigInteger manifestId = service.appendDtSc(user, ownerDtManifestId, targetDtManifestId);
+
+        CcCreateResponse response = new CcCreateResponse();
+        response.setManifestId(manifestId);
+        return response;
+    }
+
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/restriction/add",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcBdtNodeDetail addRestriction(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
+                                         @RequestBody CcCreateRestrictionRequest restrictionRequest) {
+
+        CcBdtNode dtNode = new CcBdtNode();
+        dtNode.setManifestId(ownerDtManifestId);
+
+        service.addDtRestriction(user, restrictionRequest);
+
+        return service.getBdtNodeDetail(user, dtNode);
     }
 
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
@@ -335,7 +374,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/bdt", method = RequestMethod.POST,
+    @RequestMapping(value = "/core_component/dt", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createBdt(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @RequestBody CcBdtCreateRequest request) {
@@ -369,7 +408,7 @@ public class CcNodeController {
                 return service.getAsccpNodeRevision(user, manifestId);
             case BCCP:
                 return service.getBccpNodeRevision(user, manifestId);
-            case BDT:
+            case DT:
                 return service.getBdtNodeRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
@@ -395,6 +434,9 @@ public class CcNodeController {
                 break;
             case BCCP:
                 service.cancelRevisionBccp(user, manifestId);
+                break;
+            case DT:
+                service.cancelRevisionDt(user, manifestId);
                 break;
             default:
                 throw new UnsupportedOperationException();

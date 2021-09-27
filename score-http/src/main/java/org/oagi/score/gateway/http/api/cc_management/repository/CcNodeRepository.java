@@ -677,14 +677,13 @@ public class CcNodeRepository {
                 DT.DT_ID.as("bdtId"),
                 DT_MANIFEST.DT_MANIFEST_ID.as("manifestId"),
                 DT.GUID,
-                DT.TYPE.as("dtType"),
-                DT.VERSION_NUM,
+                DT.REPRESENTATION_TERM,
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
                 DT.as("based").DT_ID.as("basedBdtId"),
                 DT_MANIFEST.as("basedManifest").DT_MANIFEST_ID.as("basedBdtManifestId"),
                 DT.as("based").DEN.as("basedBdtDen"),
-                DT.CONTENT_COMPONENT_DEN,
+                DT.SIX_DIGIT_ID,
                 DT.CONTENT_COMPONENT_DEFINITION,
                 DT.COMMONLY_USED,
                 DT.DEN,
@@ -748,11 +747,13 @@ public class CcNodeRepository {
                 if (record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1) {
                     ccBdtPriResri.setDefault(true);
                 }
-                CcXbt xbt = new CcXbt();
-                xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
-                xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
-                xbt.setXbtName(record.get(XBT.NAME));
-                ccBdtPriResri.getXbtList().add(xbt);
+                if (ccBdtPriResri.getType().equals(PrimitiveRestriType.Primitive.toString())) {
+                    CcXbt xbt = new CcXbt();
+                    xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
+                    xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                    xbt.setXbtName(record.get(XBT.NAME));
+                    ccBdtPriResri.getXbtList().add(xbt);
+                }
             } else {
                 CcBdtPriResri ccBdtPriResri = new CcBdtPriResri();
                 ccBdtPriResri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
@@ -1245,6 +1246,16 @@ public class CcNodeRepository {
                         .from(BCCP)
                         .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                         .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(String.class)
+        );
+    }
+
+    public CcState getDtState(BigInteger manifestId) {
+        return CcState.valueOf(
+                dslContext.select(DT.STATE)
+                        .from(DT)
+                        .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                         .fetchOneInto(String.class)
         );
     }

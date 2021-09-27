@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class CcBdtScNodeDetail implements CcNodeDetail {
 
-    private CcType type = CcType.BDT_SC;
+    private CcType type = CcType.DT_SC;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger bdtScId = BigInteger.ZERO;
     private String guid;

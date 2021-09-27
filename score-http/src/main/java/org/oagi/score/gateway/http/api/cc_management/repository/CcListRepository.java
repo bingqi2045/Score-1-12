@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
-import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcList;
 import org.oagi.score.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -64,8 +63,8 @@ public class CcListRepository {
         if (request.getTypes().isBcc()) {
             select = (select != null) ? select.union(getBccList(request, release, defaultModuleSetReleaseId)) : getBccList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isBdt()) {
-            select = (select != null) ? select.union(getBdtList(request, release, defaultModuleSetReleaseId)) : getBdtList(request, release, defaultModuleSetReleaseId);
+        if (request.getTypes().isDt()) {
+            select = (select != null) ? select.union(getDtList(request, release, defaultModuleSetReleaseId)) : getDtList(request, release, defaultModuleSetReleaseId);
         }
 
         if (select == null) {
@@ -143,7 +142,6 @@ public class CcListRepository {
             if (componentType != null) {
                 ccList.setOagisComponentType(OagisComponentType.valueOf(componentType));
             }
-            ccList.setDtType(row.getValue("dt_type", String.class));
             ccList.setState(CcState.valueOf(row.getValue("state", String.class)));
             ccList.setDeprecated(row.getValue("is_deprecated", Byte.class) == 1);
             ccList.setLastUpdateTimestamp(Date.from(row.getValue("last_update_timestamp", LocalDateTime.class)
@@ -661,7 +659,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    public SelectOrderByStep getBdtList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    public SelectOrderByStep getDtList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -692,15 +690,6 @@ public class CcListRepository {
         if (StringUtils.hasLength(request.getModule())) {
             conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
-        if (!request.getDtTypes().isEmpty()) {
-            if (request.getDtTypes().size() == 1) {
-                conditions.add(DT.TYPE.eq(request.getDtTypes().get(0)));
-            } else {
-                conditions.add(DT.TYPE.in(request.getDtTypes()));
-            }
-        } else {
-            conditions.add(DT.TYPE.notEqual(DTType.Core.toString()));
-        }
         if (request.getCommonlyUsed() != null) {
             conditions.add(DT.COMMONLY_USED.eq((byte) (request.getCommonlyUsed() ? 1 : 0)));
         }
@@ -712,7 +701,7 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                inline("BDT").as("type"),
+                inline("DT").as("type"),
                 DT_MANIFEST.DT_MANIFEST_ID.as("manifest_id"),
                 DT.DT_ID.as("id"),
                 DT.GUID,
@@ -721,7 +710,7 @@ public class CcListRepository {
                 DT.DEFINITION_SOURCE,
                 DT.DATA_TYPE_TERM.as("term"),
                 val((Integer) null).as("oagis_component_type"),
-                DT.TYPE.as("dt_type"),
+                inline("DT").as("dtType"),
                 DT.STATE,
                 DT.IS_DEPRECATED,
                 DT.LAST_UPDATE_TIMESTAMP,

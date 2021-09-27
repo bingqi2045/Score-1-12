@@ -6,8 +6,8 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record14;
-import org.jooq.Row14;
+import org.jooq.Record16;
+import org.jooq.Row16;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
  * a new set of supplementary components is created along with it. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> {
+public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -220,6 +220,34 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         return (ULong) get(13);
     }
 
+    /**
+     * Setter for <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public void setPrevDtScId(ULong value) {
+        set(14, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public ULong getPrevDtScId() {
+        return (ULong) get(14);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.next_dt_sc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public void setNextDtScId(ULong value) {
+        set(15, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.next_dt_sc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public ULong getNextDtScId() {
+        return (ULong) get(15);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -230,17 +258,17 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     // -------------------------------------------------------------------------
-    // Record14 type implementation
+    // Record16 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 
     @Override
-    public Row14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> valuesRow() {
-        return (Row14) super.valuesRow();
+    public Row16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> valuesRow() {
+        return (Row16) super.valuesRow();
     }
 
     @Override
@@ -314,6 +342,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
+    public Field<ULong> field15() {
+        return DtSc.DT_SC.PREV_DT_SC_ID;
+    }
+
+    @Override
+    public Field<ULong> field16() {
+        return DtSc.DT_SC.NEXT_DT_SC_ID;
+    }
+
+    @Override
     public ULong component1() {
         return getDtScId();
     }
@@ -384,6 +422,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
+    public ULong component15() {
+        return getPrevDtScId();
+    }
+
+    @Override
+    public ULong component16() {
+        return getNextDtScId();
+    }
+
+    @Override
     public ULong value1() {
         return getDtScId();
     }
@@ -451,6 +499,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     @Override
     public ULong value14() {
         return getReplacementDtScId();
+    }
+
+    @Override
+    public ULong value15() {
+        return getPrevDtScId();
+    }
+
+    @Override
+    public ULong value16() {
+        return getNextDtScId();
     }
 
     @Override
@@ -538,7 +596,19 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
-    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12, Byte value13, ULong value14) {
+    public DtScRecord value15(ULong value) {
+        setPrevDtScId(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value16(ULong value) {
+        setNextDtScId(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12, Byte value13, ULong value14, ULong value15, ULong value16) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -553,6 +623,8 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         value12(value12);
         value13(value13);
         value14(value14);
+        value15(value15);
+        value16(value16);
         return this;
     }
 
@@ -570,7 +642,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     /**
      * Create a detached, initialised DtScRecord
      */
-    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId) {
+    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId, ULong prevDtScId, ULong nextDtScId) {
         super(DtSc.DT_SC);
 
         setDtScId(dtScId);
@@ -587,5 +659,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         setFixedValue(fixedValue);
         setIsDeprecated(isDeprecated);
         setReplacementDtScId(replacementDtScId);
+        setPrevDtScId(prevDtScId);
+        setNextDtScId(nextDtScId);
     }
 }

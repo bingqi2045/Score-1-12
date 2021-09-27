@@ -1,13 +1,27 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
-import com.sun.xml.xsom.impl.scd.Iterators;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.component.dt.BdtWriteRepository;
-import org.oagi.score.repo.component.dt.CreateBdtRepositoryRequest;
-import org.oagi.score.repo.component.dt.CreateBdtRepositoryResponse;
-import org.oagi.score.repo.component.dt.CreatedBdtEvent;
+import org.oagi.score.data.Xbt;
+import org.oagi.score.repo.component.bccp.CancelRevisionBccpEvent;
+import org.oagi.score.repo.component.bccp.CancelRevisionBccpRepositoryRequest;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryResponse;
+import org.oagi.score.repo.component.bccp.DeletedBccpEvent;
+import org.oagi.score.repo.component.bccp.RevisedBccpEvent;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpOwnerRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdatedBccpBdtEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpStateEvent;
+import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.common.data.CcState;
@@ -67,7 +81,7 @@ public class CcNodeService extends EventHandler {
     private BccpWriteRepository bccpWriteRepository;
 
     @Autowired
-    private BdtWriteRepository bdtWriteRepository;
+    private DtWriteRepository dtWriteRepository;
 
     @Autowired
     private AsccWriteRepository asccWriteRepository;
@@ -237,7 +251,7 @@ public class CcNodeService extends EventHandler {
                         request.getBdtManifestId(), request.getReleaseId());
 
         CreateBdtRepositoryResponse repositoryResponse =
-                bdtWriteRepository.createBdt(repositoryRequest);
+                dtWriteRepository.createBdt(repositoryRequest);
 
         fireEvent(new CreatedBdtEvent());
 
@@ -631,6 +645,50 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
+    public BigInteger appendDtSc(AuthenticatedPrincipal user, BigInteger ownerDtManifestId,
+                                  BigInteger targetDtManifestId) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        CreateDtScRepositoryRequest request =
+                new CreateDtScRepositoryRequest(user, ownerDtManifestId, targetDtManifestId);
+
+        CreateDtScRepositoryResponse response = dtWriteRepository.createDtSc(request);
+        fireEvent(new CreatedDtScEvent());
+        return response.getDtScManifestId();
+    }
+
+    @Transactional
+    public void addDtRestriction(AuthenticatedPrincipal user, CcCreateRestrictionRequest createRestrictionRequest) {
+
+        if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.Primitive.name())) {
+
+            createRestrictionRequest.getPrimitiveXbtMapList().forEach(e -> {
+                CreatePrimitiveRestrictionRepositoryRequest request =
+                        new CreatePrimitiveRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+                request.setPrimitive(e.getPrimitive());
+                request.setXbtManifestIdList(e.getXbtList().stream().map(Xbt::getManifestId).collect(Collectors.toList()));
+                dtWriteRepository.addDtPrimitiveRestriction(request);
+            });
+
+        } else if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.CodeList.name())) {
+            CreateCodeListRestrictionRepositoryRequest request =
+                    new CreateCodeListRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+            request.setCodeListManifestId(createRestrictionRequest.getCodeListManifestId());
+            dtWriteRepository.addDtCodeListRestriction(request);
+        } else if (createRestrictionRequest.getRestrictionType().equals(PrimitiveRestriType.AgencyIdList.name())) {
+            CreateAgencyIdListRestrictionRepositoryRequest request =
+                    new CreateAgencyIdListRestrictionRepositoryRequest(user, createRestrictionRequest.getDtManifestId(), createRestrictionRequest.getReleaseId());
+
+            request.setAgencyIdListManifestId(createRestrictionRequest.getAgencyIdListManifestId());
+            dtWriteRepository.addDtAgencyIdListRestriction(request);
+        }
+
+        fireEvent(new UpdatedDtEvent());
+    }
+
+
+    @Transactional
     public BigInteger updateAccBasedAcc(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger basedAccManifestId) {
         UpdateAccBasedAccRepositoryRequest repositoryRequest =
                 new UpdateAccBasedAccRepositoryRequest(user, accManifestId, basedAccManifestId);
@@ -727,6 +785,25 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
+    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState toState) {
+        CcState fromState = repository.getDtState(dtManifestId);
+        return updateDtState(user, dtManifestId, fromState, toState);
+    }
+
+    @Transactional
+    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState fromState, CcState toState) {
+        UpdateDtStateRepositoryRequest repositoryRequest =
+                new UpdateDtStateRepositoryRequest(user, dtManifestId, fromState, toState);
+
+        UpdateDtStateRepositoryResponse repositoryResponse =
+                dtWriteRepository.updateDtState(repositoryRequest);
+
+        fireEvent(new UpdatedDtStateEvent());
+
+        return repositoryResponse.getDtManifestId();
+    }
+
+    @Transactional
     public BigInteger makeNewRevisionForAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
         ReviseAccRepositoryRequest repositoryRequest =
                 new ReviseAccRepositoryRequest(user, accManifestId);
@@ -763,6 +840,19 @@ public class CcNodeService extends EventHandler {
         fireEvent(new RevisedBccpEvent());
 
         return repositoryResponse.getBccpManifestId();
+    }
+
+    @Transactional
+    public BigInteger makeNewRevisionForDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        ReviseDtRepositoryRequest repositoryRequest =
+                new ReviseDtRepositoryRequest(user, dtManifestId);
+
+        ReviseDtRepositoryResponse repositoryResponse =
+                dtWriteRepository.reviseDt(repositoryRequest);
+
+        fireEvent(new RevisedDtEvent());
+
+        return repositoryResponse.getDtManifestId();
     }
 
     public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
@@ -831,7 +921,7 @@ public class CcNodeService extends EventHandler {
 
     public CcRevisionResponse getBdtNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcBdtNode bdtNode = getBdtNode(user, manifestId);
-        BigInteger lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.BDT);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.DT);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(lastPublishedCcId));
@@ -917,7 +1007,7 @@ public class CcNodeService extends EventHandler {
                 }
                 return getLastPublishedCcId(bccpRecord.getPrevBccpId().toBigInteger(), CcType.BCCP);
 
-            case BDT:
+            case DT:
                 DtRecord bdtRecord = ccRepository.getBdtById(ULong.valueOf(ccId));
                 if (bdtRecord.getState().equals(CcState.Published.name()) ||
                         bdtRecord.getState().equals(CcState.Production.name())) {
@@ -926,9 +1016,9 @@ public class CcNodeService extends EventHandler {
                 if (bdtRecord.getPrevDtId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bdtRecord.getPrevDtId().toBigInteger(), CcType.BDT);
+                return getLastPublishedCcId(bdtRecord.getPrevDtId().toBigInteger(), CcType.DT);
 
-            case BDT_SC:
+            case DT_SC:
                 return null;
 
             case XBT:
@@ -971,6 +1061,15 @@ public class CcNodeService extends EventHandler {
         bccpWriteRepository.cancelRevisionBccp(request);
 
         fireEvent(new CancelRevisionBccpEvent());
+    }
+
+    @Transactional
+    public void cancelRevisionDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        CancelRevisionDtRepositoryRequest request
+                = new CancelRevisionDtRepositoryRequest(user, dtManifestId);
+        dtWriteRepository.cancelRevisionDt(request);
+
+        fireEvent(new CancelRevisionDtEvent());
     }
 
     @Transactional

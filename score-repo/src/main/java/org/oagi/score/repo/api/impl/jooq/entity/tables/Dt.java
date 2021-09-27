@@ -62,21 +62,6 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
-     * The column <code>oagi.dt.type</code>. This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.
-     */
-    public final TableField<DtRecord, String> TYPE = createField(DSL.name("type"), SQLDataType.VARCHAR(64).nullable(false), this, "This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.");
-
-    /**
-     * The column <code>oagi.dt.version_num</code>. Format X.Y.Z where all of them are integer with no leading zero allowed. X means major version number, Y means minor version number and Z means patch version number. This column is different from the REVISION_NUM column in that the new version is only assigned to the release component while the REVISION_NUM is assigned every time editing life cycle.
-     */
-    public final TableField<DtRecord, String> VERSION_NUM = createField(DSL.name("version_num"), SQLDataType.VARCHAR(45).nullable(false), this, "Format X.Y.Z where all of them are integer with no leading zero allowed. X means major version number, Y means minor version number and Z means patch version number. This column is different from the REVISION_NUM column in that the new version is only assigned to the release component while the REVISION_NUM is assigned every time editing life cycle.");
-
-    /**
-     * The column <code>oagi.dt.previous_version_dt_id</code>. Foregin key to the DT table itself. It identifies the previous version.
-     */
-    public final TableField<DtRecord, ULong> PREVIOUS_VERSION_DT_ID = createField(DSL.name("previous_version_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foregin key to the DT table itself. It identifies the previous version.");
-
-    /**
      * The column <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public final TableField<DtRecord, String> DATA_TYPE_TERM = createField(DSL.name("data_type_term"), SQLDataType.VARCHAR(45), this, "This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. ");
@@ -87,6 +72,16 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, String> QUALIFIER = createField(DSL.name("qualifier"), SQLDataType.VARCHAR(100), this, "This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these \"unqualified BDTs\". ");
 
     /**
+     * The column <code>oagi.dt.representation_term</code>.
+     */
+    public final TableField<DtRecord, String> REPRESENTATION_TERM = createField(DSL.name("representation_term"), SQLDataType.VARCHAR(100), this, "");
+
+    /**
+     * The column <code>oagi.dt.six_digit_id</code>. The six number suffix comes from the UN/CEFACT XML Schema NDR.
+     */
+    public final TableField<DtRecord, String> SIX_DIGIT_ID = createField(DSL.name("six_digit_id"), SQLDataType.VARCHAR(45), this, "The six number suffix comes from the UN/CEFACT XML Schema NDR.");
+
+    /**
      * The column <code>oagi.dt.based_dt_id</code>. Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.
      */
     public final TableField<DtRecord, ULong> BASED_DT_ID = createField(DSL.name("based_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.");
@@ -95,11 +90,6 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public final TableField<DtRecord, String> DEN = createField(DSL.name("den"), SQLDataType.VARCHAR(200).nullable(false), this, "Dictionary Entry Name of the data type. ");
-
-    /**
-     * The column <code>oagi.dt.content_component_den</code>. When the DT_TYPE is CDT this column is automatically derived from DATA_TYPE_TERM as "&lt;DATA_TYPE_TYPE&gt;. Content", where 'Content' is called property term of the content component according to CCTS. When the DT_TYPE is BDT this column has the same value as its BASED_DT_ID.
-     */
-    public final TableField<DtRecord, String> CONTENT_COMPONENT_DEN = createField(DSL.name("content_component_den"), SQLDataType.VARCHAR(200), this, "When the DT_TYPE is CDT this column is automatically derived from DATA_TYPE_TERM as \"<DATA_TYPE_TYPE>. Content\", where 'Content' is called property term of the content component according to CCTS. When the DT_TYPE is BDT this column has the same value as its BASED_DT_ID.");
 
     /**
      * The column <code>oagi.dt.definition</code>. Description of the data type.
@@ -120,11 +110,6 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
      */
     public final TableField<DtRecord, String> CONTENT_COMPONENT_DEFINITION = createField(DSL.name("content_component_definition"), SQLDataType.CLOB, this, "Description of the content component of the data type.");
-
-    /**
-     * The column <code>oagi.dt.revision_doc</code>. This is for documenting about the revision, e.g., how the newer version of the DT is different from the previous version.
-     */
-    public final TableField<DtRecord, String> REVISION_DOC = createField(DSL.name("revision_doc"), SQLDataType.CLOB, this, "This is for documenting about the revision, e.g., how the newer version of the DT is different from the previous version.");
 
     /**
      * The column <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.
@@ -249,10 +234,9 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_NAMESPACE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_REPLACEMENT_DT_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_BASED_DT_ID_FK, Keys.DT_NAMESPACE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_REPLACEMENT_DT_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
-    private transient Dt _dtPreviousVersionDtIdFk;
     private transient Dt _dtBasedDtIdFk;
     private transient Namespace _namespace;
     private transient AppUser _dtCreatedByFk;
@@ -261,13 +245,6 @@ The value of this column in the latest history record should be the same as that
     private transient Dt _dtReplacementDtIdFk;
     private transient Dt _dtPrevDtIdFk;
     private transient Dt _dtNextDtIdFk;
-
-    public Dt dtPreviousVersionDtIdFk() {
-        if (_dtPreviousVersionDtIdFk == null)
-            _dtPreviousVersionDtIdFk = new Dt(this, Keys.DT_PREVIOUS_VERSION_DT_ID_FK);
-
-        return _dtPreviousVersionDtIdFk;
-    }
 
     public Dt dtBasedDtIdFk() {
         if (_dtBasedDtIdFk == null)

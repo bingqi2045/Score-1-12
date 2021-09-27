@@ -385,7 +385,7 @@ public class JooqModuleSetReleaseReadRepository
                                 MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
                 .where(and(DT.STATE.eq(CcState.Published.name()),
                         DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        DT.TYPE.notEqual(DtType.Core.name()),
+                        DT.DT_ID.greaterThan(ULong.valueOf(23)),
                         MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
