@@ -84,7 +84,13 @@ public class CcNodeService extends EventHandler {
     private DtWriteRepository dtWriteRepository;
 
     @Autowired
+    private AsccReadRepository asccReadRepository;
+
+    @Autowired
     private AsccWriteRepository asccWriteRepository;
+
+    @Autowired
+    private BccReadRepository bccReadRepository;
 
     @Autowired
     private BccWriteRepository bccWriteRepository;
@@ -1254,6 +1260,18 @@ public class CcNodeService extends EventHandler {
         bccWriteRepository.refactor(request);
 
         fireEvent(new RefactorBccEvent());
+    }
+
+    public CcRefactorValidationResponse validateBccRefactoring(AuthenticatedPrincipal user, BigInteger bccManifestId, BigInteger destinationAccManifestId) {
+        AppUser requester = sessionService.getAppUser(user);
+
+        return bccReadRepository.validateBccRefactoring(requester, bccManifestId, destinationAccManifestId);
+    }
+
+    public CcRefactorValidationResponse validateAsccRefactoring(AuthenticatedPrincipal user, BigInteger asccManifestId, BigInteger destinationAccManifestId) {
+        AppUser requester = sessionService.getAppUser(user);
+
+        return asccReadRepository.validateAsccRefactoring(requester, asccManifestId, destinationAccManifestId);
     }
 
     public List<CcList> getBaseAccList(AuthenticatedPrincipal user, BigInteger accManifestId) {

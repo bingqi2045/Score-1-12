@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.*;
 
+import static org.oagi.score.gateway.http.api.cc_management.data.CcType.*;
+
 @RestController
 public class CcNodeController {
 
@@ -87,7 +89,7 @@ public class CcNodeController {
                                                      @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.valueOf(type.toUpperCase()));
+        resp.setType(valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case ASCCP:
@@ -123,7 +125,7 @@ public class CcNodeController {
                                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.valueOf(type.toUpperCase()));
+        resp.setType(valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case ACC:
@@ -166,7 +168,7 @@ public class CcNodeController {
                                                 @PathVariable("manifestId") BigInteger manifestId) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.valueOf(type.toUpperCase()));
+        resp.setType(valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case ACC:
@@ -205,7 +207,7 @@ public class CcNodeController {
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("type") String type,
                                        @PathVariable("manifestId") BigInteger manifestId) {
-        switch (CcType.valueOf(type.toUpperCase())) {
+        switch (valueOf(type.toUpperCase())) {
             case ACC:
                 service.deleteAcc(user, manifestId);
                 break;
@@ -246,7 +248,7 @@ public class CcNodeController {
     public CcNodeDetail getNodeDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                       @PathVariable("type") String type,
                                       @RequestParam("data") String data) {
-        switch (CcType.valueOf(type.toUpperCase())) {
+        switch (valueOf(type.toUpperCase())) {
             case ACC:
                 CcAccNode accNode = convertValue(data, CcAccNode.class);
                 return service.getAccNodeDetail(user, accNode);
@@ -332,7 +334,7 @@ public class CcNodeController {
                                              @PathVariable("manifestId") BigInteger manifestId,
                                              @RequestBody CcSetBaseAccRequest ccSetBaseAccRequest) {
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.ACC);
+        resp.setType(ACC);
         resp.setManifestId(
                 service.updateAccBasedAcc(user, manifestId, ccSetBaseAccRequest.getBasedAccManifestId())
         );
@@ -401,7 +403,7 @@ public class CcNodeController {
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @PathVariable("type") String type,
                                                 @PathVariable("manifestId") BigInteger manifestId) {
-        switch (CcType.valueOf(type.toUpperCase())) {
+        switch (valueOf(type.toUpperCase())) {
             case ACC:
                 return service.getAccNodeRevision(user, manifestId);
             case ASCCP:
@@ -423,7 +425,7 @@ public class CcNodeController {
                                                @PathVariable("manifestId") BigInteger manifestId) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.valueOf(type.toUpperCase()));
+        resp.setType(valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case ACC:
@@ -482,7 +484,7 @@ public class CcNodeController {
                                                @RequestBody CcRefactorRequest request) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(CcType.valueOf(type.toUpperCase()));
+        resp.setType(valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case BCC:
@@ -497,5 +499,32 @@ public class CcNodeController {
         return resp;
     }
 
+    @RequestMapping(value = "/core_component/{type}/refactor",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcRefactorValidationResponse refactorValidation(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                    @PathVariable("type") String type,
+                                                    @RequestParam("targetManifestId") BigInteger targetManifestId,
+                                                    @RequestParam("destinationManifestId") BigInteger destinationManifestId) {
 
+        CcRefactorRequest request = new CcRefactorRequest();
+        request.setDestinationManifestId(destinationManifestId);
+        request.setTargetManifestId(targetManifestId);
+        request.setType(type);
+
+        CcRefactorValidationResponse resp;
+
+        switch (valueOf(type)) {
+            case BCC:
+                resp = service.validateBccRefactoring(user, request.getTargetManifestId(), request.getDestinationManifestId());
+                break;
+            case ASCC:
+                resp = service.validateAsccRefactoring(user, request.getTargetManifestId(), request.getDestinationManifestId());
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        return resp;
+    }
 }

@@ -397,8 +397,6 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        // getDuplicatedBccList(ULong.valueOf(request.getAccManifestId()), bccManifestRecord.getReleaseId());
-
         int usedBieCount = dslContext.selectCount().from(BBIE)
                 .where(BBIE.BASED_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).fetchOne(0, int.class);
 
