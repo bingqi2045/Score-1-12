@@ -3,20 +3,14 @@ package org.oagi.score.repo.component.bcc;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcList;
-import org.oagi.score.gateway.http.api.cc_management.data.CcRefactorRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcRefactorValidationResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
-import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.stripToNull;
+import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIE;
@@ -65,40 +60,6 @@ public class BccReadRepository {
                 ))
                 .fetchOne();
 
-        BccRecord bccRecord = dslContext.selectFrom(Bcc.BCC)
-                .where(Bcc.BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
-                .fetchOne();
-
-        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId()))
-                .fetchOne();
-
-        AccRecord prevAccRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(prevAccManifestRecord.getAccId()))
-                .fetchOne();
-
-        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
-                .fetchOne();
-
-        AccRecord accRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
-                .fetchOne();
-
-        String bccpDen = dslContext.select(BCCP.DEN)
-                .from(BCCP_MANIFEST)
-                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
-                .fetchOneInto(String.class);
-
-        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be refactored.");
-        }
-
-        if (!accRecord.getOwnerUserId().equals(ULong.valueOf(user.getAppUserId()))) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-        }
-
         int usedBieCount = dslContext.selectCount().from(BBIE)
                 .where(BBIE.BASED_BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId())).fetchOne(0, int.class);
 
@@ -106,13 +67,13 @@ public class BccReadRepository {
             throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
         }
 
-        List<BccManifestRecord> blockerList = getBlockerList(bccManifestRecord, ULong.valueOf(accManifestId));
+        List<AccManifestRecord> blockerList = getBlockerList(user, bccManifestRecord, ULong.valueOf(accManifestId));
 
         CcRefactorValidationResponse response = new CcRefactorValidationResponse();
         response.setType(CcType.BCC.toString());
         response.setManifestId(bccManifestId);
 
-        List<ULong> blockerAccManifestIdList = blockerList.stream().map(BccManifestRecord::getFromAccManifestId).collect(Collectors.toList());
+        List<ULong> blockerAccManifestIdList = blockerList.stream().map(AccManifestRecord::getAccManifestId).collect(Collectors.toList());
 
         List<CcList> blockerAccList = dslContext.select(
                 inline("ACC").as("type"),
@@ -173,44 +134,69 @@ public class BccReadRepository {
 
         response.setBlockers(blockerAccList);
 
-
         return response;
     }
 
-    public List<BccManifestRecord> getBlockerList(BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
-        List<AccManifestRecord> accList = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.RELEASE_ID.eq(bccManifestRecord.getReleaseId())).fetch();
-
-        Map<ULong, AccManifestRecord> accMap = accList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accList.stream().filter(e -> e.getBasedAccManifestId() != null)
+    public List<AccManifestRecord> getBlockerList(AppUser requester, BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+        ULong releaseId = bccManifestRecord.getReleaseId();
+        List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
+        Map<ULong, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
-        List<BccManifestRecord> bccList = dslContext.selectFrom(BccManifest.BCC_MANIFEST)
-                .where(BccManifest.BCC_MANIFEST.RELEASE_ID.eq(bccManifestRecord.getReleaseId())).fetch();
+        List<AccRecord> accList = dslContext.selectFrom(ACC).fetch();
+        Map<ULong, AccRecord> accMap = accList.stream().collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
+        List<BccManifestRecord> bccList = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
         Map<ULong, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestList = new ArrayList<>();
+        List<ULong> accManifestIdList = new ArrayList<>();
+        AccManifestRecord targetAccManifestRecord = accManifestMap.get(targetAccManifestId);
 
-        AccManifestRecord targetAccManifestRecord = accMap.get(targetAccManifestId);
-
-        accManifestList.add(targetAccManifestId);
+        accManifestIdList.add(targetAccManifestId);
 
         while (targetAccManifestRecord.getBasedAccManifestId() != null) {
-            accManifestList.add(targetAccManifestRecord.getBasedAccManifestId());
-            targetAccManifestRecord = accMap.get(targetAccManifestRecord.getBasedAccManifestId());
+            accManifestIdList.add(targetAccManifestRecord.getBasedAccManifestId());
+            targetAccManifestRecord = accManifestMap.get(targetAccManifestRecord.getBasedAccManifestId());
         }
 
-        Set<ULong> result = new HashSet<>();
+        Set<ULong> accCandidates = new HashSet<>();
+        Set<ULong> groupBlockers = new HashSet<>();
 
-        for (ULong cur : accManifestList) {
-            result.addAll(getBaseAccManifestId(cur, baseAccMap));
+        for (ULong cur : accManifestIdList) {
+            accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
+
+        Set<ULong> groups = new HashSet<>(dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ASCC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
+                .join(ACC_MANIFEST.as("group")).on(ACC_MANIFEST.as("group").ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.as("group").ACC_ID.eq(ACC.ACC_ID))
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(releaseId),
+                        ACC.OAGIS_COMPONENT_TYPE.in(OagisComponentType.SemanticGroup.getValue(),
+                                OagisComponentType.UserExtensionGroup.getValue()),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.in(accCandidates)))
+                .fetchInto(ULong.class));
+
+        for (ULong cur : groups) {
+            AccManifestRecord am = accManifestMap.get(cur);
+            while (am.getBasedAccManifestId() != null) {
+                groupBlockers.add(am.getBasedAccManifestId());
+                am = accManifestMap.get(am.getBasedAccManifestId());
+            }
+            groupBlockers.addAll(getBaseAccManifestId(cur, baseAccMap));
+        }
+
+        accCandidates.addAll(groups);
 
         Set<BccManifestRecord> bccResult = new HashSet<>();
+        Set<BccManifestRecord> groupBccResult = new HashSet<>();
 
-        for (ULong acc : result) {
+        for (ULong acc : accCandidates) {
             bccResult.addAll(
                     fromAccBccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -219,7 +205,34 @@ public class BccReadRepository {
                             .collect(Collectors.toList()));
         }
 
-        return new ArrayList<>(bccResult);
+        for (ULong acc : groupBlockers) {
+            groupBccResult.addAll(
+                    fromAccBccMap.getOrDefault(acc, Collections.emptyList())
+                            .stream()
+                            .filter(bcc -> bcc.getToBccpManifestId().equals(bccManifestRecord.getToBccpManifestId())
+                                    && !bcc.getBccManifestId().equals(bccManifestRecord.getBccManifestId()))
+                            .collect(Collectors.toList()));
+        }
+
+        Set<AccManifestRecord> accManifestResult = new HashSet<>();
+
+        for (BccManifestRecord bcc : bccResult) {
+            AccManifestRecord amr = accManifestMap.get(bcc.getFromAccManifestId());
+            AccRecord acc = accMap.get(amr.getAccId());
+            if (!acc.getState().equals(CcState.WIP.name())) {
+                accManifestResult.add(amr);
+            } else {
+                if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+                    accManifestResult.add(amr);
+                }
+            }
+        }
+
+        for (BccManifestRecord bcc : groupBccResult) {
+            accManifestResult.add(accManifestMap.get(bcc.getFromAccManifestId()));
+        }
+
+        return new ArrayList<>(accManifestResult);
     }
 
     private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {

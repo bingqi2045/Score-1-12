@@ -28,6 +28,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIE;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 
 @Repository
 public class AsccReadRepository {
@@ -106,13 +107,13 @@ public class AsccReadRepository {
             throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
         }
 
-        List<AsccManifestRecord> blockerList = getBlockerList(asccManifestRecord, ULong.valueOf(accManifestId));
+        List<AccManifestRecord> blockerList = getBlockerList(user, asccManifestRecord, ULong.valueOf(accManifestId));
 
         CcRefactorValidationResponse response = new CcRefactorValidationResponse();
         response.setType(CcType.ASCC.toString());
         response.setManifestId(asccManifestId);
 
-        List<ULong> blockerAccManifestIdList = blockerList.stream().map(e -> { return e.getFromAccManifestId(); }).collect(Collectors.toList());
+        List<ULong> blockerAccManifestIdList = blockerList.stream().map(e -> { return e.getAccManifestId(); }).collect(Collectors.toList());
 
         List<CcList> blockerAccList = dslContext.select(
                 inline("ACC").as("type"),
@@ -176,40 +177,66 @@ public class AsccReadRepository {
         return response;
     }
 
-    public List<AsccManifestRecord> getBlockerList(AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
-        List<AccManifestRecord> accList = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.RELEASE_ID.eq(asccManifestRecord.getReleaseId())).fetch();
-
-        Map<ULong, AccManifestRecord> accMap = accList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accList.stream().filter(e -> e.getBasedAccManifestId() != null)
+    public List<AccManifestRecord> getBlockerList(AppUser requester, AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
+        ULong releaseId = asccManifestRecord.getReleaseId();
+        List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
+        Map<ULong, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
-        List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST.ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_MANIFEST.RELEASE_ID.eq(asccManifestRecord.getReleaseId())).fetch();
+        List<AccRecord> accList = dslContext.selectFrom(ACC).fetch();
+        Map<ULong, AccRecord> accMap = accList.stream().collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
+        List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
         Map<ULong, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestList = new ArrayList<>();
+        List<ULong> accManifestIdList = new ArrayList<>();
+        AccManifestRecord targetAccManifestRecord = accManifestMap.get(targetAccManifestId);
 
-        AccManifestRecord targetAccManifestRecord = accMap.get(targetAccManifestId);
-
-        accManifestList.add(targetAccManifestId);
+        accManifestIdList.add(targetAccManifestId);
 
         while (targetAccManifestRecord.getBasedAccManifestId() != null) {
-            accManifestList.add(targetAccManifestRecord.getBasedAccManifestId());
-            targetAccManifestRecord = accMap.get(targetAccManifestRecord.getBasedAccManifestId());
+            accManifestIdList.add(targetAccManifestRecord.getBasedAccManifestId());
+            targetAccManifestRecord = accManifestMap.get(targetAccManifestRecord.getBasedAccManifestId());
         }
 
-        Set<ULong> result = new HashSet<>();
+        Set<ULong> accCandidates = new HashSet<>();
+        Set<ULong> groupBlockers = new HashSet<>();
 
-        for (ULong cur : accManifestList) {
-            result.addAll(getBaseAccManifestId(cur, baseAccMap));
+        for (ULong cur : accManifestIdList) {
+            accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
+
+        Set<ULong> groups = new HashSet<>(dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ASCC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
+                .join(ACC_MANIFEST.as("group")).on(ACC_MANIFEST.as("group").ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.as("group").ACC_ID.eq(ACC.ACC_ID))
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(releaseId),
+                        ACC.OAGIS_COMPONENT_TYPE.in(OagisComponentType.SemanticGroup.getValue(),
+                                OagisComponentType.UserExtensionGroup.getValue()),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.in(accCandidates)))
+                .fetchInto(ULong.class));
+
+        for (ULong cur : groups) {
+            AccManifestRecord am = accManifestMap.get(cur);
+            while (am.getBasedAccManifestId() != null) {
+                groupBlockers.add(am.getBasedAccManifestId());
+                am = accManifestMap.get(am.getBasedAccManifestId());
+            }
+            groupBlockers.addAll(getBaseAccManifestId(cur, baseAccMap));
+        }
+
+        accCandidates.addAll(groups);
 
         Set<AsccManifestRecord> asccResult = new HashSet<>();
+        Set<AsccManifestRecord> groupAsccResult = new HashSet<>();
 
-        for (ULong acc : result) {
+        for (ULong acc : accCandidates) {
             asccResult.addAll(
                     fromAccAsccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -218,7 +245,34 @@ public class AsccReadRepository {
                             .collect(Collectors.toList()));
         }
 
-        return new ArrayList<>(asccResult);
+        for (ULong acc : groupBlockers) {
+            groupAsccResult.addAll(
+                    fromAccAsccMap.getOrDefault(acc, Collections.emptyList())
+                            .stream()
+                            .filter(ascc -> ascc.getToAsccpManifestId().equals(asccManifestRecord.getToAsccpManifestId())
+                                    && !ascc.getAsccManifestId().equals(asccManifestRecord.getAsccManifestId()))
+                            .collect(Collectors.toList()));
+        }
+
+        Set<AccManifestRecord> accManifestResult = new HashSet<>();
+
+        for (AsccManifestRecord ascc : asccResult) {
+            AccManifestRecord amr = accManifestMap.get(ascc.getFromAccManifestId());
+            AccRecord acc = accMap.get(amr.getAccId());
+            if (!acc.getState().equals(CcState.WIP.name())) {
+                accManifestResult.add(amr);
+            } else {
+                if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+                    accManifestResult.add(amr);
+                }
+            }
+        }
+
+        for (AsccManifestRecord ascc : groupAsccResult) {
+            accManifestResult.add(accManifestMap.get(ascc.getFromAccManifestId()));
+        }
+
+        return new ArrayList<>(accManifestResult);
     }
 
     private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
