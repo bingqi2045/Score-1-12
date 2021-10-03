@@ -154,14 +154,8 @@ public class BccReadRepository {
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
         List<ULong> accManifestIdList = new ArrayList<>();
-        AccManifestRecord targetAccManifestRecord = accManifestMap.get(targetAccManifestId);
 
         accManifestIdList.add(targetAccManifestId);
-
-        while (targetAccManifestRecord.getBasedAccManifestId() != null) {
-            accManifestIdList.add(targetAccManifestRecord.getBasedAccManifestId());
-            targetAccManifestRecord = accManifestMap.get(targetAccManifestRecord.getBasedAccManifestId());
-        }
 
         Set<ULong> accCandidates = new HashSet<>();
         Set<ULong> groupBlockers = new HashSet<>();
