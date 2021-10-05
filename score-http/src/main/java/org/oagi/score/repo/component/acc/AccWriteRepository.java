@@ -1075,11 +1075,22 @@ public class AccWriteRepository {
     }
 
     private void discardLogAssociations(AuthenticatedPrincipal user, AccManifestRecord accManifestRecord, AccRecord accRecord) {
+        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())).fetchOne();
+
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
+
+        List<AsccManifestRecord> nullNextPrevAsccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                        ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.isNull())).fetch();
+
+        List<BccManifestRecord> nullNextPrevBccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                        BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.isNull())).fetch();
 
         // delete SEQ_KEY for current ACC
         dslContext.update(SEQ_KEY)
@@ -1115,6 +1126,20 @@ public class AccWriteRepository {
             }
         }
 
+        for (AsccManifestRecord asccManifestRecord: nullNextPrevAsccManifestRecords) {
+            AsccManifestRecord newAsccManifestRecord = new AsccManifestRecord();
+            newAsccManifestRecord.setAsccId(asccManifestRecord.getAsccId());
+            newAsccManifestRecord.setReleaseId(accManifestRecord.getReleaseId());
+            newAsccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            ULong toAsccpManifestId = dslContext.select(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID)
+                    .from(ASCCP_MANIFEST)
+                    .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                    .fetchOneInto(ULong.class);
+            newAsccManifestRecord.setToAsccpManifestId(toAsccpManifestId);
+            newAsccManifestRecord.setPrevAsccManifestId(asccManifestRecord.getAsccManifestId());
+            dslContext.insertInto(ASCC_MANIFEST).set(newAsccManifestRecord).execute();
+        }
+
         for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
             BccRecord bccRecord = dslContext.selectFrom(BCC)
                     .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne();
@@ -1134,6 +1159,20 @@ public class AccWriteRepository {
                 bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.SEQ_KEY_ID);
                 bccRecord.delete();
             }
+        }
+
+        for (BccManifestRecord bccManifestRecord: nullNextPrevBccManifestRecords) {
+            BccManifestRecord newBccManifestRecord = new BccManifestRecord();
+            newBccManifestRecord.setBccId(bccManifestRecord.getBccId());
+            newBccManifestRecord.setReleaseId(accManifestRecord.getReleaseId());
+            newBccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            ULong toBccpManifestId = dslContext.select(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID)
+                    .from(BCCP_MANIFEST)
+                    .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                    .fetchOneInto(ULong.class);
+            newBccManifestRecord.setToBccpManifestId(toBccpManifestId);
+            newBccManifestRecord.setPrevBccManifestId(bccManifestRecord.getBccManifestId());
+            dslContext.insertInto(BCC_MANIFEST).set(newBccManifestRecord).execute();
         }
 
         // update ACCs which using with based current ACC
