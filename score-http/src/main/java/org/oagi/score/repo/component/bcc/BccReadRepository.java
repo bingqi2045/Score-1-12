@@ -158,7 +158,6 @@ public class BccReadRepository {
         accManifestIdList.add(targetAccManifestId);
 
         Set<ULong> accCandidates = new HashSet<>();
-        Set<ULong> groupBlockers = new HashSet<>();
 
         for (ULong cur : accManifestIdList) {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
@@ -176,31 +175,12 @@ public class BccReadRepository {
                         ACC_MANIFEST.ACC_MANIFEST_ID.in(accCandidates)))
                 .fetchInto(ULong.class));
 
-        for (ULong cur : groups) {
-            AccManifestRecord am = accManifestMap.get(cur);
-            while (am.getBasedAccManifestId() != null) {
-                groupBlockers.add(am.getBasedAccManifestId());
-                am = accManifestMap.get(am.getBasedAccManifestId());
-            }
-            groupBlockers.addAll(getBaseAccManifestId(cur, baseAccMap));
-        }
-
         accCandidates.addAll(groups);
 
         Set<BccManifestRecord> bccResult = new HashSet<>();
-        Set<BccManifestRecord> groupBccResult = new HashSet<>();
 
         for (ULong acc : accCandidates) {
             bccResult.addAll(
-                    fromAccBccMap.getOrDefault(acc, Collections.emptyList())
-                            .stream()
-                            .filter(bcc -> bcc.getToBccpManifestId().equals(bccManifestRecord.getToBccpManifestId())
-                                    && !bcc.getBccManifestId().equals(bccManifestRecord.getBccManifestId()))
-                            .collect(Collectors.toList()));
-        }
-
-        for (ULong acc : groupBlockers) {
-            groupBccResult.addAll(
                     fromAccBccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
                             .filter(bcc -> bcc.getToBccpManifestId().equals(bccManifestRecord.getToBccpManifestId())
@@ -215,15 +195,16 @@ public class BccReadRepository {
             AccRecord acc = accMap.get(amr.getAccId());
             if (!acc.getState().equals(CcState.WIP.name())) {
                 accManifestResult.add(amr);
-            } else {
-                if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
-                    accManifestResult.add(amr);
-                }
             }
-        }
 
-        for (BccManifestRecord bcc : groupBccResult) {
-            accManifestResult.add(accManifestMap.get(bcc.getFromAccManifestId()));
+            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+                accManifestResult.add(amr);
+            }
+
+            if (acc.getOagisComponentType().equals(OagisComponentType.SemanticGroup.getValue())
+                || acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
+                accManifestResult.add(amr);
+            }
         }
 
         return new ArrayList<>(accManifestResult);
