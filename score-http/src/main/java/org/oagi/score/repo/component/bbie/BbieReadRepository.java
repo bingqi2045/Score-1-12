@@ -40,7 +40,7 @@ public class BbieReadRepository {
     }
 
     public BbieNode getBbieNode(BigInteger topLevelAsbiepId, BigInteger bccManifestId, String hashPath) {
-        BccManifestRecord bccManifestRecord = bccReadRepository.getBccManifestByManifestId(bccManifestId);
+        BccManifestRecord bccManifestRecord = bccReadRepository.getBccManifestById(bccManifestId);
         BccRecord bccRecord = bccReadRepository.getBccByManifestId(bccManifestId);
         if (bccRecord == null) {
             return null;

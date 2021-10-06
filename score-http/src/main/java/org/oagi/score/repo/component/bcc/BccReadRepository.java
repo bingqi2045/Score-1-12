@@ -45,7 +45,7 @@ public class BccReadRepository {
                 .fetchOptionalInto(BccRecord.class).orElse(null);
     }
 
-    public BccManifestRecord getBccManifestByManifestId(BigInteger bccManifestId) {
+    public BccManifestRecord getBccManifestById(BigInteger bccManifestId) {
         return dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))

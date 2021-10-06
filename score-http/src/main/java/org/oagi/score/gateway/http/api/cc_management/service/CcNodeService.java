@@ -3,33 +3,13 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.data.Xbt;
-import org.oagi.score.repo.component.bccp.CancelRevisionBccpEvent;
-import org.oagi.score.repo.component.bccp.CancelRevisionBccpRepositoryRequest;
-import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
-import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryResponse;
-import org.oagi.score.repo.component.bccp.DeletedBccpEvent;
-import org.oagi.score.repo.component.bccp.RevisedBccpEvent;
-import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
-import org.oagi.score.repo.component.bccp.UpdateBccpOwnerRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryResponse;
-import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpStateRepositoryResponse;
-import org.oagi.score.repo.component.bccp.UpdatedBccpBdtEvent;
-import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
-import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
-import org.oagi.score.repo.component.bccp.UpdatedBccpStateEvent;
-import org.oagi.score.repo.component.dt.*;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.common.data.BCCEntityType;
-import org.oagi.score.service.common.data.CcState;
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.data.Release;
+import org.oagi.score.data.Xbt;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
+import org.oagi.score.gateway.http.api.graph.data.Node;
+import org.oagi.score.gateway.http.api.graph.service.GraphService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
@@ -38,8 +18,25 @@ import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
 import org.oagi.score.repo.component.asccp.*;
 import org.oagi.score.repo.component.bcc.*;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
+import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryResponse;
+import org.oagi.score.repo.component.bccp.DeletedBccpEvent;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpOwnerRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryRequest;
+import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
+import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
 import org.oagi.score.repo.component.bccp.*;
+import org.oagi.score.repo.component.dt.*;
+import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
+import org.oagi.score.repo.component.graph.GraphContextRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.BCCEntityType;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -103,6 +100,12 @@ public class CcNodeService extends EventHandler {
 
     @Autowired
     private DSLContext dslContext;
+
+    @Autowired
+    private GraphService graphService;
+
+    @Autowired
+    private GraphContextRepository graphContextRepository;
 
     public CcAccNode getAccNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getAccNodeByAccManifestId(user, manifestId);
@@ -1279,5 +1282,69 @@ public class CcNodeService extends EventHandler {
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
         return accReadRepository.getBaseAccList(accManifestRecord.getAccManifestId().toBigInteger(), accManifestRecord.getReleaseId().toBigInteger());
     }
-}
 
+    @Transactional
+    public CcUngroupResponse ungroup(AuthenticatedPrincipal user, CcUngroupRequest request) {
+        AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(request.getAccManifestId());
+        AccRecord accRecord = accReadRepository.getAccByManifestId(request.getAccManifestId());
+        if (accRecord == null) {
+            throw new IllegalArgumentException("'accManifestId' parameter must not be null.");
+        }
+
+        AsccManifestRecord asccManifestRecord = asccReadRepository.getAsccManifestById(request.getAsccManifestId());
+        AsccRecord asccRecord = asccReadRepository.getAsccByManifestId(request.getAsccManifestId());
+        if (asccRecord == null) {
+            throw new IllegalArgumentException("'asccManifestId' parameter must not be null.");
+        }
+
+        AsccpManifestRecord asccpManifestRecord =
+                asccpReadRepository.getAsccpManifestById(asccManifestRecord.getToAsccpManifestId().toBigInteger());
+        AccManifestRecord roleOfAccManifestRecord =
+                accReadRepository.getAccManifest(asccpManifestRecord.getRoleOfAccManifestId().toBigInteger());
+
+        Stack<AccManifestRecord> accManifestRecordStack = new Stack();
+        accManifestRecordStack.add(roleOfAccManifestRecord);
+
+        while (roleOfAccManifestRecord.getBasedAccManifestId() != null) {
+            roleOfAccManifestRecord = accReadRepository.getAccManifest(
+                    roleOfAccManifestRecord.getBasedAccManifestId().toBigInteger());
+            accManifestRecordStack.add(roleOfAccManifestRecord);
+        }
+
+        while (!accManifestRecordStack.isEmpty()) {
+            roleOfAccManifestRecord = accManifestRecordStack.pop();
+
+            CoreComponentGraphContext coreComponentGraphContext =
+                    graphContextRepository.buildGraphContext(roleOfAccManifestRecord);
+            List<Node> children = coreComponentGraphContext.findChildren(
+                    coreComponentGraphContext.toNode(roleOfAccManifestRecord), true);
+
+            int pos = request.getPos();
+            for (Node child : children) {
+                if (child.getType() == Node.NodeType.ASCC) {
+                    AsccManifestRecord asccChild =
+                            asccReadRepository.getAsccManifestById(child.getManifestId().toBigInteger());
+
+                    appendAsccp(user, accManifestRecord.getReleaseId().toBigInteger(),
+                            accManifestRecord.getAccManifestId().toBigInteger(),
+                            asccChild.getToAsccpManifestId().toBigInteger(), pos);
+                } else if (child.getType() == Node.NodeType.BCC) {
+                    BccManifestRecord bccChild =
+                            bccReadRepository.getBccManifestById(child.getManifestId().toBigInteger());
+
+                    appendBccp(user, accManifestRecord.getReleaseId().toBigInteger(),
+                            accManifestRecord.getAccManifestId().toBigInteger(),
+                            bccChild.getToBccpManifestId().toBigInteger(), pos);
+                }
+
+                pos++;
+            }
+        }
+
+        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger());
+
+        CcUngroupResponse response = new CcUngroupResponse();
+        response.setAccManifestId(accManifestRecord.getAccManifestId().toBigInteger());
+        return response;
+    }
+}

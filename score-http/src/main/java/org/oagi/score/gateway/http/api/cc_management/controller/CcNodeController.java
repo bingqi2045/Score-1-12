@@ -58,7 +58,7 @@ public class CcNodeController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getBdtNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("manifestId") BigInteger manifestId) {
+                             @PathVariable("manifestId") BigInteger manifestId) {
         return service.getBdtNode(user, manifestId);
     }
 
@@ -302,8 +302,8 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendScNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                       @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
-                                       @PathVariable("targetDtManifestId") BigInteger targetDtManifestId) {
+                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
+                                         @PathVariable("targetDtManifestId") BigInteger targetDtManifestId) {
 
         BigInteger manifestId = service.appendDtSc(user, ownerDtManifestId, targetDtManifestId);
 
@@ -316,8 +316,8 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcBdtNodeDetail addRestriction(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
-                                         @RequestBody CcCreateRestrictionRequest restrictionRequest) {
+                                          @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
+                                          @RequestBody CcCreateRestrictionRequest restrictionRequest) {
 
         CcBdtNode dtNode = new CcBdtNode();
         dtNode.setManifestId(ownerDtManifestId);
@@ -379,7 +379,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/dt", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createBdt(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                       @RequestBody CcBdtCreateRequest request) {
+                                      @RequestBody CcBdtCreateRequest request) {
         BigInteger manifestId = service.createBdt(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
@@ -390,7 +390,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/extension", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createAccExtensionComponent(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                          @RequestBody CcExtensionCreateRequest request) {
+                                                        @RequestBody CcExtensionCreateRequest request) {
         BigInteger manifestId = service.createAccExtension(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
@@ -480,8 +480,8 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse refactorAssociation(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                               @PathVariable("type") String type,
-                                               @RequestBody CcRefactorRequest request) {
+                                                    @PathVariable("type") String type,
+                                                    @RequestBody CcRefactorRequest request) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
         resp.setType(valueOf(type.toUpperCase()));
@@ -503,9 +503,9 @@ public class CcNodeController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRefactorValidationResponse refactorValidation(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                    @PathVariable("type") String type,
-                                                    @RequestParam("targetManifestId") BigInteger targetManifestId,
-                                                    @RequestParam("destinationManifestId") BigInteger destinationManifestId) {
+                                                           @PathVariable("type") String type,
+                                                           @RequestParam("targetManifestId") BigInteger targetManifestId,
+                                                           @RequestParam("destinationManifestId") BigInteger destinationManifestId) {
 
         CcRefactorRequest request = new CcRefactorRequest();
         request.setDestinationManifestId(destinationManifestId);
@@ -526,5 +526,17 @@ public class CcNodeController {
         }
 
         return resp;
+    }
+
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/ungroup",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcUngroupResponse ungroup(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                     @PathVariable("manifestId") BigInteger accManifestId,
+                                     @RequestBody CcUngroupRequest ccUngroupRequest) {
+
+        ccUngroupRequest.setAccManifestId(accManifestId);
+
+        return service.ungroup(user, ccUngroupRequest);
     }
 }
