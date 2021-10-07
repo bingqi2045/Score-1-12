@@ -2,7 +2,6 @@ package org.oagi.score.repo.component.bcc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.cc_management.data.CcList;
 import org.oagi.score.gateway.http.api.cc_management.data.CcRefactorValidationResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
@@ -21,7 +20,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -67,23 +65,19 @@ public class BccReadRepository {
             throw new IllegalArgumentException("This association used in " + usedBieCount + " BIE(s). Can not be refactored.");
         }
 
-        List<AccManifestRecord> blockerList = getBlockerList(user, bccManifestRecord, ULong.valueOf(accManifestId));
-
         CcRefactorValidationResponse response = new CcRefactorValidationResponse();
         response.setType(CcType.BCC.toString());
         response.setManifestId(bccManifestId);
 
-        List<ULong> blockerAccManifestIdList = blockerList.stream().map(AccManifestRecord::getAccManifestId).collect(Collectors.toList());
+        Map<ULong, List<String>> issueMap = getBlockerReasonMap(user, bccManifestRecord, ULong.valueOf(accManifestId));
 
-        List<CcList> blockerAccList = dslContext.select(
+        List<CcRefactorValidationResponse.IssuedCc> issuedCcList = dslContext.select(
                 inline("ACC").as("type"),
                 Tables.ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
                 Tables.ACC.ACC_ID.as("id"),
                 Tables.ACC.GUID,
                 Tables.ACC.DEN,
-                Tables.ACC.DEFINITION,
-                Tables.ACC.DEFINITION_SOURCE,
-                Tables.ACC.OBJECT_CLASS_TERM.as("term"),
+                Tables.ACC.OBJECT_CLASS_TERM,
                 Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagis_component_type"),
                 Tables.ACC.STATE,
                 Tables.ACC.IS_DEPRECATED,
@@ -105,39 +99,37 @@ public class BccReadRepository {
                 .on(Tables.ACC.OWNER_USER_ID.eq(APP_USER.as("appUserOwner").APP_USER_ID))
                 .join(APP_USER.as("appUserUpdater"))
                 .on(Tables.ACC.LAST_UPDATED_BY.eq(APP_USER.as("appUserUpdater").APP_USER_ID))
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.in(blockerAccManifestIdList))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.in(issueMap.keySet()))
                 .fetchStream().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
-                    ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
-                    ccList.setId(row.getValue("id", ULong.class).toBigInteger());
-                    ccList.setGuid(row.getValue("guid", String.class));
-                    ccList.setDen(row.getValue("den", String.class));
-                    ccList.setDefinition(stripToNull(row.getValue("definition", String.class)));
-                    ccList.setDefinitionSource(stripToNull(row.getValue("definition_source", String.class)));
-                    ccList.setName(row.getValue("term", String.class));
+                    CcRefactorValidationResponse.IssuedCc issuedCc = new CcRefactorValidationResponse.IssuedCc();
+                    issuedCc.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
+                    issuedCc.setId(row.getValue("id", ULong.class).toBigInteger());
+                    issuedCc.setGuid(row.getValue("guid", String.class));
+                    issuedCc.setDen(row.getValue("den", String.class));
+                    issuedCc.setName(row.getValue("object_class_term", String.class));
                     Integer componentType = row.getValue("oagis_component_type", Integer.class);
                     if (componentType != null) {
-                        ccList.setOagisComponentType(OagisComponentType.valueOf(componentType));
+                        issuedCc.setOagisComponentType(OagisComponentType.valueOf(componentType));
                     }
-                    ccList.setState(CcState.valueOf(row.getValue("state", String.class)));
-                    ccList.setDeprecated(row.getValue("is_deprecated", Byte.class) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue("last_update_timestamp", LocalDateTime.class)
+                    issuedCc.setState(CcState.valueOf(row.getValue("state", String.class)));
+                    issuedCc.setDeprecated(row.getValue("is_deprecated", Byte.class) == 1);
+                    issuedCc.setLastUpdateTimestamp(Date.from(row.getValue("last_update_timestamp", LocalDateTime.class)
                             .atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setOwnedByDeveloper(row.getValue("owned_by_developer", Byte.class) == 1);
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(LOG.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
+                    issuedCc.setOwner((String) row.getValue("owner"));
+                    issuedCc.setLastUpdateUser((String) row.getValue("last_update_user"));
+                    issuedCc.setRevision(row.getValue(LOG.REVISION_NUM).toString());
+                    issuedCc.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
+                    issuedCc.setReasons(issueMap.get(ULong.valueOf(issuedCc.getManifestId())));
+                    return issuedCc;
                 }).collect(Collectors.toList());
 
-        response.setBlockers(blockerAccList);
+        response.setIssueList(issuedCcList);
 
         return response;
     }
 
-    public List<AccManifestRecord> getBlockerList(AppUser requester, BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+    public Map<ULong, List<String>> getBlockerReasonMap(AppUser requester, BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+
         ULong releaseId = bccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
@@ -163,7 +155,9 @@ public class BccReadRepository {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
 
-        Set<ULong> groups = new HashSet<>(dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID)
+        Map<ULong, ULong> groupMap = new HashMap<>();
+
+        dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ASCC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
@@ -173,9 +167,11 @@ public class BccReadRepository {
                         ACC.OAGIS_COMPONENT_TYPE.in(OagisComponentType.SemanticGroup.getValue(),
                                 OagisComponentType.UserExtensionGroup.getValue()),
                         ACC_MANIFEST.ACC_MANIFEST_ID.in(accCandidates)))
-                .fetchInto(ULong.class));
+                .fetchStream().forEach(r -> {
+                    groupMap.put(r.get(ACC_MANIFEST.as("group").ACC_MANIFEST_ID), r.get(ACC_MANIFEST.ACC_MANIFEST_ID));
+                });
 
-        accCandidates.addAll(groups);
+        accCandidates.addAll(groupMap.keySet());
 
         Set<BccManifestRecord> bccResult = new HashSet<>();
 
@@ -188,26 +184,51 @@ public class BccReadRepository {
                             .collect(Collectors.toList()));
         }
 
-        Set<AccManifestRecord> accManifestResult = new HashSet<>();
+        Map<ULong, List<String>> map = new HashMap<>();
 
         for (BccManifestRecord bcc : bccResult) {
             AccManifestRecord amr = accManifestMap.get(bcc.getFromAccManifestId());
             AccRecord acc = accMap.get(amr.getAccId());
             if (!acc.getState().equals(CcState.WIP.name())) {
-                accManifestResult.add(amr);
+                String reason = "Direct association: 'WIP' state required.";
+                if (map.get(amr.getAccManifestId()) != null) {
+                    map.get(amr.getAccManifestId()).add(reason);
+                } else {
+                    List<String> reasons = new ArrayList<>();
+                    reasons.add(reason);
+                    map.put(amr.getAccManifestId(), reasons);
+                }
             }
 
             if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
-                accManifestResult.add(amr);
+                String reason = "Direct association: Ownership required.";
+                if (map.get(amr.getAccManifestId()) != null) {
+                    map.get(amr.getAccManifestId()).add(reason);
+                } else {
+                    List<String> reasons = new ArrayList<>();
+                    reasons.add(reason);
+                    map.put(amr.getAccManifestId(), reasons);
+                }
             }
 
             if (acc.getOagisComponentType().equals(OagisComponentType.SemanticGroup.getValue())
                 || acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
-                accManifestResult.add(amr);
+
+                AccManifestRecord parentAccManifest = accManifestMap.get(groupMap.get(amr.getAccManifestId()));
+                AccRecord parentAcc = accMap.get(parentAccManifest.getAccId());
+
+                String reason = "Nested in `" + parentAcc.getObjectClassTerm() + "`";
+                if (map.get(amr.getAccManifestId()) != null) {
+                    map.get(amr.getAccManifestId()).add(reason);
+                } else {
+                    List<String> reasons = new ArrayList<>();
+                    reasons.add(reason);
+                    map.put(amr.getAccManifestId(), reasons);
+                }
             }
         }
 
-        return new ArrayList<>(accManifestResult);
+        return map;
     }
 
     private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
