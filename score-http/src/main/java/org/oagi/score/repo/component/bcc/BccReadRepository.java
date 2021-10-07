@@ -217,7 +217,7 @@ public class BccReadRepository {
                 AccManifestRecord parentAccManifest = accManifestMap.get(groupMap.get(amr.getAccManifestId()));
                 AccRecord parentAcc = accMap.get(parentAccManifest.getAccId());
 
-                String reason = "Nested in `" + parentAcc.getObjectClassTerm() + "`";
+                String reason = "Nested in `" + parentAcc.getObjectClassTerm() + "`.";
                 if (map.get(amr.getAccManifestId()) != null) {
                     map.get(amr.getAccManifestId()).add(reason);
                 } else {
