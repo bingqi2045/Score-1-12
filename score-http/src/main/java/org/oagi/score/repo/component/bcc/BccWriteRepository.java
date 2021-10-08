@@ -15,6 +15,7 @@ import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.log.model.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -161,6 +162,23 @@ public class BccWriteRepository {
                         accManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
+
+        accManifestRecord.setLogId(logRecord.getLogId());
+        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+    }
+
+    private void upsertLogIntoAccAndAssociationsForRefactor(AccRecord accRecord,
+                                                            AccManifestRecord accManifestRecord,
+                                                            ULong releaseId,
+                                                            ULong userId,
+                                                            LocalDateTime timestamp,
+                                                            String hash) {
+        LogRecord logRecord =
+                logRepository.insertAccLog(accManifestRecord,
+                        accRecord,
+                        accManifestRecord.getLogId(),
+                        LogAction.Refactored,
+                        userId, timestamp, hash);
 
         accManifestRecord.setLogId(logRecord.getLogId());
         accManifestRecord.update(ACC_MANIFEST.LOG_ID);
@@ -383,7 +401,9 @@ public class BccWriteRepository {
 
         List<BccManifestRecord> targetBccManifestList = this.getRefactorTargetBccManifestList(targetBccManifestRecord, targetAccManifestRecord.getAccManifestId());
 
-        for (BccManifestRecord bccManifestRecord: targetBccManifestList) {
+        String hash = LogUtils.generateHash();
+
+        for (BccManifestRecord bccManifestRecord : targetBccManifestList) {
 
             BccRecord bccRecord = dslContext.selectFrom(BCC)
                     .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
@@ -441,11 +461,10 @@ public class BccWriteRepository {
                     .execute();
             bccRecord.delete();
 
-            upsertLogIntoAccAndAssociations(
+            upsertLogIntoAccAndAssociationsForRefactor(
                     prevAccRecord, prevAccManifestRecord,
                     accManifestRecord.getReleaseId(),
-                    userId, timestamp
-            );
+                    userId, timestamp, hash);
         }
 
         targetBccRecord.setBccId(null);
@@ -464,11 +483,10 @@ public class BccWriteRepository {
 
         seqKeyHandler(request.getUser(), targetBccManifestRecord).moveTo(MoveTo.LAST);
 
-        upsertLogIntoAccAndAssociations(
+        upsertLogIntoAccAndAssociationsForRefactor(
                 targetAccRecord, targetAccManifestRecord,
                 targetAccManifestRecord.getReleaseId(),
-                userId, timestamp
-        );
+                userId, timestamp, hash);
 
         return new RefactorBccRepositoryResponse(targetBccManifestRecord.getBccManifestId().toBigInteger());
     }

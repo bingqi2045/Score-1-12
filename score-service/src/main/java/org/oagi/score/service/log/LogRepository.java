@@ -528,6 +528,16 @@ public class LogRepository {
                                   LogAction logAction,
                                   ULong requesterId,
                                   LocalDateTime timestamp) {
+        return insertAccLog(accManifestRecord, accRecord, prevLogId, logAction, requesterId, timestamp, LogUtils.generateHash());
+    }
+
+    public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
+                                  AccRecord accRecord,
+                                  ULong prevLogId,
+                                  LogAction logAction,
+                                  ULong requesterId,
+                                  LocalDateTime timestamp,
+                                  String hash) {
 
         LogRecord prevLogRecord = null;
         if (prevLogId != null) {
@@ -537,7 +547,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
-        logRecord.setHash(LogUtils.generateHash());
+        logRecord.setHash(hash);
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
             logRecord.setRevisionNum(prevLogRecord.getRevisionNum().add(1));

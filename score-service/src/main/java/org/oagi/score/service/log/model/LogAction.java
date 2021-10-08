@@ -8,4 +8,6 @@ public enum LogAction {
     Deleted,
     Restored,
     Associated,
+    Refactored,
+    Ungrouped
 }
