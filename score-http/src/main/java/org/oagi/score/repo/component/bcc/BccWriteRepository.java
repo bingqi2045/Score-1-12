@@ -26,8 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.service.common.data.BCCEntityType.Attribute;
 import static org.oagi.score.service.common.data.BCCEntityType.Element;
@@ -143,11 +142,21 @@ public class BccWriteRepository {
 
         seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(request.getPos());
 
-        upsertLogIntoAccAndAssociations(
-                accRecord, accManifestRecord,
-                ULong.valueOf(request.getReleaseId()),
-                userId, timestamp
-        );
+        if (request.getLogAction() != null) {
+            upsertLogIntoAccAndAssociationsByAction(
+                    accRecord, accManifestRecord,
+                    ULong.valueOf(request.getReleaseId()),
+                    userId, timestamp, request.getLogHash(), request.getLogAction()
+            );
+        } else {
+            upsertLogIntoAccAndAssociations(
+                    accRecord, accManifestRecord,
+                    ULong.valueOf(request.getReleaseId()),
+                    userId, timestamp
+            );
+        }
+
+
 
         return new CreateBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
@@ -156,29 +165,19 @@ public class BccWriteRepository {
                                                  AccManifestRecord accManifestRecord,
                                                  ULong releaseId,
                                                  ULong userId, LocalDateTime timestamp) {
-        LogRecord logRecord =
-                logRepository.insertAccLog(accManifestRecord,
-                        accRecord,
-                        accManifestRecord.getLogId(),
-                        LogAction.Modified,
-                        userId, timestamp);
-
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        upsertLogIntoAccAndAssociationsByAction(accRecord, accManifestRecord, releaseId, userId, timestamp, LogUtils.generateHash(), LogAction.Modified);
     }
 
-    private void upsertLogIntoAccAndAssociationsForRefactor(AccRecord accRecord,
+    private void upsertLogIntoAccAndAssociationsByAction(AccRecord accRecord,
                                                             AccManifestRecord accManifestRecord,
                                                             ULong releaseId,
                                                             ULong userId,
                                                             LocalDateTime timestamp,
-                                                            String hash) {
+                                                            String hash, LogAction action) {
         LogRecord logRecord =
                 logRepository.insertAccLog(accManifestRecord,
-                        accRecord,
-                        accManifestRecord.getLogId(),
-                        LogAction.Refactored,
-                        userId, timestamp, hash);
+                        accRecord, accManifestRecord.getLogId(),
+                        action, userId, timestamp, hash);
 
         accManifestRecord.setLogId(logRecord.getLogId());
         accManifestRecord.update(ACC_MANIFEST.LOG_ID);
@@ -461,10 +460,10 @@ public class BccWriteRepository {
                     .execute();
             bccRecord.delete();
 
-            upsertLogIntoAccAndAssociationsForRefactor(
+            upsertLogIntoAccAndAssociationsByAction(
                     prevAccRecord, prevAccManifestRecord,
                     accManifestRecord.getReleaseId(),
-                    userId, timestamp, hash);
+                    userId, timestamp, hash, LogAction.Refactored);
         }
 
         targetBccRecord.setBccId(null);
@@ -483,10 +482,10 @@ public class BccWriteRepository {
 
         seqKeyHandler(request.getUser(), targetBccManifestRecord).moveTo(MoveTo.LAST);
 
-        upsertLogIntoAccAndAssociationsForRefactor(
+        upsertLogIntoAccAndAssociationsByAction(
                 targetAccRecord, targetAccManifestRecord,
                 targetAccManifestRecord.getReleaseId(),
-                userId, timestamp, hash);
+                userId, timestamp, hash, LogAction.Refactored);
 
         return new RefactorBccRepositoryResponse(targetBccManifestRecord.getBccManifestId().toBigInteger());
     }

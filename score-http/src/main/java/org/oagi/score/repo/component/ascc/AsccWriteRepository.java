@@ -170,11 +170,20 @@ public class AsccWriteRepository {
 
         seqKeyHandler(request.getUser(), asccManifest).moveTo(request.getPos());
 
-        upsertLogIntoAccAndAssociations(
-                accRecord, accManifestRecord,
-                ULong.valueOf(request.getReleaseId()),
-                userId, timestamp
-        );
+        if (request.getLogAction() != null) {
+            upsertLogIntoAccAndAssociationsByAction(
+                    accRecord, accManifestRecord,
+                    ULong.valueOf(request.getReleaseId()),
+                    userId, timestamp, request.getLogHash(), request.getLogAction()
+            );
+        } else {
+            upsertLogIntoAccAndAssociations(
+                    accRecord, accManifestRecord,
+                    ULong.valueOf(request.getReleaseId()),
+                    userId, timestamp
+            );
+        }
+
 
         return new CreateAsccRepositoryResponse(asccManifest.getAsccManifestId().toBigInteger());
     }
@@ -183,28 +192,18 @@ public class AsccWriteRepository {
                                                  AccManifestRecord accManifestRecord,
                                                  ULong releaseId,
                                                  ULong userId, LocalDateTime timestamp) {
-        LogRecord logRecord =
-                logRepository.insertAccLog(accManifestRecord,
-                        accRecord,
-                        accManifestRecord.getLogId(),
-                        LogAction.Modified,
-                        userId, timestamp);
-
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        upsertLogIntoAccAndAssociationsByAction(accRecord, accManifestRecord, releaseId, userId, timestamp, LogUtils.generateHash(), LogAction.Modified);
     }
 
-    private void upsertLogIntoAccAndAssociationsForRefactor(AccRecord accRecord,
+    private void upsertLogIntoAccAndAssociationsByAction(AccRecord accRecord,
                                                  AccManifestRecord accManifestRecord,
                                                  ULong releaseId,
                                                  ULong userId, LocalDateTime timestamp,
-                                                            String hash) {
+                                                 String hash, LogAction action) {
         LogRecord logRecord =
                 logRepository.insertAccLog(accManifestRecord,
-                        accRecord,
-                        accManifestRecord.getLogId(),
-                        LogAction.Refactored,
-                        userId, timestamp, hash);
+                        accRecord, accManifestRecord.getLogId(),
+                        action, userId, timestamp, hash);
 
         accManifestRecord.setLogId(logRecord.getLogId());
         accManifestRecord.update(ACC_MANIFEST.LOG_ID);
@@ -349,11 +348,19 @@ public class AsccWriteRepository {
             asccRecord.delete();
         }
 
-        upsertLogIntoAccAndAssociations(
-                accRecord, accManifestRecord,
-                accManifestRecord.getReleaseId(),
-                userId, timestamp
-        );
+        if (request.getLogAction() != null) {
+            upsertLogIntoAccAndAssociationsByAction(
+                    accRecord, accManifestRecord,
+                    accManifestRecord.getReleaseId(),
+                    userId, timestamp, request.getLogHash(), request.getLogAction()
+            );
+        } else {
+            upsertLogIntoAccAndAssociations(
+                    accRecord, accManifestRecord,
+                    accManifestRecord.getReleaseId(),
+                    userId, timestamp
+            );
+        }
 
         return new DeleteAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
     }
@@ -457,10 +464,10 @@ public class AsccWriteRepository {
                     .execute();
             asccRecord.delete();
 
-            upsertLogIntoAccAndAssociationsForRefactor(
+            upsertLogIntoAccAndAssociationsByAction(
                     prevAccRecord, prevAccManifestRecord,
                     accManifestRecord.getReleaseId(),
-                    userId, timestamp, hash
+                    userId, timestamp, hash, LogAction.Refactored
             );
         }
 
@@ -480,10 +487,10 @@ public class AsccWriteRepository {
 
         seqKeyHandler(request.getUser(), targetAsccManifestRecord).moveTo(MoveTo.LAST);
 
-        upsertLogIntoAccAndAssociationsForRefactor(
+        upsertLogIntoAccAndAssociationsByAction(
                 targetAccRecord, targetAccManifestRecord,
                 targetAccManifestRecord.getReleaseId(),
-                userId, timestamp, hash
+                userId, timestamp, hash, LogAction.Ungrouped
         );
 
         return new RefactorAsccRepositoryResponse(targetAsccManifestRecord.getAsccManifestId().toBigInteger());

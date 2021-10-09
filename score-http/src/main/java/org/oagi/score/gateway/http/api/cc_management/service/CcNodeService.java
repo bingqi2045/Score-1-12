@@ -37,6 +37,8 @@ import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
+import org.oagi.score.service.log.model.LogAction;
+import org.oagi.score.service.log.model.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -158,8 +160,16 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId) {
+        deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified);
+    }
+
+    @Transactional
+    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, String logHash, LogAction action) {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
+
+        request.setLogHash(logHash);
+        request.setLogAction(action);
 
         asccWriteRepository.deleteAscc(request);
 
@@ -629,10 +639,19 @@ public class CcNodeService extends EventHandler {
     public BigInteger appendAsccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                   BigInteger accManifestId, BigInteger asccpManifestId,
                                   int pos) {
+        return appendAsccp(user, releaseId, accManifestId, asccpManifestId, pos, LogUtils.generateHash(), LogAction.Modified);
+    }
+
+    @Transactional
+    public BigInteger appendAsccp(AuthenticatedPrincipal user, BigInteger releaseId,
+                                  BigInteger accManifestId, BigInteger asccpManifestId,
+                                  int pos, String logHash, LogAction action) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateAsccRepositoryRequest request =
                 new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
         request.setPos(pos);
+        request.setLogHash(logHash);
+        request.setLogAction(action);
 
         CreateAsccRepositoryResponse response = asccWriteRepository.createAscc(request);
         fireEvent(new CreatedAsccEvent());
@@ -643,10 +662,19 @@ public class CcNodeService extends EventHandler {
     public BigInteger appendBccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                  BigInteger accManifestId, BigInteger bccpManifestId,
                                  int pos) {
+        return appendBccp(user, releaseId, accManifestId, bccpManifestId, pos, LogUtils.generateHash(), LogAction.Modified);
+    }
+
+    @Transactional
+    public BigInteger appendBccp(AuthenticatedPrincipal user, BigInteger releaseId,
+                                 BigInteger accManifestId, BigInteger bccpManifestId,
+                                 int pos, String logHash, LogAction action) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateBccRepositoryRequest request =
                 new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId);
         request.setPos(pos);
+        request.setLogHash(logHash);
+        request.setLogAction(action);
 
         CreateBccRepositoryResponse response = bccWriteRepository.createBcc(request);
         fireEvent(new CreatedBccEvent());
@@ -1311,6 +1339,8 @@ public class CcNodeService extends EventHandler {
             accManifestRecordStack.add(roleOfAccManifestRecord);
         }
 
+        String logHash = LogUtils.generateHash();
+
         while (!accManifestRecordStack.isEmpty()) {
             roleOfAccManifestRecord = accManifestRecordStack.pop();
 
@@ -1327,21 +1357,21 @@ public class CcNodeService extends EventHandler {
 
                     appendAsccp(user, accManifestRecord.getReleaseId().toBigInteger(),
                             accManifestRecord.getAccManifestId().toBigInteger(),
-                            asccChild.getToAsccpManifestId().toBigInteger(), pos);
+                            asccChild.getToAsccpManifestId().toBigInteger(), pos, logHash, LogAction.Ungrouped);
                 } else if (child.getType() == Node.NodeType.BCC) {
                     BccManifestRecord bccChild =
                             bccReadRepository.getBccManifestById(child.getManifestId().toBigInteger());
 
                     appendBccp(user, accManifestRecord.getReleaseId().toBigInteger(),
                             accManifestRecord.getAccManifestId().toBigInteger(),
-                            bccChild.getToBccpManifestId().toBigInteger(), pos);
+                            bccChild.getToBccpManifestId().toBigInteger(), pos, logHash, LogAction.Ungrouped);
                 }
 
                 pos++;
             }
         }
 
-        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger());
+        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger(), logHash, LogAction.Ungrouped);
 
         CcUngroupResponse response = new CcUngroupResponse();
         response.setAccManifestId(accManifestRecord.getAccManifestId().toBigInteger());
