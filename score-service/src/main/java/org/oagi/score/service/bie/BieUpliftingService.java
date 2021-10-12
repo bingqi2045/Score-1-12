@@ -327,7 +327,7 @@ public class BieUpliftingService {
             DtManifest sourceDtManifest = sourceCcDocument.getDtManifest(
                     sourceBccpManifest.getBdtManifestId());
             currentSourcePath = currentSourcePath + ">" + "BCCP-" + sourceBccpManifest.getBccpManifestId() + ">" +
-                    "BDT-" + sourceDtManifest.getDtManifestId();
+                    "DT-" + sourceDtManifest.getDtManifestId();
 
             BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
             if (targetBccpManifest != null) {
@@ -336,7 +336,7 @@ public class BieUpliftingService {
                 bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
                 currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId() + ">" +
-                        "BDT-" + targetDtManifest.getDtManifestId();
+                        "DT-" + targetDtManifest.getDtManifestId();
             }
         }
 
@@ -345,7 +345,7 @@ public class BieUpliftingService {
             CcDocument sourceCcDocument = context.getBieDocument().getCcDocument();
             DtScManifest sourceDtScManifest = sourceCcDocument.getDtScManifest(bbieSc.getBasedDtScManifestId());
 
-            String sourcePath = currentSourcePath + ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
+            String sourcePath = currentSourcePath + ">" + "DT_SC-" + sourceDtScManifest.getDtScManifestId();
             CcMatchingScore matchingScore =
                     bbieTargetDtScManifestsMap.getOrDefault(bbieSc.getBbieId(), Collections.emptyList()).stream()
                             .map(e -> ccMatchingService.score(
@@ -363,7 +363,7 @@ public class BieUpliftingService {
                 });
             } else {
                 DtScManifest targetDtScManifest = (DtScManifest) matchingScore.getTarget();
-                String targetPath = currentTargetPath + ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                String targetPath = currentTargetPath + ">" + "DT_SC-" + targetDtScManifest.getDtScManifestId();
 
                 this.listeners.forEach(listener -> {
                     listener.foundBestMatchedBbieSc(bbieSc,
@@ -1084,8 +1084,8 @@ public class BieUpliftingService {
             DtScManifest sourceDtScManifest = sourceCcDocument.getDtScManifest(bbieSc.getBasedDtScManifestId());
             DtManifest sourceDtManifest = sourceCcDocument.getDtManifest(sourceDtScManifest.getOwnerDtManifestId());
 
-            String sourcePath = currentSourcePath + ">" + "BDT-" + sourceDtManifest.getDtManifestId() +
-                    ">" + "BDT_SC-" + sourceDtScManifest.getDtScManifestId();
+            String sourcePath = currentSourcePath + ">" + "DT-" + sourceDtManifest.getDtManifestId() +
+                    ">" + "DT_SC-" + sourceDtScManifest.getDtScManifestId();
             DtScManifest targetDtScManifest = null;
             String targetPath = null;
             BieUpliftingMapping targetDtScMapping =
@@ -1107,8 +1107,8 @@ public class BieUpliftingService {
                 if (matchingScore.getScore() > 0.0d) {
                     targetDtScManifest = (DtScManifest) matchingScore.getTarget();
                     DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetDtScManifest.getOwnerDtManifestId());
-                    targetPath = currentTargetPath + ">" + "BDT-" + targetDtManifest.getDtManifestId() +
-                            ">" + "BDT_SC-" + targetDtScManifest.getDtScManifestId();
+                    targetPath = currentTargetPath + ">" + "DT-" + targetDtManifest.getDtManifestId() +
+                            ">" + "DT_SC-" + targetDtScManifest.getDtScManifestId();
                 }
             }
 

@@ -41,3 +41,7 @@ DROP COLUMN `previous_version_dt_id`,
 DROP COLUMN `origin_den`,
 DROP COLUMN `content_component_den`,
 DROP COLUMN `revision_doc`;
+
+-- migrate `BDT` in path to `DT` and hash.
+UPDATE `bbie_sc` SET `bbie_sc`.`path` = replace(`path`, 'BDT', 'DT');
+UPDATE `bbie_sc` SET `bbie_sc`.`hash_path` = SHA2(`path`, 256);
