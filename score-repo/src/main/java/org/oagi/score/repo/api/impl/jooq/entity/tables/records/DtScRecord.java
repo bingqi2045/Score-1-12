@@ -4,10 +4,12 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record16;
-import org.jooq.Row16;
+import org.jooq.Record21;
+import org.jooq.Row21;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
@@ -20,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
  * a new set of supplementary components is created along with it. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> {
+public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record21<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -221,31 +223,105 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     /**
+     * Setter for <code>oagi.dt_sc.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     */
+    public void setCreatedBy(ULong value) {
+        set(14, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     */
+    public ULong getCreatedBy() {
+        return (ULong) get(14);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     */
+    public void setOwnerUserId(ULong value) {
+        set(15, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     */
+    public ULong getOwnerUserId() {
+        return (ULong) get(15);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     */
+    public void setLastUpdatedBy(ULong value) {
+        set(16, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     */
+    public ULong getLastUpdatedBy() {
+        return (ULong) get(16);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.creation_timestamp</code>. Timestamp when the code list was created.
+     */
+    public void setCreationTimestamp(LocalDateTime value) {
+        set(17, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.creation_timestamp</code>. Timestamp when the code list was created.
+     */
+    public LocalDateTime getCreationTimestamp() {
+        return (LocalDateTime) get(17);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     */
+    public void setLastUpdateTimestamp(LocalDateTime value) {
+        set(18, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     */
+    public LocalDateTime getLastUpdateTimestamp() {
+        return (LocalDateTime) get(18);
+    }
+
+    /**
      * Setter for <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtScId(ULong value) {
-        set(14, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtScId() {
-        return (ULong) get(14);
+        return (ULong) get(19);
     }
 
     /**
      * Setter for <code>oagi.dt_sc.next_dt_sc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtScId(ULong value) {
-        set(15, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.dt_sc.next_dt_sc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtScId() {
-        return (ULong) get(15);
+        return (ULong) get(20);
     }
 
     // -------------------------------------------------------------------------
@@ -258,17 +334,17 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     // -------------------------------------------------------------------------
-    // Record16 type implementation
+    // Record21 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> valuesRow() {
-        return (Row16) super.valuesRow();
+    public Row21<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+        return (Row21) super.valuesRow();
     }
 
     @Override
@@ -343,11 +419,36 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public Field<ULong> field15() {
-        return DtSc.DT_SC.PREV_DT_SC_ID;
+        return DtSc.DT_SC.CREATED_BY;
     }
 
     @Override
     public Field<ULong> field16() {
+        return DtSc.DT_SC.OWNER_USER_ID;
+    }
+
+    @Override
+    public Field<ULong> field17() {
+        return DtSc.DT_SC.LAST_UPDATED_BY;
+    }
+
+    @Override
+    public Field<LocalDateTime> field18() {
+        return DtSc.DT_SC.CREATION_TIMESTAMP;
+    }
+
+    @Override
+    public Field<LocalDateTime> field19() {
+        return DtSc.DT_SC.LAST_UPDATE_TIMESTAMP;
+    }
+
+    @Override
+    public Field<ULong> field20() {
+        return DtSc.DT_SC.PREV_DT_SC_ID;
+    }
+
+    @Override
+    public Field<ULong> field21() {
         return DtSc.DT_SC.NEXT_DT_SC_ID;
     }
 
@@ -423,11 +524,36 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public ULong component15() {
-        return getPrevDtScId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong component16() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong component17() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime component18() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime component19() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public ULong component20() {
+        return getPrevDtScId();
+    }
+
+    @Override
+    public ULong component21() {
         return getNextDtScId();
     }
 
@@ -503,11 +629,36 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public ULong value15() {
-        return getPrevDtScId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong value16() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong value17() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime value18() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime value19() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public ULong value20() {
+        return getPrevDtScId();
+    }
+
+    @Override
+    public ULong value21() {
         return getNextDtScId();
     }
 
@@ -597,18 +748,48 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public DtScRecord value15(ULong value) {
-        setPrevDtScId(value);
+        setCreatedBy(value);
         return this;
     }
 
     @Override
     public DtScRecord value16(ULong value) {
+        setOwnerUserId(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value17(ULong value) {
+        setLastUpdatedBy(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value18(LocalDateTime value) {
+        setCreationTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value19(LocalDateTime value) {
+        setLastUpdateTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value20(ULong value) {
+        setPrevDtScId(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value21(ULong value) {
         setNextDtScId(value);
         return this;
     }
 
     @Override
-    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12, Byte value13, ULong value14, ULong value15, ULong value16) {
+    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12, Byte value13, ULong value14, ULong value15, ULong value16, ULong value17, LocalDateTime value18, LocalDateTime value19, ULong value20, ULong value21) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -625,6 +806,11 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         value14(value14);
         value15(value15);
         value16(value16);
+        value17(value17);
+        value18(value18);
+        value19(value19);
+        value20(value20);
+        value21(value21);
         return this;
     }
 
@@ -642,7 +828,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     /**
      * Create a detached, initialised DtScRecord
      */
-    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId, ULong prevDtScId, ULong nextDtScId) {
+    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevDtScId, ULong nextDtScId) {
         super(DtSc.DT_SC);
 
         setDtScId(dtScId);
@@ -659,6 +845,11 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         setFixedValue(fixedValue);
         setIsDeprecated(isDeprecated);
         setReplacementDtScId(replacementDtScId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
         setPrevDtScId(prevDtScId);
         setNextDtScId(nextDtScId);
     }

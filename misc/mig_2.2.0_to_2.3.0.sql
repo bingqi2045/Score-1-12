@@ -4,11 +4,22 @@
 -- Author: Kwanghoon Lee <kwanghoon.lee@nist.gov>    --
 -- ----------------------------------------------------
 
+
 -- Alter dt tables
-ALTER TABLE `dt_sc` ADD COLUMN `prev_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
-                 ADD COLUMN `next_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                 ADD CONSTRAINT `dt_sc_prev_dt_sc_id_fk` FOREIGN KEY (`prev_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
-                 ADD CONSTRAINT `dt_sc_next_dt_sc_id_fk` FOREIGN KEY (`next_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+ALTER TABLE `dt_sc` ADD COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.',
+				ADD COLUMN  `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+				ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',
+				ADD COLUMN  `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was created.',
+				ADD COLUMN  `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was last updated.',
+				ADD COLUMN `prev_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                ADD COLUMN `next_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                ADD CONSTRAINT `dt_sc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+                ADD CONSTRAINT `dt_sc_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+				ADD CONSTRAINT `dt_sc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+                ADD CONSTRAINT `dt_sc_prev_dt_sc_id_fk` FOREIGN KEY (`prev_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+                ADD CONSTRAINT `dt_sc_next_dt_sc_id_fk` FOREIGN KEY (`next_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+
+UPDATE `dt_sc` JOIN `dt` ON `dt_sc`.`owner_dt_id` = `dt`.`dt_id` SET `dt_sc`.`created_by` = `dt`.`created_by`, `dt_sc`.`owner_user_id` = `dt`.`owner_user_id`, `dt_sc`.`last_updated_by` = `dt`.`last_updated_by`, `dt_sc`.`creation_timestamp` = `dt`.`creation_timestamp`, `dt_sc`.`last_update_timestamp` = `dt`.`last_update_timestamp`;
 
 -- add six_digit_id to `dt`
 ALTER TABLE `dt` ADD COLUMN `six_digit_id` varchar(45) DEFAULT NULL COMMENT 'The six number suffix comes from the UN/CEFACT XML Schema NDR.' AFTER `qualifier`;

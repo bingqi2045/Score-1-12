@@ -24,6 +24,7 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private String propertyTerm;
     private String representationTerm;
+    private Boolean deprecated;
 
     private CcState state;
     private String owner;

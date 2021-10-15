@@ -287,6 +287,34 @@ public class CcNodeRepository {
                 .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID));
     }
 
+    private SelectOnConditionStep<Record13<ULong, String, String, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong, ULong, ULong>> selectOnConditionStepForDtScNode() {
+        return dslContext.select(
+                DT_SC.DT_SC_ID.as("dt_sc_id"),
+                DT_SC.GUID,
+                concat(DT_SC.PROPERTY_TERM, val(" "), DT_SC.REPRESENTATION_TERM).as("name"),
+                DT.STATE,
+                DT_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
+                DT_SC_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                DT_SC_MANIFEST.DT_SC_MANIFEST_ID.as("manifest_id"),
+                DT.OWNER_USER_ID,
+                DT_SC.PREV_DT_SC_ID,
+                DT_SC.NEXT_DT_SC_ID)
+                .from(DT_SC)
+                .join(DT_SC_MANIFEST)
+                .on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .join(DT_MANIFEST)
+                .on(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
+                .join(DT)
+                .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .join(RELEASE)
+                .on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(LOG)
+                .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID));
+    }
+
     public CcBccpNode getBccpNodeByBccpManifestId(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcBccpNode bccpNode = selectOnConditionStepForBccpNode()
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
@@ -313,6 +341,19 @@ public class CcNodeRepository {
         bdtNode.setHasChild(hasChild(bdtNode));
 
         return bdtNode;
+    }
+
+    public CcBdtScNode getDtScNodeByManifestId(AuthenticatedPrincipal user, BigInteger manifestId) {
+        CcBdtScNode dtScNode = selectOnConditionStepForDtScNode()
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .fetchOneInto(CcBdtScNode.class);
+
+        AppUser requester = sessionService.getAppUser(user);
+        AppUser owner = sessionService.getAppUser(dtScNode.getOwnerUserId());
+        boolean isWorkingRelease = dtScNode.getReleaseNum().equals("Working");
+        dtScNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, dtScNode.getState(), isWorkingRelease));
+
+        return dtScNode;
     }
 
     private boolean hasChild(CcBccpNode bccpNode) {

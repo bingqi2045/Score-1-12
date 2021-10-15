@@ -30,6 +30,10 @@ import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
 import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
 import org.oagi.score.repo.component.bccp.*;
 import org.oagi.score.repo.component.dt.*;
+import org.oagi.score.repo.component.dt_sc.DtScWriteRepository;
+import org.oagi.score.repo.component.dt_sc.UpdateDtScPropertiesRepositoryRequest;
+import org.oagi.score.repo.component.dt_sc.UpdateDtScPropertiesRepositoryResponse;
+import org.oagi.score.repo.component.dt_sc.UpdatedDtScPropertiesEvent;
 import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
 import org.oagi.score.repo.component.graph.GraphContextRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
@@ -83,6 +87,9 @@ public class CcNodeService extends EventHandler {
     private DtWriteRepository dtWriteRepository;
 
     @Autowired
+    private DtScWriteRepository dtScWriteRepository;
+
+    @Autowired
     private AsccReadRepository asccReadRepository;
 
     @Autowired
@@ -123,6 +130,10 @@ public class CcNodeService extends EventHandler {
 
     public CcBdtNode getBdtNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getBdtNodeByBdtManifestId(user, manifestId);
+    }
+
+    public CcBdtScNode getDtScNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+        return repository.getDtScNodeByManifestId(user, manifestId);
     }
 
     @Transactional
@@ -454,6 +465,10 @@ public class CcNodeService extends EventHandler {
                 updateAsccp(user, ccUpdateRequest.getAsccpNodeDetails()));
         ccUpdateResponse.setBccpNodeResults(
                 updateBccpDetail(user, ccUpdateRequest.getBccpNodeDetails()));
+        ccUpdateResponse.setDtNodeResults(
+                updateDtDetail(user, ccUpdateRequest.getDtNodeDetails()));
+        ccUpdateResponse.setBdtScNodeResults(
+                updateDtScDetail(user, ccUpdateRequest.getDtScNodeDetails()));
 
         return ccUpdateResponse;
     }
@@ -529,6 +544,30 @@ public class CcNodeService extends EventHandler {
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
         return updatedBccpNodeDetails;
+    }
+
+    @Transactional
+    public List<CcBdtNodeDetail> updateDtDetail(AuthenticatedPrincipal user, List<CcBdtNodeDetail> dtNodeDetails) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        List<CcBdtNodeDetail> updatedDtNodeDetails = new ArrayList<>();
+        for (CcBdtNodeDetail detail : dtNodeDetails) {
+            updateDtDetail(user, timestamp, detail);
+            CcBdtNode ccDtNode = getBdtNode(user, detail.getManifestId());
+            updatedDtNodeDetails.add(getBdtNodeDetail(user, ccDtNode));
+        }
+        return updatedDtNodeDetails;
+    }
+
+    @Transactional
+    public List<CcBdtScNodeDetail> updateDtScDetail(AuthenticatedPrincipal user, List<CcBdtScNodeDetail> dtScNodeDetails) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        List<CcBdtScNodeDetail> updatedDtScNodeDetails = new ArrayList<>();
+        for (CcBdtScNodeDetail detail : dtScNodeDetails) {
+            updateDtScDetail(user, timestamp, detail);
+            CcBdtScNode ccDtScNode = getDtScNode(user, detail.getManifestId());
+            updatedDtScNodeDetails.add(getBdtScNodeDetail(user, ccDtScNode));
+        }
+        return updatedDtScNodeDetails;
     }
 
     private CcAccNode updateAccDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcAccNodeDetail detail) {
@@ -633,6 +672,47 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedBccpPropertiesEvent());
 
         return repository.getBccpNodeByBccpManifestId(user, response.getBccpManifestId());
+    }
+
+    private CcBdtNode updateDtDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcBdtNodeDetail detail) {
+        UpdateDtPropertiesRepositoryRequest request =
+                new UpdateDtPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
+
+        request.setQualifier(detail.getQualifier());
+        request.setSixDigitId(detail.getSixDigitId());
+        request.setContentComponentDefinition(detail.getContentComponentDefinition());
+        request.setDefinition(detail.getDefinition());
+        request.setDefinitionSource(detail.getDefinitionSource());
+        request.setDeprecated(detail.isDeprecated());
+        request.setNamespaceId(detail.getNamespaceId());
+
+        UpdateDtPropertiesRepositoryResponse response =
+                dtWriteRepository.updateDtProperties(request);
+
+        fireEvent(new UpdatedDtPropertiesEvent());
+
+        return repository.getBdtNodeByBdtManifestId(user, response.getDtManifestId());
+    }
+
+    private CcBdtScNode updateDtScDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcBdtScNodeDetail detail) {
+        UpdateDtScPropertiesRepositoryRequest request =
+                new UpdateDtScPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
+
+        request.setPropertyTerm(detail.getPropertyTerm());
+        request.setDefaultValue(detail.getDefaultValue());
+        request.setFixedValue(detail.getFixedValue());
+        request.setDefinition(detail.getDefinition());
+        request.setCardinalityMax(detail.getCardinalityMax());
+        request.setCardinalityMin(detail.getCardinalityMin());
+        request.setDefinitionSource(detail.getDefinitionSource());
+        request.setDeprecated(detail.getDeprecated());
+
+        UpdateDtScPropertiesRepositoryResponse response =
+                dtScWriteRepository.updateDtScProperties(request);
+
+        fireEvent(new UpdatedDtScPropertiesEvent());
+
+        return repository.getDtScNodeByManifestId(user, response.getDtScManifestId());
     }
 
     @Transactional
