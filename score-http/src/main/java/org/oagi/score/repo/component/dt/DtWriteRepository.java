@@ -343,12 +343,20 @@ public class DtWriteRepository {
         // update bdt record.
         UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
         UpdateSetMoreStep<DtRecord> moreStep = null;
-        boolean qualifierChanged = false;
         if (compare(dtRecord.getQualifier(), request.getQualifier()) != 0) {
-            qualifierChanged = true;
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT.QUALIFIER, request.getQualifier())
                     .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+        }
+        if (compare(dtRecord.getSixDigitId(), request.getSixDigitId()) != 0) {
+            DtRecord exist = dslContext.selectFrom(DT)
+                    .where(and(DT.GUID.notEqual(dtRecord.getGuid()),
+                            DT.SIX_DIGIT_ID.eq(request.getSixDigitId()))).fetchOne();
+            if (exist != null) {
+                throw new IllegalArgumentException("Six Digit Id '" + request.getSixDigitId() + "' already exist.");
+            }
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.SIX_DIGIT_ID, request.getSixDigitId());
         }
         if (compare(dtRecord.getContentComponentDefinition(), request.getContentComponentDefinition()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)

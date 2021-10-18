@@ -94,20 +94,12 @@ public class DtScWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT_SC.DEFINITION_SOURCE, request.getDefinitionSource());
         }
-        if ((dtScRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT_SC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
-        }
 
         if (moreStep != null) {
             moreStep.set(DT_SC.LAST_UPDATED_BY, userId)
                     .set(DT_SC.LAST_UPDATE_TIMESTAMP, timestamp)
                     .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId()))
                     .execute();
-
-            dtScRecord = dslContext.selectFrom(DT_SC)
-                    .where(DT_SC.DT_SC_ID.eq(dtScManifestRecord.getDtScId()))
-                    .fetchOne();
         }
 
         // creates new log for updated record.

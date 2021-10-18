@@ -17,7 +17,7 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
     private Integer cardinalityMax;
     private String definition;
     private String definitionSource;
-    private boolean deprecated;
+    private Boolean deprecated;
 
     public UpdateDtScPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger dtScManifestId) {
@@ -76,11 +76,11 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
         this.definitionSource = definitionSource;
     }
 
-    public boolean isDeprecated() {
+    public Boolean isDeprecated() {
         return deprecated;
     }
 
-    public void setDeprecated(boolean deprecated) {
+    public void setDeprecated(Boolean deprecated) {
         this.deprecated = deprecated;
     }
 
