@@ -200,27 +200,32 @@ public class AsccReadRepository {
                 map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
             }
 
-            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))
+                    && !acc.getState().equals(CcState.Production.name())
+                    && !acc.getState().equals(CcState.Published.name())) {
                 map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");
             }
 
             if (acc.getOagisComponentType().equals(OagisComponentType.SemanticGroup.getValue())
                     || acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
                 AccManifestRecord parentAccManifest = accManifestMap.get(groupMap.get(amr.getAccManifestId()));
-                AccRecord parentAcc = accMap.get(parentAccManifest.getAccId());
-                map.get(amr.getAccManifestId()).add("Nested in `" + parentAcc.getObjectClassTerm() + "`.");
+                map.put(parentAccManifest.getAccManifestId(), map.get(amr.getAccManifestId()));
+                map.remove(amr.getAccManifestId());
+                map.get(parentAccManifest.getAccManifestId()).add("Ungrouping '" + acc.getObjectClassTerm() + "' required.");
             }
         }
 
-        AccManifestRecord amr = accManifestMap.get(targetAccManifestId);
-        AccRecord acc = accMap.get(amr.getAccId());
-        map.computeIfAbsent(amr.getAccManifestId(), k -> new ArrayList<>());
-        if (!acc.getState().equals(CcState.WIP.name())) {
-            map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
-        }
+        if (map.get(targetAccManifestId) == null) {
+            AccManifestRecord amr = accManifestMap.get(targetAccManifestId);
+            AccRecord acc = accMap.get(amr.getAccId());
+            map.computeIfAbsent(amr.getAccManifestId(), k -> new ArrayList<>());
+            if (!acc.getState().equals(CcState.WIP.name())) {
+                map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
+            }
 
-        if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
-            map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");
+            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+                map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");
+            }
         }
 
         return map;

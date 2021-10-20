@@ -9,5 +9,6 @@ public enum LogAction {
     Restored,
     Associated,
     Refactored,
-    Ungrouped
+    Ungrouped,
+    IGNORE
 }

@@ -174,6 +174,10 @@ public class BccWriteRepository {
                                                             ULong userId,
                                                             LocalDateTime timestamp,
                                                             String hash, LogAction action) {
+
+        if (action.equals(LogAction.IGNORE)) {
+            return;
+        }
         LogRecord logRecord =
                 logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
@@ -470,6 +474,8 @@ public class BccWriteRepository {
         targetBccRecord.setLastUpdatedBy(userId);
         targetBccRecord.setLastUpdateTimestamp(timestamp);
         targetBccRecord.setFromAccId(targetAccRecord.getAccId());
+        targetBccRecord.setPrevBccId(null);
+        targetBccRecord.setNextBccId(null);
         targetBccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + bccpDen);
         ULong bccId = dslContext.insertInto(BCC).set(targetBccRecord).returning().fetchOne().getBccId();
 
@@ -477,6 +483,8 @@ public class BccWriteRepository {
         targetBccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
         targetBccManifestRecord.setBccId(bccId);
         targetBccManifestRecord.setSeqKeyId(null);
+        targetBccManifestRecord.setPrevBccManifestId(null);
+        targetBccManifestRecord.setNextBccManifestId(null);
         targetBccManifestRecord.setBccManifestId(
                 dslContext.insertInto(BCC_MANIFEST).set(targetBccManifestRecord).returning().fetchOne().getBccManifestId());
 

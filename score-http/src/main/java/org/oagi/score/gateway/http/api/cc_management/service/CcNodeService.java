@@ -1437,14 +1437,14 @@ public class CcNodeService extends EventHandler {
 
                     appendAsccp(user, accManifestRecord.getReleaseId().toBigInteger(),
                             accManifestRecord.getAccManifestId().toBigInteger(),
-                            asccChild.getToAsccpManifestId().toBigInteger(), pos, logHash, LogAction.Ungrouped);
+                            asccChild.getToAsccpManifestId().toBigInteger(), pos, logHash, LogAction.IGNORE);
                 } else if (child.getType() == Node.NodeType.BCC) {
                     BccManifestRecord bccChild =
                             bccReadRepository.getBccManifestById(child.getManifestId().toBigInteger());
 
                     appendBccp(user, accManifestRecord.getReleaseId().toBigInteger(),
                             accManifestRecord.getAccManifestId().toBigInteger(),
-                            bccChild.getToBccpManifestId().toBigInteger(), pos, logHash, LogAction.Ungrouped);
+                            bccChild.getToBccpManifestId().toBigInteger(), pos, logHash, LogAction.IGNORE);
                 }
 
                 pos++;
