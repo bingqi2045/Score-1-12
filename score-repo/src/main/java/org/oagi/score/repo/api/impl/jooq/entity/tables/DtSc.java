@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -63,6 +63,11 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier (GUID).
      */
     public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+
+    /**
+     * The column <code>oagi.dt_sc.object_class_term</code>. Object class term of the SC.
+     */
+    public final TableField<DtScRecord, String> OBJECT_CLASS_TERM = createField(DSL.name("object_class_term"), SQLDataType.VARCHAR(60), this, "Object class term of the SC.");
 
     /**
      * The column <code>oagi.dt_sc.property_term</code>. Property term of the SC.
@@ -316,11 +321,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row22<ULong, String, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }
