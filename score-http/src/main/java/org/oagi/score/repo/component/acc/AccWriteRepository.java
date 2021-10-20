@@ -1,15 +1,13 @@
 package org.oagi.score.repo.component.acc;
 
-import com.google.gson.*;
-import net.sf.saxon.expr.BigRangeIterator;
-import org.jooq.*;
-import org.jooq.tools.json.JSONArray;
-import org.jooq.tools.json.JSONObject;
-import org.jooq.tools.json.JSONParser;
-import org.jooq.tools.json.ParseException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.service.log.model.LogAction;
@@ -30,18 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.val;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
@@ -1030,6 +1023,8 @@ public class AccWriteRepository {
     }
 
     public CancelRevisionAccRepositoryResponse cancelRevisionAcc(CancelRevisionAccRepositoryRequest request) {
+        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
@@ -1076,171 +1071,110 @@ public class AccWriteRepository {
         return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
 
-    private ULong discardLogAssociations(AuthenticatedPrincipal user, AccManifestRecord accManifestRecord, AccRecord accRecord) {
+    private void discardLogAssociations(AuthenticatedPrincipal user, AccManifestRecord accManifestRecord, AccRecord accRecord) {
+        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())).fetchOne();
+
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
-        LogRecord currentLog = dslContext.selectFrom(LOG)
-                .where(and(LOG.REFERENCE.eq(accRecord.getGuid()), LOG.LOG_ACTION.eq(LogAction.Revised.name())))
-                .orderBy(LOG.LOG_ID.desc()).limit(1).fetchOne();
+        List<AsccManifestRecord> nullNextPrevAsccManifestRecords = Collections.emptyList();
+        List<BccManifestRecord> nullNextPrevBccManifestRecords = Collections.emptyList();
 
-        List<AsccManifestRecord> allAsccManifestRecordList = dslContext.selectFrom(ASCC_MANIFEST).fetch();
-        Map<ULong, AsccManifestRecord> prevAsccManifestMap = allAsccManifestRecordList.stream()
-                .filter(e -> e.getPrevAsccManifestId() != null)
-                .collect(Collectors.toMap(AsccManifestRecord::getPrevAsccManifestId, Function.identity()));
-
-        Map<ULong, AsccManifestRecord> nextAsccManifestMap = allAsccManifestRecordList.stream()
-                .filter(e -> e.getNextAsccManifestId() != null)
-                .collect(Collectors.toMap(AsccManifestRecord::getNextAsccManifestId, Function.identity()));
-
-        List<BccManifestRecord> allBccManifestRecordList = dslContext.selectFrom(BCC_MANIFEST).fetch();
-        Map<ULong, BccManifestRecord> prevBccManifestMap = allBccManifestRecordList.stream()
-                .filter(e -> e.getPrevBccManifestId() != null)
-                .collect(Collectors.toMap(BccManifestRecord::getPrevBccManifestId, Function.identity()));
-
-        Map<ULong, BccManifestRecord> nextBccManifestMap = allBccManifestRecordList.stream()
-                .filter(e -> e.getNextBccManifestId() != null)
-                .collect(Collectors.toMap(BccManifestRecord::getNextBccManifestId, Function.identity()));
-        if (currentLog == null || currentLog.getPrevLogId() == null) {
-            throw new IllegalArgumentException("Can not found log of revise.");
+        if (prevAccManifestRecord != null) {
+            nullNextPrevAsccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                    .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                            ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.isNull())).fetch();
+            nullNextPrevBccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                    .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                            BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.isNull())).fetch();
         }
 
-        dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
+        // delete SEQ_KEY for current ACC
+        dslContext.update(SEQ_KEY)
+                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.update(ASCC_MANIFEST)
+                .setNull(ASCC_MANIFEST.SEQ_KEY_ID)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.update(BCC_MANIFEST)
+                .setNull(BCC_MANIFEST.SEQ_KEY_ID)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
         dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
-        dslContext.deleteFrom(ASCC).where(ASCC.ASCC_ID.in(asccManifestRecords.stream().map(AsccManifestRecord::getAsccId).collect(Collectors.toList()))).execute();
-        dslContext.deleteFrom(ASCC_MANIFEST).where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
-        dslContext.deleteFrom(BCC).where(BCC.BCC_ID.in(bccManifestRecords.stream().map(BccManifestRecord::getBccId).collect(Collectors.toList()))).execute();
-        dslContext.deleteFrom(BCC_MANIFEST).where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
 
-        LogRecord prevLog = dslContext.selectFrom(LOG).where(LOG.LOG_ID.eq(currentLog.getPrevLogId())).fetchOne();
+        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
+            AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
 
-        Gson gson = new Gson();
-        HashMap obj = gson.fromJson(prevLog.getSnapshot().toString(), HashMap.class);
-        Map meta = (Map) obj.get("_metadata");
-        List associations = Collections.emptyList();
-
-        if (meta.get("associations") != null) {
-            associations = (List) meta.get("associations");
+            if (asccRecord.getPrevAsccId() == null) {
+                // delete ascc and ascc manifest which added this revision
+                asccManifestRecord.delete();
+                asccRecord.delete();
+            } else {
+                // delete ascc and update ascc manifest
+                AsccRecord prevAsccRecord = dslContext.selectFrom(ASCC)
+                        .where(ASCC.ASCC_ID.eq(asccRecord.getPrevAsccId())).fetchOne();
+                prevAsccRecord.setNextAsccId(null);
+                prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
+                asccManifestRecord.setAsccId(prevAsccRecord.getAsccId());
+                asccManifestRecord.setSeqKeyId(null);
+                asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.SEQ_KEY_ID);
+                asccRecord.delete();
+            }
         }
 
-        associations.stream().forEach(association -> {
+        for (AsccManifestRecord asccManifestRecord: nullNextPrevAsccManifestRecords) {
+            AsccManifestRecord newAsccManifestRecord = new AsccManifestRecord();
+            newAsccManifestRecord.setAsccId(asccManifestRecord.getAsccId());
+            newAsccManifestRecord.setReleaseId(accManifestRecord.getReleaseId());
+            newAsccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            ULong toAsccpManifestId = dslContext.select(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID)
+                    .from(ASCCP_MANIFEST)
+                    .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                    .fetchOneInto(ULong.class);
+            newAsccManifestRecord.setToAsccpManifestId(toAsccpManifestId);
+            newAsccManifestRecord.setPrevAsccManifestId(asccManifestRecord.getAsccManifestId());
+            dslContext.insertInto(ASCC_MANIFEST).set(newAsccManifestRecord).execute();
+        }
 
-            Map associationObj = (Map) association;
-            if (associationObj.get("ascc") != null) {
-                Map asccObj = (Map) associationObj.get("ascc");
-                ULong asccId = fromMeta(asccObj, "ascc_id", ULong.class);
-                dslContext.deleteFrom(ASCC).where(ASCC.ASCC_ID.eq(asccId)).execute();
-                AsccRecord ascc = new AsccRecord();
-                ascc.setAsccId(asccId);
-                ascc.setGuid(fromMeta(asccObj, "guid", String.class));
-                ascc.setCardinalityMax(fromMeta(asccObj, "cardinality_max", Integer.class));
-                ascc.setCardinalityMin(fromMeta(asccObj, "cardinality_min", Integer.class));
-                ascc.setFromAccId(fromMeta(asccObj, "from_acc_id", ULong.class));
-                ascc.setToAsccpId(fromMeta(asccObj, "to_asccp_id", ULong.class));
-                ascc.setDefinition(fromMeta(asccObj, "definition", String.class));
-                ascc.setDefinitionSource(fromMeta(asccObj, "definition_source", String.class));
-                ascc.setIsDeprecated(fromMeta(asccObj, "is_deprecated", Byte.class));
-                ascc.setReplacementAsccId(fromMeta(asccObj, "replacement_ascc_id", ULong.class));
-                ascc.setCreatedBy(fromMeta(asccObj, "created_by", ULong.class));
-                ascc.setOwnerUserId(fromMeta(asccObj, "owner_user_id", ULong.class));
-                ascc.setLastUpdatedBy(fromMeta(asccObj, "last_updated_by", ULong.class));
-                ascc.setCreationTimestamp(fromMeta(asccObj, "creation_timestamp", LocalDateTime.class));
-                ascc.setLastUpdateTimestamp(fromMeta(asccObj, "last_update_timestamp", LocalDateTime.class));
-                ascc.setState(fromMeta(asccObj, "state", String.class));
-                ascc.setPrevAsccId(fromMeta(asccObj, "prev_ascc_id", ULong.class));
-                ascc.setNextAsccId(fromMeta(asccObj, "next_ascc_id", ULong.class));
-                ascc.setDen(fromMeta(asccObj, "den", String.class));
-                dslContext.insertInto(ASCC).set(ascc).execute();
+        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
+            BccRecord bccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne();
 
-                Map asccManifestObj = (Map) associationObj.get("asccManifest");
-                ULong asccManifestId = fromMeta(asccManifestObj, "ascc_manifest_id", ULong.class);
-                dslContext.deleteFrom(ASCC_MANIFEST).where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(asccManifestId)).execute();
-                AsccManifestRecord asccManifest = new AsccManifestRecord();
-                asccManifest.setAsccManifestId(asccManifestId);
-                asccManifest.setAsccId(fromMeta(asccManifestObj, "ascc_id", ULong.class));
-                asccManifest.setToAsccpManifestId(fromMeta(asccManifestObj, "to_asccp_manifest_id", ULong.class));
-                asccManifest.setFromAccManifestId(fromMeta(asccManifestObj, "from_acc_manifest_id", ULong.class));
-                asccManifest.setSeqKeyId(fromMeta(asccManifestObj, "seq_key_id", ULong.class));
-                if (nextAsccManifestMap.get(asccManifestId) != null) {
-                    asccManifest.setPrevAsccManifestId(nextAsccManifestMap.get(asccManifestId).getAsccManifestId());    
-                }
-                if (prevAsccManifestMap.get(asccManifestId) != null) {
-                    asccManifest.setNextAsccManifestId(prevAsccManifestMap.get(asccManifestId).getAsccManifestId());
-                }
-                asccManifest.setReplacementAsccManifestId(fromMeta(asccManifestObj, "replacement_ascc_manifest_id", ULong.class));
-                asccManifest.setReleaseId(fromMeta(asccManifestObj, "release_id", ULong.class));
-                asccManifest.setConflict(fromMeta(asccManifestObj, "conflict", Byte.class));
-                dslContext.insertInto(ASCC_MANIFEST).set(asccManifest).execute();
-
+            if (bccRecord.getPrevBccId() == null) {
+                // delete bcc and bcc manifest which added this revision
+                bccManifestRecord.delete();
+                bccRecord.delete();
             } else {
-                Map bccObj = (Map) associationObj.get("bcc");
-                ULong bccId = fromMeta(bccObj, "bcc_id", ULong.class);
-                dslContext.deleteFrom(BCC).where(BCC.BCC_ID.eq(bccId)).execute();
-                BccRecord bcc = new BccRecord();
-                bcc.setBccId(bccId);
-                bcc.setGuid(fromMeta(bccObj, "guid", String.class));
-                bcc.setCardinalityMax(fromMeta(bccObj, "cardinality_max", Integer.class));
-                bcc.setCardinalityMin(fromMeta(bccObj, "cardinality_min", Integer.class));
-                bcc.setFromAccId(fromMeta(bccObj, "from_acc_id", ULong.class));
-                bcc.setToBccpId(fromMeta(bccObj, "to_bccp_id", ULong.class));
-                bcc.setEntityType(fromMeta(bccObj, "entity_type", Integer.class));
-                bcc.setDefinition(fromMeta(bccObj, "definition", String.class));
-                bcc.setDefinitionSource(fromMeta(bccObj, "definition_source", String.class));
-                bcc.setIsDeprecated(fromMeta(bccObj, "is_deprecated", Byte.class));
-                bcc.setIsNillable(fromMeta(bccObj, "is_nillable", Byte.class));
-                bcc.setReplacementBccId(fromMeta(bccObj, "replacement_bcc_id", ULong.class));
-                bcc.setCreatedBy(fromMeta(bccObj, "created_by", ULong.class));
-                bcc.setOwnerUserId(fromMeta(bccObj, "owner_user_id", ULong.class));
-                bcc.setLastUpdatedBy(fromMeta(bccObj, "last_updated_by", ULong.class));
-                bcc.setCreationTimestamp(fromMeta(bccObj, "creation_timestamp", LocalDateTime.class));
-                bcc.setLastUpdateTimestamp(fromMeta(bccObj, "last_update_timestamp", LocalDateTime.class));
-                bcc.setState(fromMeta(bccObj, "state", String.class));
-                bcc.setPrevBccId(fromMeta(bccObj, "prev_bcc_id", ULong.class));
-                bcc.setNextBccId(fromMeta(bccObj, "next_bcc_id", ULong.class));
-                bcc.setDen(fromMeta(bccObj, "den", String.class));
-                bcc.setDefaultValue(fromMeta(bccObj, "default_value", String.class));
-                bcc.setFixedValue(fromMeta(bccObj, "fixed_value", String.class));
-                dslContext.insertInto(BCC).set(bcc).execute();
-
-                Map bccManifestObj = (Map) associationObj.get("bccManifest");
-                ULong bccManifestId = fromMeta(bccManifestObj, "bcc_manifest_id", ULong.class);
-                dslContext.deleteFrom(BCC_MANIFEST).where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestId)).execute();
-                BccManifestRecord bccManifest = new BccManifestRecord();
-                bccManifest.setBccManifestId(bccManifestId);
-                bccManifest.setBccId(fromMeta(bccManifestObj, "bcc_id", ULong.class));
-                bccManifest.setToBccpManifestId(fromMeta(bccManifestObj, "to_bccp_manifest_id", ULong.class));
-                bccManifest.setFromAccManifestId(fromMeta(bccManifestObj, "from_acc_manifest_id", ULong.class));
-                bccManifest.setSeqKeyId(fromMeta(bccManifestObj, "seq_key_id", ULong.class));
-                if (nextBccManifestMap.get(bccManifestId) != null) {
-                    bccManifest.setPrevBccManifestId(nextBccManifestMap.get(bccManifestId).getBccManifestId());
-                }
-                if (prevBccManifestMap.get(bccManifestId) != null) {
-                    bccManifest.setNextBccManifestId(prevBccManifestMap.get(bccManifestId).getBccManifestId());
-                }
-                bccManifest.setReplacementBccManifestId(fromMeta(bccManifestObj, "replacement_bcc_manifest_id", ULong.class));
-                bccManifest.setReleaseId(fromMeta(bccManifestObj, "release_id", ULong.class));
-                bccManifest.setConflict(fromMeta(bccManifestObj, "conflict", Byte.class));
-                dslContext.insertInto(BCC_MANIFEST).set(bccManifest).execute();
+                // delete bcc and update bcc manifest
+                BccRecord prevBccRecord = dslContext.selectFrom(BCC)
+                        .where(BCC.BCC_ID.eq(bccRecord.getPrevBccId())).fetchOne();
+                prevBccRecord.setNextBccId(null);
+                prevBccRecord.update(BCC.NEXT_BCC_ID);
+                bccManifestRecord.setBccId(prevBccRecord.getBccId());
+                bccManifestRecord.setSeqKeyId(null);
+                bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.SEQ_KEY_ID);
+                bccRecord.delete();
             }
+        }
 
-            Map seqKeyObj = (Map) associationObj.get("seqKey");
-            ULong seqKeyId = fromMeta(seqKeyObj, "seq_key_id", ULong.class);
-            dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyId)).execute();
-            SeqKeyRecord seqKey = new SeqKeyRecord();
-            seqKey.setSeqKeyId(fromMeta(seqKeyObj, "seq_key_id", ULong.class));
-            seqKey.setFromAccManifestId(fromMeta(seqKeyObj, "from_acc_manifest_id", ULong.class));
-            seqKey.setAsccManifestId(fromMeta(seqKeyObj, "ascc_manifest_id", ULong.class));
-            seqKey.setBccManifestId(fromMeta(seqKeyObj, "bcc_manifest_id", ULong.class));
-            seqKey.setPrevSeqKeyId(fromMeta(seqKeyObj, "prev_seq_key_id", ULong.class));
-            seqKey.setNextSeqKeyId(fromMeta(seqKeyObj, "next_seq_key_id", ULong.class));
-            dslContext.insertInto(SEQ_KEY).set(seqKey).execute();
-
-        });
-
-        dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
+        for (BccManifestRecord bccManifestRecord: nullNextPrevBccManifestRecords) {
+            BccManifestRecord newBccManifestRecord = new BccManifestRecord();
+            newBccManifestRecord.setBccId(bccManifestRecord.getBccId());
+            newBccManifestRecord.setReleaseId(accManifestRecord.getReleaseId());
+            newBccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            ULong toBccpManifestId = dslContext.select(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID)
+                    .from(BCCP_MANIFEST)
+                    .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                    .fetchOneInto(ULong.class);
+            newBccManifestRecord.setToBccpManifestId(toBccpManifestId);
+            newBccManifestRecord.setPrevBccManifestId(bccManifestRecord.getBccManifestId());
+            dslContext.insertInto(BCC_MANIFEST).set(newBccManifestRecord).execute();
+        }
 
         // update ACCs which using with based current ACC
         dslContext.update(ACC)
@@ -1254,29 +1188,7 @@ public class AccWriteRepository {
                 .where(ASCCP.ROLE_OF_ACC_ID.eq(accRecord.getAccId()))
                 .execute();
 
-        return accManifestRecord.getAccManifestId();
-    }
-
-    private <T> T fromMeta(Map obj, String key, Class<T> T) {
-        Object value = obj.get(key);
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof Double && T == ULong.class) {
-            return (T) ULong.valueOf(((Double) value).longValue());
-        } else if (value instanceof Double && T == Integer.class) {
-            return (T) Integer.valueOf(((Double) value).intValue());
-        } else if (value instanceof Boolean) {
-            if ((Boolean) value) {
-                return (T) Byte.valueOf((byte) 1);
-            } else {
-                return (T) Byte.valueOf((byte) 0);
-            }
-        } else if (T == LocalDateTime.class) {
-            return (T) LocalDateTime.parse(value.toString());
-        }
-
-        return (T) obj.get(key);
+        insertSeqKey(user, accManifestRecord.getAccManifestId(), accRecord.getGuid());
     }
 
     private static class Association {
