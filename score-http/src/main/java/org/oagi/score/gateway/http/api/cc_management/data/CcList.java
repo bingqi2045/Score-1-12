@@ -25,7 +25,6 @@ public class CcList {
 
     private String definitionSource;
     private OagisComponentType oagisComponentType;
-    private String dtType;
     private String owner;
     private CcState state;
     private String revision;
@@ -36,4 +35,7 @@ public class CcList {
     private BigInteger id;
 
     private boolean ownedByDeveloper;
+
+    private BigInteger basedManifestId;
+    private String sixDigitId;
 }

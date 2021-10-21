@@ -143,6 +143,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private ULong ownerDtManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
+        private String objectClassTerm;
         private String propertyTerm;
         private String representationTerm;
         private String State;
@@ -328,8 +329,8 @@ public class CoreComponentGraphContext implements GraphContext {
                         .collect(Collectors.toMap(DtManifest::getDtManifestId, Function.identity()));
         dtScManifestMap =
                 dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID, DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
-                        DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM, DT.STATE, DT_SC.IS_DEPRECATED,
-                        DT_SC_MANIFEST.RELEASE_ID, DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
+                        DT_SC.OBJECT_CLASS_TERM, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM, DT.STATE,
+                        DT_SC.IS_DEPRECATED, DT_SC_MANIFEST.RELEASE_ID, DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                         DT_SC.CARDINALITY_MIN, DT_SC.CARDINALITY_MAX)
                         .from(DT_SC_MANIFEST)
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
@@ -340,6 +341,7 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID),
                                 record.get(DT_SC.CARDINALITY_MIN),
                                 record.get(DT_SC.CARDINALITY_MAX),
+                                record.get(DT_SC.OBJECT_CLASS_TERM),
                                 record.get(DT_SC.PROPERTY_TERM),
                                 record.get(DT_SC.REPRESENTATION_TERM),
                                 record.get(DT.STATE),
@@ -641,6 +643,7 @@ public class CoreComponentGraphContext implements GraphContext {
                 CcState.valueOf(dtScManifest.getState()));
         node.setPrevManifestId(dtScManifest.getPrevDtScManifestId());
         node.put("propertyTerm", dtScManifest.getPropertyTerm());
+        node.put("objectClassTerm", dtScManifest.getObjectClassTerm());
         node.put("state", dtScManifest.getState());
         node.put("deprecated", dtScManifest.getIsDeprecated() == 1);
         node.put("representationTerm", dtScManifest.getRepresentationTerm());

@@ -199,6 +199,10 @@ public class DtWriteRepository {
             }
         }
 
+        if (dtManifestRecord.getBasedDtManifestId() == null) {
+            throw new IllegalArgumentException("CDT can not be revised.");
+        }
+
         ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_NUM.eq("Working"))

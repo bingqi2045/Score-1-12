@@ -38,6 +38,7 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private BigInteger logId;
     private int revisionNum;
     private int revisionTrackingNum;
+    private String spec;
 
     private List<CcBdtPriResri> bdtPriRestriList;
 }
