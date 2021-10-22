@@ -701,12 +701,8 @@ public class DtWriteRepository {
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
 
-        DtManifestRecord targetDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.RELEASE_ID.eq(ownerDtManifest.getReleaseId()))
-                .limit(1).fetchOne();
-
         DtRecord targetDtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(targetDtManifest.getDtId())).fetchOne();
+                .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
 
         DtScRecord dtScRecord = new DtScRecord();
         dtScRecord.setGuid(ScoreGuid.randomGuid());
