@@ -223,7 +223,9 @@ public class AsccReadRepository {
                 map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
             }
 
-            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))) {
+            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))
+                    && !acc.getState().equals(CcState.Production.name())
+                    && !acc.getState().equals(CcState.Published.name())) {
                 map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");
             }
         }

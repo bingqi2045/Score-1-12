@@ -156,6 +156,7 @@ public class CcListRepository {
                 ccList.setBasedManifestId(basedManifestId.toBigInteger());
             }
             ccList.setSixDigitId(row.getValue("six_digit_id", String.class));
+            ccList.setDefaultValueDomain(row.getValue("default_value_domain", String.class));
             return ccList;
         });
 
@@ -309,7 +310,8 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 ACC_MANIFEST.BASED_ACC_MANIFEST_ID.as("based_manifest_id"),
-                val((String) null).as("six_digit_id"))
+                val((String) null).as("six_digit_id"),
+                val((String) null).as("default_value_domain"))
                 .from(ACC)
                 .join(ACC_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID).and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -389,7 +391,8 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 val((Integer) null).as("based_manifest_id"),
-                val((String) null).as("six_digit_id"))
+                val((String) null).as("six_digit_id"),
+                val((String) null).as("default_value_domain"))
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID).and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -475,7 +478,8 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 val((Integer) null).as("based_manifest_id"),
-                val((String) null).as("six_digit_id"))
+                val((String) null).as("six_digit_id"),
+                val((String) null).as("default_value_domain"))
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID).and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -567,7 +571,8 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 val((Integer) null).as("based_manifest_id"),
-                val((String) null).as("six_digit_id"))
+                val((String) null).as("six_digit_id"),
+                val((String) null).as("default_value_domain"))
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -650,7 +655,8 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 val((Integer) null).as("based_manifest_id"),
-                val((String) null).as("six_digit_id"))
+                val((String) null).as("six_digit_id"),
+                val((String) null).as("default_value_domain"))
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID).and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -715,11 +721,7 @@ public class CcListRepository {
                 DT_MANIFEST.DT_MANIFEST_ID.as("manifest_id"),
                 DT.DT_ID.as("id"),
                 DT.GUID,
-                concat(ifnull(CDT_PRI.NAME, ""),
-                        ifnull(CODE_LIST.NAME, ""),
-                        ifnull(AGENCY_ID_LIST.NAME, ""),
-                        ifnull(CDT_PRI.as("pri_for_cdt").NAME, ""),
-                        inline(", "), DT.DEN).as("den"),
+                DT.DEN,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
                 DT.DATA_TYPE_TERM.as("term"),
@@ -735,7 +737,11 @@ public class CcListRepository {
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM,
                 DT_MANIFEST.BASED_DT_MANIFEST_ID.as("based_manifest_id"),
-                DT.SIX_DIGIT_ID)
+                DT.SIX_DIGIT_ID,
+                concat(ifnull(CDT_PRI.NAME, ""),
+                ifnull(CODE_LIST.NAME, ""),
+                ifnull(AGENCY_ID_LIST.NAME, ""),
+                ifnull(CDT_PRI.as("pri_for_cdt").NAME, "")).as("default_value_domain"))
                 .from(DT)
                 .join(DT_MANIFEST)
                 .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID).and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))

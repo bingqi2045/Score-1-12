@@ -762,11 +762,9 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendDtSc(AuthenticatedPrincipal user, BigInteger ownerDtManifestId,
-                                  BigInteger targetDtManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
+    public BigInteger appendDtSc(AuthenticatedPrincipal user, BigInteger ownerDtManifestId) {
         CreateDtScRepositoryRequest request =
-                new CreateDtScRepositoryRequest(user, ownerDtManifestId, targetDtManifestId);
+                new CreateDtScRepositoryRequest(user, ownerDtManifestId);
 
         CreateDtScRepositoryResponse response = dtWriteRepository.createDtSc(request);
         fireEvent(new CreatedDtScEvent());

@@ -397,53 +397,6 @@ public class DtScWriteRepository {
 //        return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
 //    }
 
-    public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
-
-        DtManifestRecord targetDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getTargetDdtManifestId()))).fetchOne();
-
-        if(targetDtManifest == null) {
-            throw new IllegalArgumentException("Can not found target DT manifest.");
-        }
-
-        DtRecord targetDtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(targetDtManifest.getDtId())).fetchOne();
-
-        if(targetDtRecord == null) {
-            throw new IllegalArgumentException("Can not found target DT.");
-        }
-
-        DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
-
-        DtScRecord dtScRecord = new DtScRecord();
-        dtScRecord.setGuid(ScoreGuid.randomGuid());
-        dtScRecord.setPropertyTerm("Property Term");
-        dtScRecord.setRepresentationTerm(targetDtRecord.getDataTypeTerm());
-        dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
-        dtScRecord.setCardinalityMin(0);
-        dtScRecord.setCardinalityMax(1);
-
-        dtScRecord.setDtScId(
-                dslContext.insertInto(DT_SC)
-                        .set(dtScRecord)
-                        .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
-        );
-
-        DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
-        dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
-        dtScManifestRecord.setReleaseId(ownerDtManifest.getReleaseId());
-        dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
-
-        dtScManifestRecord.setDtScManifestId(
-                dslContext.insertInto(DT_SC_MANIFEST)
-                        .set(dtScManifestRecord)
-                        .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
-        );
-
-        return new CreateDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
-    }
-
     public void addDtPrimitiveRestriction(CreatePrimitiveRestrictionRepositoryRequest request) {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)

@@ -696,31 +696,31 @@ public class DtWriteRepository {
 //    }
 
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
-
-        DtManifestRecord targetDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getTargetDdtManifestId()))).fetchOne();
-
-        if(targetDtManifest == null) {
-            throw new IllegalArgumentException("Can not found target DT manifest.");
-        }
-
-        DtRecord targetDtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(targetDtManifest.getDtId())).fetchOne();
-
-        if(targetDtRecord == null) {
-            throw new IllegalArgumentException("Can not found target DT.");
-        }
+        AppUser user = sessionService.getAppUser(request.getUser());
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
 
+        DtManifestRecord targetDtManifest = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.RELEASE_ID.eq(ownerDtManifest.getReleaseId()))
+                .limit(1).fetchOne();
+
+        DtRecord targetDtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(targetDtManifest.getDtId())).fetchOne();
+
         DtScRecord dtScRecord = new DtScRecord();
         dtScRecord.setGuid(ScoreGuid.randomGuid());
+        dtScRecord.setObjectClassTerm("Object Class Term");
         dtScRecord.setPropertyTerm("Property Term");
         dtScRecord.setRepresentationTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
+        dtScRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setCreationTimestamp(request.getLocalDateTime());
+        dtScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
         dtScRecord.setDtScId(
                 dslContext.insertInto(DT_SC)

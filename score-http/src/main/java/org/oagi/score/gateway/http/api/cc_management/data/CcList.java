@@ -38,4 +38,5 @@ public class CcList {
 
     private BigInteger basedManifestId;
     private String sixDigitId;
+    private String defaultValueDomain;
 }
