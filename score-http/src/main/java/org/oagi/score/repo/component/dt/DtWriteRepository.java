@@ -710,9 +710,9 @@ public class DtWriteRepository {
 
         DtScRecord dtScRecord = new DtScRecord();
         dtScRecord.setGuid(ScoreGuid.randomGuid());
-        dtScRecord.setObjectClassTerm("Object Class Term");
+        dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setPropertyTerm("Property Term");
-        dtScRecord.setRepresentationTerm(targetDtRecord.getDataTypeTerm());
+        dtScRecord.setRepresentationTerm("Code");
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
