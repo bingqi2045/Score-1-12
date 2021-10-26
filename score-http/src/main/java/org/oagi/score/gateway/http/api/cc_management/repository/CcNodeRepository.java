@@ -262,7 +262,7 @@ public class CcNodeRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID));
     }
 
-    private SelectOnConditionStep<Record14<ULong, String, String, String, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong, ULong, ULong>> selectOnConditionStepForBdtNode() {
+    private SelectOnConditionStep<Record15<ULong, String, String, String, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong, ULong, ULong, ULong>> selectOnConditionStepForBdtNode() {
         return dslContext.select(
                 DT.DT_ID.as("bdt_id"),
                 DT.GUID,
@@ -275,6 +275,7 @@ public class CcNodeRepository {
                 DT_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
                 DT_MANIFEST.DT_MANIFEST_ID.as("manifest_id"),
+                DT_MANIFEST.BASED_DT_MANIFEST_ID.as("based_manifest_id"),
                 DT.OWNER_USER_ID,
                 DT.PREV_DT_ID,
                 DT.NEXT_DT_ID)
