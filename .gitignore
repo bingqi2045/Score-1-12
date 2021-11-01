@@ -27,3 +27,7 @@ target/
 docker/*.war
 /data/
 /backup
+docker/volumes/elasticsearch/
+
+# System Files
+.DS_Store
