@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Optional;
 
 @Data
 public class CcList {
@@ -36,4 +37,31 @@ public class CcList {
     private BigInteger id;
 
     private boolean ownedByDeveloper;
+
+    public CcList() {
+    }
+
+    public CcList(CcType type, BigInteger manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, BigInteger id, boolean ownedByDeveloper) {
+        this.type = type;
+        this.manifestId = manifestId;
+        this.guid = guid;
+        this.den = den;
+        this.definition = definition;
+        this.module = module;
+        this.name = name;
+        this.definitionSource = definitionSource;
+        if (oagisComponentType.isPresent()) {
+            this.oagisComponentType = OagisComponentType.valueOf(Integer.parseInt(oagisComponentType.get()));
+        }
+        this.dtType = dtType;
+        this.owner = owner;
+        this.state = state;
+        this.revision = revision;
+        this.deprecated = deprecated;
+        this.lastUpdateUser = lastUpdateUser;
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
+        this.releaseNum = releaseNum;
+        this.id = id;
+        this.ownedByDeveloper = ownedByDeveloper;
+    }
 }
