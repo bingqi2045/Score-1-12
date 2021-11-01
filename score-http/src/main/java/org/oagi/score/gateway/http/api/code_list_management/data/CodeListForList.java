@@ -10,6 +10,7 @@ import java.util.Date;
 public class CodeListForList {
 
     private BigInteger codeListManifestId;
+    private BigInteger codeListId;
     private String codeListName;
     private String definition;
     private String definitionSource;

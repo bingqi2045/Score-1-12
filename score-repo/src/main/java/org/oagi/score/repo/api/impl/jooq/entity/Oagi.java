@@ -44,8 +44,10 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -76,6 +78,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.RefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
@@ -281,6 +284,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final CdtPri CDT_PRI = CdtPri.CDT_PRI;
 
     /**
+     * The table <code>oagi.cdt_ref_spec</code>.
+     */
+    public final CdtRefSpec CDT_REF_SPEC = CdtRefSpec.CDT_REF_SPEC;
+
+    /**
      * This table capture the CDT primitives allowed for a particular SC of a CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends its base (such SC is not defined in the CCTS data type catalog specification).
      */
     public final CdtScAwdPri CDT_SC_AWD_PRI = CdtScAwdPri.CDT_SC_AWD_PRI;
@@ -289,6 +297,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, but it is for the supplementary component (SC). It allows for the concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON. 
      */
     public final CdtScAwdPriXpsTypeMap CDT_SC_AWD_PRI_XPS_TYPE_MAP = CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP;
+
+    /**
+     * The table <code>oagi.cdt_sc_ref_spec</code>.
+     */
+    public final CdtScRefSpec CDT_SC_REF_SPEC = CdtScRefSpec.CDT_SC_REF_SPEC;
 
     /**
      * This table stores information about a code list. When a code list is derived from another code list, the whole set of code values belonging to the based code list will be copied.
@@ -441,6 +454,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final Oauth2AppScope OAUTH2_APP_SCOPE = Oauth2AppScope.OAUTH2_APP_SCOPE;
 
     /**
+     * The table <code>oagi.ref_spec</code>.
+     */
+    public final RefSpec REF_SPEC = RefSpec.REF_SPEC;
+
+    /**
      * The is table store the release information.
      */
     public final Release RELEASE = Release.RELEASE;
@@ -525,8 +543,10 @@ If we use a separate table for each expression, then we need binding all the way
             CdtAwdPri.CDT_AWD_PRI,
             CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP,
             CdtPri.CDT_PRI,
+            CdtRefSpec.CDT_REF_SPEC,
             CdtScAwdPri.CDT_SC_AWD_PRI,
             CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP,
+            CdtScRefSpec.CDT_SC_REF_SPEC,
             CodeList.CODE_LIST,
             CodeListManifest.CODE_LIST_MANIFEST,
             CodeListValue.CODE_LIST_VALUE,
@@ -557,6 +577,7 @@ If we use a separate table for each expression, then we need binding all the way
             Namespace.NAMESPACE,
             Oauth2App.OAUTH2_APP,
             Oauth2AppScope.OAUTH2_APP_SCOPE,
+            RefSpec.REF_SPEC,
             Release.RELEASE,
             SeqKey.SEQ_KEY,
             TopLevelAsbiep.TOP_LEVEL_ASBIEP,

@@ -47,9 +47,10 @@ public class CodeListService extends EventHandler {
     @Autowired
     private CodeListWriteRepository codeListWriteRepository;
 
-    private SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
+    private SelectOnConditionStep<Record21<ULong, ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                CODE_LIST.CODE_LIST_ID,
                 CODE_LIST.GUID,
                 CODE_LIST.NAME.as("code_list_name"),
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
@@ -94,7 +95,7 @@ public class CodeListService extends EventHandler {
             defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
         }
 
-        SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> step = getSelectOnConditionStep(defaultModuleSetReleaseId);
+        SelectOnConditionStep<Record21<ULong, ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> step = getSelectOnConditionStep(defaultModuleSetReleaseId);
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
@@ -151,7 +152,7 @@ public class CodeListService extends EventHandler {
             conditions.add(APP_USER.as("owner").IS_DEVELOPER.eq(request.getOwnedByDeveloper() ? (byte) 1 : 0));
         }
 
-        SelectConnectByStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> conditionStep = step;
+        SelectConnectByStep<Record21<ULong, ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
             conditionStep = step.where(conditions);
         }
@@ -182,7 +183,7 @@ public class CodeListService extends EventHandler {
         }
 
 
-        SelectWithTiesAfterOffsetStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> offsetStep = null;
+        SelectWithTiesAfterOffsetStep<Record21<ULong, ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());

@@ -1,11 +1,14 @@
 package org.oagi.score.repo.component.dt;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -18,6 +21,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -123,6 +127,11 @@ public class DtWriteRepository {
             dtScRecord.setBasedDtScId(basedDtSc.getDtScId());
             dtScRecord.setDefaultValue(basedDtSc.getDefaultValue());
             dtScRecord.setFixedValue(basedDtSc.getFixedValue());
+            dtScRecord.setCreatedBy(userId);
+            dtScRecord.setLastUpdatedBy(userId);
+            dtScRecord.setOwnerUserId(userId);
+            dtScRecord.setCreationTimestamp(timestamp);
+            dtScRecord.setLastUpdateTimestamp(timestamp);
             dtScRecord.setDtScId(
                     dslContext.insertInto(DT_SC)
                             .set(dtScRecord)
@@ -188,6 +197,10 @@ public class DtWriteRepository {
             if (!CcState.Production.equals(CcState.valueOf(prevDtRecord.getState()))) {
                 throw new IllegalArgumentException("Only the core component in 'Production' state can be revised.");
             }
+        }
+
+        if (dtManifestRecord.getBasedDtManifestId() == null) {
+            throw new IllegalArgumentException("CDT can not be revised.");
         }
 
         ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
@@ -307,173 +320,97 @@ public class DtWriteRepository {
 
         return new ReviseDtRepositoryResponse(responseDtManifestId.toBigInteger());
     }
-//
-//    public UpdateBdtPropertiesRepositoryResponse updateBdtProperties(UpdateBdtPropertiesRepositoryRequest request) {
-//        AppUser user = sessionService.getAppUser(request.getUser());
-//        ULong userId = ULong.valueOf(user.getAppUserId());
-//        LocalDateTime timestamp = request.getLocalDateTime();
-//
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-//                        ULong.valueOf(request.getBdtManifestId())
-//                ))
-//                .fetchOne();
-//
-//        DtRecord bdtRecord = dslContext.selectFrom(DT)
-//                .where(DT.DT_ID.eq(bdtManifestRecord.getBdtId()))
-//                .fetchOne();
-//
-//        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
-//            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
-//        }
-//
-//        if (!bdtRecord.getOwnerUserId().equals(userId)) {
-//            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-//        }
-//
-//        // update bdt record.
-//        UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
-//        UpdateSetMoreStep<DtRecord> moreStep = null;
-//        boolean propertyTermChanged = false;
-//        if (compare(bdtRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
-//            propertyTermChanged = true;
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.PROPERTY_TERM, request.getPropertyTerm())
-//                    .set(DT.DEN, request.getPropertyTerm() + ". " + bdtRecord.getRepresentationTerm());
-//        }
-//        if (!StringUtils.hasLength(request.getDefaultValue()) && !StringUtils.hasLength(request.getFixedValue())) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .setNull(DT.DEFAULT_VALUE)
-//                    .setNull(DT.FIXED_VALUE);
-//        } else {
-//            if (compare(bdtRecord.getDefaultValue(), request.getDefaultValue()) != 0) {
-//                moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                        .set(DT.DEFAULT_VALUE, request.getDefaultValue())
-//                        .setNull(DT.FIXED_VALUE);
-//            } else if (compare(bdtRecord.getFixedValue(), request.getFixedValue()) != 0) {
-//                moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                        .setNull(DT.DEFAULT_VALUE)
-//                        .set(DT.FIXED_VALUE, request.getFixedValue());
-//            }
-//        }
-//        if (compare(bdtRecord.getDefinition(), request.getDefinition()) != 0) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.DEFINITION, request.getDefinition());
-//        }
-//        if (compare(bdtRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
-//        }
-//        if ((bdtRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
-//        }
-//        if ((bdtRecord.getIsNillable() == 1) != request.isNillable()) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
-//        }
-//        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .setNull(DT.NAMESPACE_ID);
-//        } else {
-//            moreStep = ((moreStep != null) ? moreStep : firstStep)
-//                    .set(DT.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
-//        }
-//
-//        if (moreStep != null) {
-//            moreStep.set(DT.LAST_UPDATED_BY, userId)
-//                    .set(DT.LAST_UPDATE_TIMESTAMP, timestamp)
-//                    .where(DT.DT_ID.eq(bdtRecord.getBdtId()))
-//                    .execute();
-//
-//            bdtRecord = dslContext.selectFrom(DT)
-//                    .where(DT.DT_ID.eq(bdtManifestRecord.getBdtId()))
-//                    .fetchOne();
-//        }
-//
-//        // creates new log for updated record.
-//        LogRecord logRecord =
-//                logRepository.insertBdtLog(
-//                        bdtManifestRecord,
-//                        bdtRecord, bdtManifestRecord.getLogId(),
-//                        LogAction.Modified,
-//                        userId, timestamp);
-//
-//        bdtManifestRecord.setLogId(logRecord.getLogId());
-//        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
-//
-//        if (propertyTermChanged) {
-//            for (ULong bccManifestId : dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
-//                    .from(BCC_MANIFEST)
-//                    .where(BCC_MANIFEST.TO_DT_MANIFEST_ID.eq(bdtManifestRecord.getBdtManifestId()))
-//                    .fetchInto(ULong.class)) {
-//
-//                UpdateBccPropertiesRepositoryRequest updateBccPropertiesRepositoryRequest =
-//                        new UpdateBccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-//                                bccManifestId.toBigInteger());
-//                updateBccPropertiesRepositoryRequest.setPropagation(true);
-//                bccWriteRepository.updateBccProperties(updateBccPropertiesRepositoryRequest);
-//            }
-//        }
-//
-//        return new UpdateBdtPropertiesRepositoryResponse(bdtManifestRecord.getBdtManifestId().toBigInteger());
-//    }
-//
-//    public UpdateBdtBdtRepositoryResponse updateBdtBdt(UpdateBdtBdtRepositoryRequest request) {
-//        AppUser user = sessionService.getAppUser(request.getUser());
-//        ULong userId = ULong.valueOf(user.getAppUserId());
-//        LocalDateTime timestamp = request.getLocalDateTime();
-//
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-//                        ULong.valueOf(request.getBdtManifestId())
-//                ))
-//                .fetchOne();
-//
-//        DtRecord bdtRecord = dslContext.selectFrom(DT)
-//                .where(DT.DT_ID.eq(bdtManifestRecord.getBdtId()))
-//                .fetchOne();
-//
-//        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
-//            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
-//        }
-//
-//        if (!bdtRecord.getOwnerUserId().equals(userId)) {
-//            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-//        }
-//
-//        // update bdt record.
-//        ULong bdtManifestId = ULong.valueOf(request.getBdtManifestId());
-//        Record2<ULong, String> result = dslContext.select(DT.DT_ID, DT.DATA_TYPE_TERM)
-//                .from(DT)
-//                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(bdtManifestId))
-//                .fetchOne();
-//
-//        bdtRecord.setBdtId(result.get(DT.DT_ID));
-//        bdtRecord.setRepresentationTerm(result.get(DT.DATA_TYPE_TERM));
-//        bdtRecord.setDen(bdtRecord.getPropertyTerm() + ". " + bdtRecord.getRepresentationTerm());
-//        bdtRecord.setLastUpdatedBy(userId);
-//        bdtRecord.setLastUpdateTimestamp(timestamp);
-//        bdtRecord.update(DT.BDT_ID,
-//                DT.REPRESENTATION_TERM, DT.DEN,
-//                DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
-//
-//        // creates new log for updated record.
-//        LogRecord logRecord =
-//                logRepository.insertBdtLog(
-//                        bdtManifestRecord,
-//                        bdtRecord, bdtManifestRecord.getLogId(),
-//                        LogAction.Modified,
-//                        userId, timestamp);
-//
-//        bdtManifestRecord.setBdtManifestId(bdtManifestId);
-//        bdtManifestRecord.setLogId(logRecord.getLogId());
-//        bdtManifestRecord.update(DT_MANIFEST.BDT_MANIFEST_ID, DT_MANIFEST.LOG_ID);
-//
-//        return new UpdateBdtBdtRepositoryResponse(bdtManifestRecord.getBdtManifestId().toBigInteger(), bdtRecord.getDen());
-//    }
-//
+
+    public UpdateDtPropertiesRepositoryResponse updateDtProperties(UpdateDtPropertiesRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getDtManifestId())
+                ))
+                .fetchOne();
+
+        DtRecord dtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(bdtManifestRecord.getDtId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(dtRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
+
+        if (!dtRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        // update bdt record.
+        UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
+        UpdateSetMoreStep<DtRecord> moreStep = null;
+        if (compare(dtRecord.getQualifier(), request.getQualifier()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.QUALIFIER, request.getQualifier())
+                    .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+        }
+        if (compare(dtRecord.getSixDigitId(), request.getSixDigitId()) != 0) {
+            DtRecord exist = dslContext.selectFrom(DT)
+                    .where(and(DT.GUID.notEqual(dtRecord.getGuid()),
+                            DT.SIX_DIGIT_ID.eq(request.getSixDigitId()))).fetchOne();
+            if (exist != null) {
+                throw new IllegalArgumentException("Six Digit Id '" + request.getSixDigitId() + "' already exist.");
+            }
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.SIX_DIGIT_ID, request.getSixDigitId());
+        }
+        if (compare(dtRecord.getContentComponentDefinition(), request.getContentComponentDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+        }
+        if (compare(dtRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.DEFINITION, request.getDefinition());
+        }
+        if (compare(dtRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+        if ((dtRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(DT.NAMESPACE_ID);
+        } else {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+        }
+
+        if (moreStep != null) {
+            moreStep.set(DT.LAST_UPDATED_BY, userId)
+                    .set(DT.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(DT.DT_ID.eq(dtRecord.getDtId()))
+                    .execute();
+
+            dtRecord = dslContext.selectFrom(DT)
+                    .where(DT.DT_ID.eq(bdtManifestRecord.getDtId()))
+                    .fetchOne();
+        }
+
+        // creates new log for updated record.
+        LogRecord logRecord =
+                logRepository.insertBdtLog(
+                        bdtManifestRecord,
+                        dtRecord, bdtManifestRecord.getLogId(),
+                        LogAction.Modified,
+                        userId, timestamp);
+
+        bdtManifestRecord.setLogId(logRecord.getLogId());
+        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
+
+        return new UpdateDtPropertiesRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+    }
+
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
@@ -759,31 +696,27 @@ public class DtWriteRepository {
 //    }
 
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
-
-        DtManifestRecord targetDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getTargetDdtManifestId()))).fetchOne();
-
-        if(targetDtManifest == null) {
-            throw new IllegalArgumentException("Can not found target DT manifest.");
-        }
-
-        DtRecord targetDtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(targetDtManifest.getDtId())).fetchOne();
-
-        if(targetDtRecord == null) {
-            throw new IllegalArgumentException("Can not found target DT.");
-        }
+        AppUser user = sessionService.getAppUser(request.getUser());
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
 
+        DtRecord targetDtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
+
         DtScRecord dtScRecord = new DtScRecord();
         dtScRecord.setGuid(ScoreGuid.randomGuid());
+        dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setPropertyTerm("Property Term");
-        dtScRecord.setRepresentationTerm(targetDtRecord.getDataTypeTerm());
+        dtScRecord.setRepresentationTerm("Code");
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
+        dtScRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setCreationTimestamp(request.getLocalDateTime());
+        dtScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
         dtScRecord.setDtScId(
                 dslContext.insertInto(DT_SC)

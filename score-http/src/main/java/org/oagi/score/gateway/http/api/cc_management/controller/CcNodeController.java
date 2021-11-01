@@ -298,14 +298,13 @@ public class CcNodeController {
         return response;
     }
 
-    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/append/{targetDtManifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/append_sc",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendScNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId,
-                                         @PathVariable("targetDtManifestId") BigInteger targetDtManifestId) {
+                                         @PathVariable("ownerDtManifestId") BigInteger ownerDtManifestId) {
 
-        BigInteger manifestId = service.appendDtSc(user, ownerDtManifestId, targetDtManifestId);
+        BigInteger manifestId = service.appendDtSc(user, ownerDtManifestId);
 
         CcCreateResponse response = new CcCreateResponse();
         response.setManifestId(manifestId);

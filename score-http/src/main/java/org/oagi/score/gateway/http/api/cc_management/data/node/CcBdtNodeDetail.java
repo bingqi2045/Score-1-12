@@ -24,6 +24,7 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private String basedBdtDen;
     private String contentComponentDefinition;
     private boolean commonlyUsed;
+    private boolean deprecated;
     private String den;
     private String definition;
     private String definitionSource;
@@ -37,6 +38,7 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private BigInteger logId;
     private int revisionNum;
     private int revisionTrackingNum;
+    private String spec;
 
     private List<CcBdtPriResri> bdtPriRestriList;
 }

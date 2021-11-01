@@ -4,6 +4,7 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -62,6 +63,11 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier (GUID).
      */
     public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+
+    /**
+     * The column <code>oagi.dt_sc.object_class_term</code>. Object class term of the SC.
+     */
+    public final TableField<DtScRecord, String> OBJECT_CLASS_TERM = createField(DSL.name("object_class_term"), SQLDataType.VARCHAR(60), this, "Object class term of the SC.");
 
     /**
      * The column <code>oagi.dt_sc.property_term</code>. Property term of the SC.
@@ -122,6 +128,33 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The column <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a replacement if the record is deprecated.
      */
     public final TableField<DtScRecord, ULong> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+
+    /**
+     * The column <code>oagi.dt_sc.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     */
+    public final TableField<DtScRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
+
+    /**
+     * The column <code>oagi.dt_sc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     */
+    public final TableField<DtScRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+
+    /**
+     * The column <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     */
+    public final TableField<DtScRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
+
+    /**
+     * The column <code>oagi.dt_sc.creation_timestamp</code>. Timestamp when the code list was created.
+     */
+    public final TableField<DtScRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP(6)", SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was created.");
+
+    /**
+     * The column <code>oagi.dt_sc.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     */
+    public final TableField<DtScRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP(6)", SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was last updated.");
 
     /**
      * The column <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to indicate the previous history record.
@@ -193,12 +226,15 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     @Override
     public List<ForeignKey<DtScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK, Keys.DT_SC_PREV_DT_SC_ID_FK, Keys.DT_SC_NEXT_DT_SC_ID_FK);
+        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK, Keys.DT_SC_CREATED_BY_FK, Keys.DT_SC_OWNER_USER_ID_FK, Keys.DT_SC_LAST_UPDATED_BY_FK, Keys.DT_SC_PREV_DT_SC_ID_FK, Keys.DT_SC_NEXT_DT_SC_ID_FK);
     }
 
     private transient Dt _dt;
     private transient DtSc _dtScBasedDtScIdFk;
     private transient DtSc _dtScReplacementDtScIdFk;
+    private transient AppUser _dtScCreatedByFk;
+    private transient AppUser _dtScOwnerUserIdFk;
+    private transient AppUser _dtScLastUpdatedByFk;
     private transient DtSc _dtScPrevDtScIdFk;
     private transient DtSc _dtScNextDtScIdFk;
 
@@ -221,6 +257,27 @@ public class DtSc extends TableImpl<DtScRecord> {
             _dtScReplacementDtScIdFk = new DtSc(this, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK);
 
         return _dtScReplacementDtScIdFk;
+    }
+
+    public AppUser dtScCreatedByFk() {
+        if (_dtScCreatedByFk == null)
+            _dtScCreatedByFk = new AppUser(this, Keys.DT_SC_CREATED_BY_FK);
+
+        return _dtScCreatedByFk;
+    }
+
+    public AppUser dtScOwnerUserIdFk() {
+        if (_dtScOwnerUserIdFk == null)
+            _dtScOwnerUserIdFk = new AppUser(this, Keys.DT_SC_OWNER_USER_ID_FK);
+
+        return _dtScOwnerUserIdFk;
+    }
+
+    public AppUser dtScLastUpdatedByFk() {
+        if (_dtScLastUpdatedByFk == null)
+            _dtScLastUpdatedByFk = new AppUser(this, Keys.DT_SC_LAST_UPDATED_BY_FK);
+
+        return _dtScLastUpdatedByFk;
     }
 
     public DtSc dtScPrevDtScIdFk() {
@@ -264,11 +321,11 @@ public class DtSc extends TableImpl<DtScRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row22<ULong, String, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }

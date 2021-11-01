@@ -475,6 +475,8 @@ public class AsccWriteRepository {
         targetAsccRecord.setLastUpdatedBy(userId);
         targetAsccRecord.setLastUpdateTimestamp(timestamp);
         targetAsccRecord.setFromAccId(targetAccRecord.getAccId());
+        targetAsccRecord.setPrevAsccId(null);
+        targetAsccRecord.setNextAsccId(null);
         targetAsccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + asccpDen);
         ULong asccId = dslContext.insertInto(ASCC).set(targetAsccRecord).returning().fetchOne().getAsccId();
 
@@ -482,6 +484,8 @@ public class AsccWriteRepository {
         targetAsccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
         targetAsccManifestRecord.setAsccId(asccId);
         targetAsccManifestRecord.setSeqKeyId(null);
+        targetAsccManifestRecord.setPrevAsccManifestId(null);
+        targetAsccManifestRecord.setNextAsccManifestId(null);
         targetAsccManifestRecord.setAsccManifestId(
                 dslContext.insertInto(ASCC_MANIFEST).set(targetAsccManifestRecord).returning().fetchOne().getAsccManifestId());
 

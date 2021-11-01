@@ -38,8 +38,10 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -70,6 +72,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.RefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
@@ -268,6 +271,11 @@ If we use a separate table for each expression, then we need binding all the way
     public static final CdtPri CDT_PRI = CdtPri.CDT_PRI;
 
     /**
+     * The table <code>oagi.cdt_ref_spec</code>.
+     */
+    public static final CdtRefSpec CDT_REF_SPEC = CdtRefSpec.CDT_REF_SPEC;
+
+    /**
      * This table capture the CDT primitives allowed for a particular SC of a CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends its base (such SC is not defined in the CCTS data type catalog specification).
      */
     public static final CdtScAwdPri CDT_SC_AWD_PRI = CdtScAwdPri.CDT_SC_AWD_PRI;
@@ -276,6 +284,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, but it is for the supplementary component (SC). It allows for the concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON. 
      */
     public static final CdtScAwdPriXpsTypeMap CDT_SC_AWD_PRI_XPS_TYPE_MAP = CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP;
+
+    /**
+     * The table <code>oagi.cdt_sc_ref_spec</code>.
+     */
+    public static final CdtScRefSpec CDT_SC_REF_SPEC = CdtScRefSpec.CDT_SC_REF_SPEC;
 
     /**
      * This table stores information about a code list. When a code list is derived from another code list, the whole set of code values belonging to the based code list will be copied.
@@ -426,6 +439,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The table <code>oagi.oauth2_app_scope</code>.
      */
     public static final Oauth2AppScope OAUTH2_APP_SCOPE = Oauth2AppScope.OAUTH2_APP_SCOPE;
+
+    /**
+     * The table <code>oagi.ref_spec</code>.
+     */
+    public static final RefSpec REF_SPEC = RefSpec.REF_SPEC;
 
     /**
      * The is table store the release information.

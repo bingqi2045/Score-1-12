@@ -9,21 +9,15 @@ import java.time.LocalDateTime;
 public class CreateDtScRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger ownerDdtManifestId;
-    private final BigInteger targetDdtManifestId;
 
 
     public CreateDtScRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger ownerDdtManifestId, BigInteger targetDdtManifestId) {
+                                       BigInteger ownerDdtManifestId) {
         super(user);
         this.ownerDdtManifestId = ownerDdtManifestId;
-        this.targetDdtManifestId = targetDdtManifestId;
     }
 
     public BigInteger getOwnerDdtManifestId() {
         return ownerDdtManifestId;
-    }
-
-    public BigInteger getTargetDdtManifestId() {
-        return targetDdtManifestId;
     }
 }

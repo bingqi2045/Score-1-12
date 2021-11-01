@@ -22,8 +22,10 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private String defaultValue;
     private String fixedValue;
 
+    private String objectClassTerm;
     private String propertyTerm;
     private String representationTerm;
+    private Boolean deprecated;
 
     private CcState state;
     private String owner;
@@ -32,6 +34,8 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private BigInteger logId;
     private int revisionNum;
     private int revisionTrackingNum;
+    private String spec;
+    private BigInteger basedDtManifestId;
 
     private List<CcBdtScPriResri> bdtScPriRestriList;
 }

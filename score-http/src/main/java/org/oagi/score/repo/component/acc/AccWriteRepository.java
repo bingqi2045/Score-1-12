@@ -29,10 +29,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -1084,13 +1081,17 @@ public class AccWriteRepository {
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
-        List<AsccManifestRecord> nullNextPrevAsccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
-                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
-                        ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.isNull())).fetch();
+        List<AsccManifestRecord> nullNextPrevAsccManifestRecords = Collections.emptyList();
+        List<BccManifestRecord> nullNextPrevBccManifestRecords = Collections.emptyList();
 
-        List<BccManifestRecord> nullNextPrevBccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
-                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
-                        BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.isNull())).fetch();
+        if (prevAccManifestRecord != null) {
+            nullNextPrevAsccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                    .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                            ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.isNull())).fetch();
+            nullNextPrevBccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                    .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()),
+                            BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.isNull())).fetch();
+        }
 
         // delete SEQ_KEY for current ACC
         dslContext.update(SEQ_KEY)
