@@ -1,6 +1,7 @@
 package org.oagi.score.gateway.http.configuration.elasticsearch;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,18 +16,11 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @ComponentScan(basePackages = { "org.oagi.score.gateway.http.api.cc_management.service" } )
 public class ElasticsearchRepositoryConfig {
 
-    @Bean
-    public RestHighLevelClient client() {
-        org.springframework.data.elasticsearch.client.ClientConfiguration clientConfiguration
-                = ClientConfiguration.builder()
-                .connectedTo("localhost:9200")
-                .build();
-
-        return RestClients.create(clientConfiguration).rest();
-    }
+    @Autowired
+    private RestHighLevelClient client;
 
     @Bean(name = { "elasticsearchOperations", "elasticsearchTemplate" })
     public ElasticsearchOperations elasticsearchTemplate() {
-        return new ElasticsearchRestTemplate(client());
+        return new ElasticsearchRestTemplate(client);
     }
 }

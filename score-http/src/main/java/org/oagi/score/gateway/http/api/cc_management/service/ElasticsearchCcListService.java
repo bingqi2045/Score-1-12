@@ -23,7 +23,6 @@ public class ElasticsearchCcListService {
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
 
-
     public SearchPage<CoreComponent> getCcListES(Query criteriaQuery) {
         SearchHits<CoreComponent> hits = elasticsearchOperations.search(criteriaQuery,
                 CoreComponent.class, IndexCoordinates.of("core_component"));

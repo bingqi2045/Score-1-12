@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,11 @@ public class InfoController {
         productInfos.add(productInfoService.gatewayMetadata());
         productInfos.add(productInfoService.databaseMetadata());
         productInfos.add(productInfoService.redisMetadata());
+        try {
+            productInfos.add(productInfoService.elasticsearchMetadata());
+        } catch (IOException e) {
+            logger.warn("Cannot retrieve the elasticsearch product info.", e);
+        }
         return productInfos;
     }
 
