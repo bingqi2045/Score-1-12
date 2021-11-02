@@ -34,6 +34,8 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @RestController
 public class CcListController {
 
+    static final int FUZINESS_DISTANCE = 2;
+
     @Autowired
     private CcListService service;
 
@@ -92,7 +94,7 @@ public class CcListController {
             if (den.startsWith("\"") && den.endsWith("\"")) {
                 filterQueryPart.filter(termQuery("den.keyword", den.replace("\"", "")));
             } else {
-                queryBuilder.withQuery(matchQuery("den", den));
+                queryBuilder.withQuery(matchQuery("den", den).fuzziness(FUZINESS_DISTANCE));
             }
         }
         if (StringUtils.hasLength(definition)) {
