@@ -34,7 +34,8 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @RestController
 public class CcListController {
 
-    static final int FUZINESS_DISTANCE = 2;
+    static private final Object FUZZINESS_DISTANCE = "AUTO";
+    static private final int NUMBER_OF_TOP_TERMS = 10;
 
     @Autowired
     private CcListService service;
@@ -94,7 +95,11 @@ public class CcListController {
             if (den.startsWith("\"") && den.endsWith("\"")) {
                 filterQueryPart.filter(termQuery("den.keyword", den.replace("\"", "")));
             } else {
-                queryBuilder.withQuery(matchQuery("den", den).fuzziness(FUZINESS_DISTANCE));
+                queryBuilder.withQuery(matchQuery("den", den)
+                        .fuzziness(FUZZINESS_DISTANCE)
+                        .fuzzyTranspositions(true)
+                        .fuzzyRewrite("top_terms_boost_" + NUMBER_OF_TOP_TERMS)
+                );
             }
         }
         if (StringUtils.hasLength(definition)) {
