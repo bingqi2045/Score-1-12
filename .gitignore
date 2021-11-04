@@ -28,6 +28,7 @@ docker/*.war
 /data/
 /backup
 docker/volumes/elasticsearch/
+docker/volumes/logstash/config/queries/*.yml
 
 # System Files
 .DS_Store

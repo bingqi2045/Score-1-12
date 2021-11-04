@@ -44,7 +44,7 @@ public class CcList {
     public CcList() {
     }
 
-    public CcList(CcType type, BigInteger manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, BigInteger id, boolean ownedByDeveloper) {
+    public CcList(CcType type, BigInteger manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, BigInteger id, boolean ownedByDeveloper, String sixDigitId, String defaultValueDomain) {
         this.type = type;
         this.manifestId = manifestId;
         this.guid = guid;
@@ -65,6 +65,8 @@ public class CcList {
         this.releaseNum = releaseNum;
         this.id = id;
         this.ownedByDeveloper = ownedByDeveloper;
+        this.sixDigitId = sixDigitId;
+        this.defaultValueDomain = defaultValueDomain;
     }
 
 }

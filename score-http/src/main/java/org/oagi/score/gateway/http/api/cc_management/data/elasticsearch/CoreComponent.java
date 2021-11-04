@@ -16,45 +16,112 @@ public class CoreComponent {
     @Id
     private String id;
 
-    private BigInteger manifest_id;
+    @Field("manifest_id")
+    private BigInteger manifestId;
 
+    @Field("score")
     private Double score;
 
-    private BigInteger component_id;
+    @Field("component_id")
+    private BigInteger componentId;
 
+    @Field("deprecated")
     private String deprecated;
 
+    @Field("type")
     private String type;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @Field(name = "last_update_timestamp", type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC-5")
-    private String last_update_timestamp;
+    private String lastUpdateTimestamp;
+
+    @Field("module")
     private String module;
-    private String revision_num;
+
+    @Field("revision_num")
+    private String revisionNum;
+
+    @Field("definition")
     private String definition;
+
+    @Field("updater")
     private String updater;
+
+    @Field("guid")
     private String guid;
-    private String definition_source;
+
+    @Field("definition_source")
+    private String definitionSource;
+
+    @Field("owner")
     private String owner;
+
+    @Field("state")
     private String state;
+
+    @Field("den")
     private String den;
-    private String release_num;
-    private String release_id;
-    private String oagis_component_type;
-    private String asccp_type;
-    private String owned_by_developer;
-    private String dt_type;
+
+    @Field("release_num")
+    private String releaseNum;
+
+    @Field("release_id")
+    private String releaseId;
+
+    @Field("oagis_component_type")
+    private String oagisComponentType;
+
+    @Field("asccp_type")
+    private String asccpType;
+
+    @Field("owned_by_developer")
+    private String ownedByDeveloper;
+
+    @Field("dt_type")
+    private String dtType;
+
+    @Field("name")
     private String name;
+
+    @Field("six_digit_id")
+    private String sixDigitId;
+
+    @Field("default_value_domain")
+    private String defaultValueDomain;
 
     public CoreComponent() {
     }
 
-    public BigInteger getManifest_id() {
-        return manifest_id;
+    public String getId() {
+        return id;
     }
 
-    public void setManifest_id(BigInteger manifest_id) {
-        this.manifest_id = manifest_id;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public BigInteger getManifestId() {
+        return manifestId;
+    }
+
+    public void setManifestId(BigInteger manifestId) {
+        this.manifestId = manifestId;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public BigInteger getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(BigInteger componentId) {
+        this.componentId = componentId;
     }
 
     public String getDeprecated() {
@@ -73,12 +140,12 @@ public class CoreComponent {
         this.type = type;
     }
 
-    public String getLast_update_timestamp() {
-        return last_update_timestamp;
+    public String getLastUpdateTimestamp() {
+        return lastUpdateTimestamp;
     }
 
-    public void setLast_update_timestamp(String last_update_timestamp) {
-        this.last_update_timestamp = last_update_timestamp;
+    public void setLastUpdateTimestamp(String lastUpdateTimestamp) {
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
     public String getModule() {
@@ -89,12 +156,12 @@ public class CoreComponent {
         this.module = module;
     }
 
-    public String getRevision_num() {
-        return revision_num;
+    public String getRevisionNum() {
+        return revisionNum;
     }
 
-    public void setRevision_num(String revision_num) {
-        this.revision_num = revision_num;
+    public void setRevisionNum(String revisionNum) {
+        this.revisionNum = revisionNum;
     }
 
     public String getDefinition() {
@@ -121,12 +188,12 @@ public class CoreComponent {
         this.guid = guid;
     }
 
-    public String getDefinition_source() {
-        return definition_source;
+    public String getDefinitionSource() {
+        return definitionSource;
     }
 
-    public void setDefinition_source(String definition_source) {
-        this.definition_source = definition_source;
+    public void setDefinitionSource(String definitionSource) {
+        this.definitionSource = definitionSource;
     }
 
     public String getOwner() {
@@ -153,60 +220,52 @@ public class CoreComponent {
         this.den = den;
     }
 
-    public String getRelease_num() {
-        return release_num;
+    public String getReleaseNum() {
+        return releaseNum;
     }
 
-    public void setRelease_num(String release_num) {
-        this.release_num = release_num;
+    public void setReleaseNum(String releaseNum) {
+        this.releaseNum = releaseNum;
     }
 
-    public String getRelease_id() {
-        return release_id;
+    public String getReleaseId() {
+        return releaseId;
     }
 
-    public void setRelease_id(String release_id) {
-        this.release_id = release_id;
+    public void setReleaseId(String releaseId) {
+        this.releaseId = releaseId;
     }
 
-    public String getOagis_component_type() {
-        return oagis_component_type;
+    public String getOagisComponentType() {
+        return oagisComponentType;
     }
 
-    public void setOagis_component_type(String oagis_component_type) {
-        this.oagis_component_type = oagis_component_type;
+    public void setOagisComponentType(String oagisComponentType) {
+        this.oagisComponentType = oagisComponentType;
     }
 
-    public String getAsccp_type() {
-        return asccp_type;
+    public String getAsccpType() {
+        return asccpType;
     }
 
-    public void setAsccp_type(String asccp_type) {
-        this.asccp_type = asccp_type;
+    public void setAsccpType(String asccpType) {
+        this.asccpType = asccpType;
     }
 
-    public String getOwned_by_developer() {
-        return owned_by_developer;
+    public String getOwnedByDeveloper() {
+        return ownedByDeveloper;
     }
 
-    public void setOwned_by_developer(String owned_by_developer) {
-        this.owned_by_developer = owned_by_developer;
+    public void setOwnedByDeveloper(String ownedByDeveloper) {
+        this.ownedByDeveloper = ownedByDeveloper;
     }
 
-    public String getId() {
-        return id;
+    public String getDtType() {
+        return dtType;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDt_type() {
-        return dt_type;
-    }
-
-    public void setDt_type(String dt_type) {
-        this.dt_type = dt_type;
+    public void setDtType(String dtType) {
+        this.dtType = dtType;
     }
 
     public String getName() {
@@ -217,11 +276,19 @@ public class CoreComponent {
         this.name = name;
     }
 
-    public BigInteger getComponent_id() {
-        return component_id;
+    public String getSixDigitId() {
+        return sixDigitId;
     }
 
-    public void setComponent_id(BigInteger component_id) {
-        this.component_id = component_id;
+    public void setSixDigitId(String sixDigitId) {
+        this.sixDigitId = sixDigitId;
+    }
+
+    public String getDefaultValueDomain() {
+        return defaultValueDomain;
+    }
+
+    public void setDefaultValueDomain(String defaultValueDomain) {
+        this.defaultValueDomain = defaultValueDomain;
     }
 }

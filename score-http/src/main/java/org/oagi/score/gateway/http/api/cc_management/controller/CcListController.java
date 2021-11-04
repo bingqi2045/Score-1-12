@@ -150,24 +150,26 @@ public class CcListController {
         PageResponse<CcList> ccListPageResponse = new PageResponse<CcList>();
         ccListPageResponse.setList(esResponse.stream().map(cc ->
                 new CcList(CcType.valueOf(cc.getContent().getType()),
-                        cc.getContent().getManifest_id(),
+                        cc.getContent().getManifestId(),
                         cc.getContent().getGuid(),
                         cc.getContent().getDen(),
                         cc.getContent().getDefinition(),
                         cc.getContent().getModule(),
                         cc.getContent().getName(),
-                        cc.getContent().getDefinition_source(),
-                        Optional.ofNullable(cc.getContent().getOagis_component_type()),
-                        cc.getContent().getDt_type(),
+                        cc.getContent().getDefinitionSource(),
+                        Optional.ofNullable(cc.getContent().getOagisComponentType()),
+                        cc.getContent().getDtType(),
                         cc.getContent().getOwner(),
                         CcState.valueOf(cc.getContent().getState()),
-                        cc.getContent().getRevision_num(),
+                        cc.getContent().getRevisionNum(),
                         Boolean.parseBoolean(cc.getContent().getDeprecated()),
                         cc.getContent().getUpdater(),
-                        getDateFromString(cc.getContent().getLast_update_timestamp()),
-                        cc.getContent().getRelease_num(),
-                        cc.getContent().getComponent_id(),
-                        Boolean.parseBoolean(cc.getContent().getOwned_by_developer()))
+                        getDateFromString(cc.getContent().getLastUpdateTimestamp()),
+                        cc.getContent().getReleaseNum(),
+                        cc.getContent().getComponentId(),
+                        Boolean.parseBoolean(cc.getContent().getOwnedByDeveloper()),
+                        cc.getContent().getSixDigitId(),
+                        cc.getContent().getDefaultValueDomain())
         ).collect(Collectors.toList()));
         ccListPageResponse.setPage(esResponse.getNumber());
         ccListPageResponse.setSize(esResponse.getSize());
