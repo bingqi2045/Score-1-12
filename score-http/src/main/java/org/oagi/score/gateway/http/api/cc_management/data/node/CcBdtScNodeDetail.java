@@ -36,6 +36,7 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private int revisionTrackingNum;
     private String spec;
     private BigInteger basedDtManifestId;
+    private BigInteger basedDtScId;
 
     private List<CcBdtScPriResri> bdtScPriRestriList;
 }
