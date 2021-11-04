@@ -712,6 +712,79 @@ public class CcNodeRepository {
         return bccpNodeDetail;
     }
 
+    private Map<String, CcBdtPriResri> getPriResriMapByDtId(ULong dtId) {
+        Map<String, CcBdtPriResri> priResriMap = new HashMap<>();
+        dslContext.select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
+                BDT_PRI_RESTRI.IS_DEFAULT,
+                CDT_AWD_PRI.CDT_AWD_PRI_ID,
+                CDT_PRI.NAME,
+                XBT.XBT_ID,
+                XBT.NAME,
+                CODE_LIST.CODE_LIST_ID,
+                CODE_LIST.NAME,
+                AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST.NAME)
+                .from(BDT_PRI_RESTRI)
+                .leftJoin(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .leftJoin(CDT_AWD_PRI).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
+                .leftJoin(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                .leftJoin(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
+                .leftJoin(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .leftJoin(AGENCY_ID_LIST).on(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(dtId))
+                .fetchStream().forEach(record -> {
+            String key;
+            if (record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID) != null) {
+                key = PrimitiveRestriType.Primitive.toString() + record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID);
+            } else if (record.get(CODE_LIST.CODE_LIST_ID) != null) {
+                key = PrimitiveRestriType.CodeList.toString() + record.get(CODE_LIST.CODE_LIST_ID);
+            } else {
+                key = PrimitiveRestriType.AgencyIdList.toString() + record.get(AGENCY_ID_LIST.AGENCY_ID_LIST_ID);
+            }
+            if (priResriMap.containsKey(key)) {
+                CcBdtPriResri ccBdtPriResri = priResriMap.get(key);
+                if (record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1) {
+                    ccBdtPriResri.setDefault(true);
+                }
+                if (ccBdtPriResri.getType().equals(PrimitiveRestriType.Primitive)) {
+                    CcXbt xbt = new CcXbt();
+                    xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
+                    xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                    xbt.setXbtName(record.get(XBT.NAME));
+                    List<CcXbt> xbtList = ccBdtPriResri.getXbtList();
+                    xbtList.add(xbt);
+                    ccBdtPriResri.setXbtList(xbtList);
+                }
+                priResriMap.put(key, ccBdtPriResri);
+            } else {
+                CcBdtPriResri ccBdtPriResri = new CcBdtPriResri();
+                ccBdtPriResri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
+                if (record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID) != null) {
+                    ccBdtPriResri.setType(PrimitiveRestriType.Primitive);
+                    ccBdtPriResri.setCdtAwdPriId(record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID).toBigInteger());
+                    ccBdtPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
+                    CcXbt xbt = new CcXbt();
+                    xbt.setDefault(ccBdtPriResri.isDefault());
+                    xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                    xbt.setXbtName(record.get(XBT.NAME));
+                    List<CcXbt> xbtList = new ArrayList<>();
+                    xbtList.add(xbt);
+                    ccBdtPriResri.setXbtList(xbtList);
+                } else if (record.get(CODE_LIST.CODE_LIST_ID) != null) {
+                    ccBdtPriResri.setType(PrimitiveRestriType.CodeList);
+                    ccBdtPriResri.setCodeListId(record.get(CODE_LIST.CODE_LIST_ID).toBigInteger());
+                    ccBdtPriResri.setCodeListName(record.get(CODE_LIST.NAME));
+                } else {
+                    ccBdtPriResri.setType(PrimitiveRestriType.AgencyIdList);
+                    ccBdtPriResri.setAgencyIdListId(record.get(AGENCY_ID_LIST.AGENCY_ID_LIST_ID).toBigInteger());
+                    ccBdtPriResri.setAgencyIdListName(record.get(AGENCY_ID_LIST.NAME));
+                }
+                priResriMap.put(key, ccBdtPriResri);
+            }
+        });
+        return priResriMap;
+    }
+
     public CcBdtNodeDetail getBdtNodeDetail(AuthenticatedPrincipal user, CcBdtNode bdtNode) {
         BigInteger manifestId = bdtNode.getManifestId();
 
@@ -755,7 +828,7 @@ public class CcNodeRepository {
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtNodeDetail.class);
 
-        Map<String, CcBdtPriResri> priResriMap = new HashMap<>();
+        ;
 
         List<String> specs = dslContext.select(REF_SPEC.SPEC)
                 .from(DT)
@@ -767,72 +840,13 @@ public class CcNodeRepository {
 
         // BDT
         if (detail.getBasedBdtManifestId() != null) {
-            dslContext.select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
-                    BDT_PRI_RESTRI.IS_DEFAULT,
-                    CDT_AWD_PRI.CDT_AWD_PRI_ID,
-                    CDT_PRI.NAME,
-                    XBT.XBT_ID,
-                    XBT.NAME,
-                    CODE_LIST.CODE_LIST_ID,
-                    CODE_LIST.NAME,
-                    AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
-                    AGENCY_ID_LIST.NAME)
-                    .from(BDT_PRI_RESTRI)
-                    .leftJoin(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
-                    .leftJoin(CDT_AWD_PRI).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
-                    .leftJoin(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
-                    .leftJoin(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
-                    .leftJoin(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
-                    .leftJoin(AGENCY_ID_LIST).on(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
-                    .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(detail.getBdtId())))
-                    .fetchStream().forEach(record -> {
-                String key;
-                if (record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID) != null) {
-                    key = PrimitiveRestriType.Primitive.toString() + record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID);
-                } else if (record.get(CODE_LIST.CODE_LIST_ID) != null) {
-                    key = PrimitiveRestriType.CodeList.toString() + record.get(CODE_LIST.CODE_LIST_ID);
+            Map<String, CcBdtPriResri> priResriMap = getPriResriMapByDtId(ULong.valueOf(detail.getBdtId()));
+            Map<String, CcBdtPriResri> basePriResriMap = getPriResriMapByDtId(ULong.valueOf(detail.getBasedBdtId()));
+            priResriMap.keySet().stream().forEach(key -> {
+                if (basePriResriMap.get(key) != null) {
+                    priResriMap.get(key).setInherited(true);
                 } else {
-                    key = PrimitiveRestriType.AgencyIdList.toString() + record.get(AGENCY_ID_LIST.AGENCY_ID_LIST_ID);
-                }
-                if (priResriMap.containsKey(key)) {
-                    CcBdtPriResri ccBdtPriResri = priResriMap.get(key);
-                    if (record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1) {
-                        ccBdtPriResri.setDefault(true);
-                    }
-                    if (ccBdtPriResri.getType().equals(PrimitiveRestriType.Primitive)) {
-                        CcXbt xbt = new CcXbt();
-                        xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
-                        xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
-                        xbt.setXbtName(record.get(XBT.NAME));
-                        List<CcXbt> xbtList = ccBdtPriResri.getXbtList();
-                        xbtList.add(xbt);
-                        ccBdtPriResri.setXbtList(xbtList);
-                    }
-                    priResriMap.put(key, ccBdtPriResri);
-                } else {
-                    CcBdtPriResri ccBdtPriResri = new CcBdtPriResri();
-                    ccBdtPriResri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
-                    if (record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID) != null) {
-                        ccBdtPriResri.setType(PrimitiveRestriType.Primitive);
-                        ccBdtPriResri.setCdtAwdPriId(record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID).toBigInteger());
-                        ccBdtPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
-                        CcXbt xbt = new CcXbt();
-                        xbt.setDefault(ccBdtPriResri.isDefault());
-                        xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
-                        xbt.setXbtName(record.get(XBT.NAME));
-                        List<CcXbt> xbtList = new ArrayList<>();
-                        xbtList.add(xbt);
-                        ccBdtPriResri.setXbtList(xbtList);
-                    } else if (record.get(CODE_LIST.CODE_LIST_ID) != null) {
-                        ccBdtPriResri.setType(PrimitiveRestriType.CodeList);
-                        ccBdtPriResri.setCodeListId(record.get(CODE_LIST.CODE_LIST_ID).toBigInteger());
-                        ccBdtPriResri.setCodeListName(record.get(CODE_LIST.NAME));
-                    } else {
-                        ccBdtPriResri.setType(PrimitiveRestriType.AgencyIdList);
-                        ccBdtPriResri.setAgencyIdListId(record.get(AGENCY_ID_LIST.AGENCY_ID_LIST_ID).toBigInteger());
-                        ccBdtPriResri.setAgencyIdListName(record.get(AGENCY_ID_LIST.NAME));
-                    }
-                    priResriMap.put(key, ccBdtPriResri);
+                    priResriMap.get(key).setInherited(false);
                 }
             });
 

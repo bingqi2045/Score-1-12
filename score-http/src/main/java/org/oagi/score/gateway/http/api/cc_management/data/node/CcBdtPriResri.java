@@ -17,4 +17,5 @@ public class CcBdtPriResri {
     private String agencyIdListName;
     private boolean isDefault;
     private List<CcXbt> xbtList;
+    private boolean inherited;
 }
