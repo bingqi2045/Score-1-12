@@ -119,6 +119,7 @@ public class DtWriteRepository {
             DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
 
             dtScRecord.setGuid(ScoreGuid.randomGuid());
+            dtScRecord.setObjectClassTerm(basedDtSc.getObjectClassTerm());
             dtScRecord.setPropertyTerm(basedDtSc.getPropertyTerm());
             dtScRecord.setRepresentationTerm(basedDtSc.getRepresentationTerm());
             dtScRecord.setOwnerDtId(bdt.getDtId());

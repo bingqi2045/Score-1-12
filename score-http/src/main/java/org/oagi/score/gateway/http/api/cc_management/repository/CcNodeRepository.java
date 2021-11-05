@@ -991,15 +991,16 @@ public class CcNodeRepository {
         
         if (detail.getBasedDtManifestId() != null) {
             Map<String, CcBdtScPriResri> priResriMap = getPriScResriMapByDtScId(ULong.valueOf(detail.getBdtScId()));
-            Map<String, CcBdtScPriResri> basePriResriMap = getPriScResriMapByDtScId(ULong.valueOf(detail.getBasedDtScId()));
-            priResriMap.keySet().stream().forEach(key -> {
-                if (basePriResriMap.get(key) != null) {
-                    priResriMap.get(key).setInherited(true);
-                } else {
-                    priResriMap.get(key).setInherited(false);
-                }
-            });
-
+            if (detail.getBasedDtScId() != null) {
+                Map<String, CcBdtScPriResri> basePriResriMap = getPriScResriMapByDtScId(ULong.valueOf(detail.getBasedDtScId()));
+                priResriMap.keySet().stream().forEach(key -> {
+                    if (basePriResriMap.get(key) != null) {
+                        priResriMap.get(key).setInherited(true);
+                    } else {
+                        priResriMap.get(key).setInherited(false);
+                    }
+                });
+            }
             detail.setBdtScPriRestriList(new ArrayList<>(priResriMap.values()));
             detail.getBdtScPriRestriList().sort(Comparator.comparing(CcBdtScPriResri::getType));
         } else {
