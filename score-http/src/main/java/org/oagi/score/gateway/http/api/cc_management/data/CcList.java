@@ -26,6 +26,7 @@ public class CcList {
 
     private String definitionSource;
     private OagisComponentType oagisComponentType;
+    private String dtType;
     private String owner;
     private CcState state;
     private String revision;
@@ -56,6 +57,7 @@ public class CcList {
         if (oagisComponentType.isPresent()) {
             this.oagisComponentType = OagisComponentType.valueOf(Integer.parseInt(oagisComponentType.get()));
         }
+        this.dtType = dtType;
         this.owner = owner;
         this.state = state;
         this.revision = revision;

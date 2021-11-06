@@ -2,6 +2,9 @@ package org.oagi.score.gateway.http.api.cc_management.controller;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.elasticsearch.CoreComponent;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
@@ -129,21 +132,34 @@ public class CcListController {
             filterQueryPart.filter(rangeQuery("last_update_timestamp").lte(endDate));
         }
 
-        Sort sort;
-        Pageable pageable;
+        FieldSortBuilder sort = null;
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageIndex, pageSize);
         if (StringUtils.hasLength(sortActive)) {
-            if (sortDirection.equals("desc")) {
-                sort = Sort.by(camelToSnake(sortActive)).descending();
-            } else {
-                sort = Sort.by(camelToSnake(sortActive)).ascending();
+            String field = camelToSnake(sortActive);
+            switch (sortActive) {
+                case "lastUpdateTimestamp":
+                    break;
+                case "revision":
+                    field = "revision_num";
+                    break;
+                case "valueDomain":
+                    field = "default_value_domain" + ".keyword";
+                    break;
+                default:
+                    field = field + ".keyword";
+                    break;
             }
-            pageable = org.springframework.data.domain.PageRequest.of(pageIndex, pageSize, sort);
-        } else {
-            pageable = org.springframework.data.domain.PageRequest.of(pageIndex, pageSize);
+            sort = SortBuilders.fieldSort(field);
+            if (sortDirection.equals("desc")) {
+                sort = sort.order(SortOrder.DESC);
+            } else {
+                sort = sort.order(SortOrder.ASC);
+            }
         }
         final Query searchQuery = queryBuilder
                 .withPageable(pageable)
                 .withFilter(filterQueryPart)
+                .withSort(sort)
                 .build();
         SearchPage<CoreComponent> esResponse = esCCListService.getCcListES(searchQuery);
 
