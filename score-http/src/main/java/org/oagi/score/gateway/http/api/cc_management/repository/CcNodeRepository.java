@@ -805,6 +805,7 @@ public class CcNodeRepository {
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
                 DT.STATE,
+                DT.COMMONLY_USED,
                 DT.NAMESPACE_ID,
                 APP_USER.LOGIN_ID.as("owner"),
                 DT_MANIFEST.RELEASE_ID,
