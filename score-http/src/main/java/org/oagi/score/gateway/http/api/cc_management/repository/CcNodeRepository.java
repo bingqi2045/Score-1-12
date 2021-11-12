@@ -717,6 +717,7 @@ public class CcNodeRepository {
         dslContext.select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 BDT_PRI_RESTRI.IS_DEFAULT,
                 CDT_AWD_PRI.CDT_AWD_PRI_ID,
+                CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
                 CDT_PRI.NAME,
                 XBT.XBT_ID,
                 XBT.NAME,
@@ -758,10 +759,12 @@ public class CcNodeRepository {
                 priResriMap.put(key, ccBdtPriResri);
             } else {
                 CcBdtPriResri ccBdtPriResri = new CcBdtPriResri();
+                ccBdtPriResri.setBdtPriRestriId(record.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
                 ccBdtPriResri.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
                 if (record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID) != null) {
                     ccBdtPriResri.setType(PrimitiveRestriType.Primitive);
                     ccBdtPriResri.setCdtAwdPriId(record.get(CDT_AWD_PRI.CDT_AWD_PRI_ID).toBigInteger());
+                    ccBdtPriResri.setCdtAwdPriXpsTypeMapId(record.get(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID).toBigInteger());
                     ccBdtPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
                     CcXbt xbt = new CcXbt();
                     xbt.setDefault(ccBdtPriResri.isDefault());
@@ -829,8 +832,6 @@ public class CcNodeRepository {
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtNodeDetail.class);
 
-        ;
-
         List<String> specs = dslContext.select(REF_SPEC.SPEC)
                 .from(DT)
                 .join(CDT_REF_SPEC).on(DT.DT_ID.eq(CDT_REF_SPEC.CDT_ID))
@@ -852,7 +853,7 @@ public class CcNodeRepository {
             });
 
             detail.setBdtPriRestriList(new ArrayList<>(priResriMap.values()));
-            detail.getBdtPriRestriList().sort(Comparator.comparing(CcBdtPriResri::getType));
+            detail.getBdtPriRestriList().sort(Comparator.comparing(CcBdtPriResri::getBdtPriRestriId));
         } else {
             detail.setBdtPriRestriList(dslContext.select(
                     CDT_AWD_PRI.CDT_AWD_PRI_ID,
@@ -878,6 +879,7 @@ public class CcNodeRepository {
         dslContext.select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
                 CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID,
+                CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
                 CDT_PRI.NAME,
                 XBT.XBT_ID,
                 XBT.NAME,
@@ -915,9 +917,11 @@ public class CcNodeRepository {
             } else {
                 CcBdtScPriResri ccBdtScPriResri = new CcBdtScPriResri();
                 ccBdtScPriResri.setDefault(record.get(BDT_SC_PRI_RESTRI.IS_DEFAULT) == 1);
+                ccBdtScPriResri.setBdtScPriRestriId(record.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
                 if (record.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID) != null) {
                     ccBdtScPriResri.setType(PrimitiveRestriType.Primitive);
                     ccBdtScPriResri.setCdtScAwdPriId(record.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID).toBigInteger());
+                    ccBdtScPriResri.setCdtScAwdPriXpsTypeMapId(record.get(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID).toBigInteger());
                     ccBdtScPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
                     CcXbt xbt = new CcXbt();
                     xbt.setDefault(ccBdtScPriResri.isDefault());
@@ -1003,7 +1007,7 @@ public class CcNodeRepository {
                 });
             }
             detail.setBdtScPriRestriList(new ArrayList<>(priResriMap.values()));
-            detail.getBdtScPriRestriList().sort(Comparator.comparing(CcBdtScPriResri::getType));
+            detail.getBdtScPriRestriList().sort(Comparator.comparing(CcBdtScPriResri::getBdtScPriRestriId));
         } else {
             detail.setBdtScPriRestriList(dslContext.select(
                     CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID,
