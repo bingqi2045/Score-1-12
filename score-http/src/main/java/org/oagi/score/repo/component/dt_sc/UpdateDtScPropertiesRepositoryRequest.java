@@ -1,10 +1,12 @@
 package org.oagi.score.repo.component.dt_sc;
 
 import org.oagi.score.data.RepositoryRequest;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriResri;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
 
@@ -18,6 +20,7 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private Boolean deprecated;
+    private List<CcBdtScPriResri> ccBdtScPriResriList;
 
     public UpdateDtScPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger dtScManifestId) {
@@ -98,5 +101,13 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
 
     public void setCardinalityMax(Integer cardinalityMax) {
         this.cardinalityMax = cardinalityMax;
+    }
+
+    public List<CcBdtScPriResri> getCcBdtScPriResriList() {
+        return ccBdtScPriResriList;
+    }
+
+    public void setCcBdtScPriResriList(List<CcBdtScPriResri> ccBdtScPriResriList) {
+        this.ccBdtScPriResriList = ccBdtScPriResriList;
     }
 }

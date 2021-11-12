@@ -4,8 +4,9 @@ import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriResri;
+import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.service.common.data.AppUser;
@@ -18,11 +19,12 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -102,6 +104,8 @@ public class DtScWriteRepository {
                     .execute();
         }
 
+        updateBdtScPriList(dtScRecord.getDtScId(), request.getCcBdtScPriResriList());
+
         // creates new log for updated record.
         LogRecord logRecord =
                 logRepository.insertBdtLog(
@@ -111,6 +115,38 @@ public class DtScWriteRepository {
                         userId, timestamp);
 
         return new UpdateDtScPropertiesRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+    }
+
+    private void updateBdtScPriList(ULong dtScId, List<CcBdtScPriResri> list) {
+        List<BdtScPriRestriRecord> records = dslContext
+                .selectFrom(BDT_SC_PRI_RESTRI)
+                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId)).fetch();
+
+        List<ULong> deleteList = new ArrayList<>();
+
+        records.forEach(r -> {
+            if (!list.stream().map(CcBdtScPriResri::getBdtScPriRestriId).collect(Collectors.toList())
+                    .contains(r.getBdtScPriRestriId().toBigInteger())) {
+                deleteList.add(r.getBdtScPriRestriId());
+            }
+        });
+
+        dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.in(deleteList)).execute();
+
+        list.forEach(e -> {
+            if(e.getBdtScPriRestriId() == null) {
+                // insert
+                BdtScPriRestriRecord newBdtScPriRestri = new BdtScPriRestriRecord();
+                newBdtScPriRestri.setIsDefault((byte) 0);
+                newBdtScPriRestri.setBdtScId(dtScId);
+                if(e.getType().equals(PrimitiveRestriType.CodeList)) {
+                    newBdtScPriRestri.setCodeListId(ULong.valueOf(e.getCodeListId()));
+                } else if(e.getType().equals(PrimitiveRestriType.AgencyIdList)) {
+                    newBdtScPriRestri.setAgencyIdListId(ULong.valueOf(e.getAgencyIdListId()));
+                }
+                dslContext.insertInto(BDT_SC_PRI_RESTRI).set(newBdtScPriRestri).execute();
+            }
+        });
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
