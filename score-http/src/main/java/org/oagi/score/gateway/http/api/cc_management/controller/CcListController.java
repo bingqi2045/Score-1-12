@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.cc_management.controller;
 
+import org.apache.lucene.util.QueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -14,7 +15,6 @@ import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -132,8 +132,10 @@ public class CcListController {
             filterQueryPart.filter(rangeQuery("last_update_timestamp").lte(endDate));
         }
 
-        FieldSortBuilder sort = null;
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageIndex, pageSize);
+        queryBuilder.withPageable(pageable)
+                .withFilter(filterQueryPart);
+        FieldSortBuilder sort = null;
         if (StringUtils.hasLength(sortActive)) {
             String field = camelToSnake(sortActive);
             switch (sortActive) {
@@ -155,12 +157,9 @@ public class CcListController {
             } else {
                 sort = sort.order(SortOrder.ASC);
             }
+            queryBuilder.withSort(sort);
         }
-        final Query searchQuery = queryBuilder
-                .withPageable(pageable)
-                .withFilter(filterQueryPart)
-                .withSort(sort)
-                .build();
+        final Query searchQuery = queryBuilder.build();
         SearchPage<CoreComponent> esResponse = esCCListService.getCcListES(searchQuery);
 
         PageResponse<CcList> ccListPageResponse = new PageResponse<CcList>();
