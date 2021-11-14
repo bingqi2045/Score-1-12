@@ -9,4 +9,5 @@ public class CcXbt {
     private BigInteger xbtId;
     private String xbtName;
     private boolean isDefault;
+    private BigInteger restriId;
 }

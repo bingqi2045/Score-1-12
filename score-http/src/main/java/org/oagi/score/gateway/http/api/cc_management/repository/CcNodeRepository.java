@@ -750,6 +750,7 @@ public class CcNodeRepository {
                 if (ccBdtPriResri.getType().equals(PrimitiveRestriType.Primitive)) {
                     CcXbt xbt = new CcXbt();
                     xbt.setDefault(record.get(BDT_PRI_RESTRI.IS_DEFAULT) == 1);
+                    xbt.setRestriId(record.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
                     xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
                     xbt.setXbtName(record.get(XBT.NAME));
                     List<CcXbt> xbtList = ccBdtPriResri.getXbtList();
@@ -768,6 +769,7 @@ public class CcNodeRepository {
                     ccBdtPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
                     CcXbt xbt = new CcXbt();
                     xbt.setDefault(ccBdtPriResri.isDefault());
+                    xbt.setRestriId(record.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
                     xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
                     xbt.setXbtName(record.get(XBT.NAME));
                     List<CcXbt> xbtList = new ArrayList<>();
@@ -913,6 +915,7 @@ public class CcNodeRepository {
                 xbt.setDefault(record.get(BDT_SC_PRI_RESTRI.IS_DEFAULT) == 1);
                 xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
                 xbt.setXbtName(record.get(XBT.NAME));
+                xbt.setRestriId(record.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
                 ccBdtScPriResri.getXbtList().add(xbt);
             } else {
                 CcBdtScPriResri ccBdtScPriResri = new CcBdtScPriResri();
@@ -927,6 +930,7 @@ public class CcNodeRepository {
                     xbt.setDefault(ccBdtScPriResri.isDefault());
                     xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
                     xbt.setXbtName(record.get(XBT.NAME));
+                    xbt.setRestriId(record.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
                     List<CcXbt> xbtList = new ArrayList<>();
                     xbtList.add(xbt);
                     ccBdtScPriResri.setXbtList(xbtList);

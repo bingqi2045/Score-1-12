@@ -5,6 +5,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriResri;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -133,20 +134,46 @@ public class DtScWriteRepository {
 
         dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.in(deleteList)).execute();
 
-        list.forEach(e -> {
-            if(e.getBdtScPriRestriId() == null) {
+        BigInteger defaultValueDomainId = null;
+
+        for (CcBdtScPriResri resri: list) {
+            if(resri.getBdtScPriRestriId() == null) {
                 // insert
                 BdtScPriRestriRecord newBdtScPriRestri = new BdtScPriRestriRecord();
                 newBdtScPriRestri.setIsDefault((byte) 0);
                 newBdtScPriRestri.setBdtScId(dtScId);
-                if(e.getType().equals(PrimitiveRestriType.CodeList)) {
-                    newBdtScPriRestri.setCodeListId(ULong.valueOf(e.getCodeListId()));
-                } else if(e.getType().equals(PrimitiveRestriType.AgencyIdList)) {
-                    newBdtScPriRestri.setAgencyIdListId(ULong.valueOf(e.getAgencyIdListId()));
+                if(resri.getType().equals(PrimitiveRestriType.CodeList)) {
+                    newBdtScPriRestri.setCodeListId(ULong.valueOf(resri.getCodeListId()));
+                } else if(resri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
+                    newBdtScPriRestri.setAgencyIdListId(ULong.valueOf(resri.getAgencyIdListId()));
                 }
-                dslContext.insertInto(BDT_SC_PRI_RESTRI).set(newBdtScPriRestri).execute();
+                resri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                        .set(newBdtScPriRestri)
+                        .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId().toBigInteger());
             }
-        });
+
+            if (resri.isDefault()) {
+                if (resri.getType().equals(PrimitiveRestriType.Primitive)) {
+                    CcXbt defaultXbt = resri.getXbtList().stream().filter(CcXbt::isDefault).findFirst().orElse(null);
+                    if (defaultXbt == null) {
+                        throw new IllegalArgumentException("Default Value Domain required.");
+                    }
+                    defaultValueDomainId = defaultXbt.getRestriId();
+                } else {
+                    defaultValueDomainId = resri.getBdtScPriRestriId();
+                }
+            }
+        }
+
+        if (defaultValueDomainId == null) {
+            throw new IllegalArgumentException("Default Value Domain required.");
+        }
+
+        dslContext.update(BDT_SC_PRI_RESTRI).set(BDT_SC_PRI_RESTRI.IS_DEFAULT, (byte) 0)
+                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId)).execute();
+
+        dslContext.update(BDT_SC_PRI_RESTRI).set(BDT_SC_PRI_RESTRI.IS_DEFAULT, (byte) 1)
+                .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(defaultValueDomainId))).execute();
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
