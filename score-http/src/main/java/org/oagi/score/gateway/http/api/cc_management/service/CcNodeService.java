@@ -55,8 +55,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -804,6 +803,18 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedDtEvent());
     }
 
+    public List<CcBdtScPriResri> getDefaultPrimitiveValues(AuthenticatedPrincipal user, String representationTerm) {
+
+        //TODO:: Representation Term and Primitive Type mapping needed.
+        ULong dtScId = dslContext.select(DT_SC.DT_SC_ID).from(DT_SC)
+                .where(DT_SC.REPRESENTATION_TERM.eq(representationTerm)).limit(1).fetchOneInto(ULong.class);
+
+        if (dtScId == null) {
+            dtScId = ULong.valueOf(1);
+        }
+
+        return repository.getDefaultPrimitiveValues(dtScId);
+    }
 
     @Transactional
     public BigInteger updateAccBasedAcc(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger basedAccManifestId) {

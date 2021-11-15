@@ -1033,6 +1033,59 @@ public class CcNodeRepository {
         return detail;
     }
 
+    public List<CcBdtScPriResri> getDefaultPrimitiveValues(ULong baseDtScId) {
+        Map<String, CcBdtScPriResri> bdtScPriResriMap = new HashMap<>();
+        dslContext.select(
+                CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID,
+                CDT_SC_AWD_PRI.IS_DEFAULT,
+                CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                CDT_PRI.NAME,
+                XBT.XBT_ID,
+                XBT.NAME)
+                .from(CDT_SC_AWD_PRI)
+                .leftJoin(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID))
+                .leftJoin(CDT_PRI).on(CDT_SC_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                .leftJoin(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
+                .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(baseDtScId))
+                .fetchStream().forEach(record -> {
+            String key;
+            if (record.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID) != null) {
+                key = PrimitiveRestriType.Primitive.toString() + record.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID);
+            } else if (record.get(CODE_LIST.CODE_LIST_ID) != null) {
+                key = PrimitiveRestriType.CodeList.toString() + record.get(CODE_LIST.CODE_LIST_ID);
+            } else {
+                key = PrimitiveRestriType.AgencyIdList.toString() + record.get(AGENCY_ID_LIST.AGENCY_ID_LIST_ID);
+            }
+            if (bdtScPriResriMap.containsKey(key)) {
+                CcBdtScPriResri ccBdtScPriResri = bdtScPriResriMap.get(key);
+                if (record.get(CDT_SC_AWD_PRI.IS_DEFAULT) == 1) {
+                    ccBdtScPriResri.setDefault(true);
+                }
+                CcXbt xbt = new CcXbt();
+                xbt.setDefault(record.get(CDT_SC_AWD_PRI.IS_DEFAULT) == 1);
+                xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                xbt.setXbtName(record.get(XBT.NAME));
+                ccBdtScPriResri.getXbtList().add(xbt);
+            } else {
+                CcBdtScPriResri ccBdtScPriResri = new CcBdtScPriResri();
+                ccBdtScPriResri.setDefault(record.get(CDT_SC_AWD_PRI.IS_DEFAULT) == 1);
+                ccBdtScPriResri.setType(PrimitiveRestriType.Primitive);
+                ccBdtScPriResri.setCdtScAwdPriId(record.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID).toBigInteger());
+                ccBdtScPriResri.setCdtScAwdPriXpsTypeMapId(record.get(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID).toBigInteger());
+                ccBdtScPriResri.setPrimitiveName(record.get(CDT_PRI.NAME));
+                CcXbt xbt = new CcXbt();
+                xbt.setDefault(ccBdtScPriResri.isDefault());
+                xbt.setXbtId(record.get(XBT.XBT_ID).toBigInteger());
+                xbt.setXbtName(record.get(XBT.NAME));
+                List<CcXbt> xbtList = new ArrayList<>();
+                xbtList.add(xbt);
+                ccBdtScPriResri.setXbtList(xbtList);
+                bdtScPriResriMap.put(key, ccBdtScPriResri);
+            }
+        });
+        return new ArrayList<>(bdtScPriResriMap.values());
+    }
+
     public AccManifestRecord getAccManifestByAcc(BigInteger accId, BigInteger releaseId) {
         return dslContext.selectFrom(ACC_MANIFEST)
                 .where(and(

@@ -326,6 +326,16 @@ public class CcNodeController {
         return service.getBdtNodeDetail(user, dtNode);
     }
 
+    @RequestMapping(value = "/core_component/dt/{representationTerm}/primitive_values",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CcBdtScPriResri> getDefaultPrimitiveValues(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                           @PathVariable("representationTerm") String representationTerm) {
+
+
+        return service.getDefaultPrimitiveValues(user, representationTerm);
+    }
+
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)

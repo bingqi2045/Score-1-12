@@ -102,20 +102,7 @@ public class DtWriteRepository {
                 .set(bdtManifest)
                 .returning(DT_MANIFEST.DT_MANIFEST_ID).fetchOne();
 
-        // insert BDT_PRI_RESTRI
-        dslContext.insertInto(BDT_PRI_RESTRI,
-                BDT_PRI_RESTRI.BDT_ID,
-                BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
-                BDT_PRI_RESTRI.CODE_LIST_ID,
-                BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
-                BDT_PRI_RESTRI.IS_DEFAULT)
-                .select(dslContext.select(inline(bdt.getDtId()),
-                        BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
-                        BDT_PRI_RESTRI.CODE_LIST_ID,
-                        BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
-                        BDT_PRI_RESTRI.IS_DEFAULT)
-                        .from(BDT_PRI_RESTRI)
-                        .where(BDT_PRI_RESTRI.BDT_ID.eq(basedBdt.getDtId()))).execute();
+        createBdtPriRestri(bdt.getDtId(), basedBdt.getDtId(), basedBdtManifest.getBasedDtManifestId() != null);
 
         for(DtScRecord basedDtSc: basedBdtScList) {
             DtScRecord dtScRecord = new DtScRecord();
@@ -150,20 +137,7 @@ public class DtWriteRepository {
                     .set(dtScManifestRecord)
                     .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId());
 
-            // insert BDT_SC_PRI_RESTRI
-            dslContext.insertInto(BDT_SC_PRI_RESTRI,
-                    BDT_SC_PRI_RESTRI.BDT_SC_ID,
-                    BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
-                    BDT_SC_PRI_RESTRI.CODE_LIST_ID,
-                    BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
-                    BDT_SC_PRI_RESTRI.IS_DEFAULT)
-                    .select(dslContext.select(inline(dtScRecord.getDtScId()),
-                            BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
-                            BDT_SC_PRI_RESTRI.CODE_LIST_ID,
-                            BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
-                            BDT_SC_PRI_RESTRI.IS_DEFAULT)
-                            .from(BDT_SC_PRI_RESTRI)
-                            .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(basedDtSc.getDtScId()))).execute();
+            createBdtScPriRestri(dtScRecord.getDtScId(), basedDtSc.getDtScId(), basedBdtManifest.getBasedDtManifestId() != null);
         }
 
         LogRecord logRecord =
@@ -176,6 +150,65 @@ public class DtWriteRepository {
         bdtManifest.update(DT_MANIFEST.LOG_ID);
 
         return new CreateBdtRepositoryResponse(bdtManifest.getDtManifestId().toBigInteger());
+    }
+
+    private void createBdtPriRestri(ULong dtId, ULong basedDtId, boolean isBdt) {
+        if (isBdt) {
+            dslContext.insertInto(BDT_PRI_RESTRI,
+                    BDT_PRI_RESTRI.BDT_ID,
+                    BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
+                    BDT_PRI_RESTRI.CODE_LIST_ID,
+                    BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                    BDT_PRI_RESTRI.IS_DEFAULT)
+                    .select(dslContext.select(inline(dtId),
+                            BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
+                            BDT_PRI_RESTRI.CODE_LIST_ID,
+                            BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                            BDT_PRI_RESTRI.IS_DEFAULT)
+                            .from(BDT_PRI_RESTRI)
+                            .where(BDT_PRI_RESTRI.BDT_ID.eq(basedDtId))).execute();
+        } else {
+            dslContext.insertInto(BDT_PRI_RESTRI,
+                    BDT_PRI_RESTRI.BDT_ID,
+                    BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
+                    BDT_PRI_RESTRI.IS_DEFAULT)
+                    .select(dslContext.select(inline(dtId),
+                            CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
+                            CDT_AWD_PRI.IS_DEFAULT)
+                            .from(CDT_AWD_PRI)
+                            .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
+                            .where(CDT_AWD_PRI.CDT_ID.eq(basedDtId))).execute();
+        }
+    }
+
+    private void createBdtScPriRestri(ULong dtScId, ULong basedDtScId, boolean isBdt) {
+        // insert BDT_SC_PRI_RESTRI
+        if (isBdt) {
+            dslContext.insertInto(BDT_SC_PRI_RESTRI,
+                    BDT_SC_PRI_RESTRI.BDT_SC_ID,
+                    BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                    BDT_SC_PRI_RESTRI.CODE_LIST_ID,
+                    BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                    BDT_SC_PRI_RESTRI.IS_DEFAULT)
+                    .select(dslContext.select(inline(dtScId),
+                            BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                            BDT_SC_PRI_RESTRI.CODE_LIST_ID,
+                            BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                            BDT_SC_PRI_RESTRI.IS_DEFAULT)
+                            .from(BDT_SC_PRI_RESTRI)
+                            .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(basedDtScId))).execute();
+        } else {
+            dslContext.insertInto(BDT_SC_PRI_RESTRI,
+                    BDT_SC_PRI_RESTRI.BDT_SC_ID,
+                    BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                    BDT_SC_PRI_RESTRI.IS_DEFAULT)
+                    .select(dslContext.select(inline(dtScId),
+                            CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                            CDT_SC_AWD_PRI.IS_DEFAULT)
+                            .from(CDT_SC_AWD_PRI)
+                            .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID))
+                            .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(basedDtScId))).execute();
+        }
     }
 
     public ReviseDtRepositoryResponse reviseDt(ReviseDtRepositoryRequest request) {
