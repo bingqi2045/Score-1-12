@@ -802,7 +802,7 @@ public class DtWriteRepository {
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setPropertyTerm("Property Term");
-        dtScRecord.setRepresentationTerm("Code");
+        dtScRecord.setRepresentationTerm("");
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
