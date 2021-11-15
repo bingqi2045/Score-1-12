@@ -154,6 +154,9 @@ public class CcListRepository {
             ULong basedManifestId = row.getValue("based_manifest_id", ULong.class);
             if (basedManifestId != null) {
                 ccList.setBasedManifestId(basedManifestId.toBigInteger());
+                ccList.setDtType(ccList.getType() == CcType.DT ? "BDT" : "");
+            } else {
+                ccList.setDtType(ccList.getType() == CcType.DT ? "CDT" : "");
             }
             ccList.setSixDigitId(row.getValue("six_digit_id", String.class));
             ccList.setDefaultValueDomain(row.getValue("default_value_domain", String.class));

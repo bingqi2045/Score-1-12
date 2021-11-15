@@ -68,13 +68,12 @@ public class DtWriteRepository {
         bdt.setDataTypeTerm(basedBdt.getDataTypeTerm());
 
         if (basedBdt.getQualifier() != null) {
-            bdt.setQualifier(basedBdt.getQualifier() + "_ Qualifier");
-            bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
-
+            bdt.setQualifier("Qualifier_ " + basedBdt.getQualifier());
         } else {
             bdt.setQualifier("Qualifier");
-            bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
         }
+
+        bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
 
         bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
