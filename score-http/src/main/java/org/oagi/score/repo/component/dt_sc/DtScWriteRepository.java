@@ -97,6 +97,15 @@ public class DtScWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT_SC.DEFINITION_SOURCE, request.getDefinitionSource());
         }
+        if (compare(dtScRecord.getDefaultValue(), request.getDefaultValue()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT_SC.DEFAULT_VALUE, request.getDefaultValue())
+                    .setNull(DT_SC.FIXED_VALUE);
+        } else if (compare(dtScRecord.getFixedValue(), request.getFixedValue()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT_SC.FIXED_VALUE, request.getFixedValue())
+                    .setNull(DT_SC.DEFAULT_VALUE);
+        }
 
         if (moreStep != null) {
             moreStep.set(DT_SC.LAST_UPDATED_BY, userId)
@@ -146,6 +155,9 @@ public class DtScWriteRepository {
                     newBdtScPriRestri.setCodeListId(ULong.valueOf(resri.getCodeListId()));
                 } else if(resri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
                     newBdtScPriRestri.setAgencyIdListId(ULong.valueOf(resri.getAgencyIdListId()));
+                } else {
+                    newBdtScPriRestri.setCdtScAwdPriXpsTypeMapId(
+                            ULong.valueOf(resri.getCdtScAwdPriXpsTypeMapId()));
                 }
                 resri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
                         .set(newBdtScPriRestri)
@@ -158,10 +170,8 @@ public class DtScWriteRepository {
                     if (defaultXbt == null) {
                         throw new IllegalArgumentException("Default Value Domain required.");
                     }
-                    defaultValueDomainId = defaultXbt.getRestriId();
-                } else {
-                    defaultValueDomainId = resri.getBdtScPriRestriId();
                 }
+                defaultValueDomainId = resri.getBdtScPriRestriId();
             }
         }
 

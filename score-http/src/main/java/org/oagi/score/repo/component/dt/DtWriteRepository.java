@@ -490,10 +490,8 @@ public class DtWriteRepository {
                     if (defaultXbt == null) {
                         throw new IllegalArgumentException("Default Value Domain required.");
                     }
-                    defaultValueDomainId = defaultXbt.getRestriId();
-                } else {
-                    defaultValueDomainId = resri.getBdtPriRestriId();
                 }
+                defaultValueDomainId = resri.getBdtPriRestriId();
             }
         }
 
