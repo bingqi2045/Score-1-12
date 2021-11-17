@@ -13,6 +13,7 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
     private final BigInteger dtScManifestId;
 
     private String propertyTerm;
+    private String representationTerm;
     private String defaultValue;
     private String fixedValue;
     private Integer cardinalityMin;
@@ -109,5 +110,13 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
 
     public void setCcBdtScPriResriList(List<CcBdtScPriResri> ccBdtScPriResriList) {
         this.ccBdtScPriResriList = ccBdtScPriResriList;
+    }
+
+    public String getRepresentationTerm() {
+        return representationTerm;
+    }
+
+    public void setRepresentationTerm(String representationTerm) {
+        this.representationTerm = representationTerm;
     }
 }

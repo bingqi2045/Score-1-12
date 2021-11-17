@@ -81,6 +81,10 @@ public class DtScWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT_SC.PROPERTY_TERM, request.getPropertyTerm());
         }
+        if (compare(dtScRecord.getRepresentationTerm(), request.getRepresentationTerm()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT_SC.REPRESENTATION_TERM, request.getRepresentationTerm());
+        }
         if (!dtScRecord.getCardinalityMax().equals(request.getCardinalityMax())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT_SC.CARDINALITY_MAX, request.getCardinalityMax());
