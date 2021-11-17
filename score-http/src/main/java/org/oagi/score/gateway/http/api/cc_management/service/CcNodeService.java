@@ -277,7 +277,7 @@ public class CcNodeService extends EventHandler {
         isPublishedRelease(request.getReleaseId());
         CreateBdtRepositoryRequest repositoryRequest =
                 new CreateBdtRepositoryRequest(user,
-                        request.getBdtManifestId(), request.getReleaseId());
+                        request.getBdtManifestId(), request.getReleaseId(), request.getSpecId());
 
         CreateBdtRepositoryResponse repositoryResponse =
                 dtWriteRepository.createBdt(repositoryRequest);

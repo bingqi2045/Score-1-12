@@ -9,6 +9,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
@@ -21,7 +22,9 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -50,10 +53,6 @@ public class DtWriteRepository {
         DtManifestRecord basedBdtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getBasedDdtManifestId())))
                 .fetchOne();
-
-        List<DtScManifestRecord> basedBdtScManifestList = dslContext.selectFrom(DT_SC_MANIFEST)
-                .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(basedBdtManifest.getDtManifestId()))
-                .fetch();
 
         DtRecord basedBdt = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(basedBdtManifest.getDtId()))
@@ -103,6 +102,16 @@ public class DtWriteRepository {
 
         createBdtPriRestri(bdt.getDtId(), basedBdt.getDtId(), basedBdtManifest.getBasedDtManifestId() != null);
 
+        Map<ULong, ULong> basedScMap = new HashMap<>();
+
+        dslContext.select(DT_SC.DT_SC_ID, DT_SC.BASED_DT_SC_ID)
+                .from(DT_SC)
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())), DT_SC.BASED_DT_SC_ID.isNotNull()))
+                .fetchStream().forEach(record -> {
+                    basedScMap.put(record.get(DT_SC.DT_SC_ID), record.get(DT_SC.BASED_DT_SC_ID));
+                });
+
         for(DtScRecord basedDtSc: basedBdtScList) {
             DtScRecord dtScRecord = new DtScRecord();
             DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
@@ -112,8 +121,22 @@ public class DtWriteRepository {
             dtScRecord.setPropertyTerm(basedDtSc.getPropertyTerm());
             dtScRecord.setRepresentationTerm(basedDtSc.getRepresentationTerm());
             dtScRecord.setOwnerDtId(bdt.getDtId());
-            dtScRecord.setCardinalityMax(basedDtSc.getCardinalityMax());
-            dtScRecord.setCardinalityMin(basedDtSc.getCardinalityMin());
+            if (request.getSpecId().longValue() > 0) {
+                ULong cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
+                CdtScRefSpecRecord specRecord = dslContext.selectFrom(CDT_SC_REF_SPEC)
+                        .where(and(CDT_SC_REF_SPEC.CDT_SC_ID.eq(cdtScId), CDT_SC_REF_SPEC.REF_SPEC_ID.eq(ULong.valueOf(request.getSpecId()))))
+                        .fetchOne();
+                if (specRecord != null) {
+                    dtScRecord.setCardinalityMin(0);
+                    dtScRecord.setCardinalityMax(1);
+                } else {
+                    dtScRecord.setCardinalityMax(0);
+                    dtScRecord.setCardinalityMin(0);
+                }
+            } else {
+                dtScRecord.setCardinalityMin(0);
+                dtScRecord.setCardinalityMax(1);
+            }
             dtScRecord.setBasedDtScId(basedDtSc.getDtScId());
             dtScRecord.setDefaultValue(basedDtSc.getDefaultValue());
             dtScRecord.setFixedValue(basedDtSc.getFixedValue());
@@ -149,6 +172,13 @@ public class DtWriteRepository {
         bdtManifest.update(DT_MANIFEST.LOG_ID);
 
         return new CreateBdtRepositoryResponse(bdtManifest.getDtManifestId().toBigInteger());
+    }
+
+    private ULong findCdtSc(ULong dtScId, Map<ULong, ULong> map) {
+        if (map.get(dtScId) == null) {
+            return dtScId;
+        }
+        return findCdtSc(map.get(dtScId), map);
     }
 
     private void createBdtPriRestri(ULong dtId, ULong basedDtId, boolean isBdt) {
