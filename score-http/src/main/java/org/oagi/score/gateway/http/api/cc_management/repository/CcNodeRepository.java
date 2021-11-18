@@ -956,12 +956,16 @@ public class CcNodeRepository {
                 DT_SC.DT_SC_ID.as("bdt_sc_id"),
                 DT_SC.GUID,
                 concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.REPRESENTATION_TERM).as("den"),
-                DT_SC.CARDINALITY_MIN,
                 DT_SC.OBJECT_CLASS_TERM,
                 DT_SC.BASED_DT_SC_ID,
                 DT_SC.PROPERTY_TERM,
                 DT_SC.REPRESENTATION_TERM,
+                DT_SC.CARDINALITY_MIN,
                 DT_SC.CARDINALITY_MAX,
+                DT_SC.as("prev").CARDINALITY_MIN.as("prev_cardinality_min"),
+                DT_SC.as("prev").CARDINALITY_MAX.as("prev_cardinality_max"),
+                DT_SC.as("base").CARDINALITY_MIN.as("base_cardinality_min"),
+                DT_SC.as("base").CARDINALITY_MAX.as("base_cardinality_max"),
                 DT_SC.DEFINITION,
                 DT_SC.DEFINITION_SOURCE,
                 DT_SC.DEFAULT_VALUE,
@@ -987,6 +991,8 @@ public class CcNodeRepository {
                 .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(LOG)
                 .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
+                .leftJoin(DT_SC.as("prev")).on(DT_SC.PREV_DT_SC_ID.eq(DT_SC.as("prev").DT_SC_ID))
+                .leftJoin(DT_SC.as("base")).on(DT_SC.BASED_DT_SC_ID.eq(DT_SC.as("base").DT_SC_ID))
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
 

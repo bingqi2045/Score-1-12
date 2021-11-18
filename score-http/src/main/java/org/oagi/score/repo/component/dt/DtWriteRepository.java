@@ -68,6 +68,8 @@ public class DtWriteRepository {
 
         if (basedBdt.getQualifier() != null) {
             bdt.setQualifier("Qualifier_ " + basedBdt.getQualifier());
+        } else if (basedBdt.getBasedDtId() == null){
+            bdt.setQualifier(null);
         } else {
             bdt.setQualifier("Qualifier");
         }

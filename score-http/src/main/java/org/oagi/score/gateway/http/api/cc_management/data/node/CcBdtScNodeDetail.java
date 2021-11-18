@@ -17,6 +17,10 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private String den;
     private int cardinalityMin;
     private int cardinalityMax;
+    private BigInteger prevCardinalityMin;
+    private BigInteger prevCardinalityMax;
+    private BigInteger baseCardinalityMin;
+    private BigInteger baseCardinalityMax;
     private String definition;
     private String definitionSource;
     private String defaultValue;
