@@ -74,6 +74,16 @@ public class DtScWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
+        if (dslContext.selectFrom(DT_SC).where(
+                and(DT_SC.PROPERTY_TERM.eq(request.getPropertyTerm()),
+                    DT_SC.REPRESENTATION_TERM.eq(request.getRepresentationTerm()),
+                    DT_SC.OBJECT_CLASS_TERM.eq(dtScRecord.getObjectClassTerm()),
+                    DT_SC.DT_SC_ID.notEqual(dtScRecord.getDtScId()),
+                    DT_SC.OWNER_DT_ID.eq(dtScRecord.getOwnerDtId())))
+        .fetch().size() > 0) {
+            throw new IllegalArgumentException("Duplicated supplementary components already exist.");
+        }
+
         // update bdtSc record.
         UpdateSetFirstStep<DtScRecord> firstStep = dslContext.update(DT_SC);
         UpdateSetMoreStep<DtScRecord> moreStep = null;

@@ -806,9 +806,15 @@ public class CcNodeService extends EventHandler {
 
     public List<CcBdtScPriResri> getDefaultPrimitiveValues(AuthenticatedPrincipal user, String representationTerm) {
 
-        //TODO:: Representation Term and Primitive Type mapping needed.
-        ULong dtScId = dslContext.select(DT_SC.DT_SC_ID).from(DT_SC)
-                .where(DT_SC.REPRESENTATION_TERM.eq(representationTerm)).limit(1).fetchOneInto(ULong.class);
+        List<ULong> cdtPriIdList = dslContext.select(CDT_PRI.CDT_PRI_ID)
+                    .from(DT)
+                    .join(CDT_AWD_PRI).on(DT.DT_ID.eq(CDT_AWD_PRI.CDT_ID))
+                    .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                    .where(DT.DATA_TYPE_TERM.eq(representationTerm))
+                    .fetchInto(ULong.class);
+
+        ULong dtScId = dslContext.select(CDT_SC_AWD_PRI.CDT_SC_ID).from(CDT_SC_AWD_PRI)
+                .where(CDT_SC_AWD_PRI.CDT_PRI_ID.in(cdtPriIdList)).limit(1).fetchOneInto(ULong.class);
 
         if (dtScId == null) {
             dtScId = ULong.valueOf(1);
