@@ -714,92 +714,94 @@ public class DtWriteRepository {
 
         return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
     }
-//
-//    public DeleteBdtRepositoryResponse deleteBdt(DeleteBdtRepositoryRequest request) {
-//        AppUser user = sessionService.getAppUser(request.getUser());
-//        ULong userId = ULong.valueOf(user.getAppUserId());
-//        LocalDateTime timestamp = request.getLocalDateTime();
-//
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-//                        ULong.valueOf(request.getBdtManifestId())
-//                ))
-//                .fetchOne();
-//
-//        DtRecord bdtRecord = dslContext.selectFrom(DT)
-//                .where(DT.DT_ID.eq(bdtManifestRecord.getBdtId()))
-//                .fetchOne();
-//
-//        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
-//            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
-//        }
-//
-//        if (!bdtRecord.getOwnerUserId().equals(userId)) {
-//            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-//        }
-//
-//        // update bdt state.
-//        bdtRecord.setState(CcState.Deleted.name());
-//        bdtRecord.setLastUpdatedBy(userId);
-//        bdtRecord.setLastUpdateTimestamp(timestamp);
-//        bdtRecord.update(DT.STATE,
-//                DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
-//
-//        // creates new log for deleted record.
-//        LogRecord logRecord =
-//                logRepository.insertBdtLog(
-//                        bdtManifestRecord,
-//                        bdtRecord, bdtManifestRecord.getLogId(),
-//                        LogAction.Deleted,
-//                        userId, timestamp);
-//
-//        bdtManifestRecord.setLogId(logRecord.getLogId());
-//        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
-//
-//        return new DeleteBdtRepositoryResponse(bdtManifestRecord.getBdtManifestId().toBigInteger());
-//    }
-//
-//    public UpdateBdtOwnerRepositoryResponse updateBdtOwner(UpdateBdtOwnerRepositoryRequest request) {
-//        AppUser user = sessionService.getAppUser(request.getUser());
-//        ULong userId = ULong.valueOf(user.getAppUserId());
-//        LocalDateTime timestamp = request.getLocalDateTime();
-//
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-//                        ULong.valueOf(request.getBdtManifestId())
-//                ))
-//                .fetchOne();
-//
-//        DtRecord bdtRecord = dslContext.selectFrom(DT)
-//                .where(DT.DT_ID.eq(bdtManifestRecord.getBdtId()))
-//                .fetchOne();
-//
-//        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
-//            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
-//        }
-//
-//        if (!bdtRecord.getOwnerUserId().equals(userId)) {
-//            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-//        }
-//
-//        bdtRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
-//        bdtRecord.setLastUpdatedBy(userId);
-//        bdtRecord.setLastUpdateTimestamp(timestamp);
-//        bdtRecord.update(DT.OWNER_USER_ID, DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
-//
-//        LogRecord logRecord =
-//                logRepository.insertBdtLog(
-//                        bdtManifestRecord,
-//                        bdtRecord, bdtManifestRecord.getLogId(),
-//                        LogAction.Modified,
-//                        userId, timestamp);
-//
-//        bdtManifestRecord.setLogId(logRecord.getLogId());
-//        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
-//
-//        return new UpdateBdtOwnerRepositoryResponse(bdtManifestRecord.getBdtManifestId().toBigInteger());
-//    }
-//
+
+    public DeleteDtRepositoryResponse deleteDt(DeleteDtRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getDtManifestId())
+                ))
+                .fetchOne();
+
+        DtRecord bdtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(bdtManifestRecord.getDtId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+        }
+
+        if (!bdtRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        // update bdt state.
+        bdtRecord.setState(CcState.Deleted.name());
+        bdtRecord.setLastUpdatedBy(userId);
+        bdtRecord.setLastUpdateTimestamp(timestamp);
+        bdtRecord.update(DT.STATE,
+                DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
+
+        // creates new log for deleted record.
+        LogRecord logRecord =
+                logRepository.insertBdtLog(
+                        bdtManifestRecord,
+                        bdtRecord, bdtManifestRecord.getLogId(),
+                        LogAction.Deleted,
+                        userId, timestamp);
+
+        bdtManifestRecord.setLogId(logRecord.getLogId());
+        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
+
+        return new DeleteDtRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+    }
+
+
+
+    public UpdateDtOwnerRepositoryResponse updateDtOwner(UpdateDtOwnerRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getDtManifestId())
+                ))
+                .fetchOne();
+
+        DtRecord bdtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(bdtManifestRecord.getDtId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(bdtRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
+
+        if (!bdtRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        bdtRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        bdtRecord.setLastUpdatedBy(userId);
+        bdtRecord.setLastUpdateTimestamp(timestamp);
+        bdtRecord.update(DT.OWNER_USER_ID, DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
+
+        LogRecord logRecord =
+                logRepository.insertBdtLog(
+                        bdtManifestRecord,
+                        bdtRecord, bdtManifestRecord.getLogId(),
+                        LogAction.Modified,
+                        userId, timestamp);
+
+        bdtManifestRecord.setLogId(logRecord.getLogId());
+        bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
+
+        return new UpdateDtOwnerRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+    }
+
     public CancelRevisionDtRepositoryResponse cancelRevisionDt(CancelRevisionDtRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -862,81 +864,6 @@ public class DtWriteRepository {
 
         return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
     }
-
-//    public CancelRevisionDtRepositoryResponse resetLogDt(CancelRevisionDtRepositoryRequest request) {
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-//                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId()))).fetchOne();
-//
-//        if (bdtManifestRecord == null) {
-//            throw new IllegalArgumentException("Not found a target DT");
-//        }
-//
-//        DtRecord bdtRecord = dslContext.selectFrom(DT)
-//                .where(DT.DT_ID.eq(bdtManifestRecord.getDtId())).fetchOne();
-//
-//        LogRecord cursorLog = dslContext.selectFrom(LOG)
-//                .where(LOG.LOG_ID.eq(bdtManifestRecord.getLogId())).fetchOne();
-//
-//        UInteger logNum = cursorLog.getRevisionNum();
-//
-//        if (cursorLog.getPrevLogId() == null) {
-//            throw new IllegalArgumentException("There is no change to be reset.");
-//        }
-//
-//        List<ULong> deleteLogTargets = new ArrayList<>();
-//
-//        while (cursorLog.getPrevLogId() != null) {
-//            if (!cursorLog.getRevisionNum().equals(logNum)) {
-//                throw new IllegalArgumentException("Cannot find reset point");
-//            }
-//            if (cursorLog.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
-//                break;
-//            }
-//            deleteLogTargets.add(cursorLog.getLogId());
-//            cursorLog = dslContext.selectFrom(LOG)
-//                    .where(LOG.LOG_ID.eq(cursorLog.getPrevLogId())).fetchOne();
-//        }
-//
-//        JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
-//
-//        ULong bdtId = serializer.getSnapshotId(snapshot.get("bdtId"));
-//        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST).where(and(
-//                DT_MANIFEST.DT_ID.eq(bdtId),
-//                DT_MANIFEST.RELEASE_ID.eq(bdtManifestRecord.getReleaseId())
-//        )).fetchOne();
-//
-//        if (bdtManifestRecord == null) {
-//            throw new IllegalArgumentException("Not found based BDT.");
-//        }
-//
-//        bdtManifestRecord.setDtManifestId(bdtManifestRecord.getDtManifestId());
-//        bdtManifestRecord.setLogId(cursorLog.getLogId());
-//        bdtManifestRecord.update(DT_MANIFEST.BDT_MANIFEST_ID, DT_MANIFEST.LOG_ID);
-//
-//        bdtRecord.setDtId(bdtManifestRecord.getDtId());
-//        bdtRecord.setPropertyTerm(serializer.getSnapshotString(snapshot.get("propertyTerm")));
-//        bdtRecord.setRepresentationTerm(serializer.getSnapshotString(snapshot.get("representationTerm")));
-//        bdtRecord.setDen(bdtRecord.getPropertyTerm() + ". " + bdtRecord.getRepresentationTerm());
-//        bdtRecord.setDefinition(serializer.getSnapshotString(snapshot.get("definition")));
-//        bdtRecord.setDefinitionSource(serializer.getSnapshotString(snapshot.get("definitionSource")));
-//        bdtRecord.setNamespaceId(serializer.getSnapshotId(snapshot.get("namespaceId")));
-//        bdtRecord.setIsDeprecated(serializer.getSnapshotByte(snapshot.get("deprecated")));
-//        bdtRecord.setIsNillable(serializer.getSnapshotByte(snapshot.get("nillable")));
-//        bdtRecord.setDefaultValue(serializer.getSnapshotString(snapshot.get("defaultValue")));
-//        bdtRecord.setFixedValue(serializer.getSnapshotString(snapshot.get("fixedValue")));
-//        bdtRecord.update();
-//
-//        cursorLog.setNextLogId(null);
-//        cursorLog.update(LOG.NEXT_LOG_ID);
-//        dslContext.update(LOG)
-//                .setNull(LOG.PREV_LOG_ID)
-//                .setNull(LOG.NEXT_LOG_ID)
-//                .where(LOG.LOG_ID.in(deleteLogTargets))
-//                .execute();
-//        dslContext.deleteFrom(LOG).where(LOG.LOG_ID.in(deleteLogTargets)).execute();
-//
-//        return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
-//    }
 
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());

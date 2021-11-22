@@ -223,6 +223,12 @@ public class CcNodeController {
             case BCC:
                 service.deleteBcc(user, manifestId);
                 break;
+            case DT:
+                service.deleteDt(user, manifestId);
+                break;
+            case DT_SC:
+                service.deleteDtSc(user, manifestId);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }

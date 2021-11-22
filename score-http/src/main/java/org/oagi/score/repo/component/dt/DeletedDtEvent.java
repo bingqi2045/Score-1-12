@@ -2,5 +2,5 @@ package org.oagi.score.repo.component.dt;
 
 import org.oagi.score.redis.event.Event;
 
-public class DeletedBccpEvent implements Event {
+public class DeletedDtEvent implements Event {
 }

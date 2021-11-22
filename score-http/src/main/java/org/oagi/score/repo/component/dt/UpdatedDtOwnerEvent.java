@@ -2,5 +2,5 @@ package org.oagi.score.repo.component.dt;
 
 import org.oagi.score.redis.event.Event;
 
-public class UpdatedBccpOwnerEvent implements Event {
+public class UpdatedDtOwnerEvent implements Event {
 }

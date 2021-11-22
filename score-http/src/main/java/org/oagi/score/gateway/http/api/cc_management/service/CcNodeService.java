@@ -30,10 +30,7 @@ import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
 import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
 import org.oagi.score.repo.component.bccp.*;
 import org.oagi.score.repo.component.dt.*;
-import org.oagi.score.repo.component.dt_sc.DtScWriteRepository;
-import org.oagi.score.repo.component.dt_sc.UpdateDtScPropertiesRepositoryRequest;
-import org.oagi.score.repo.component.dt_sc.UpdateDtScPropertiesRepositoryResponse;
-import org.oagi.score.repo.component.dt_sc.UpdatedDtScPropertiesEvent;
+import org.oagi.score.repo.component.dt_sc.*;
 import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
 import org.oagi.score.repo.component.graph.GraphContextRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
@@ -194,6 +191,26 @@ public class CcNodeService extends EventHandler {
         bccWriteRepository.deleteBcc(request);
 
         fireEvent(new DeletedBccEvent());
+    }
+
+    @Transactional
+    public void deleteDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        DeleteDtRepositoryRequest request =
+                new DeleteDtRepositoryRequest(user, dtManifestId);
+
+        dtWriteRepository.deleteDt(request);
+
+        fireEvent(new DeletedDtEvent());
+    }
+
+    @Transactional
+    public void deleteDtSc(AuthenticatedPrincipal user, BigInteger dtScManifestId) {
+        DeleteDtScRepositoryRequest request =
+                new DeleteDtScRepositoryRequest(user, dtScManifestId);
+
+        dtScWriteRepository.deleteDtSc(request);
+
+        fireEvent(new DeletedDtScEvent());
     }
 
     public CcAccNodeDetail getAccNodeDetail(AuthenticatedPrincipal user, CcAccNode accNode) {
@@ -1187,6 +1204,14 @@ public class CcNodeService extends EventHandler {
         bccpWriteRepository.updateBccpOwner(request);
 
         fireEvent(new UpdatedBccpOwnerEvent());
+    }
+
+    public void updateDtOwnerUserId(AuthenticatedPrincipal user, BigInteger dtManifestId, BigInteger ownerUserId) {
+        UpdateDtOwnerRepositoryRequest request =
+                new UpdateDtOwnerRepositoryRequest(user, dtManifestId, ownerUserId);
+        dtWriteRepository.updateDtOwner(request);
+
+        fireEvent(new UpdatedDtOwnerEvent());
     }
 
     @Transactional
