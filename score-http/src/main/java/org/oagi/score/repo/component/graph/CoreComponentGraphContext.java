@@ -140,6 +140,7 @@ public class CoreComponentGraphContext implements GraphContext {
     @AllArgsConstructor
     public class DtScManifest {
         private ULong dtScManifestId;
+        private ULong basedDtScId;
         private ULong ownerDtManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -331,13 +332,14 @@ public class CoreComponentGraphContext implements GraphContext {
                 dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID, DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
                         DT_SC.OBJECT_CLASS_TERM, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM, DT.STATE,
                         DT_SC.IS_DEPRECATED, DT_SC_MANIFEST.RELEASE_ID, DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
-                        DT_SC.CARDINALITY_MIN, DT_SC.CARDINALITY_MAX)
+                        DT_SC.CARDINALITY_MIN, DT_SC.CARDINALITY_MAX, DT_SC.BASED_DT_SC_ID)
                         .from(DT_SC_MANIFEST)
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
                         .join(DT).on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
                         .where(DT_SC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> new DtScManifest(
                                 record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID),
+                                record.get(DT_SC.BASED_DT_SC_ID),
                                 record.get(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID),
                                 record.get(DT_SC.CARDINALITY_MIN),
                                 record.get(DT_SC.CARDINALITY_MAX),
@@ -642,6 +644,7 @@ public class CoreComponentGraphContext implements GraphContext {
         Node node = Node.toNode(Node.NodeType.DT_SC, dtScManifest.getDtScManifestId(),
                 CcState.valueOf(dtScManifest.getState()));
         node.setPrevManifestId(dtScManifest.getPrevDtScManifestId());
+        node.put("basedDtScId", dtScManifest.getBasedDtScId());
         node.put("propertyTerm", dtScManifest.getPropertyTerm());
         node.put("objectClassTerm", dtScManifest.getObjectClassTerm());
         node.put("state", dtScManifest.getState());
