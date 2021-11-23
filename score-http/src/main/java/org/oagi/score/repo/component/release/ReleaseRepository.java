@@ -1267,6 +1267,46 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             }
         });
 
+        // DTs
+        map = dslContext.select(
+                        DT_MANIFEST.DT_MANIFEST_ID, DT.DEN, RELEASE.RELEASE_NUM,
+                        DT.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, DT.STATE,
+                        LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
+                .from(DT_MANIFEST)
+                .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .join(APP_USER).on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(LOG).on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
+                .where(and(
+                        or(
+                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ),
+                        DT.STATE.notEqual(CcState.Published.name())
+                ))
+                .fetchStream()
+                .collect(groupingBy(e -> e.value1()));
+
+        map.values().forEach(e -> {
+            AssignableNode node = new AssignableNode();
+            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setDen(e.get(0).value2());
+            node.setTimestamp(e.get(0).value4());
+            node.setOwnerUserId(e.get(0).value5());
+            node.setState(CcState.valueOf(e.get(0).value6()));
+            node.setRevision(e.get(0).value7().toBigInteger());
+            node.setType(CcType.DT);
+            if (e.size() == 2) { // manifest are located at both sides.
+                assignComponents.addUnassignableDtManifest(
+                        node.getManifestId(), node);
+            }
+            // manifest is only located at 'Working' release side.
+            else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+                assignComponents.addAssignableDtManifest(
+                        node.getManifestId(), node);
+            }
+        });
+
         return assignComponents;
     }
 
