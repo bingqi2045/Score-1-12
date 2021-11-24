@@ -377,7 +377,8 @@ public class ReleaseService implements InitializingBean {
                     request.getAssignedAsccpComponentManifestIds(),
                     request.getAssignedBccpComponentManifestIds(),
                     request.getAssignedCodeListComponentManifestIds(),
-                    request.getAssignedAgencyIdListComponentManifestIds());
+                    request.getAssignedAgencyIdListComponentManifestIds(),
+                    request.getAssignedDtComponentManifestIds());
 
             /*
              * Message Publishing
@@ -408,7 +409,7 @@ public class ReleaseService implements InitializingBean {
                     releaseCreateRequestEvent.getAsccpManifestIds(),
                     releaseCreateRequestEvent.getBccpManifestIds(),
                     releaseCreateRequestEvent.getCodeListManifestIds(),
-                    Collections.emptyList(),
+                    releaseCreateRequestEvent.getDtManifestIds(),
                     Collections.emptyList(),
                     Collections.emptyList(),
                     releaseCreateRequestEvent.getAgencyIdListManifestIds()
