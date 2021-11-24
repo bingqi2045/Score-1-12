@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -88,6 +88,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
      */
     public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
+    /**
+     * The column <code>oagi.dt_sc_manifest.based_dt_sc_manifest_id</code>.
+     */
+    public final TableField<DtScManifestRecord, ULong> BASED_DT_SC_MANIFEST_ID = createField(DSL.name("based_dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+
     private DtScManifest(Name alias, Table<DtScManifestRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -143,7 +148,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
     @Override
     public List<ForeignKey<DtScManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK, Keys.BASED_DT_SC_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
@@ -152,6 +157,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     private transient DtScManifest _dtScReplacementDtScManifestIdFk;
     private transient DtScManifest _dtScPrevDtScManifestIdFk;
     private transient DtScManifest _dtScNextDtScManifestIdFk;
+    private transient DtScManifest _basedDtScManifestIdFk;
 
     public Release release() {
         if (_release == null)
@@ -195,6 +201,13 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _dtScNextDtScManifestIdFk;
     }
 
+    public DtScManifest basedDtScManifestIdFk() {
+        if (_basedDtScManifestIdFk == null)
+            _basedDtScManifestIdFk = new DtScManifest(this, Keys.BASED_DT_SC_MANIFEST_ID_FK);
+
+        return _basedDtScManifestIdFk;
+    }
+
     @Override
     public DtScManifest as(String alias) {
         return new DtScManifest(DSL.name(alias), this);
@@ -222,11 +235,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

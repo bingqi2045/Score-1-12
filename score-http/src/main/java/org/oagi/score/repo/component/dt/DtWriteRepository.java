@@ -58,8 +58,8 @@ public class DtWriteRepository {
                 .where(DT.DT_ID.eq(basedBdtManifest.getDtId()))
                 .fetchOne();
 
-        List<DtScRecord> basedBdtScList = dslContext.selectFrom(DT_SC)
-                .where(DT_SC.OWNER_DT_ID.eq(basedBdt.getDtId()))
+        List<DtScManifestRecord> basedDtScManifestList = dslContext.selectFrom(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(basedBdtManifest.getDtManifestId()))
                 .fetch();
 
         DtRecord bdt = new DtRecord();
@@ -114,7 +114,12 @@ public class DtWriteRepository {
                     basedScMap.put(record.get(DT_SC.DT_SC_ID), record.get(DT_SC.BASED_DT_SC_ID));
                 });
 
-        for(DtScRecord basedDtSc: basedBdtScList) {
+        for(DtScManifestRecord basedDtScManifest: basedDtScManifestList) {
+
+            DtScRecord basedDtSc = dslContext.selectFrom(DT_SC)
+                    .where(DT_SC.DT_SC_ID.eq(basedDtScManifest.getDtScId()))
+                    .fetchOne();
+
             DtScRecord dtScRecord = new DtScRecord();
             DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
 
@@ -154,6 +159,7 @@ public class DtWriteRepository {
 
             dtScManifestRecord.setReleaseId(basedBdtManifest.getReleaseId());
             dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
+            dtScManifestRecord.setBasedDtScManifestId(basedDtScManifest.getDtScManifestId());
             dtScManifestRecord.setOwnerDtManifestId(bdtManifest.getDtManifestId());
 
             dtScManifestRecord.setDtScManifestId(
@@ -865,6 +871,42 @@ public class DtWriteRepository {
         return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
     }
 
+    private void createDtScForDerived(ULong dtManifestId,DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
+
+        DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId)).fetchOne();
+
+        DtRecord targetDtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
+
+        dtScRecord.setBasedDtScId(ULong.valueOf(dtScRecord.getDtScId().longValue()));
+        dtScRecord.setDtScId(null);
+        dtScRecord.setGuid(ScoreGuid.randomGuid());
+        dtScRecord.setOwnerDtId(targetDtRecord.getDtId());
+
+        dtScRecord.setDtScId(
+                dslContext.insertInto(DT_SC)
+                        .set(dtScRecord)
+                        .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
+        );
+
+        dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
+        dtScManifestRecord.setBasedDtScManifestId(ULong.valueOf(
+                dtScManifestRecord.getDtScManifestId().longValue()
+        ));
+        dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
+        dtScManifestRecord.setDtScManifestId(null);
+
+        dtScManifestRecord.setDtScManifestId(
+                dslContext.insertInto(DT_SC_MANIFEST)
+                        .set(dtScManifestRecord)
+                        .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
+        );
+
+        dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(dtManifestId))
+                .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
+    }
+
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
 
@@ -904,6 +946,9 @@ public class DtWriteRepository {
                         .set(dtScManifestRecord)
                         .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
         );
+
+        dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(ownerDtManifest.getDtManifestId()))
+                .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
 
         return new CreateDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
     }

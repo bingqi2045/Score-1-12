@@ -43,6 +43,14 @@ public class DtScWriteRepository {
     @Autowired
     private LogSerializer serializer;
 
+//    private void updateDerivedSc(DtScRecord baseDtScRecord) {
+//        dslContext.selectFrom(DT_SC).where(DT_SC.BASED_DT_SC_ID.eq(baseDtScRecord.getDtScId()))
+//                .fetchStream().forEach(dtScRecord -> {
+//
+//
+//        });
+//    }
+
     public UpdateDtScPropertiesRepositoryResponse updateDtScProperties(UpdateDtScPropertiesRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
