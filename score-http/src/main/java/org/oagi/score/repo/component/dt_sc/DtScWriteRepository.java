@@ -8,6 +8,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriResri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.service.common.data.AppUser;
@@ -43,13 +44,61 @@ public class DtScWriteRepository {
     @Autowired
     private LogSerializer serializer;
 
-//    private void updateDerivedSc(DtScRecord baseDtScRecord) {
-//        dslContext.selectFrom(DT_SC).where(DT_SC.BASED_DT_SC_ID.eq(baseDtScRecord.getDtScId()))
-//                .fetchStream().forEach(dtScRecord -> {
-//
-//
-//        });
-//    }
+    private void updateDerivedSc(DtScManifestRecord baseDtScManifestRecord, DtScRecord baseDtScRecord) {
+
+        dslContext.selectFrom(DT_SC_MANIFEST).where(DT_SC_MANIFEST.BASED_DT_SC_MANIFEST_ID.eq(baseDtScManifestRecord.getDtScManifestId()))
+                .fetchStream().forEach(dtScManifestRecord -> {
+                    DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
+                            .where(DT_SC.DT_SC_ID.eq(dtScManifestRecord.getDtScId())).fetchOne();
+
+            // update bdtSc record.
+            UpdateSetFirstStep<DtScRecord> firstStep = dslContext.update(DT_SC);
+            UpdateSetMoreStep<DtScRecord> moreStep = null;
+            if (compare(dtScRecord.getPropertyTerm(), baseDtScRecord.getPropertyTerm()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.PROPERTY_TERM, baseDtScRecord.getPropertyTerm());
+            }
+            if (compare(dtScRecord.getRepresentationTerm(), baseDtScRecord.getRepresentationTerm()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.REPRESENTATION_TERM, baseDtScRecord.getRepresentationTerm());
+            }
+            if (!dtScRecord.getCardinalityMax().equals(baseDtScRecord.getCardinalityMax())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.CARDINALITY_MAX, baseDtScRecord.getCardinalityMax());
+            }
+            if (!dtScRecord.getCardinalityMin().equals(baseDtScRecord.getCardinalityMin())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.CARDINALITY_MIN, baseDtScRecord.getCardinalityMin());
+            }
+            if (compare(dtScRecord.getDefinition(), baseDtScRecord.getDefinition()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.DEFINITION, baseDtScRecord.getDefinition());
+            }
+            if (compare(dtScRecord.getDefinitionSource(), baseDtScRecord.getDefinitionSource()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.DEFINITION_SOURCE, baseDtScRecord.getDefinitionSource());
+            }
+            if (compare(dtScRecord.getDefaultValue(), baseDtScRecord.getDefaultValue()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.DEFAULT_VALUE, baseDtScRecord.getDefaultValue())
+                        .setNull(DT_SC.FIXED_VALUE);
+            } else if (compare(dtScRecord.getFixedValue(), baseDtScRecord.getFixedValue()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT_SC.FIXED_VALUE, baseDtScRecord.getFixedValue())
+                        .setNull(DT_SC.DEFAULT_VALUE);
+            }
+
+            if (moreStep != null) {
+                moreStep.set(DT_SC.LAST_UPDATED_BY, baseDtScRecord.getLastUpdatedBy())
+                        .set(DT_SC.LAST_UPDATE_TIMESTAMP, baseDtScRecord.getLastUpdateTimestamp())
+                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId()))
+                        .execute();
+
+                updateDerivedSc(dtScManifestRecord, dslContext.selectFrom(DT_SC)
+                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId())).fetchOne());
+            }
+        });
+    }
 
     public UpdateDtScPropertiesRepositoryResponse updateDtScProperties(UpdateDtScPropertiesRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
@@ -134,6 +183,9 @@ public class DtScWriteRepository {
                     .set(DT_SC.LAST_UPDATE_TIMESTAMP, timestamp)
                     .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId()))
                     .execute();
+
+            updateDerivedSc(dtScManifestRecord, dslContext.selectFrom(DT_SC)
+                    .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId())).fetchOne());
         }
 
         updateBdtScPriList(dtScRecord.getDtScId(), request.getCcBdtScPriResriList());
@@ -270,7 +322,9 @@ public class DtScWriteRepository {
             }
         });
 
-        deleteDerivedValueDomain(dtScId, deleteList);
+        if (deleteList.size() > 0) {
+            deleteDerivedValueDomain(dtScId, deleteList);
+        }
 
         dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.in(
                 deleteList.stream().map(BdtScPriRestriRecord::getBdtScPriRestriId).collect(Collectors.toList())))
