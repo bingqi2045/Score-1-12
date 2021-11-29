@@ -1549,6 +1549,18 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .fetchInto(BigInteger.class)) {
             agencyIdService.updateAgencyIdListState(user, timestamp, agencyIdListManifestId, toCcState.toString());
         }
+
+        for (BigInteger dtManifestId : dslContext.select(DT_MANIFEST.DT_MANIFEST_ID)
+                .from(DT_MANIFEST)
+                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        DT.STATE.eq(fromCcState.name()),
+                        RELEASE.RELEASE_NUM.eq("Working")
+                ))
+                .fetchInto(BigInteger.class)) {
+            ccNodeService.updateDtState(user, dtManifestId, fromCcState, toCcState);
+        }
     }
 
     public boolean isThereAnyDraftRelease(BigInteger releaseId) {
