@@ -144,7 +144,7 @@ public class DefaultExportContextBuilder {
 
     private void createCDT(Map<ULong, SchemaModule> moduleMap) {
         List<DtRecord> cdtList = importedDataProvider.findDT().stream()
-                .filter(e -> e.getDtId().compareTo(ULong.valueOf(23)) > 0).collect(Collectors.toList());
+                .filter(e -> e.getBasedDtId() != null).collect(Collectors.toList());
         cdtList.forEach(bdt->{
             if (bdt.getBasedDtId() == null) {
                 throw new IllegalStateException();
