@@ -1385,6 +1385,9 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 for (BigInteger agencyIdListManifestId : validationRequest.getAssignedAgencyIdListComponentManifestIds()) {
                     agencyIdService.updateAgencyIdListState(user, timestamp, agencyIdListManifestId, toCcState.name());
                 }
+                for (BigInteger dtManifestId : validationRequest.getAssignedDtComponentManifestIds()) {
+                    ccNodeService.updateDtState(user, dtManifestId, fromCcState, toCcState);
+                }
             } else if (toCcState == Candidate) {
                 updateCCStates(user, fromCcState, toCcState, timestamp);
 

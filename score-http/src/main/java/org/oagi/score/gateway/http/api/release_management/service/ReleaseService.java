@@ -348,6 +348,7 @@ public class ReleaseService implements InitializingBean {
         validator.setAssignedAsccpComponentManifestIds(request.getAssignedAsccpComponentManifestIds());
         validator.setAssignedBccpComponentManifestIds(request.getAssignedBccpComponentManifestIds());
         validator.setAssignedCodeListComponentManifestIds(request.getAssignedBccpComponentManifestIds());
+        validator.setAssignedDtComponentManifestIds(request.getAssignedDtComponentManifestIds());
         return validator.validate();
     }
 
