@@ -9,7 +9,6 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScRefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
@@ -28,7 +27,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -65,29 +65,22 @@ public class DtWriteRepository {
         DtRecord bdt = new DtRecord();
         bdt.setGuid(ScoreGuid.randomGuid());
         bdt.setDataTypeTerm(basedBdt.getDataTypeTerm());
-
         if (basedBdt.getQualifier() != null) {
-            bdt.setQualifier("Qualifier_ " + basedBdt.getQualifier());
-        } else if (basedBdt.getBasedDtId() == null){
-            bdt.setQualifier(null);
-        } else {
-            bdt.setQualifier("Qualifier");
+            bdt.setQualifier(basedBdt.getQualifier());
         }
-
-        bdt.setDen(bdt.getQualifier() + "_ " + bdt.getDataTypeTerm() + ". Type");
+        bdt.setDen(((bdt.getQualifier() != null) ? (bdt.getQualifier() + "_ ") : "") + bdt.getDataTypeTerm() + ". Type");
 
         bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);
-        bdt.setCommonlyUsed((byte) 1);
+        bdt.setCommonlyUsed((byte) 0);
         bdt.setNamespaceId(null);
         bdt.setCreatedBy(userId);
         bdt.setLastUpdatedBy(userId);
         bdt.setOwnerUserId(userId);
         bdt.setCreationTimestamp(timestamp);
         bdt.setLastUpdateTimestamp(timestamp);
-
         bdt.setDtId(
                 dslContext.insertInto(DT)
                         .set(bdt)
@@ -114,7 +107,7 @@ public class DtWriteRepository {
                     basedScMap.put(record.get(DT_SC.DT_SC_ID), record.get(DT_SC.BASED_DT_SC_ID));
                 });
 
-        for(DtScManifestRecord basedDtScManifest: basedDtScManifestList) {
+        for (DtScManifestRecord basedDtScManifest : basedDtScManifestList) {
 
             DtScRecord basedDtSc = dslContext.selectFrom(DT_SC)
                     .where(DT_SC.DT_SC_ID.eq(basedDtScManifest.getDtScId()))
@@ -164,8 +157,8 @@ public class DtWriteRepository {
 
             dtScManifestRecord.setDtScManifestId(
                     dslContext.insertInto(DT_SC_MANIFEST)
-                    .set(dtScManifestRecord)
-                    .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId());
+                            .set(dtScManifestRecord)
+                            .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId());
 
             createBdtScPriRestri(dtScRecord.getDtScId(), basedDtSc.getDtScId(), basedBdtManifest.getBasedDtManifestId() != null);
         }
