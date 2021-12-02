@@ -40,5 +40,5 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private int revisionTrackingNum;
     private String spec;
 
-    private List<CcBdtPriResri> bdtPriRestriList;
+    private List<CcBdtPriRestri> bdtPriRestriList;
 }

@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Data
-public class CcBdtPriResri {
+public class CcBdtPriRestri {
 
     private BigInteger bdtPriRestriId;
     private PrimitiveRestriType type;

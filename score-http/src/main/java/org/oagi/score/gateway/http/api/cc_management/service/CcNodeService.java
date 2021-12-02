@@ -701,7 +701,7 @@ public class CcNodeService extends EventHandler {
         request.setDefinitionSource(detail.getDefinitionSource());
         request.setDeprecated(detail.isDeprecated());
         request.setNamespaceId(detail.getNamespaceId());
-        request.setBdtPriResris(detail.getBdtPriRestriList());
+        request.setBdtPriRestriList(detail.getBdtPriRestriList());
 
         UpdateDtPropertiesRepositoryResponse response =
                 dtWriteRepository.updateDtProperties(request);

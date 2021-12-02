@@ -1,7 +1,7 @@
 package org.oagi.score.repo.component.dt;
 
 import org.oagi.score.data.RepositoryRequest;
-import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriResri;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
@@ -19,7 +19,7 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     private String definitionSource;
     private boolean deprecated;
     private BigInteger namespaceId;
-    private List<CcBdtPriResri> bdtPriResris;
+    private List<CcBdtPriRestri> bdtPriRestriList;
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                BigInteger dtManifestId) {
@@ -94,11 +94,11 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
         this.namespaceId = namespaceId;
     }
 
-    public List<CcBdtPriResri> getBdtPriResris() {
-        return bdtPriResris;
+    public List<CcBdtPriRestri> getBdtPriRestriList() {
+        return bdtPriRestriList;
     }
 
-    public void setBdtPriResris(List<CcBdtPriResri> bdtPriResris) {
-        this.bdtPriResris = bdtPriResris;
+    public void setBdtPriRestriList(List<CcBdtPriRestri> bdtPriRestriList) {
+        this.bdtPriRestriList = bdtPriRestriList;
     }
 }

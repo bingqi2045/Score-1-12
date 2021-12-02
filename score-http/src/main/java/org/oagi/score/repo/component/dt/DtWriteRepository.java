@@ -4,7 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriResri;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -464,7 +464,7 @@ public class DtWriteRepository {
                     .fetchOne();
         }
 
-        updateBdtPriList(dtRecord.getDtId(), request.getBdtPriResris());
+        updateBdtPriList(dtRecord.getDtId(), request.getBdtPriRestriList());
 
         // creates new log for updated record.
         LogRecord logRecord =
@@ -587,7 +587,7 @@ public class DtWriteRepository {
         }
     }
 
-    private void updateBdtPriList(ULong dtId, List<CcBdtPriResri> list) {
+    private void updateBdtPriList(ULong dtId, List<CcBdtPriRestri> list) {
         List<BdtPriRestriRecord> records = dslContext
                 .selectFrom(BDT_PRI_RESTRI)
                 .where(BDT_PRI_RESTRI.BDT_ID.eq(dtId)).fetch();
@@ -595,7 +595,7 @@ public class DtWriteRepository {
         List<BdtPriRestriRecord> deleteList = new ArrayList<>();
 
         records.forEach(r -> {
-            if (!list.stream().map(CcBdtPriResri::getBdtPriRestriId).collect(Collectors.toList())
+            if (!list.stream().map(CcBdtPriRestri::getBdtPriRestriId).collect(Collectors.toList())
                     .contains(r.getBdtPriRestriId().toBigInteger())) {
                 deleteList.add(r);
             }
@@ -611,15 +611,15 @@ public class DtWriteRepository {
 
         List<BdtPriRestriRecord> insertedList = new ArrayList<>();
 
-        for (CcBdtPriResri restri: list) {
-            if(restri.getBdtPriRestriId() == null) {
+        for (CcBdtPriRestri restri : list) {
+            if (restri.getBdtPriRestriId() == null) {
                 // insert
                 BdtPriRestriRecord newBdtPriRestri = new BdtPriRestriRecord();
                 newBdtPriRestri.setIsDefault((byte) 0);
                 newBdtPriRestri.setBdtId(dtId);
-                if(restri.getType().equals(PrimitiveRestriType.CodeList)) {
+                if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
                     newBdtPriRestri.setCodeListId(ULong.valueOf(restri.getCodeListId()));
-                } else if(restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
+                } else if (restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
                     newBdtPriRestri.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
                 }
                 restri.setBdtPriRestriId(dslContext.insertInto(BDT_PRI_RESTRI)
