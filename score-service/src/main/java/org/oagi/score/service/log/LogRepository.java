@@ -104,14 +104,26 @@ public class LogRepository {
     }
 
     public List<LogRecord> getSortedLogListByReference(String reference, SortDirection sortDirection, CcType ccType) {
-        List<LogRecord> logRecordList =
-                dslContext.select(LOG.LOG_ID, LOG.HASH, LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM,
-                        LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
-                        LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
-                        .from(LOG)
-                        .where(and(LOG.REFERENCE.eq(reference),
-                                jsonValue(LOG.SNAPSHOT, "$.component").eq(JSON.valueOf(ccType.name().toLowerCase()))))
-                        .fetchInto(LogRecord.class);
+        List<LogRecord> logRecordList;
+
+        if (ccType.equals(CcType.CODE_LIST) || ccType.equals(CcType.AGENCY_ID_LIST)) {
+            logRecordList =
+                    dslContext.select(LOG.LOG_ID, LOG.HASH, LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM,
+                            LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
+                            LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
+                            .from(LOG)
+                            .where(LOG.REFERENCE.eq(reference))
+                            .fetchInto(LogRecord.class);
+        } else {
+            logRecordList =
+                    dslContext.select(LOG.LOG_ID, LOG.HASH, LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM,
+                            LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
+                            LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
+                            .from(LOG)
+                            .where(and(LOG.REFERENCE.eq(reference),
+                                    jsonValue(LOG.SNAPSHOT, "$.component").eq(JSON.valueOf(ccType.name().toLowerCase()))))
+                            .fetchInto(LogRecord.class);
+        }
 
         List<LogRecord> sortedLogRecordList = new ArrayList(logRecordList.size());
         if (logRecordList.size() > 0) {
