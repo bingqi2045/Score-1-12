@@ -1,9 +1,0 @@
-FROM docker.elastic.co/logstash/logstash:7.15.0
-
-# Download JDBC connector for Logstash
-RUN curl -L --output "mysql-connector-java-8.0.26.tar.gz" "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.26.tar.gz" \
-    && tar -xf "mysql-connector-java-8.0.26.tar.gz" "mysql-connector-java-8.0.26/mysql-connector-java-8.0.26.jar" \
-    && mv "mysql-connector-java-8.0.26/mysql-connector-java-8.0.26.jar" "mysql-connector-java-8.0.26.jar" \
-    && rm -r "mysql-connector-java-8.0.26" "mysql-connector-java-8.0.26.tar.gz"
-
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]

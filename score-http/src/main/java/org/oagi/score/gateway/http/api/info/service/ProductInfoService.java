@@ -1,8 +1,5 @@
 package org.oagi.score.gateway.http.api.info.service;
 
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.MainResponse;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -39,8 +36,6 @@ public class ProductInfoService {
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
-    @Autowired
-    private RestHighLevelClient restHighLevelClient;
 
     private InputStream getResourceAsStream(String resourcePath) {
         InputStream inputStream = getClass().getResourceAsStream(resourcePath);
@@ -124,13 +119,4 @@ public class ProductInfoService {
         }
     }
 
-    public ProductInfo elasticsearchMetadata() throws IOException {
-        ProductInfo metadata = new ProductInfo();
-        metadata.setProductName("Elasticsearch");
-
-        MainResponse response = restHighLevelClient.info(RequestOptions.DEFAULT);
-        metadata.setProductVersion(response.getVersion().getNumber());
-
-        return metadata;
-    }
 }

@@ -1,23 +1,11 @@
 package org.oagi.score.gateway.http.api.cc_management.controller;
 
-import org.apache.lucene.util.QueryBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
-import org.oagi.score.gateway.http.api.cc_management.data.elasticsearch.CoreComponent;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
-import org.oagi.score.gateway.http.api.cc_management.service.ElasticsearchCcListService;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchPage;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -32,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @RestController
 public class CcListController {
@@ -42,156 +29,6 @@ public class CcListController {
 
     @Autowired
     private CcListService service;
-
-    @Autowired
-    private ElasticsearchCcListService esCCListService;
-
-    @RequestMapping(value = "/core_component_search", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<CcList> getCcListBySearch(
-            @RequestParam(name = "releaseId") String releaseId,
-            @RequestParam(name = "den", required = false) String den,
-            @RequestParam(name = "definition", required = false) String definition,
-            @RequestParam(name = "module", required = false) String module,
-            @RequestParam(name = "types", required = false) String types,
-            @RequestParam(name = "states", required = false) String states,
-            @RequestParam(name = "deprecated", required = false) String deprecated,
-            @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
-            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
-            @RequestParam(name = "updateStart", required = false) String updateStart,
-            @RequestParam(name = "updateEnd", required = false) String updateEnd,
-            @RequestParam(name = "componentTypes", required = false) String componentTypes,
-            @RequestParam(name = "asccpTypes", required = false) String asccpTypes,
-            @RequestParam(name = "excludes", required = false) String excludes,
-            @RequestParam(name = "isBIEUsable", required = false) String isBIEUsable,
-            @RequestParam(name = "commonlyUsed", required = false) String commonlyUsed,
-            @RequestParam(name = "sortActive") String sortActive,
-            @RequestParam(name = "sortDirection") String sortDirection,
-            @RequestParam(name = "pageIndex") int pageIndex,
-            @RequestParam(name = "pageSize") int pageSize) {
-
-        BoolQueryBuilder filterQueryPart = QueryBuilders.boolQuery();
-        final NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
-
-        filterQueryPart.filter(matchQuery("release_id", releaseId));
-        List<String> selectedTypes = Arrays.asList(types.split(","))
-                .stream().map(String::toUpperCase).collect(Collectors.toList());
-        ;
-        filterQueryPart.filter(termsQuery("type.keyword", selectedTypes));
-
-        if (StringUtils.hasLength(states)) {
-            List<String> stateStrings = new ArrayList<>(Arrays.asList(states.split(",")));
-            filterQueryPart.filter(termsQuery("state.keyword", stateStrings));
-        }
-        if (StringUtils.hasLength(deprecated)) {
-            filterQueryPart.filter(matchQuery("deprecated", deprecated));
-        }
-        if (StringUtils.hasLength(ownerLoginIds)) {
-            List<String> owners = Arrays.asList(ownerLoginIds.split(","));
-            filterQueryPart.filter(termsQuery("owner.keyword", owners));
-        }
-        if (StringUtils.hasLength(updaterLoginIds)) {
-            List<String> updaters = Arrays.asList(updaterLoginIds.split(","));
-            filterQueryPart.filter(termsQuery("updater.keyword", updaters));
-        }
-        if (StringUtils.hasLength(den)) {
-            if (den.startsWith("\"") && den.endsWith("\"")) {
-                filterQueryPart.filter(termQuery("den.keyword", den.replace("\"", "")));
-            } else {
-                queryBuilder.withQuery(matchQuery("den", den)
-                        .fuzziness(FUZZINESS_DISTANCE)
-                        .fuzzyTranspositions(true)
-                        .fuzzyRewrite("top_terms_boost_" + NUMBER_OF_TOP_TERMS)
-                );
-            }
-        }
-        if (StringUtils.hasLength(definition)) {
-            queryBuilder.withQuery(matchQuery("definition", definition));
-        }
-        if (StringUtils.hasLength(module)) {
-            queryBuilder.withQuery(matchQuery("module", module));
-        }
-        if (StringUtils.hasLength(componentTypes)) {
-            List<String> componentTypesList = Arrays.asList(componentTypes.split(","));
-            filterQueryPart.filter(termsQuery("oagis_component_type.keyword", componentTypesList));
-        }
-        if (StringUtils.hasLength(asccpTypes)) {
-            List<String> asccpTypesList = Arrays.asList(asccpTypes.split(","));
-            filterQueryPart.filter(termsQuery("asccp_type.keyword", asccpTypesList));
-        }
-        if (StringUtils.hasLength(excludes)) {
-            List<String> excludesList = Arrays.asList(excludes.split(","));
-            filterQueryPart.filter(boolQuery().mustNot(termsQuery("manifest_id", excludesList)));
-        }
-        if (StringUtils.hasLength(updateStart)) {
-            Date startDate = new Date(Long.parseLong(updateStart));
-            filterQueryPart.filter(rangeQuery("last_update_timestamp").gte(startDate));
-        }
-        if (StringUtils.hasLength(updateEnd)) {
-            Date endDate = new Date(Long.parseLong(updateEnd));
-            filterQueryPart.filter(rangeQuery("last_update_timestamp").lte(endDate));
-        }
-
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageIndex, pageSize);
-        queryBuilder.withPageable(pageable)
-                .withFilter(filterQueryPart);
-        FieldSortBuilder sort = null;
-        if (StringUtils.hasLength(sortActive)) {
-            String field = camelToSnake(sortActive);
-            switch (sortActive) {
-                case "lastUpdateTimestamp":
-                    break;
-                case "revision":
-                    field = "revision_num";
-                    break;
-                case "valueDomain":
-                    field = "default_value_domain" + ".keyword";
-                    break;
-                default:
-                    field = field + ".keyword";
-                    break;
-            }
-            sort = SortBuilders.fieldSort(field);
-            if (sortDirection.equals("desc")) {
-                sort = sort.order(SortOrder.DESC);
-            } else {
-                sort = sort.order(SortOrder.ASC);
-            }
-            queryBuilder.withSort(sort);
-        }
-        final Query searchQuery = queryBuilder.build();
-        SearchPage<CoreComponent> esResponse = esCCListService.getCcListES(searchQuery);
-
-        PageResponse<CcList> ccListPageResponse = new PageResponse<CcList>();
-        ccListPageResponse.setList(esResponse.stream().map(cc ->
-                new CcList(CcType.valueOf(cc.getContent().getType()),
-                        cc.getContent().getManifestId(),
-                        cc.getContent().getGuid(),
-                        cc.getContent().getDen(),
-                        cc.getContent().getDefinition(),
-                        cc.getContent().getModule(),
-                        cc.getContent().getName(),
-                        cc.getContent().getDefinitionSource(),
-                        Optional.ofNullable(cc.getContent().getOagisComponentType()),
-                        cc.getContent().getDtType(),
-                        cc.getContent().getOwner(),
-                        CcState.valueOf(cc.getContent().getState()),
-                        cc.getContent().getRevisionNum(),
-                        Boolean.parseBoolean(cc.getContent().getDeprecated()),
-                        cc.getContent().getUpdater(),
-                        getDateFromString(cc.getContent().getLastUpdateTimestamp()),
-                        cc.getContent().getReleaseNum(),
-                        cc.getContent().getComponentId(),
-                        Boolean.parseBoolean(cc.getContent().getOwnedByDeveloper()),
-                        cc.getContent().getSixDigitId(),
-                        cc.getContent().getDefaultValueDomain())
-        ).collect(Collectors.toList()));
-        ccListPageResponse.setPage(esResponse.getNumber());
-        ccListPageResponse.setSize(esResponse.getSize());
-        ccListPageResponse.setLength((int) esResponse.getTotalElements());
-
-        return ccListPageResponse;
-    }
 
     private Date getDateFromString(String timeString) {
         DateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");

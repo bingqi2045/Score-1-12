@@ -49,11 +49,6 @@ public class InfoController {
         productInfos.add(productInfoService.gatewayMetadata());
         productInfos.add(productInfoService.databaseMetadata());
         productInfos.add(productInfoService.redisMetadata());
-        try {
-            productInfos.add(productInfoService.elasticsearchMetadata());
-        } catch (IOException e) {
-            logger.warn("Cannot retrieve the elasticsearch product info.", e);
-        }
         return productInfos;
     }
 

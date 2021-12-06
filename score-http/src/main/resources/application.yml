@@ -27,11 +27,6 @@ spring:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
 
-  elasticsearch:
-    rest:
-      uris: ${ES_SCHEME:http}://${ES_HOST:localhost}:${ES_PORT:9200}
-
-
 logging:
   level:
     org.springframework: INFO
