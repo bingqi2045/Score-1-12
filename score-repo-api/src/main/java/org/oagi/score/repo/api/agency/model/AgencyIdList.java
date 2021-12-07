@@ -85,8 +85,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private String versionId;
 
-    private BigInteger basedAgencyIdListId;
-
     private String definition;
 
     private String definitionSource;
@@ -213,14 +211,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.versionId = versionId;
     }
 
-    public BigInteger getBasedAgencyIdListId() {
-        return basedAgencyIdListId;
-    }
-
-    public void setBasedAgencyIdListId(BigInteger basedAgencyIdListId) {
-        this.basedAgencyIdListId = basedAgencyIdListId;
-    }
-
     public String getDefinition() {
         return definition;
     }
@@ -286,4 +276,34 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setAgencyIdListValueName(String agencyIdListValueName) {
         this.agencyIdListValueName = agencyIdListValueName;
     }
+
+    public BigInteger getBasedAgencyIdListManifestId() {
+        return basedAgencyIdListManifestId;
+    }
+
+    public void setBasedAgencyIdListManifestId(BigInteger basedAgencyIdListManifestId) {
+        this.basedAgencyIdListManifestId = basedAgencyIdListManifestId;
+    }
+
+    public String getBasedAgencyIdListName() {
+        return basedAgencyIdListName;
+    }
+
+    public void setBasedAgencyIdListName(String basedAgencyIdListName) {
+        this.basedAgencyIdListName = basedAgencyIdListName;
+    }
+
+    private BigInteger basedAgencyIdListManifestId;
+    private String basedAgencyIdListName;
+
+    public BigInteger getBasedAgencyIdListId() {
+        return basedAgencyIdListId;
+    }
+
+    public void setBasedAgencyIdListId(BigInteger basedAgencyIdListId) {
+        this.basedAgencyIdListId = basedAgencyIdListId;
+    }
+
+    private BigInteger basedAgencyIdListId;
+
 }
