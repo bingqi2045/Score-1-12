@@ -72,6 +72,7 @@ public class DtWriteRepository {
 
         bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
+        bdt.setContentComponentDefinition(basedBdt.getContentComponentDefinition());
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);
         bdt.setCommonlyUsed((byte) 0);
