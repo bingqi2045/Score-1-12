@@ -2,10 +2,9 @@ package org.oagi.score.export.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
+import org.jdom2.*;
 import org.jdom2.input.DOMBuilder;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.oagi.score.common.ScoreConstants;
@@ -15,6 +14,8 @@ import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.populate.helper.Context;
 import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.common.util.OagisComponentType.Extension;
@@ -35,6 +37,8 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROT
 
 @Scope(SCOPE_PROTOTYPE)
 public class XMLExportSchemaModuleVisitor {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private SchemaModule schemaModule;
     private File baseDir;
@@ -45,9 +49,9 @@ public class XMLExportSchemaModuleVisitor {
 
     private final Namespace OAGI_NS = Namespace.getNamespace("", ScoreConstants.OAGI_NS);
     private final Namespace XSD_NS = Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
-    
+
     private CoreComponentService coreComponentService;
-    
+
     private ImportedDataProvider importedDataProvider;
 
     public XMLExportSchemaModuleVisitor(CoreComponentService coreComponentService, ImportedDataProvider importedDataProvider) {
@@ -106,7 +110,12 @@ public class XMLExportSchemaModuleVisitor {
         return jdomBuilder.build(document);
     }
 
-    
+    private Element text2Element(String text) throws IOException, JDOMException {
+        SAXBuilder builder = new SAXBuilder();
+        return builder.build(new StringReader(text)).getRootElement();
+    }
+
+
     public void visitIncludeModule(SchemaModule includeSchemaModule) throws Exception {
         Element includeElement = new Element("include", XSD_NS);
         String schemaLocation = getRelativeSchemaLocation(includeSchemaModule);
@@ -114,7 +123,7 @@ public class XMLExportSchemaModuleVisitor {
         rootElement.addContent(includeElement);
     }
 
-    
+
     public void visitImportModule(SchemaModule importSchemaModule) throws Exception {
         Element importElement = new Element("import", XSD_NS);
         String schemaLocation = getRelativeSchemaLocation(importSchemaModule);
@@ -122,7 +131,7 @@ public class XMLExportSchemaModuleVisitor {
         rootElement.addContent(importElement);
     }
 
-    
+
     public void visitAgencyId(AgencyId agencyId) throws Exception {
         // ContentType part
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
@@ -173,7 +182,7 @@ public class XMLExportSchemaModuleVisitor {
         }
     }
 
-    
+
     public void visitCodeList(SchemaCodeList schemaCodeList) throws Exception {
         String name = schemaCodeList.getName();
         if (schemaCodeList.getEnumTypeGuid() != null) {
@@ -213,7 +222,7 @@ public class XMLExportSchemaModuleVisitor {
         }
     }
 
-    
+
     public void visitXBTSimpleType(XBTSimpleType xbtSimpleType) throws Exception {
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
         String name = xbtSimpleType.getName();
@@ -223,9 +232,9 @@ public class XMLExportSchemaModuleVisitor {
         String schemaDefinition = xbtSimpleType.getSchemaDefinition();
         schemaDefinition =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-                schemaDefinition +
-                "</xsd:schema>";
+                        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+                        schemaDefinition +
+                        "</xsd:schema>";
 
         Document document = createDocument(schemaDefinition.getBytes());
         for (Element child : document.getRootElement().getChildren()) {
@@ -241,7 +250,7 @@ public class XMLExportSchemaModuleVisitor {
         rootElement.addContent(simpleTypeElement);
     }
 
-    
+
     public void visitBDTSimpleType(BDTSimpleType bdtSimpleType) throws Exception {
         Element simpleTypeElement = new Element("simpleType", XSD_NS);
         String name = bdtSimpleType.getName();
@@ -339,8 +348,8 @@ public class XMLExportSchemaModuleVisitor {
             simpleTypeElement.addContent(restrictionElement);
             String name = bdtSimpleType.getName();
 
-            if ( (name.endsWith("CodeContentType") && !name.equals("CodeContentType")) ||
-                    (name.endsWith("IDContentType") && !name.equals("IDContentType")) ) {
+            if ((name.endsWith("CodeContentType") && !name.equals("CodeContentType")) ||
+                    (name.endsWith("IDContentType") && !name.equals("IDContentType"))) {
                 String baseName;
                 if (name.endsWith("CodeContentType")) {
                     baseName = getCodeListName(bdtSimpleType);
@@ -364,7 +373,7 @@ public class XMLExportSchemaModuleVisitor {
     }
 
     private void setDocumentationForRestrictionOrUnionOrExtension(Element extensionElement, BDTSimple bdtSimple) {
-        DtRecord  dataType = bdtSimple.getDataType();
+        DtRecord dataType = bdtSimple.getDataType();
         String definition = dataType.getContentComponentDefinition();
 
         Element annotationElement = new Element("annotation", XSD_NS);
@@ -420,7 +429,7 @@ public class XMLExportSchemaModuleVisitor {
         return agencyIdList.getName();
     }
 
-    
+
     public void visitBDTSimpleContent(BDTSimpleContent bdtSimpleContent) throws Exception {
         Element complexTypeElement = new Element("complexType", XSD_NS);
         complexTypeElement.setAttribute("name", bdtSimpleContent.getName());
@@ -527,7 +536,7 @@ public class XMLExportSchemaModuleVisitor {
         String dataTypeTerm = bdtSimple.getDataType().getDataTypeTerm();
         String propertyTerm = bdtSc.getPropertyTerm();
         String representationTerm = bdtSc.getRepresentationTerm();
-        String dictionaryEntryName = dataTypeTerm  + ". " + propertyTerm + ". " + representationTerm;
+        String dictionaryEntryName = dataTypeTerm + ". " + propertyTerm + ". " + representationTerm;
         ccts_DictionaryEntryName.setText(dictionaryEntryName);
 
         Element ccts_Definition = new Element("ccts_Definition", OAGI_NS);
@@ -618,8 +627,8 @@ public class XMLExportSchemaModuleVisitor {
                 if (lastEightChars.matches("[0-9]{8}")) {
                     schemeOrListVersionID =
                             lastEightChars.substring(0, 4) + "-" +
-                            lastEightChars.substring(4, 6) + "-" +
-                            lastEightChars.substring(6, 8);
+                                    lastEightChars.substring(4, 6) + "-" +
+                                    lastEightChars.substring(6, 8);
                     name = name.substring(0, name.length() - 8);
                 } else {
                     schemeOrListVersionID = "" + name.charAt(name.length() - 1);
@@ -671,7 +680,7 @@ public class XMLExportSchemaModuleVisitor {
     }
 
     private void setDocumentation(Element element, String definition, String definitionSource) {
-        if (definition == null) {
+        if (StringUtils.isEmpty(definition)) {
             return;
         }
 
@@ -681,13 +690,45 @@ public class XMLExportSchemaModuleVisitor {
         Element documentationElement = new Element("documentation", XSD_NS);
         annotationElement.addContent(documentationElement);
 
-        if (definitionSource != null) {
+        documentationElement.setAttribute("lang", "en", Namespace.XML_NAMESPACE);
+
+        if (!StringUtils.isEmpty(definitionSource)) {
             documentationElement.setAttribute("source", definitionSource);
         }
-        documentationElement.setText(definition);
+
+        // @TODO:
+        // Currently, there are an assumption that the `definition` property must be
+        // either a 'XML' formatted text or a plain text.
+        // In order to have a flexibility of this,
+        // The `definition` property should have a 'Content-Type',
+        // so that can be used for finding an appropriate parsing logic.
+        if (definition.startsWith("<") && definition.endsWith(">")) {
+            try {
+                Element doc = text2Element("<doc>" + definition + "</doc>");
+                doc.getChildren().forEach(e -> {
+                    Element clone = e.clone();
+                    setNamespaceRecursively(clone, Namespace.getNamespace(ScoreConstants.OAGI_NS));
+                    documentationElement.addContent(clone);
+                });
+            } catch (IOException | JDOMException e) {
+                logger.warn("Can't parse a given text: " + definition, e);
+            }
+        } else {
+            if (Pattern.compile("[<>&'\"]").matcher(definition).find()) {
+                documentationElement.setContent(new CDATA(definition));
+            } else {
+                documentationElement.setText(definition);
+            }
+        }
     }
 
-    
+    private void setNamespaceRecursively(Element element, Namespace namespace) {
+        element.setNamespace(namespace);
+        for (Element child : element.getChildren()) {
+            setNamespaceRecursively(child, namespace);
+        }
+    }
+
     public void visitBCCP(BCCP bccp) throws Exception {
         Element element = addSimpleElement(bccp);
         if (bccp.isNillable()) {
@@ -713,7 +754,7 @@ public class XMLExportSchemaModuleVisitor {
         return element;
     }
 
-    
+
     public void visitACCComplexType(ACCComplexType accComplexType) throws Exception {
         switch (accComplexType.getOagisComponentType()) {
             case OAGIS10Nouns:
@@ -876,7 +917,7 @@ public class XMLExportSchemaModuleVisitor {
                 BccRecord bcc = importedDataProvider.findBCC(bccManifest.getBccId());
                 BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
                 BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
-                DtRecord  bdt = importedDataProvider.findDT(bccp.getBdtId());
+                DtRecord bdt = importedDataProvider.findDT(bccp.getBdtId());
 
                 if (bcc.getEntityType() == 0) {
                     Element attributeElement = new Element("attribute", XSD_NS);
@@ -940,12 +981,12 @@ public class XMLExportSchemaModuleVisitor {
         return null;
     }
 
-    
+
     public void visitACCGroup(ACCGroup accGroup) throws Exception {
         // not implemented yet
     }
 
-    
+
     public void visitASCCPComplexType(ASCCPComplexType asccpComplexType) throws Exception {
         /*
          * <xsd:group> element doesn't need to be created here.
@@ -960,12 +1001,12 @@ public class XMLExportSchemaModuleVisitor {
         }
     }
 
-    
+
     public void visitASCCPGroup(ASCCPGroup asccpGroup) throws Exception {
         // not implemented yet
     }
 
-    
+
     public void visitBlobContent(byte[] content) throws Exception {
         this.document = createDocument(content);
         this.rootElement = this.document.getRootElement();
@@ -993,7 +1034,7 @@ public class XMLExportSchemaModuleVisitor {
         return FilenameUtils.separatorsToUnix(pathRelative.toString()) + ".xsd";
     }
 
-    
+
     public File endSchemaModule(SchemaModule schemaModule) throws Exception {
 
 
