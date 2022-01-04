@@ -8,6 +8,7 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.businessterm.BusinessTermReadRepository;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
@@ -161,4 +162,14 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
     public MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException {
         return new JooqMessageWriteRepository(this.dslContext);
     }
+
+//    @Override
+//    public BusinessTermReadRepository createBusinessTermReadRepository() throws ScoreDataAccessException {
+//        return new JooqBusinessTermReadRepository(this.dslContext);
+//    }
+
+//    @Override
+//    public MessageWriteRepository createMessageWriteRepository() throws ScoreDataAccessException {
+//        return new JooqMessageWriteRepository(this.dslContext);
+//    }
 }
