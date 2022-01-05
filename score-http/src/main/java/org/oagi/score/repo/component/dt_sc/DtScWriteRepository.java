@@ -451,6 +451,14 @@ public class DtScWriteRepository {
                 ))
                 .fetchOne();
 
+        // Delete all DT_SCs derived from the target DT_SC in the request
+        for (DtScManifestRecord derivedDtScManifestRecord : dslContext.selectFrom(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.BASED_DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getDtScManifestId()))
+                .fetch()) {
+            deleteDtSc(new DeleteDtScRepositoryRequest(request.getUser(), request.getLocalDateTime(),
+                    derivedDtScManifestRecord.getDtScManifestId().toBigInteger()));
+        }
+
         DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
                 .where(DT_SC.DT_SC_ID.eq(dtScManifestRecord.getDtScId()))
                 .fetchOne();
@@ -477,18 +485,84 @@ public class DtScWriteRepository {
         }
 
         // delete from Tables
-        dslContext.update(DT_SC_MANIFEST).setNull(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
-                .where(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getDtScManifestId())).execute();
-        dslContext.update(DT_SC_MANIFEST).setNull(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID)
-                .where(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getDtScManifestId())).execute();
+        DtScManifestRecord prevDtScManifestRecord = null;
+        DtScManifestRecord nextDtScManifestRecord = null;
+        if (dtScManifestRecord.getPrevDtScManifestId() != null) {
+            prevDtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
+                    .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getPrevDtScManifestId()))
+                    .fetchOne();
+        }
+        if (dtScManifestRecord.getNextDtScManifestId() != null) {
+            nextDtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
+                    .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getNextDtScManifestId()))
+                    .fetchOne();
+        }
+        if (prevDtScManifestRecord != null) {
+            if (nextDtScManifestRecord != null) {
+                dslContext.update(DT_SC_MANIFEST)
+                        .set(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID, nextDtScManifestRecord.getDtScManifestId())
+                        .execute();
+            } else {
+                dslContext.update(DT_SC_MANIFEST)
+                        .setNull(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
+                        .execute();
+            }
+        }
+        if (nextDtScManifestRecord != null) {
+            if (prevDtScManifestRecord != null) {
+                dslContext.update(DT_SC_MANIFEST)
+                        .set(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID, prevDtScManifestRecord.getDtScManifestId())
+                        .execute();
+            } else {
+                dslContext.update(DT_SC_MANIFEST)
+                        .setNull(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID)
+                        .execute();
+            }
+        }
         dtScManifestRecord.delete();
 
         if (dslContext.selectCount().from(DT_SC_MANIFEST)
-                .where(DT_SC_MANIFEST.DT_SC_ID.eq(dtScManifestRecord.getDtScId())).fetchOne(0, int.class) == 0) {
-            dslContext.update(DT_SC).setNull(DT_SC.NEXT_DT_SC_ID)
-                    .where(DT_SC.NEXT_DT_SC_ID.eq(dtScRecord.getDtScId())).execute();
-            dslContext.update(DT_SC).setNull(DT_SC.PREV_DT_SC_ID)
-                    .where(DT_SC.PREV_DT_SC_ID.eq(dtScRecord.getDtScId())).execute();
+                .where(DT_SC_MANIFEST.DT_SC_ID.eq(dtScManifestRecord.getDtScId()))
+                .fetchOneInto(Integer.class) == 0) {
+            
+            dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
+                    .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScRecord.getDtScId()))
+                    .execute();
+
+            DtScRecord prevDtScRecord = null;
+            DtScRecord nextDtScRecord = null;
+            if (dtScRecord.getPrevDtScId() != null) {
+                prevDtScRecord = dslContext.selectFrom(DT_SC)
+                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getPrevDtScId()))
+                        .fetchOne();
+            }
+            if (dtScRecord.getNextDtScId() != null) {
+                nextDtScRecord = dslContext.selectFrom(DT_SC)
+                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getNextDtScId()))
+                        .fetchOne();
+            }
+            if (prevDtScRecord != null) {
+                if (nextDtScRecord != null) {
+                    dslContext.update(DT_SC)
+                            .set(DT_SC.NEXT_DT_SC_ID, nextDtScRecord.getDtScId())
+                            .execute();
+                } else {
+                    dslContext.update(DT_SC)
+                            .setNull(DT_SC.NEXT_DT_SC_ID)
+                            .execute();
+                }
+            }
+            if (nextDtScRecord != null) {
+                if (prevDtScRecord != null) {
+                    dslContext.update(DT_SC)
+                            .set(DT_SC.PREV_DT_SC_ID, prevDtScRecord.getDtScId())
+                            .execute();
+                } else {
+                    dslContext.update(DT_SC)
+                            .setNull(DT_SC.PREV_DT_SC_ID)
+                            .execute();
+                }
+            }
             dtScRecord.delete();
         }
 
