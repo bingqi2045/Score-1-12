@@ -127,7 +127,7 @@ public class CcListRepository {
             }
         }
 
-        List<CcList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch()).map(row -> {
+        List<CcList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch()).map((RecordMapper<Record, CcList>) row -> {
             CcList ccList = new CcList();
             ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
             ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
@@ -140,7 +140,7 @@ public class CcListRepository {
             ccList.setName(row.getValue("term", String.class));
             Integer componentType = row.getValue("oagis_component_type", Integer.class);
             if (componentType != null) {
-                ccList.setOagisComponentType(OagisComponentType.valueOf(componentType));
+                ccList.setOagisComponentType(valueOf(componentType));
             }
             ccList.setState(CcState.valueOf(row.getValue("state", String.class)));
             ccList.setDeprecated(row.getValue("is_deprecated", Byte.class) == 1);

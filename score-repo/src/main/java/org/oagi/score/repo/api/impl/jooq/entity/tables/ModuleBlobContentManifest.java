@@ -52,42 +52,58 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     }
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.module_blob_content_manifest_id</code>. Primary key.
+     * The column
+     * <code>oagi.module_blob_content_manifest.module_blob_content_manifest_id</code>.
+     * Primary key.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("module_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.module_set_release_id</code>. A foreign key of the module set release record.
+     * The column
+     * <code>oagi.module_blob_content_manifest.module_set_release_id</code>. A
+     * foreign key of the module set release record.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.blob_content_manifest_id</code>. A foreign key of the blob content manifest record.
+     * The column
+     * <code>oagi.module_blob_content_manifest.blob_content_manifest_id</code>.
+     * A foreign key of the blob content manifest record.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the blob content manifest record.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.module_id</code>. This indicates a module.
+     * The column <code>oagi.module_blob_content_manifest.module_id</code>. This
+     * indicates a module.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
+     * The column <code>oagi.module_blob_content_manifest.created_by</code>.
+     * Foreign key to the APP_USER table. It indicates the user who created this
+     * record.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
+     * The column
+     * <code>oagi.module_blob_content_manifest.last_updated_by</code>. Foreign
+     * key to the APP_USER table referring to the last user who updated the
+     * record.
      */
     public final TableField<ModuleBlobContentManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.creation_timestamp</code>. The timestamp when the record was first created.
+     * The column
+     * <code>oagi.module_blob_content_manifest.creation_timestamp</code>. The
+     * timestamp when the record was first created.
      */
     public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
-     * The column <code>oagi.module_blob_content_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
+     * The column
+     * <code>oagi.module_blob_content_manifest.last_update_timestamp</code>. The
+     * timestamp when the record was last updated.
      */
     public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
@@ -100,14 +116,16 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     }
 
     /**
-     * Create an aliased <code>oagi.module_blob_content_manifest</code> table reference
+     * Create an aliased <code>oagi.module_blob_content_manifest</code> table
+     * reference
      */
     public ModuleBlobContentManifest(String alias) {
         this(DSL.name(alias), MODULE_BLOB_CONTENT_MANIFEST);
     }
 
     /**
-     * Create an aliased <code>oagi.module_blob_content_manifest</code> table reference
+     * Create an aliased <code>oagi.module_blob_content_manifest</code> table
+     * reference
      */
     public ModuleBlobContentManifest(Name alias) {
         this(alias, MODULE_BLOB_CONTENT_MANIFEST);
@@ -126,12 +144,12 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK, Indexes.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK);
+        return Arrays.asList(Indexes.MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK, Indexes.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK);
     }
 
     @Override
@@ -145,13 +163,8 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     }
 
     @Override
-    public List<UniqueKey<ModuleBlobContentManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<ModuleBlobContentManifestRecord>>asList(Keys.KEY_MODULE_BLOB_CONTENT_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<ModuleBlobContentManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleBlobContentManifestRecord, ?>>asList(Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK, Keys.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK);
     }
 
     private transient ModuleSetRelease _moduleSetRelease;

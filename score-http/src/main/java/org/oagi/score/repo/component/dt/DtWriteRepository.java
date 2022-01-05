@@ -65,10 +65,10 @@ public class DtWriteRepository {
         DtRecord bdt = new DtRecord();
         bdt.setGuid(ScoreGuid.randomGuid());
         bdt.setDataTypeTerm(basedBdt.getDataTypeTerm());
-        if (basedBdt.getQualifier() != null) {
-            bdt.setQualifier(basedBdt.getQualifier());
+        if (basedBdt.getQualifier_() != null) {
+            bdt.setQualifier_(basedBdt.getQualifier_());
         }
-        bdt.setDen(((bdt.getQualifier() != null) ? (bdt.getQualifier() + "_ ") : "") + bdt.getDataTypeTerm() + ". Type");
+        bdt.setDen(((bdt.getQualifier_() != null) ? (bdt.getQualifier_() + "_ ") : "") + bdt.getDataTypeTerm() + ". Type");
 
         bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
@@ -415,7 +415,7 @@ public class DtWriteRepository {
         // update bdt record.
         UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
         UpdateSetMoreStep<DtRecord> moreStep = null;
-        if (compare(dtRecord.getQualifier(), request.getQualifier()) != 0) {
+        if (compare(dtRecord.getQualifier_(), request.getQualifier()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT.QUALIFIER, request.getQualifier())
                     .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");

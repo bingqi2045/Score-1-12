@@ -49,7 +49,8 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     }
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.agency_id_list_value_manifest_id</code>.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
@@ -59,32 +60,39 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     public final TableField<AgencyIdListValueManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_value_id</code>.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.agency_id_list_value_id</code>.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_manifest_id</code>.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.agency_id_list_manifest_id</code>.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.agency_id_list_value_manifest.conflict</code>. This
+     * indicates that there is a conflict between self and relationship.
      */
     public final TableField<AgencyIdListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.replacement_agency_id_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.replacement_agency_id_list_value_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.prev_agency_id_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.prev_agency_id_list_value_manifest_id</code>.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.agency_id_list_value_manifest.next_agency_id_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.agency_id_list_value_manifest.next_agency_id_list_value_manifest_id</code>.
      */
     public final TableField<AgencyIdListValueManifestRecord, ULong> NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
@@ -97,14 +105,16 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     }
 
     /**
-     * Create an aliased <code>oagi.agency_id_list_value_manifest</code> table reference
+     * Create an aliased <code>oagi.agency_id_list_value_manifest</code> table
+     * reference
      */
     public AgencyIdListValueManifest(String alias) {
         this(DSL.name(alias), AGENCY_ID_LIST_VALUE_MANIFEST);
     }
 
     /**
-     * Create an aliased <code>oagi.agency_id_list_value_manifest</code> table reference
+     * Create an aliased <code>oagi.agency_id_list_value_manifest</code> table
+     * reference
      */
     public AgencyIdListValueManifest(Name alias) {
         this(alias, AGENCY_ID_LIST_VALUE_MANIFEST);
@@ -123,7 +133,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -137,13 +147,8 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     }
 
     @Override
-    public List<UniqueKey<AgencyIdListValueManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<AgencyIdListValueManifestRecord>>asList(Keys.KEY_AGENCY_ID_LIST_VALUE_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<AgencyIdListValueManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListValueManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
+        return Arrays.asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
     }
 
     private transient Release _release;

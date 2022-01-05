@@ -49,7 +49,8 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.blob_content_manifest.blob_content_manifest_id</code>.
+     * The column
+     * <code>oagi.blob_content_manifest.blob_content_manifest_id</code>.
      */
     public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
@@ -64,17 +65,20 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     public final TableField<BlobContentManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.blob_content_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.blob_content_manifest.conflict</code>. This
+     * indicates that there is a conflict between self and relationship.
      */
     public final TableField<BlobContentManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.blob_content_manifest.prev_blob_content_manifest_id</code>.
+     * The column
+     * <code>oagi.blob_content_manifest.prev_blob_content_manifest_id</code>.
      */
     public final TableField<BlobContentManifestRecord, ULong> PREV_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("prev_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.blob_content_manifest.next_blob_content_manifest_id</code>.
+     * The column
+     * <code>oagi.blob_content_manifest.next_blob_content_manifest_id</code>.
      */
     public final TableField<BlobContentManifestRecord, ULong> NEXT_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("next_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
@@ -113,7 +117,7 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -127,13 +131,8 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<BlobContentManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<BlobContentManifestRecord>>asList(Keys.KEY_BLOB_CONTENT_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<BlobContentManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BlobContentManifestRecord, ?>>asList(Keys.BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK, Keys.BLOB_CONTENT_MANIFEST_RELEASE_ID_FK, Keys.BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK, Keys.BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK, Keys.BLOB_CONTENT_MANIFEST_RELEASE_ID_FK, Keys.BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK, Keys.BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK);
     }
 
     private transient BlobContent _blobContent;

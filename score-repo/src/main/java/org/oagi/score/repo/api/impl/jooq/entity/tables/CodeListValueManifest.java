@@ -49,7 +49,8 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     }
 
     /**
-     * The column <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
      */
     public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
@@ -64,27 +65,33 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
+     * The column
+     * <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
      */
     public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.code_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.code_list_value_manifest.conflict</code>. This
+     * indicates that there is a conflict between self and relationship.
      */
     public final TableField<CodeListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column
+     * <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<CodeListValueManifestRecord, ULong> REPLACEMENT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
-     * The column <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
      */
     public final TableField<CodeListValueManifestRecord, ULong> PREV_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
+     * The column
+     * <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
      */
     public final TableField<CodeListValueManifestRecord, ULong> NEXT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
@@ -97,14 +104,16 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     }
 
     /**
-     * Create an aliased <code>oagi.code_list_value_manifest</code> table reference
+     * Create an aliased <code>oagi.code_list_value_manifest</code> table
+     * reference
      */
     public CodeListValueManifest(String alias) {
         this(DSL.name(alias), CODE_LIST_VALUE_MANIFEST);
     }
 
     /**
-     * Create an aliased <code>oagi.code_list_value_manifest</code> table reference
+     * Create an aliased <code>oagi.code_list_value_manifest</code> table
+     * reference
      */
     public CodeListValueManifest(Name alias) {
         this(alias, CODE_LIST_VALUE_MANIFEST);
@@ -123,7 +132,7 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -137,13 +146,8 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     }
 
     @Override
-    public List<UniqueKey<CodeListValueManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<CodeListValueManifestRecord>>asList(Keys.KEY_CODE_LIST_VALUE_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<CodeListValueManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueManifestRecord, ?>>asList(Keys.CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK);
     }
 
     private transient Release _release;

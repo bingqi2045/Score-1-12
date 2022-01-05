@@ -22,14 +22,16 @@ public class CodeListValueManifestRecord extends UpdatableRecordImpl<CodeListVal
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
      */
     public void setCodeListValueManifestId(ULong value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
      */
     public ULong getCodeListValueManifestId() {
         return (ULong) get(0);
@@ -64,70 +66,82 @@ public class CodeListValueManifestRecord extends UpdatableRecordImpl<CodeListVal
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
      */
     public void setCodeListManifestId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
      */
     public ULong getCodeListManifestId() {
         return (ULong) get(3);
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * Setter for <code>oagi.code_list_value_manifest.conflict</code>. This
+     * indicates that there is a conflict between self and relationship.
      */
     public void setConflict(Byte value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * Getter for <code>oagi.code_list_value_manifest.conflict</code>. This
+     * indicates that there is a conflict between self and relationship.
      */
     public Byte getConflict() {
         return (Byte) get(4);
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * Setter for
+     * <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public void setReplacementCodeListValueManifestId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * Getter for
+     * <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public ULong getReplacementCodeListValueManifestId() {
         return (ULong) get(5);
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
      */
     public void setPrevCodeListValueManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
      */
     public ULong getPrevCodeListValueManifestId() {
         return (ULong) get(6);
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
      */
     public void setNextCodeListValueManifestId(ULong value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
      */
     public ULong getNextCodeListValueManifestId() {
         return (ULong) get(7);

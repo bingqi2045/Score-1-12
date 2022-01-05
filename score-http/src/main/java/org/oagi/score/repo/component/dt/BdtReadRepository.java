@@ -42,7 +42,7 @@ public class BdtReadRepository {
         BdtNode bdtNode = new BdtNode();
 
         bdtNode.setDataTypeTerm(dtRecord.getDataTypeTerm());
-        bdtNode.setQualifier(dtRecord.getQualifier());
+        bdtNode.setQualifier(dtRecord.getQualifier_());
         bdtNode.setDefinition(dtRecord.getDefinition());
         bdtNode.setDen(dtRecord.getDen());
         bdtNode.setBdtManifestId(dtManifestId);

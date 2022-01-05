@@ -64,84 +64,98 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
      */
     public void setBasedCodeListManifestId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
      */
     public ULong getBasedCodeListManifestId() {
         return (ULong) get(3);
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * Setter for <code>oagi.code_list_manifest.conflict</code>. This indicates
+     * that there is a conflict between self and relationship.
      */
     public void setConflict(Byte value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * Getter for <code>oagi.code_list_manifest.conflict</code>. This indicates
+     * that there is a conflict between self and relationship.
      */
     public Byte getConflict() {
         return (Byte) get(4);
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * Setter for <code>oagi.code_list_manifest.log_id</code>. A foreign key
+     * pointed to a log for the current record.
      */
     public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * Getter for <code>oagi.code_list_manifest.log_id</code>. A foreign key
+     * pointed to a log for the current record.
      */
     public ULong getLogId() {
         return (ULong) get(5);
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * Setter for
+     * <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public void setReplacementCodeListManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * Getter for
+     * <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public ULong getReplacementCodeListManifestId() {
         return (ULong) get(6);
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
      */
     public void setPrevCodeListManifestId(ULong value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
      */
     public ULong getPrevCodeListManifestId() {
         return (ULong) get(7);
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.next_code_list_manifest_id</code>.
+     * Setter for
+     * <code>oagi.code_list_manifest.next_code_list_manifest_id</code>.
      */
     public void setNextCodeListManifestId(ULong value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.next_code_list_manifest_id</code>.
+     * Getter for
+     * <code>oagi.code_list_manifest.next_code_list_manifest_id</code>.
      */
     public ULong getNextCodeListManifestId() {
         return (ULong) get(8);
