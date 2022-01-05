@@ -109,7 +109,6 @@ public class DtWriteRepository {
                 });
 
         for (DtScManifestRecord basedDtScManifest : basedDtScManifestList) {
-
             DtScRecord basedDtSc = dslContext.selectFrom(DT_SC)
                     .where(DT_SC.DT_SC_ID.eq(basedDtScManifest.getDtScId()))
                     .fetchOne();
@@ -122,7 +121,7 @@ public class DtWriteRepository {
             dtScRecord.setPropertyTerm(basedDtSc.getPropertyTerm());
             dtScRecord.setRepresentationTerm(basedDtSc.getRepresentationTerm());
             dtScRecord.setOwnerDtId(bdt.getDtId());
-            if (request.getSpecId().longValue() > 0) {
+            if (basedBdt.getBasedDtId() == null && request.getSpecId().longValue() > 0) {
                 ULong cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
                 CdtScRefSpecRecord specRecord = dslContext.selectFrom(CDT_SC_REF_SPEC)
                         .where(and(CDT_SC_REF_SPEC.CDT_SC_ID.eq(cdtScId), CDT_SC_REF_SPEC.REF_SPEC_ID.eq(ULong.valueOf(request.getSpecId()))))
@@ -135,9 +134,10 @@ public class DtWriteRepository {
                     dtScRecord.setCardinalityMin(0);
                 }
             } else {
-                dtScRecord.setCardinalityMin(0);
-                dtScRecord.setCardinalityMax(1);
+                dtScRecord.setCardinalityMin(basedDtSc.getCardinalityMin());
+                dtScRecord.setCardinalityMax(basedDtSc.getCardinalityMax());
             }
+
             dtScRecord.setBasedDtScId(basedDtSc.getDtScId());
             dtScRecord.setDefaultValue(basedDtSc.getDefaultValue());
             dtScRecord.setFixedValue(basedDtSc.getFixedValue());
