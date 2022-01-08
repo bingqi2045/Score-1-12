@@ -984,6 +984,33 @@ public class DtWriteRepository {
         }
     }
 
+    private String getUniquePropertyTerm() {
+        List<String> propertyTerms = dslContext.select(DT_SC.PROPERTY_TERM)
+                .from(DT_SC)
+                .where(DT_SC.PROPERTY_TERM.like("Property Term%"))
+                .fetchInto(String.class);
+
+        List<Integer> existingNumbers = propertyTerms.stream().filter(e -> e.startsWith("Property Term "))
+                .map(e -> e.substring("Property Term ".length()))
+                .map(e -> {
+                    try {
+                        return Integer.parseInt(e.trim());
+                    } catch (NumberFormatException ex) {
+                        return 0;
+                    }
+                }).collect(Collectors.toList());
+
+        int propertyTermNum = 1;
+        while (true) {
+            if (!existingNumbers.contains(propertyTermNum)) {
+                break;
+            }
+            propertyTermNum++;
+        }
+
+        return "Property Term " + propertyTermNum;
+    }
+
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
 
@@ -996,7 +1023,8 @@ public class DtWriteRepository {
         DtScRecord dtScRecord = new DtScRecord();
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
-        dtScRecord.setPropertyTerm("Property Term");
+        dtScRecord.setPropertyTerm(getUniquePropertyTerm());
+
         String defaultRepresentationTerm = "Amount";
         dtScRecord.setRepresentationTerm(defaultRepresentationTerm);
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());

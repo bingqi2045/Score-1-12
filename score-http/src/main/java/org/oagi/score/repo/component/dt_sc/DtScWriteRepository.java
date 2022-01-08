@@ -616,9 +616,7 @@ public class DtScWriteRepository {
                 .where(DT_SC_MANIFEST.DT_SC_ID.eq(dtScManifestRecord.getDtScId()))
                 .fetchOneInto(Integer.class) == 0) {
 
-            dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
-                    .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScRecord.getDtScId()))
-                    .execute();
+            deleteCdtScAwdPriByDtScId(dtScRecord.getDtScId());
 
             DtScRecord prevDtScRecord = null;
             DtScRecord nextDtScRecord = null;
