@@ -821,23 +821,15 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedDtEvent());
     }
 
-    public List<CcBdtScPriResri> getDefaultPrimitiveValues(AuthenticatedPrincipal user, String representationTerm) {
-
-        List<ULong> cdtPriIdList = dslContext.select(CDT_PRI.CDT_PRI_ID)
-                    .from(DT)
-                    .join(CDT_AWD_PRI).on(DT.DT_ID.eq(CDT_AWD_PRI.CDT_ID))
-                    .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
-                    .where(DT.DATA_TYPE_TERM.eq(representationTerm))
-                    .fetchInto(ULong.class);
-
-        ULong dtScId = dslContext.select(CDT_SC_AWD_PRI.CDT_SC_ID).from(CDT_SC_AWD_PRI)
-                .where(CDT_SC_AWD_PRI.CDT_PRI_ID.in(cdtPriIdList)).limit(1).fetchOneInto(ULong.class);
-
-        if (dtScId == null) {
-            dtScId = ULong.valueOf(1);
+    public List<CcBdtScPriRestri> getDefaultPrimitiveValues(AuthenticatedPrincipal user,
+                                                            String representationTerm, BigInteger bdtScManifestId) {
+        if (repository.bdtScHasRepresentationTermSameAs(representationTerm, bdtScManifestId)) {
+            CcBdtScNode bdtScNode = new CcBdtScNode();
+            bdtScNode.setManifestId(bdtScManifestId);
+            CcBdtScNodeDetail bdtScNodeDetail = getBdtScNodeDetail(user, bdtScNode);
+            return bdtScNodeDetail.getBdtScPriRestriList();
         }
-
-        return repository.getDefaultPrimitiveValues(dtScId);
+        return repository.getDefaultPrimitiveValues(representationTerm);
     }
 
     @Transactional

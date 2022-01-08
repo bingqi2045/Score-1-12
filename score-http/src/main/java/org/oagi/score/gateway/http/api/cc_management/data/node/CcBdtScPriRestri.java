@@ -6,18 +6,24 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Data
-public class CcBdtScPriResri {
+public class CcBdtScPriRestri {
 
     private BigInteger bdtScPriRestriId;
     private PrimitiveRestriType type;
-    private BigInteger cdtScAwdPriXpsTypeMapId;
     private BigInteger cdtScAwdPriId;
     private String primitiveName;
+
+    private BigInteger cdtScAwdPriXpsTypeMapId;
+    private BigInteger xbtId;
+    private String xbtName;
+
     private BigInteger codeListId;
     private String codeListName;
+
     private BigInteger agencyIdListId;
     private String agencyIdListName;
+
     private boolean isDefault;
-    private List<CcXbt> xbtList;
+
     private boolean inherited;
 }

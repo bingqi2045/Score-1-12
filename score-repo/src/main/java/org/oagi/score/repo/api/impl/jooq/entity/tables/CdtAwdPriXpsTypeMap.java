@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -82,6 +82,12 @@ public class CdtAwdPriXpsTypeMap extends TableImpl<CdtAwdPriXpsTypeMapRecord> {
      * to more than one XML schema built-in types.
      */
     public final TableField<CdtAwdPriXpsTypeMapRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key and to the XBT table. It identifies the XML schema built-in types that can be mapped to the CDT primivite identified in the CDT_AWD_PRI_ID column. The CDT primitives are typically broad and hence it usually maps to more than one XML schema built-in types.");
+
+    /**
+     * The column <code>oagi.cdt_awd_pri_xps_type_map.is_default</code>.
+     * Indicating a default value domain mapping.
+     */
+    public final TableField<CdtAwdPriXpsTypeMapRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "Indicating a default value domain mapping.");
 
     private CdtAwdPriXpsTypeMap(Name alias, Table<CdtAwdPriXpsTypeMapRecord> aliased) {
         this(alias, aliased, null);
@@ -182,11 +188,11 @@ public class CdtAwdPriXpsTypeMap extends TableImpl<CdtAwdPriXpsTypeMapRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<ULong, ULong, ULong, Byte> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

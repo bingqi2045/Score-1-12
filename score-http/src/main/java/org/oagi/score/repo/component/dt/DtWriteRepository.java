@@ -5,7 +5,6 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
-import org.oagi.score.gateway.http.api.cc_management.data.node.CcXbt;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -33,6 +33,9 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class DtWriteRepository {
+
+    @Autowired
+    private BdtReadRepository bdtReadRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -628,15 +631,31 @@ public class DtWriteRepository {
                         .returning(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).fetchOne().getBdtPriRestriId().toBigInteger());
 
                 insertedList.add(newBdtPriRestri);
+            } else {
+                // update
+                BdtPriRestriRecord bdtPriRestriRecord = dslContext.selectFrom(BDT_PRI_RESTRI)
+                        .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(ULong.valueOf(restri.getBdtPriRestriId())))
+                        .fetchOne();
+
+                if (restri.getCdtAwdPriXpsTypeMapId() != null) {
+                    bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(ULong.valueOf(restri.getCdtAwdPriXpsTypeMapId()));
+                    bdtPriRestriRecord.setCodeListId(null);
+                    bdtPriRestriRecord.setAgencyIdListId(null);
+                } else if (restri.getCodeListId() != null) {
+                    bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(null);
+                    bdtPriRestriRecord.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    bdtPriRestriRecord.setAgencyIdListId(null);
+                } else if (restri.getAgencyIdListId() != null) {
+                    bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(null);
+                    bdtPriRestriRecord.setCodeListId(null);
+                    bdtPriRestriRecord.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                }
+
+                bdtPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
+                bdtPriRestriRecord.update();
             }
 
             if (restri.isDefault()) {
-                if (restri.getType().equals(PrimitiveRestriType.Primitive)) {
-                    CcXbt defaultXbt = restri.getXbtList().stream().filter(CcXbt::isDefault).findFirst().orElse(null);
-                    if (defaultXbt == null) {
-                        throw new IllegalArgumentException("Default Value Domain required.");
-                    }
-                }
                 defaultValueDomainId = restri.getBdtPriRestriId();
             }
         }
@@ -901,6 +920,70 @@ public class DtWriteRepository {
                 .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
     }
 
+    private void insertBdtScPriRestriByRepresentationTerm(ULong bdtScId, String representationTerm) {
+        DtRecord cdtRecord = dslContext.selectFrom(DT)
+                .where(and(
+                        DT.BASED_DT_ID.isNull(),
+                        DT.DATA_TYPE_TERM.eq(representationTerm)))
+                .fetchOne();
+
+        List<CdtAwdPriRecord> cdtAwdPriRecords = dslContext.selectFrom(CDT_AWD_PRI)
+                .where(CDT_AWD_PRI.CDT_ID.eq(cdtRecord.getDtId()))
+                .fetch();
+
+        Map<ULong, List<CdtScAwdPriRecord>> cdtScAwdPriRecordMapByCdtAwdPriId = new HashMap();
+        for (CdtAwdPriRecord cdtAwdPriRecord : cdtAwdPriRecords) {
+            CdtScAwdPriRecord cdtScAwdPriRecord = new CdtScAwdPriRecord();
+            cdtScAwdPriRecord.setCdtPriId(cdtAwdPriRecord.getCdtPriId());
+            cdtScAwdPriRecord.setCdtScId(bdtScId);
+            cdtScAwdPriRecord.setIsDefault(cdtAwdPriRecord.getIsDefault());
+            cdtScAwdPriRecord.setCdtScAwdPriId(
+                    dslContext.insertInto(CDT_SC_AWD_PRI)
+                            .set(cdtScAwdPriRecord)
+                            .returning(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID)
+                            .fetchOne().getCdtScAwdPriId()
+            );
+
+            if (!cdtScAwdPriRecordMapByCdtAwdPriId.containsKey(cdtAwdPriRecord.getCdtAwdPriId())) {
+                cdtScAwdPriRecordMapByCdtAwdPriId.put(cdtAwdPriRecord.getCdtAwdPriId(), new ArrayList());
+            }
+
+            cdtScAwdPriRecordMapByCdtAwdPriId.get(cdtAwdPriRecord.getCdtAwdPriId()).add(cdtScAwdPriRecord);
+        }
+
+        List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapRecords = dslContext.selectFrom(CDT_AWD_PRI_XPS_TYPE_MAP)
+                .where(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.in(
+                        cdtAwdPriRecords.stream().map(e -> e.getCdtAwdPriId()).collect(Collectors.toList())
+                ))
+                .fetch();
+
+        List<CdtScAwdPriXpsTypeMapRecord> cdtScAwdPriXpsTypeMapRecords = new ArrayList();
+        for (CdtAwdPriXpsTypeMapRecord cdtAwdPriXpsTypeMapRecord : cdtAwdPriXpsTypeMapRecords) {
+            for (CdtScAwdPriRecord cdtScAwdPriRecord : cdtScAwdPriRecordMapByCdtAwdPriId.get(cdtAwdPriXpsTypeMapRecord.getCdtAwdPriId())) {
+                CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMapRecord = new CdtScAwdPriXpsTypeMapRecord();
+                cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriId(cdtScAwdPriRecord.getCdtScAwdPriId());
+                cdtScAwdPriXpsTypeMapRecord.setXbtId(cdtAwdPriXpsTypeMapRecord.getXbtId());
+                cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriXpsTypeMapId(
+                        dslContext.insertInto(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                                .set(cdtScAwdPriXpsTypeMapRecord)
+                                .returning(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID)
+                                .fetchOne().getCdtScAwdPriXpsTypeMapId()
+                );
+                cdtScAwdPriXpsTypeMapRecords.add(cdtScAwdPriXpsTypeMapRecord);
+
+                BdtScPriRestriRecord bdtScPriRestriRecord = new BdtScPriRestriRecord();
+                bdtScPriRestriRecord.setBdtScId(bdtScId);
+                bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapRecord.getCdtScAwdPriXpsTypeMapId());
+                bdtScPriRestriRecord.setIsDefault(cdtAwdPriXpsTypeMapRecord.getIsDefault());
+                bdtScPriRestriRecord.setBdtScPriRestriId(
+                        dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                                .set(bdtScPriRestriRecord)
+                                .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId()
+                );
+            }
+        }
+    }
+
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
 
@@ -914,7 +997,8 @@ public class DtWriteRepository {
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setPropertyTerm("Property Term");
-        dtScRecord.setRepresentationTerm("");
+        String defaultRepresentationTerm = "Amount";
+        dtScRecord.setRepresentationTerm(defaultRepresentationTerm);
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
@@ -929,6 +1013,7 @@ public class DtWriteRepository {
                         .set(dtScRecord)
                         .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
         );
+        insertBdtScPriRestriByRepresentationTerm(dtScRecord.getDtScId(), defaultRepresentationTerm);
 
         DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
         dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
