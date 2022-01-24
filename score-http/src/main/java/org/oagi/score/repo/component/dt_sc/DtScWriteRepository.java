@@ -576,6 +576,19 @@ public class DtScWriteRepository {
         }
 
         // delete from Tables
+        dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
+                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScRecord.getDtScId()))
+                .execute();
+
+        for (CdtScAwdPriRecord cdtScAwdPriRecord : dslContext.selectFrom(CDT_SC_AWD_PRI)
+                .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(dtScRecord.getDtScId()))
+                .fetch()) {
+            dslContext.deleteFrom(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                    .where(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(cdtScAwdPriRecord.getCdtScAwdPriId()))
+                    .execute();
+            cdtScAwdPriRecord.delete();
+        }
+
         DtScManifestRecord prevDtScManifestRecord = null;
         DtScManifestRecord nextDtScManifestRecord = null;
         if (dtScManifestRecord.getPrevDtScManifestId() != null) {
