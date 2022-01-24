@@ -8,6 +8,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
@@ -19,8 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -49,53 +49,53 @@ public class DtScWriteRepository {
                     DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
                             .where(DT_SC.DT_SC_ID.eq(dtScManifestRecord.getDtScId())).fetchOne();
 
-            // update bdtSc record.
-            UpdateSetFirstStep<DtScRecord> firstStep = dslContext.update(DT_SC);
-            UpdateSetMoreStep<DtScRecord> moreStep = null;
-            if (compare(dtScRecord.getPropertyTerm(), baseDtScRecord.getPropertyTerm()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.PROPERTY_TERM, baseDtScRecord.getPropertyTerm());
-            }
-            if (compare(dtScRecord.getRepresentationTerm(), baseDtScRecord.getRepresentationTerm()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.REPRESENTATION_TERM, baseDtScRecord.getRepresentationTerm());
-            }
-            if (!dtScRecord.getCardinalityMax().equals(baseDtScRecord.getCardinalityMax())) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.CARDINALITY_MAX, baseDtScRecord.getCardinalityMax());
-            }
-            if (!dtScRecord.getCardinalityMin().equals(baseDtScRecord.getCardinalityMin())) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.CARDINALITY_MIN, baseDtScRecord.getCardinalityMin());
-            }
-            if (compare(dtScRecord.getDefinition(), baseDtScRecord.getDefinition()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.DEFINITION, baseDtScRecord.getDefinition());
-            }
-            if (compare(dtScRecord.getDefinitionSource(), baseDtScRecord.getDefinitionSource()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.DEFINITION_SOURCE, baseDtScRecord.getDefinitionSource());
-            }
-            if (compare(dtScRecord.getDefaultValue(), baseDtScRecord.getDefaultValue()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.DEFAULT_VALUE, baseDtScRecord.getDefaultValue())
-                        .setNull(DT_SC.FIXED_VALUE);
-            } else if (compare(dtScRecord.getFixedValue(), baseDtScRecord.getFixedValue()) != 0) {
-                moreStep = ((moreStep != null) ? moreStep : firstStep)
-                        .set(DT_SC.FIXED_VALUE, baseDtScRecord.getFixedValue())
-                        .setNull(DT_SC.DEFAULT_VALUE);
-            }
+                    // update bdtSc record.
+                    UpdateSetFirstStep<DtScRecord> firstStep = dslContext.update(DT_SC);
+                    UpdateSetMoreStep<DtScRecord> moreStep = null;
+                    if (compare(dtScRecord.getPropertyTerm(), baseDtScRecord.getPropertyTerm()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.PROPERTY_TERM, baseDtScRecord.getPropertyTerm());
+                    }
+                    if (compare(dtScRecord.getRepresentationTerm(), baseDtScRecord.getRepresentationTerm()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.REPRESENTATION_TERM, baseDtScRecord.getRepresentationTerm());
+                    }
+                    if (!dtScRecord.getCardinalityMax().equals(baseDtScRecord.getCardinalityMax())) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.CARDINALITY_MAX, baseDtScRecord.getCardinalityMax());
+                    }
+                    if (!dtScRecord.getCardinalityMin().equals(baseDtScRecord.getCardinalityMin())) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.CARDINALITY_MIN, baseDtScRecord.getCardinalityMin());
+                    }
+                    if (compare(dtScRecord.getDefinition(), baseDtScRecord.getDefinition()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.DEFINITION, baseDtScRecord.getDefinition());
+                    }
+                    if (compare(dtScRecord.getDefinitionSource(), baseDtScRecord.getDefinitionSource()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.DEFINITION_SOURCE, baseDtScRecord.getDefinitionSource());
+                    }
+                    if (compare(dtScRecord.getDefaultValue(), baseDtScRecord.getDefaultValue()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.DEFAULT_VALUE, baseDtScRecord.getDefaultValue())
+                                .setNull(DT_SC.FIXED_VALUE);
+                    } else if (compare(dtScRecord.getFixedValue(), baseDtScRecord.getFixedValue()) != 0) {
+                        moreStep = ((moreStep != null) ? moreStep : firstStep)
+                                .set(DT_SC.FIXED_VALUE, baseDtScRecord.getFixedValue())
+                                .setNull(DT_SC.DEFAULT_VALUE);
+                    }
 
-            if (moreStep != null) {
-                moreStep.set(DT_SC.LAST_UPDATED_BY, baseDtScRecord.getLastUpdatedBy())
-                        .set(DT_SC.LAST_UPDATE_TIMESTAMP, baseDtScRecord.getLastUpdateTimestamp())
-                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId()))
-                        .execute();
+                    if (moreStep != null) {
+                        moreStep.set(DT_SC.LAST_UPDATED_BY, baseDtScRecord.getLastUpdatedBy())
+                                .set(DT_SC.LAST_UPDATE_TIMESTAMP, baseDtScRecord.getLastUpdateTimestamp())
+                                .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId()))
+                                .execute();
 
-                updateDerivedSc(dtScManifestRecord, dslContext.selectFrom(DT_SC)
-                        .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId())).fetchOne());
-            }
-        });
+                        updateDerivedSc(dtScManifestRecord, dslContext.selectFrom(DT_SC)
+                                .where(DT_SC.DT_SC_ID.eq(dtScRecord.getDtScId())).fetchOne());
+                    }
+                });
     }
 
     private void deleteCdtScAwdPriByDtScId(ULong dtScId) {
@@ -132,6 +132,60 @@ public class DtScWriteRepository {
         }
     }
 
+    private void ensureUniquenessOfDen(DtScRecord dtScRecord,
+                                       String objectClassTerm,
+                                       String propertyTerm,
+                                       String representationTerm) {
+        while (dtScRecord.getBasedDtScId() != null) {
+            dtScRecord = dslContext.selectFrom(DT_SC)
+                    .where(DT_SC.DT_SC_ID.eq(dtScRecord.getBasedDtScId()))
+                    .fetchOne();
+        }
+
+        Queue<DtScRecord> dtScHierarchy = new LinkedList();
+        dtScHierarchy.add(dtScRecord);
+
+        Set<ULong> dtScIdSet = new HashSet();
+        while (!dtScHierarchy.isEmpty()) {
+            dtScRecord = dtScHierarchy.poll();
+            dtScIdSet.add(dtScRecord.getDtScId());
+
+            dtScHierarchy.addAll(
+                    dslContext.selectFrom(DT_SC)
+                            .where(DT_SC.BASED_DT_SC_ID.eq(dtScRecord.getDtScId()))
+                            .fetch()
+            );
+        }
+
+        int cnt = dslContext.selectCount()
+                .from(DT_SC)
+                .where(and(
+                        DT_SC.OBJECT_CLASS_TERM.eq(objectClassTerm),
+                        DT_SC.PROPERTY_TERM.eq(propertyTerm),
+                        DT_SC.REPRESENTATION_TERM.eq(representationTerm),
+                        DT_SC.DT_SC_ID.notIn(dtScIdSet)
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            String den = getDen(objectClassTerm, propertyTerm, representationTerm);
+            throw new IllegalArgumentException("There is an another supplementary component whose DEN is same with the request: " + den);
+        }
+    }
+
+    private String getDen(
+            String objectClassTerm,
+            String propertyTerm,
+            String representationTerm) {
+        String middleTerm = null;
+        if (StringUtils.hasLength(propertyTerm)) {
+            middleTerm = propertyTerm.replaceAll(representationTerm, "").trim();
+        }
+        if (middleTerm != null) {
+            return objectClassTerm + ". " + middleTerm + ". " + representationTerm;
+        }
+        return objectClassTerm + ". " + representationTerm;
+    }
+
     public UpdateDtScPropertiesRepositoryResponse updateDtScProperties(UpdateDtScPropertiesRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
@@ -147,6 +201,12 @@ public class DtScWriteRepository {
                 .where(DT_SC.DT_SC_ID.eq(dtScManifestRecord.getDtScId()))
                 .fetchOne();
 
+        // Issue #1240
+        ensureUniquenessOfDen(dtScRecord,
+                dtScRecord.getObjectClassTerm(),
+                request.getPropertyTerm(),
+                request.getRepresentationTerm());
+
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtScManifestRecord.getOwnerDtManifestId()))
                 .fetchOne();
@@ -161,16 +221,6 @@ public class DtScWriteRepository {
 
         if (!dtRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-        }
-
-        if (dslContext.selectFrom(DT_SC).where(
-                and(DT_SC.PROPERTY_TERM.eq(request.getPropertyTerm()),
-                    DT_SC.REPRESENTATION_TERM.eq(request.getRepresentationTerm()),
-                    DT_SC.OBJECT_CLASS_TERM.eq(dtScRecord.getObjectClassTerm()),
-                    DT_SC.DT_SC_ID.notEqual(dtScRecord.getDtScId()),
-                    DT_SC.OWNER_DT_ID.eq(dtScRecord.getOwnerDtId())))
-        .fetch().size() > 0) {
-            throw new IllegalArgumentException("Duplicated supplementary components already exist.");
         }
 
         // update bdtSc record.
@@ -250,19 +300,19 @@ public class DtScWriteRepository {
         List<ULong> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtScPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
-        for (DtScRecord dtSc: derivedDtScList) {
+        for (DtScRecord dtSc : derivedDtScList) {
             deleteDerivedValueDomain(dtSc.getDtScId(), deleteList);
             dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(
-                    and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
-                    BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.in(cdtScAwdPriXpsTypeMapIdList))
+                            and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
+                            BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.in(cdtScAwdPriXpsTypeMapIdList))
                     .execute();
             dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(
-                    and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
-                    BDT_SC_PRI_RESTRI.CODE_LIST_ID.in(codeListId))
+                            and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
+                            BDT_SC_PRI_RESTRI.CODE_LIST_ID.in(codeListId))
                     .execute();
             dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(
-                    and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
-                    BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.in(agencyIdList))
+                            and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
+                            BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.in(agencyIdList))
                     .execute();
             BdtScPriRestriRecord defaultRecord = dslContext.selectFrom(BDT_SC_PRI_RESTRI).where(
                     and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtSc.getDtScId())),
@@ -397,7 +447,7 @@ public class DtScWriteRepository {
         }
 
         dslContext.deleteFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.in(
-                deleteList.stream().map(BdtScPriRestriRecord::getBdtScPriRestriId).collect(Collectors.toList())))
+                        deleteList.stream().map(BdtScPriRestriRecord::getBdtScPriRestriId).collect(Collectors.toList())))
                 .execute();
 
         BigInteger defaultValueDomainId = null;
