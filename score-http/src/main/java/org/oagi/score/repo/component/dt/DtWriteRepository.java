@@ -76,6 +76,8 @@ public class DtWriteRepository {
         bdt.setRepresentationTerm(basedBdt.getDataTypeTerm());
         bdt.setBasedDtId(basedBdt.getDtId());
         bdt.setContentComponentDefinition(basedBdt.getContentComponentDefinition());
+        bdt.setDefinition(basedBdt.getDefinition());
+        bdt.setDefinitionSource(basedBdt.getDefinitionSource());
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);
         bdt.setCommonlyUsed((byte) 0);
@@ -123,6 +125,8 @@ public class DtWriteRepository {
             dtScRecord.setObjectClassTerm(basedDtSc.getObjectClassTerm());
             dtScRecord.setPropertyTerm(basedDtSc.getPropertyTerm());
             dtScRecord.setRepresentationTerm(basedDtSc.getRepresentationTerm());
+            dtScRecord.setDefinition(basedDtSc.getDefinition());
+            dtScRecord.setDefinitionSource(basedDtSc.getDefinitionSource());
             dtScRecord.setOwnerDtId(bdt.getDtId());
             if (basedBdt.getBasedDtId() == null && request.getSpecId().longValue() > 0) {
                 ULong cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
