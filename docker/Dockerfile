@@ -12,13 +12,13 @@ ENV REDIS_PORT 6379
 
 RUN yum -y update
 
-COPY mysql-connector-java-8.0.25.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.25.jar
+COPY mysql-connector-java-8.0.27.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.27.jar
 
 RUN rm -rf /usr/local/tomcat/webapps/* && \
     chgrp -R 0 /usr/local/tomcat/ && \
     chmod -R g=u /usr/local/tomcat/
 
 USER 1001
-COPY score-http-2.2.0.war /usr/local/tomcat/webapps/ROOT.war
+COPY score-http-2.3.0.war /usr/local/tomcat/webapps/ROOT.war
 
 CMD ["catalina.sh", "run"]

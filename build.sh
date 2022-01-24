@@ -14,7 +14,7 @@ cp score-http/target/*.war docker
 
 echo "Building docker image..."
 cd docker
-docker build --no-cache -f Dockerfile -t oagi1docker/srt-http-gateway:2.2.0 .
+docker build --no-cache -f Dockerfile -t oagi1docker/srt-http-gateway:2.3.0 .
 cd ..
 
 echo "Done."
