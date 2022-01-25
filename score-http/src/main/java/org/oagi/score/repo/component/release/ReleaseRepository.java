@@ -6,6 +6,7 @@ import org.jooq.Record8;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.agency_id_management.service.AgencyIdService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecord;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.data.Release;
 import org.oagi.score.service.common.data.CcState;
@@ -197,11 +198,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             List<BigInteger> accManifestIds,
             List<BigInteger> asccpManifestIds,
             List<BigInteger> bccpManifestIds,
-            List<BigInteger> codeListManifestIds,
-            List<BigInteger> bdtManifestIds,
-            List<BigInteger> bdtScManifestIds,
-            List<BigInteger> xbtManifestIds,
-            List<BigInteger> agencyIdListManifestIds) {
+            List<BigInteger> bdtManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -214,13 +211,24 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             throw new IllegalStateException("Cannot find 'Working' release");
         }
 
+        List<BigInteger> bdtScManifestIds = Collections.emptyList();
+        List<BigInteger> xbtManifestIds = Collections.emptyList();
+        List<BigInteger> codeListManifestIds = Collections.emptyList();
+        List<BigInteger> codeListValueManifestIds = Collections.emptyList();
+        List<BigInteger> agencyIdListManifestIds = Collections.emptyList();
+        List<BigInteger> agencyIdListValueManifestIds = Collections.emptyList();
+
         try {
             // copying manifests from 'Working' release
-            copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
-
             copyDtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
+
+            copyDtScManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtScManifestIds);
+            updateBdtScDependencies(releaseRecord.getReleaseId().toBigInteger());
+
+            copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
 
             copyAsccpManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), asccpManifestIds);
@@ -245,10 +253,6 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             copySeqKeyRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger());
             updateSeqKeyPrevNext(releaseRecord.getReleaseId().toBigInteger());
 
-            copyDtScManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtScManifestIds);
-            updateBdtScDependencies(releaseRecord.getReleaseId().toBigInteger());
-
             copyXbtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), xbtManifestIds);
             updateXbtDependencies(releaseRecord.getReleaseId().toBigInteger());
@@ -258,7 +262,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             updateCodeListDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyCodeListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListManifestIds);
+                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListValueManifestIds);
             updateCodeListValueDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyAgencyIdListManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
@@ -266,7 +270,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             updateAgencyIdListDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyAgencyIdListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListManifestIds);
+                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListValueManifestIds);
             updateAgencyIdListValueDependencies(releaseRecord.getReleaseId().toBigInteger());
 
         } catch (Exception e) {
@@ -599,7 +603,9 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                         DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
                         .from(DT_SC_MANIFEST)
-                        .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)))).execute();
+                        .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.isNotNull(),
+                                        DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(dtScManifestIds)))))).execute();
     }
 
     private void copyXbtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
