@@ -63,6 +63,7 @@ public class CcListController {
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
+            @RequestParam(name = "dtTypes", required = false) String dtTypes,
             @RequestParam(name = "asccpTypes", required = false) String asccpTypes,
             @RequestParam(name = "excludes", required = false) String excludes,
             @RequestParam(name = "isBIEUsable", required = false) String isBIEUsable,
@@ -110,6 +111,8 @@ public class CcListController {
         request.setDefinition(definition);
         request.setModule(module);
         request.setComponentTypes(componentTypes);
+        request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
+                Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setAsccpTypes(!StringUtils.hasLength(asccpTypes) ? Collections.emptyList() :
                 Arrays.asList(asccpTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setExcludes(!StringUtils.hasLength(excludes) ? Collections.emptyList() :

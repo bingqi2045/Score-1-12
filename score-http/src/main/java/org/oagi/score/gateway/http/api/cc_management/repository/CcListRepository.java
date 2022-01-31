@@ -684,6 +684,23 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        if (request.getDtTypes() != null && !request.getDtTypes().isEmpty()) {
+            List<String> dtTypes = request.getDtTypes().stream()
+                    .filter(e -> "CDT".equals(e) || "BDT".equals(e))
+                    .collect(Collectors.toList());
+
+            if (dtTypes.size() == 1) {
+                String dtType = dtTypes.get(0);
+                switch (dtType) {
+                    case "CDT":
+                        conditions.add(DT.BASED_DT_ID.isNull());
+                        break;
+                    case "BDT":
+                        conditions.add(DT.BASED_DT_ID.isNotNull());
+                        break;
+                }
+            }
+        }
         if (request.getDeprecated() != null) {
             conditions.add(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
