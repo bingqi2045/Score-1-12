@@ -5,11 +5,11 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public class SimpleAgencyIdListValue {
+public class SimpleAgencyIdList {
 
-    private BigInteger agencyIdListValueManifestId;
     private BigInteger agencyIdListManifestId;
-    private BigInteger agencyIdListValueId;
+    private BigInteger agencyIdListId;
     private String name;
+    private String state;
 
 }

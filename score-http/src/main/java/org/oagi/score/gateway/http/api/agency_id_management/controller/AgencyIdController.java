@@ -34,8 +34,10 @@ public class AgencyIdController {
 
     @RequestMapping(value = "/simple_agency_id_list_values/{releaseId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleAgencyIdListValue> getSimpleAgencyIdListValues(@PathVariable("releaseId") BigInteger releaseId) {
-        return service.getSimpleAgencyIdListValues(releaseId);
+    public GetSimpleAgencyIdListValuesResponse getSimpleAgencyIdListValues(
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @PathVariable("releaseId") BigInteger releaseId) {
+        return service.getSimpleAgencyIdListValues(sessionService.asScoreUser(user), releaseId);
     }
 
     @RequestMapping(value = "/agency_id_list/{id}", method = RequestMethod.GET,
