@@ -1,7 +1,7 @@
 package org.oagi.score.repo.component.dt_sc;
 
 import org.oagi.score.data.RepositoryRequest;
-import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriResri;
+import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriRestri;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
@@ -21,7 +21,7 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private Boolean deprecated;
-    private List<CcBdtScPriResri> ccBdtScPriResriList;
+    private List<CcBdtScPriRestri> ccBdtScPriRestriList;
 
     public UpdateDtScPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger dtScManifestId) {
@@ -104,12 +104,12 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
         this.cardinalityMax = cardinalityMax;
     }
 
-    public List<CcBdtScPriResri> getCcBdtScPriResriList() {
-        return ccBdtScPriResriList;
+    public List<CcBdtScPriRestri> getCcBdtScPriResriList() {
+        return ccBdtScPriRestriList;
     }
 
-    public void setCcBdtScPriResriList(List<CcBdtScPriResri> ccBdtScPriResriList) {
-        this.ccBdtScPriResriList = ccBdtScPriResriList;
+    public void setCcBdtScPriResriList(List<CcBdtScPriRestri> ccBdtScPriRestriList) {
+        this.ccBdtScPriRestriList = ccBdtScPriRestriList;
     }
 
     public String getRepresentationTerm() {

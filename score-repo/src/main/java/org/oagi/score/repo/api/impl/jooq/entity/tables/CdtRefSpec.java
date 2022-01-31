@@ -98,7 +98,7 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -112,13 +112,8 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
     }
 
     @Override
-    public List<UniqueKey<CdtRefSpecRecord>> getKeys() {
-        return Arrays.<UniqueKey<CdtRefSpecRecord>>asList(Keys.KEY_CDT_REF_SPEC_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<CdtRefSpecRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CdtRefSpecRecord, ?>>asList(Keys.CDT_REF_SPEC_CDT_ID_FK, Keys.CDT_REF_SPEC_REF_SPEC_ID_FK);
+        return Arrays.asList(Keys.CDT_REF_SPEC_CDT_ID_FK, Keys.CDT_REF_SPEC_REF_SPEC_ID_FK);
     }
 
     private transient Dt _dt;

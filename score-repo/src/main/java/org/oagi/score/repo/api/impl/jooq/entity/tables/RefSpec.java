@@ -4,9 +4,6 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
@@ -93,7 +90,7 @@ public class RefSpec extends TableImpl<RefSpecRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -104,11 +101,6 @@ public class RefSpec extends TableImpl<RefSpecRecord> {
     @Override
     public UniqueKey<RefSpecRecord> getPrimaryKey() {
         return Keys.KEY_REF_SPEC_PRIMARY;
-    }
-
-    @Override
-    public List<UniqueKey<RefSpecRecord>> getKeys() {
-        return Arrays.<UniqueKey<RefSpecRecord>>asList(Keys.KEY_REF_SPEC_PRIMARY);
     }
 
     @Override

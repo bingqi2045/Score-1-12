@@ -69,17 +69,20 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     public final TableField<BccpManifestRecord, ULong> BDT_MANIFEST_ID = createField(DSL.name("bdt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.bccp_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.bccp_manifest.conflict</code>. This indicates that
+     * there is a conflict between self and relationship.
      */
     public final TableField<BccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * The column <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed
+     * to a log for the current record.
      */
     public final TableField<BccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
-     * The column <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<BccpManifestRecord, ULong> REPLACEMENT_BCCP_MANIFEST_ID = createField(DSL.name("replacement_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
@@ -128,7 +131,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -142,13 +145,8 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<BccpManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<BccpManifestRecord>>asList(Keys.KEY_BCCP_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<BccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_LOG_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_LOG_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
     }
 
     private transient Release _release;

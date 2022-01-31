@@ -28,7 +28,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 
 
 /**
- * This table captures the user information for authentication and authorization 
+ * This table captures the user information for authentication and authorization
  * purposes.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
@@ -60,7 +60,8 @@ public class AppUser extends TableImpl<AppUserRecord> {
     public final TableField<AppUserRecord, String> LOGIN_ID = createField(DSL.name("login_id"), SQLDataType.VARCHAR(45).nullable(false), this, "User Id of the user.");
 
     /**
-     * The column <code>oagi.app_user.password</code>. Password to authenticate the user.
+     * The column <code>oagi.app_user.password</code>. Password to authenticate
+     * the user.
      */
     public final TableField<AppUserRecord, String> PASSWORD = createField(DSL.name("password"), SQLDataType.VARCHAR(100), this, "Password to authenticate the user.");
 
@@ -70,7 +71,8 @@ public class AppUser extends TableImpl<AppUserRecord> {
     public final TableField<AppUserRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100), this, "Full name of the user.");
 
     /**
-     * The column <code>oagi.app_user.organization</code>. The company the user represents.
+     * The column <code>oagi.app_user.organization</code>. The company the user
+     * represents.
      */
     public final TableField<AppUserRecord, String> ORGANIZATION = createField(DSL.name("organization"), SQLDataType.VARCHAR(100), this, "The company the user represents.");
 
@@ -119,7 +121,7 @@ public class AppUser extends TableImpl<AppUserRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -133,8 +135,8 @@ public class AppUser extends TableImpl<AppUserRecord> {
     }
 
     @Override
-    public List<UniqueKey<AppUserRecord>> getKeys() {
-        return Arrays.<UniqueKey<AppUserRecord>>asList(Keys.KEY_APP_USER_PRIMARY, Keys.KEY_APP_USER_APP_USER_UK1);
+    public List<UniqueKey<AppUserRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_APP_USER_APP_USER_UK1);
     }
 
     @Override

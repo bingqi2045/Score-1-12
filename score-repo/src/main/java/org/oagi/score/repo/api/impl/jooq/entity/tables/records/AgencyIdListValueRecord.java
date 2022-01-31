@@ -24,228 +24,282 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary key column.
+     * Setter for
+     * <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary
+     * key column.
      */
     public void setAgencyIdListValueId(ULong value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary key column.
+     * Getter for
+     * <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary
+     * key column.
      */
     public ULong getAgencyIdListValueId() {
         return (ULong) get(0);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.guid</code>. A globally unique identifier (GUID).
+     * Setter for <code>oagi.agency_id_list_value.guid</code>. A globally unique
+     * identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.guid</code>. A globally unique identifier (GUID).
+     * Getter for <code>oagi.agency_id_list_value.guid</code>. A globally unique
+     * identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.value</code>. A value in the agency identification list.
+     * Setter for <code>oagi.agency_id_list_value.value</code>. A value in the
+     * agency identification list.
      */
     public void setValue(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.value</code>. A value in the agency identification list.
+     * Getter for <code>oagi.agency_id_list_value.value</code>. A value in the
+     * agency identification list.
      */
     public String getValue() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.name</code>. Descriptive or short name of the value.
+     * Setter for <code>oagi.agency_id_list_value.name</code>. Descriptive or
+     * short name of the value.
      */
     public void setName(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.name</code>. Descriptive or short name of the value.
+     * Getter for <code>oagi.agency_id_list_value.name</code>. Descriptive or
+     * short name of the value.
      */
     public String getName() {
         return (String) get(3);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.definition</code>. The meaning of the value.
+     * Setter for <code>oagi.agency_id_list_value.definition</code>. The meaning
+     * of the value.
      */
     public void setDefinition(String value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.definition</code>. The meaning of the value.
+     * Getter for <code>oagi.agency_id_list_value.definition</code>. The meaning
+     * of the value.
      */
     public String getDefinition() {
         return (String) get(4);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.definition_source</code>. This is typically a URL which indicates the source of the agency id list value DEFINITION.
+     * Setter for <code>oagi.agency_id_list_value.definition_source</code>. This
+     * is typically a URL which indicates the source of the agency id list value
+     * DEFINITION.
      */
     public void setDefinitionSource(String value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.definition_source</code>. This is typically a URL which indicates the source of the agency id list value DEFINITION.
+     * Getter for <code>oagi.agency_id_list_value.definition_source</code>. This
+     * is typically a URL which indicates the source of the agency id list value
+     * DEFINITION.
      */
     public String getDefinitionSource() {
         return (String) get(5);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.owner_list_id</code>. Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.
+     * Setter for <code>oagi.agency_id_list_value.owner_list_id</code>. Foreign
+     * key to the agency identification list in the AGENCY_ID_LIST table this
+     * value belongs to.
      */
     public void setOwnerListId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.owner_list_id</code>. Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.
+     * Getter for <code>oagi.agency_id_list_value.owner_list_id</code>. Foreign
+     * key to the agency identification list in the AGENCY_ID_LIST table this
+     * value belongs to.
      */
     public ULong getOwnerListId() {
         return (ULong) get(6);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.is_deprecated</code>. Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
+     * Setter for <code>oagi.agency_id_list_value.is_deprecated</code>.
+     * Indicates whether the code list value is deprecated and should not be
+     * reused (i.e., no new reference to this record should be allowed).
      */
     public void setIsDeprecated(Byte value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.is_deprecated</code>. Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
+     * Getter for <code>oagi.agency_id_list_value.is_deprecated</code>.
+     * Indicates whether the code list value is deprecated and should not be
+     * reused (i.e., no new reference to this record should be allowed).
      */
     public Byte getIsDeprecated() {
         return (Byte) get(7);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>. This refers to a replacement if the record is deprecated.
+     * Setter for
+     * <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>.
+     * This refers to a replacement if the record is deprecated.
      */
     public void setReplacementAgencyIdListValueId(ULong value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>. This refers to a replacement if the record is deprecated.
+     * Getter for
+     * <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>.
+     * This refers to a replacement if the record is deprecated.
      */
     public ULong getReplacementAgencyIdListValueId() {
         return (ULong) get(8);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     * Setter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key
+     * to the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(ULong value) {
         set(9, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     * Getter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key
+     * to the APP_USER table. It indicates the user who created the code list.
      */
     public ULong getCreatedBy() {
         return (ULong) get(9);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * Setter for <code>oagi.agency_id_list_value.owner_user_id</code>. Foreign
+     * key to the APP_USER table. This is the user who owns the entity, is
+     * allowed to edit the entity, and who can transfer the ownership to another
+     * user.
+     * 
+     * The ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * Getter for <code>oagi.agency_id_list_value.owner_user_id</code>. Foreign
+     * key to the APP_USER table. This is the user who owns the entity, is
+     * allowed to edit the entity, and who can transfer the ownership to another
+     * user.
+     * 
+     * The ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(10);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     * Setter for <code>oagi.agency_id_list_value.last_updated_by</code>.
+     * Foreign key to the APP_USER table. It identifies the user who last
+     * updated the code list.
      */
     public void setLastUpdatedBy(ULong value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     * Getter for <code>oagi.agency_id_list_value.last_updated_by</code>.
+     * Foreign key to the APP_USER table. It identifies the user who last
+     * updated the code list.
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(11);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.creation_timestamp</code>. Timestamp when the code list was created.
+     * Setter for <code>oagi.agency_id_list_value.creation_timestamp</code>.
+     * Timestamp when the code list was created.
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(12, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.creation_timestamp</code>. Timestamp when the code list was created.
+     * Getter for <code>oagi.agency_id_list_value.creation_timestamp</code>.
+     * Timestamp when the code list was created.
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(12);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     * Setter for <code>oagi.agency_id_list_value.last_update_timestamp</code>.
+     * Timestamp when the code list was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
         set(13, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     * Getter for <code>oagi.agency_id_list_value.last_update_timestamp</code>.
+     * Timestamp when the code list was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
         return (LocalDateTime) get(13);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A self-foreign key to indicate the previous history record.
+     * Setter for
+     * <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A
+     * self-foreign key to indicate the previous history record.
      */
     public void setPrevAgencyIdListValueId(ULong value) {
         set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A self-foreign key to indicate the previous history record.
+     * Getter for
+     * <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A
+     * self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAgencyIdListValueId() {
         return (ULong) get(14);
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A self-foreign key to indicate the next history record.
+     * Setter for
+     * <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A
+     * self-foreign key to indicate the next history record.
      */
     public void setNextAgencyIdListValueId(ULong value) {
         set(15, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A self-foreign key to indicate the next history record.
+     * Getter for
+     * <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A
+     * self-foreign key to indicate the next history record.
      */
     public ULong getNextAgencyIdListValueId() {
         return (ULong) get(15);

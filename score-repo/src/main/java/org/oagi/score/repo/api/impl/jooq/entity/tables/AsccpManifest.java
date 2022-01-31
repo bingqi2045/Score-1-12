@@ -69,17 +69,21 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     public final TableField<AsccpManifestRecord, ULong> ROLE_OF_ACC_MANIFEST_ID = createField(DSL.name("role_of_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.asccp_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.asccp_manifest.conflict</code>. This indicates that
+     * there is a conflict between self and relationship.
      */
     public final TableField<AsccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed
+     * to a log for the current record.
      */
     public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
-     * The column <code>oagi.asccp_manifest.replacement_asccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column
+     * <code>oagi.asccp_manifest.replacement_asccp_manifest_id</code>. This
+     * refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<AsccpManifestRecord, ULong> REPLACEMENT_ASCCP_MANIFEST_ID = createField(DSL.name("replacement_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
@@ -128,7 +132,7 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -142,13 +146,8 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<AsccpManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<AsccpManifestRecord>>asList(Keys.KEY_ASCCP_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<AsccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpManifestRecord, ?>>asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_LOG_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_LOG_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
     }
 
     private transient Release _release;

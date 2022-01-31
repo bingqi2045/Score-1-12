@@ -64,12 +64,14 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     public final TableField<XbtManifestRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.xbt_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.xbt_manifest.conflict</code>. This indicates that
+     * there is a conflict between self and relationship.
      */
     public final TableField<XbtManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * The column <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed
+     * to a log for the current record.
      */
     public final TableField<XbtManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
@@ -118,7 +120,7 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -132,13 +134,8 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<XbtManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<XbtManifestRecord>>asList(Keys.KEY_XBT_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<XbtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_LOG_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_LOG_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
     }
 
     private transient Release _release;

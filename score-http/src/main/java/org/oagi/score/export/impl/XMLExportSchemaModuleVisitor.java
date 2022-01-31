@@ -320,8 +320,8 @@ public class XMLExportSchemaModuleVisitor {
         String dataTypeTerm = dataType.getDataTypeTerm();
         ccts_DataTypeTermName.setText(dataTypeTerm);
 
-        String qualifier = dataType.getQualifier();
-        if (!StringUtils.isEmpty(qualifier)) {
+        String qualifier = dataType.getQualifier_();
+        if (StringUtils.hasLength(qualifier)) {
             Element ccts_QualifierTerm = new Element("ccts_QualifierTerm", OAGI_NS);
             documentationElement.addContent(ccts_QualifierTerm);
             ccts_QualifierTerm.setText(qualifier);
@@ -383,7 +383,7 @@ public class XMLExportSchemaModuleVisitor {
         annotationElement.addContent(documentationElement);
 
         String definitionSource = dataType.getDefinitionSource();
-        if (!StringUtils.isEmpty(definitionSource)) {
+        if (StringUtils.hasLength(definitionSource)) {
             documentationElement.setAttribute("source", definitionSource);
         }
 
@@ -517,7 +517,7 @@ public class XMLExportSchemaModuleVisitor {
         documentationElement.setAttribute("lang", "en", Namespace.XML_NAMESPACE);
 
         String definitionSource = bdtSc.getDefinitionSource();
-        if (!StringUtils.isEmpty(definitionSource)) {
+        if (StringUtils.hasLength(definitionSource)) {
             documentationElement.setAttribute("source", definitionSource);
         }
 
@@ -680,7 +680,7 @@ public class XMLExportSchemaModuleVisitor {
     }
 
     private void setDocumentation(Element element, String definition, String definitionSource) {
-        if (StringUtils.isEmpty(definition)) {
+        if (!StringUtils.hasLength(definition)) {
             return;
         }
 
@@ -692,7 +692,7 @@ public class XMLExportSchemaModuleVisitor {
 
         documentationElement.setAttribute("lang", "en", Namespace.XML_NAMESPACE);
 
-        if (!StringUtils.isEmpty(definitionSource)) {
+        if (StringUtils.hasLength(definitionSource)) {
             documentationElement.setAttribute("source", definitionSource);
         }
 
@@ -735,7 +735,7 @@ public class XMLExportSchemaModuleVisitor {
             element.setAttribute("nillable", "true");
         }
         String defaultValue = bccp.getDefaultValue();
-        if (!StringUtils.isEmpty(defaultValue)) {
+        if (StringUtils.hasLength(defaultValue)) {
             element.setAttribute("default", defaultValue);
         }
     }
@@ -936,7 +936,7 @@ public class XMLExportSchemaModuleVisitor {
                         attributeElement.setAttribute("nillable", "true");
                     }
                     String defaultValue = bcc.getDefaultValue();
-                    if (!StringUtils.isEmpty(defaultValue)) {
+                    if (StringUtils.hasLength(defaultValue)) {
                         attributeElement.setAttribute("default", defaultValue);
                     }
 

@@ -6,6 +6,7 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -340,7 +341,7 @@ public class JooqContextSchemeReadRepository
         }
 
         return new GetContextSchemeValueListResponse(
-                finalStep.fetch(record -> {
+                finalStep.fetch((RecordMapper<Record, ContextSchemeValue>) record -> {
                     ContextSchemeValue contextSchemeValue = new ContextSchemeValue();
                     contextSchemeValue.setContextSchemeValueId(record.get(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID).toBigInteger());
                     contextSchemeValue.setGuid(record.get(CTX_SCHEME_VALUE.GUID));

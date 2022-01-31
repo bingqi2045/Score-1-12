@@ -335,11 +335,11 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/dt/{representationTerm}/primitive_values",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CcBdtScPriResri> getDefaultPrimitiveValues(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                           @PathVariable("representationTerm") String representationTerm) {
+    public List<CcBdtScPriRestri> getDefaultPrimitiveValues(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                            @PathVariable("representationTerm") String representationTerm,
+                                                            @RequestParam(name = "bdtScManifestId") BigInteger bdtScManifestId) {
 
-
-        return service.getDefaultPrimitiveValues(user, representationTerm);
+        return service.getDefaultPrimitiveValues(user, representationTerm, bdtScManifestId);
     }
 
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",

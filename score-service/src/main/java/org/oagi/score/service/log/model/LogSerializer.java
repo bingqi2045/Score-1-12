@@ -106,7 +106,7 @@ public class LogSerializer {
 
     private Map<String, Object> toMetadata(Record record) {
         if (record == null) {
-            return Collections.emptyMap();
+            return new HashMap();
         }
         Map<String, Object> properties = new HashMap();
         for (Field field : record.fields()) {
@@ -321,7 +321,7 @@ public class LogSerializer {
         properties.put("guid", dtRecord.getGuid());
         properties.put("representationTerm", dtRecord.getRepresentationTerm());
         properties.put("dataTypeTerm", dtRecord.getDataTypeTerm());
-        properties.put("qualifier", dtRecord.getQualifier());
+        properties.put("qualifier", dtRecord.getQualifier_());
         properties.put("definition", dtRecord.getDefinition());
         properties.put("definitionSource", dtRecord.getDefinitionSource());
         properties.put("contentComponentDefinition", dtRecord.getContentComponentDefinition());

@@ -115,12 +115,12 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID);
+        return Arrays.asList(Indexes.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID);
     }
 
     @Override
@@ -134,13 +134,8 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     }
 
     @Override
-    public List<UniqueKey<SeqKeyRecord>> getKeys() {
-        return Arrays.<UniqueKey<SeqKeyRecord>>asList(Keys.KEY_SEQ_KEY_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<SeqKeyRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<SeqKeyRecord, ?>>asList(Keys.SEQ_KEY_FROM_ACC_MANIFEST_ID_FK, Keys.SEQ_KEY_ASCC_MANIFEST_ID_FK, Keys.SEQ_KEY_BCC_MANIFEST_ID_FK, Keys.SEQ_KEY_PREV_SEQ_KEY_ID_FK, Keys.SEQ_KEY_NEXT_SEQ_KEY_ID_FK);
+        return Arrays.asList(Keys.SEQ_KEY_FROM_ACC_MANIFEST_ID_FK, Keys.SEQ_KEY_ASCC_MANIFEST_ID_FK, Keys.SEQ_KEY_BCC_MANIFEST_ID_FK, Keys.SEQ_KEY_PREV_SEQ_KEY_ID_FK, Keys.SEQ_KEY_NEXT_SEQ_KEY_ID_FK);
     }
 
     private transient AccManifest _accManifest;

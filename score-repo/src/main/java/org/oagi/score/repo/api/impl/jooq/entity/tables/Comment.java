@@ -131,12 +131,12 @@ public class Comment extends TableImpl<CommentRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.COMMENT_REFERENCE);
+        return Arrays.asList(Indexes.COMMENT_REFERENCE);
     }
 
     @Override
@@ -150,13 +150,8 @@ public class Comment extends TableImpl<CommentRecord> {
     }
 
     @Override
-    public List<UniqueKey<CommentRecord>> getKeys() {
-        return Arrays.<UniqueKey<CommentRecord>>asList(Keys.KEY_COMMENT_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<CommentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CommentRecord, ?>>asList(Keys.COMMENT_PREV_COMMENT_ID_FK, Keys.COMMENT_CREATED_BY_FK);
+        return Arrays.asList(Keys.COMMENT_PREV_COMMENT_ID_FK, Keys.COMMENT_CREATED_BY_FK);
     }
 
     private transient Comment _comment;

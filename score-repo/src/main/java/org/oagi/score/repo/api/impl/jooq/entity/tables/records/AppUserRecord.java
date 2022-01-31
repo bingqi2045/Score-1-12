@@ -14,7 +14,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 
 
 /**
- * This table captures the user information for authentication and authorization 
+ * This table captures the user information for authentication and authorization
  * purposes.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
@@ -51,14 +51,16 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.app_user.password</code>. Password to authenticate the user.
+     * Setter for <code>oagi.app_user.password</code>. Password to authenticate
+     * the user.
      */
     public void setPassword(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.app_user.password</code>. Password to authenticate the user.
+     * Getter for <code>oagi.app_user.password</code>. Password to authenticate
+     * the user.
      */
     public String getPassword() {
         return (String) get(2);
@@ -79,14 +81,16 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.app_user.organization</code>. The company the user represents.
+     * Setter for <code>oagi.app_user.organization</code>. The company the user
+     * represents.
      */
     public void setOrganization(String value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.app_user.organization</code>. The company the user represents.
+     * Getter for <code>oagi.app_user.organization</code>. The company the user
+     * represents.
      */
     public String getOrganization() {
         return (String) get(4);

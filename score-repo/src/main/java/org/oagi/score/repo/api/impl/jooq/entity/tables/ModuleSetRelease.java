@@ -50,42 +50,53 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     }
 
     /**
-     * The column <code>oagi.module_set_release.module_set_release_id</code>. Primary key.
+     * The column <code>oagi.module_set_release.module_set_release_id</code>.
+     * Primary key.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
-     * The column <code>oagi.module_set_release.module_set_id</code>. A foreign key of the module set.
+     * The column <code>oagi.module_set_release.module_set_id</code>. A foreign
+     * key of the module set.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
 
     /**
-     * The column <code>oagi.module_set_release.release_id</code>. A foreign key of the release.
+     * The column <code>oagi.module_set_release.release_id</code>. A foreign key
+     * of the release.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the release.");
 
     /**
-     * The column <code>oagi.module_set_release.is_default</code>. It would be a default module set if this indicator is checked. Otherwise, it would be an optional.
+     * The column <code>oagi.module_set_release.is_default</code>. It would be a
+     * default module set if this indicator is checked. Otherwise, it would be
+     * an optional.
      */
     public final TableField<ModuleSetReleaseRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "It would be a default module set if this indicator is checked. Otherwise, it would be an optional.");
 
     /**
-     * The column <code>oagi.module_set_release.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.
+     * The column <code>oagi.module_set_release.created_by</code>. Foreign key
+     * to the APP_USER table. It indicates the user who created this
+     * MODULE_SET_RELEASE.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.");
 
     /**
-     * The column <code>oagi.module_set_release.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
+     * The column <code>oagi.module_set_release.last_updated_by</code>. Foreign
+     * key to the APP_USER table referring to the last user who updated the
+     * record.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
-     * The column <code>oagi.module_set_release.creation_timestamp</code>. The timestamp when the record was first created.
+     * The column <code>oagi.module_set_release.creation_timestamp</code>. The
+     * timestamp when the record was first created.
      */
     public final TableField<ModuleSetReleaseRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
-     * The column <code>oagi.module_set_release.last_update_timestamp</code>. The timestamp when the record was last updated.
+     * The column <code>oagi.module_set_release.last_update_timestamp</code>.
+     * The timestamp when the record was last updated.
      */
     public final TableField<ModuleSetReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
@@ -124,7 +135,7 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -138,13 +149,8 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     }
 
     @Override
-    public List<UniqueKey<ModuleSetReleaseRecord>> getKeys() {
-        return Arrays.<UniqueKey<ModuleSetReleaseRecord>>asList(Keys.KEY_MODULE_SET_RELEASE_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<ModuleSetReleaseRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleSetReleaseRecord, ?>>asList(Keys.MODULE_SET_RELEASE_MODULE_SET_ID_FK, Keys.MODULE_SET_RELEASE_RELEASE_ID_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.MODULE_SET_RELEASE_MODULE_SET_ID_FK, Keys.MODULE_SET_RELEASE_RELEASE_ID_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK);
     }
 
     private transient ModuleSet _moduleSet;

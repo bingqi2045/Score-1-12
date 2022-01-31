@@ -69,17 +69,20 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     public final TableField<DtManifestRecord, ULong> BASED_DT_MANIFEST_ID = createField(DSL.name("based_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.dt_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.dt_manifest.conflict</code>. This indicates that
+     * there is a conflict between self and relationship.
      */
     public final TableField<DtManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.dt_manifest.log_id</code>. A foreign key pointed to a log for the current record.
+     * The column <code>oagi.dt_manifest.log_id</code>. A foreign key pointed to
+     * a log for the current record.
      */
     public final TableField<DtManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
-     * The column <code>oagi.dt_manifest.replacement_dt_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.dt_manifest.replacement_dt_manifest_id</code>. This
+     * refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<DtManifestRecord, ULong> REPLACEMENT_DT_MANIFEST_ID = createField(DSL.name("replacement_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
@@ -128,7 +131,7 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -142,13 +145,8 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<DtManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<DtManifestRecord>>asList(Keys.KEY_DT_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     private transient Release _release;

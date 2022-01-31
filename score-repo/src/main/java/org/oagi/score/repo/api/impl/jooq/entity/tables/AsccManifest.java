@@ -79,12 +79,14 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     public final TableField<AsccManifestRecord, ULong> TO_ASCCP_MANIFEST_ID = createField(DSL.name("to_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.ascc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     * The column <code>oagi.ascc_manifest.conflict</code>. This indicates that
+     * there is a conflict between self and relationship.
      */
     public final TableField<AsccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.ascc_manifest.replacement_ascc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.ascc_manifest.replacement_ascc_manifest_id</code>.
+     * This refers to a replacement manifest if the record is deprecated.
      */
     public final TableField<AsccManifestRecord, ULong> REPLACEMENT_ASCC_MANIFEST_ID = createField(DSL.name("replacement_ascc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
@@ -133,7 +135,7 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
     @Override
     public Schema getSchema() {
-        return Oagi.OAGI;
+        return aliased() ? null : Oagi.OAGI;
     }
 
     @Override
@@ -147,13 +149,8 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     }
 
     @Override
-    public List<UniqueKey<AsccManifestRecord>> getKeys() {
-        return Arrays.<UniqueKey<AsccManifestRecord>>asList(Keys.KEY_ASCC_MANIFEST_PRIMARY);
-    }
-
-    @Override
     public List<ForeignKey<AsccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccManifestRecord, ?>>asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_SEQ_KEY_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_SEQ_KEY_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
