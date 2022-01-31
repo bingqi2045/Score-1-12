@@ -236,6 +236,7 @@ public class CodeListService extends EventHandler {
     public CodeList getCodeList(AuthenticatedPrincipal user, BigInteger manifestId) {
         CodeList codeList = dslContext.select(
                 CODE_LIST_MANIFEST.RELEASE_ID,
+                RELEASE.STATE.as("release_state"),
                 RELEASE.RELEASE_NUM,
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.NAME.as("code_list_name"),

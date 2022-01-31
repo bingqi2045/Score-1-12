@@ -60,6 +60,7 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST.CREATION_TIMESTAMP,
                 AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP,
                 RELEASE.RELEASE_NUM,
+                RELEASE.STATE.as("release_state"),
                 RELEASE.RELEASE_ID,
                 LOG.REVISION_NUM,
                 MODULE.PATH,
