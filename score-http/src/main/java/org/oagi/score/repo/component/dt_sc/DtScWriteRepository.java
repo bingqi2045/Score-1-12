@@ -132,6 +132,21 @@ public class DtScWriteRepository {
         }
     }
 
+    private void ensureUniquenessOfPropertyTerm(DtScRecord dtScRecord, String propertyTerm) {
+        ULong dtId = dtScRecord.getOwnerDtId();
+        int cnt = dslContext.selectCount()
+                .from(DT_SC)
+                .where(and(
+                        DT_SC.OWNER_DT_ID.eq(dtId),
+                        DT_SC.PROPERTY_TERM.eq(propertyTerm),
+                        DT_SC.DT_SC_ID.notEqual(dtScRecord.getDtScId())
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            throw new IllegalArgumentException("There is an another supplementary component whose property term is same with the request: " + propertyTerm);
+        }
+    }
+
     private void ensureUniquenessOfDen(DtScRecord dtScRecord,
                                        String objectClassTerm,
                                        String propertyTerm,
@@ -202,6 +217,8 @@ public class DtScWriteRepository {
                 .fetchOne();
 
         // Issue #1240
+        ensureUniquenessOfPropertyTerm(dtScRecord, request.getPropertyTerm());
+
         ensureUniquenessOfDen(dtScRecord,
                 dtScRecord.getObjectClassTerm(),
                 request.getPropertyTerm(),
