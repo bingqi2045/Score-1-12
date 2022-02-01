@@ -113,6 +113,17 @@ public class CcListController {
         request.setComponentTypes(componentTypes);
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
                 Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        if ((request.getTypes().isCdt() || request.getTypes().isBdt()) && request.getDtTypes().isEmpty()) {
+            List<String> dtTypeList = new ArrayList();
+            if (request.getTypes().isCdt()) {
+                dtTypeList.add("CDT");
+            }
+            if (request.getTypes().isBdt()) {
+                dtTypeList.add("BDT");
+            }
+            request.setDtTypes(dtTypeList);
+        }
+
         request.setAsccpTypes(!StringUtils.hasLength(asccpTypes) ? Collections.emptyList() :
                 Arrays.asList(asccpTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setExcludes(!StringUtils.hasLength(excludes) ? Collections.emptyList() :
