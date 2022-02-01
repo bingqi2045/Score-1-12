@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.score.repo.api.corecomponent.model.CcState.Production;
 import static org.oagi.score.repo.api.corecomponent.model.CcState.Published;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -62,7 +63,12 @@ public class AgencyIdService {
                     .join(RELEASE)
                     .on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                     .where(and(
-                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            RELEASE.STATE.in(Published.name(), Production.name()),
+                            or(
+                                    AGENCY_ID_LIST.STATE.in(Published.name(), Production.name()),
+                                    AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID.isNotNull()
+                            )
                     ))
                     .fetchInto(SimpleAgencyIdList.class);
         } else {
@@ -79,6 +85,11 @@ public class AgencyIdService {
                     .on(AGENCY_ID_LIST.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
                     .where(and(
                             RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            RELEASE.STATE.in(Published.name(), Production.name()),
+                            or(
+                                    AGENCY_ID_LIST.STATE.in(Published.name(), Production.name()),
+                                    AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID.isNotNull()
+                            ),
                             APP_USER.IS_DEVELOPER.eq((byte) 1)
                     ))
                     .fetchInto(SimpleAgencyIdList.class);

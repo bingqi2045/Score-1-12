@@ -929,6 +929,19 @@ public class JooqAgencyIdListWriteRepository
         }
     }
 
+    private void updateCodeListAgencyIdListValueId(BigInteger releaseId, BigInteger prevAgencyIdListId, BigInteger nextAgencyIdListId) {
+        dslContext().update(CODE_LIST)
+                .set(CODE_LIST.AGENCY_ID, ULong.valueOf(nextAgencyIdListId))
+                .where(CODE_LIST.CODE_LIST_ID.in(
+                        dslContext().select(CODE_LIST.CODE_LIST_ID)
+                                .from(CODE_LIST)
+                                .join(CODE_LIST_MANIFEST)
+                                .on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                                .where(and(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                        CODE_LIST.AGENCY_ID.eq(ULong.valueOf(prevAgencyIdListId))))))
+                .execute();
+    }
+
     private void updateBIEAgencyIdListId(BigInteger releaseId, BigInteger prevAgencyIdListId, BigInteger nextAgencyIdListId) {
         dslContext().update(BBIE)
                 .set(BBIE.AGENCY_ID_LIST_ID, ULong.valueOf(nextAgencyIdListId))
@@ -954,7 +967,8 @@ public class JooqAgencyIdListWriteRepository
 
     }
 
-    private void discardLogAgencyIdListValues(AgencyIdListManifestRecord agencyIdListManifestRecord, AgencyIdListRecord agencyIdListRecord) {
+    private void discardLogAgencyIdListValues(AgencyIdListManifestRecord agencyIdListManifestRecord,
+                                              AgencyIdListRecord agencyIdListRecord) {
         List<AgencyIdListValueManifestRecord> agencyIdListValueManifests = dslContext().selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
                 .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
                 .fetch();
@@ -965,14 +979,19 @@ public class JooqAgencyIdListWriteRepository
                     .fetchOne();
 
             if (agencyIdListValue.getPrevAgencyIdListValueId() == null) {
-                //delete code list value and code list manifest which added this revision
+                // delete code list value and code list manifest which added this revision
                 agencyIdListValueManifest.delete();
                 agencyIdListValue.delete();
             } else {
-                //delete code list value and update code list value manifest
+                // delete code list value and update code list value manifest
                 AgencyIdListValueRecord prevAgencyIdListValue = dslContext().selectFrom(AGENCY_ID_LIST_VALUE)
                         .where(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(agencyIdListValue.getPrevAgencyIdListValueId()))
                         .fetchOne();
+
+                updateCodeListAgencyIdListValueId(agencyIdListManifestRecord.getReleaseId().toBigInteger(),
+                        agencyIdListValue.getAgencyIdListValueId().toBigInteger(),
+                        prevAgencyIdListValue.getAgencyIdListValueId().toBigInteger());
+
                 prevAgencyIdListValue.setNextAgencyIdListValueId(null);
                 prevAgencyIdListValue.update(AGENCY_ID_LIST_VALUE.NEXT_AGENCY_ID_LIST_VALUE_ID);
                 agencyIdListValueManifest.setAgencyIdListValueId(prevAgencyIdListValue.getAgencyIdListValueId());
@@ -1020,6 +1039,10 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValueManifestRecord.setAgencyIdListManifestId(manifestRecord.getAgencyIdListManifestId());
             agencyIdListValueManifestRecord.update(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID,
                     AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID);
+
+            updateCodeListAgencyIdListValueId(manifestRecord.getReleaseId().toBigInteger(),
+                    prevAgencyIdListValueRecord.getAgencyIdListValueId().toBigInteger(),
+                    nextAgencyIdListValueRecord.getAgencyIdListValueId().toBigInteger());
         }
     }
 }
