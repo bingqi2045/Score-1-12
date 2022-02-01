@@ -50,14 +50,30 @@ public class BusinessTermService {
         return response;
     }
 
-//    public GetContextSchemeValueListResponse getContextSchemeValueList(GetContextSchemeValueListRequest request) {
-//        GetContextSchemeValueListResponse response =
-//                scoreRepositoryFactory.createContextSchemeReadRepository()
-//                        .getContextSchemeValueList(request);
-//
-//        return response;
-//    }
-//
+    public GetAssignedBusinessTermListResponse getAssignedBusinessTermList(GetAssignedBusinessTermListRequest request) {
+//        GetBusinessTermListResponse response =
+//                scoreRepositoryFactory.createBusinessTermReadRepository()
+//                        .getBusinessTermList(request);
+        List<AssignedBusinessTerm> termList = new ArrayList<>();
+        termList.add(new AssignedBusinessTerm(
+                BigInteger.valueOf(1),
+                BigInteger.valueOf(1),
+                "Sync Invoice",
+                "ABIE",
+                BigInteger.valueOf(1),
+                "term1",
+                "definition",
+                "http://test.com/123",
+                "123",
+                "123",
+                new Date(Long.valueOf("1639759181187")),
+                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ),
+                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER )));
+
+        GetAssignedBusinessTermListResponse response = new GetAssignedBusinessTermListResponse(termList, 0, 1, 1);
+        return response;
+    }
+
     public GetBusinessTermResponse getBusinessTerm(GetBusinessTermRequest request) {
 //        GetBusinessTermResponse response =
 //                scoreRepositoryFactory.createContextSchemeReadRepository()

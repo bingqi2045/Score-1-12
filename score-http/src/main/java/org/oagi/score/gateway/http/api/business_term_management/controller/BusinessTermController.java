@@ -33,7 +33,7 @@ public class BusinessTermController {
 
     @RequestMapping(value = "/business_terms", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<BusinessTerm> getContextSchemeList(
+    public PageResponse<BusinessTerm> getBusinessTermList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "term", required = false) String term,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
@@ -69,6 +69,57 @@ public class BusinessTermController {
         GetBusinessTermListResponse response = businessTermService.getBusinessTermList(request);
 
         PageResponse<BusinessTerm> pageResponse = new PageResponse<>();
+        pageResponse.setList(response.getResults());
+        pageResponse.setPage(response.getPage());
+        pageResponse.setSize(response.getSize());
+        pageResponse.setLength(response.getLength());
+        return pageResponse;
+    }
+
+    @RequestMapping(value = "/assigned_business_terms", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public PageResponse<AssignedBusinessTerm> getAssignedBusinessTermList(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestParam(name = "bieId", required = false) Optional<BigInteger> bieId,
+            @RequestParam(name = "biePropertyTerm", required = false) String biePropertyTerm,
+            @RequestParam(name = "term", required = false) String term,
+            @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
+            @RequestParam(name = "updateStart", required = false) String updateStart,
+            @RequestParam(name = "updateEnd", required = false) String updateEnd,
+            @RequestParam(name = "sortActive") String sortActive,
+            @RequestParam(name = "sortDirection") String sortDirection,
+            @RequestParam(name = "pageIndex") int pageIndex,
+            @RequestParam(name = "pageSize") int pageSize) {
+
+        GetAssignedBusinessTermListRequest request = new GetAssignedBusinessTermListRequest(
+                authenticationService.asScoreUser(requester));
+
+        if (bieId.isPresent()) {
+            request.setBieId(bieId.get());
+        }
+        request.setBiePropertyTerm(biePropertyTerm);
+        request.setBusinessTerm(term);
+        request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
+                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
+                        .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
+        if (StringUtils.hasLength(updateStart)) {
+            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
+        }
+        if (StringUtils.hasLength(updateEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(updateEnd));
+            calendar.add(Calendar.DATE, 1);
+            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
+        }
+
+        request.setPageIndex(pageIndex);
+        request.setPageSize(pageSize);
+        request.setSortActive(sortActive);
+        request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
+
+        GetAssignedBusinessTermListResponse response = businessTermService.getAssignedBusinessTermList(request);
+
+        PageResponse<AssignedBusinessTerm> pageResponse = new PageResponse<>();
         pageResponse.setList(response.getResults());
         pageResponse.setPage(response.getPage());
         pageResponse.setSize(response.getSize());
