@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.base.SortDirection.DESC;
+import static org.oagi.score.repo.api.corecomponent.model.CcState.Deleted;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.LOG;
 
@@ -263,7 +264,7 @@ public class JooqAgencyIdListWriteRepository
     }
 
     @Override
-    public void transferOwnerShipAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) throws ScoreDataAccessException {
+    public void transferOwnershipAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) throws ScoreDataAccessException {
         ULong userId = ULong.valueOf(user.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
         ULong targetUserId = dslContext().selectFrom(APP_USER).where(APP_USER.LOGIN_ID.eq(targetLoginId)).fetchOne().getAppUserId();
@@ -336,8 +337,27 @@ public class JooqAgencyIdListWriteRepository
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
-        if (!agencyIdListRecord.getOwnerUserId().equals(userId) && !prevState.canForceMove(nextState)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        if (prevState == Deleted) {
+            boolean isOwnerDeveloper = dslContext().select(APP_USER.IS_DEVELOPER)
+                    .from(APP_USER)
+                    .where(APP_USER.APP_USER_ID.eq(agencyIdListRecord.getOwnerUserId()))
+                    .fetchOneInto(Byte.class) == (byte) 1;
+            boolean isRequesterDeveloper = dslContext().select(APP_USER.IS_DEVELOPER)
+                    .from(APP_USER)
+                    .where(APP_USER.APP_USER_ID.eq(userId))
+                    .fetchOneInto(Byte.class) == (byte) 1;
+
+            if (isOwnerDeveloper != isRequesterDeveloper) {
+                if (isOwnerDeveloper) {
+                    throw new IllegalArgumentException("Only developers can restore this component.");
+                } else {
+                    throw new IllegalArgumentException("Only end-users can restore this component.");
+                }
+            }
+        } else {
+            if (!agencyIdListRecord.getOwnerUserId().equals(userId) && !prevState.canForceMove(nextState)) {
+                throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            }
         }
 
         // update agencyIdList state.
@@ -346,11 +366,16 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListRecord.setLastUpdatedBy(userId);
             agencyIdListRecord.setLastUpdateTimestamp(timestamp);
         }
+        if (prevState == Deleted) {
+            agencyIdListRecord.setOwnerUserId(userId);
+        }
         agencyIdListRecord.update(AGENCY_ID_LIST.STATE,
-                AGENCY_ID_LIST.LAST_UPDATED_BY, AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP);
+                AGENCY_ID_LIST.LAST_UPDATED_BY,
+                AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP,
+                AGENCY_ID_LIST.OWNER_USER_ID);
 
         // creates new revision for updated record.
-        LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
+        LogAction logAction = (Deleted == prevState && CcState.WIP == nextState)
                 ? LogAction.Restored : LogAction.Modified;
         LogRecord logRecord =
                 insertAgencyIdListLog(
@@ -361,7 +386,6 @@ public class JooqAgencyIdListWriteRepository
 
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
         agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
-
     }
 
     @Override

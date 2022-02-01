@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.agency_id_management.service;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.export.model.AgencyId;
 import org.oagi.score.gateway.http.api.agency_id_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.agency.model.GetAgencyIdListListRequest;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
 
 import org.oagi.score.repo.api.corecomponent.model.CcState;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.AccessPrivilege;
@@ -158,7 +156,7 @@ public class AgencyIdService {
 
     @Transactional
     public void transferOwnership(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) {
-        scoreRepositoryFactory.createAgencyIdListWriteRepository().transferOwnerShipAgencyIdList(user, agencyIdListManifestId, targetLoginId);
+        scoreRepositoryFactory.createAgencyIdListWriteRepository().transferOwnershipAgencyIdList(user, agencyIdListManifestId, targetLoginId);
     }
 
     @Transactional
