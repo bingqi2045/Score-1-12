@@ -1,9 +1,7 @@
 package org.oagi.score.gateway.http.api.business_term_management.controller;
 
-import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.businessterm.model.*;
 import org.oagi.score.service.authentication.AuthenticationService;
-import org.oagi.score.service.businesscontext.ContextSchemeService;
 import org.oagi.score.service.businessterm.BusinessTermService;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +73,15 @@ public class BusinessTermController {
         pageResponse.setLength(response.getLength());
         return pageResponse;
     }
+    @RequestMapping(value = "/business_terms/check_uniqueness", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkUniqueness(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody PostBusinessTermRequest postBusinessTermRequest) {
+        return businessTermService.hasSameTermDefinitionAndExternalRefId(postBusinessTermRequest.getBusinessTerm());
+    }
 
-    @RequestMapping(value = "/assigned_business_terms", method = RequestMethod.GET,
+    @RequestMapping(value = "/business_terms/assign", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<AssignedBusinessTerm> getAssignedBusinessTermList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
@@ -171,7 +176,22 @@ public class BusinessTermController {
                 businessTermService.getBusinessTerm(request);
         return response.getBusinessTerm();
     }
-//
+
+        @RequestMapping(value = "/business_terms/assign", method = RequestMethod.PUT)
+    public ResponseEntity create(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody AssignBusinessTermRequest request) {
+
+        AssignBusinessTermResponse response =
+                businessTermService.assignBusinessTerm(request);
+
+        if (response.getAssignedBusinessTerm() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 //    @RequestMapping(value = "/simple_context_schemes", method = RequestMethod.GET,
 //            produces = MediaType.APPLICATION_JSON_VALUE)
 //    public List<ContextScheme> getSimpleContextSchemeList(
@@ -304,13 +324,7 @@ public class BusinessTermController {
 //        }
 //    }
 //
-//    @RequestMapping(value = "/context_scheme/check_uniqueness", method = RequestMethod.POST,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public boolean checkUniqueness(
-//            @AuthenticationPrincipal AuthenticatedPrincipal requester,
-//            @RequestBody ContextScheme contextScheme) {
-//        return contextSchemeService.hasSameCtxScheme(contextScheme);
-//    }
+
 //
 //    @RequestMapping(value = "/context_scheme/check_name_uniqueness", method = RequestMethod.POST,
 //            produces = MediaType.APPLICATION_JSON_VALUE)

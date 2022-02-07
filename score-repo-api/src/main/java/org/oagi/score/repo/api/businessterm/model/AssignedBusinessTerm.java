@@ -10,6 +10,8 @@ public class AssignedBusinessTerm extends Auditable {
 
     private BigInteger assignedBtId;
 
+    private boolean isPrimary;
+
     private BigInteger bieId;
 
     private String biePropertyTerm;
@@ -39,6 +41,14 @@ public class AssignedBusinessTerm extends Auditable {
 
     public void setAssignedBtId(BigInteger assignedBtId) {
         this.assignedBtId = assignedBtId;
+    }
+
+    public boolean isPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(boolean primary) {
+        isPrimary = primary;
     }
 
     public BigInteger getBieId() {
@@ -140,8 +150,9 @@ public class AssignedBusinessTerm extends Auditable {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public AssignedBusinessTerm(BigInteger assignedBtId, BigInteger bieId, String biePropertyTerm, String bieType, BigInteger businessTermId, String businessTerm, String definition, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
+    public AssignedBusinessTerm(BigInteger assignedBtId, boolean isPrimary, BigInteger bieId, String biePropertyTerm, String bieType, BigInteger businessTermId, String businessTerm, String definition, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
         this.assignedBtId = assignedBtId;
+        this.isPrimary = isPrimary;
         this.bieId = bieId;
         this.biePropertyTerm = biePropertyTerm;
         this.bieType = bieType;
