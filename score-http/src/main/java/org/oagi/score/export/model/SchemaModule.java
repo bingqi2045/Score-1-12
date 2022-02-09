@@ -43,6 +43,13 @@ public class SchemaModule {
     }
 
     public boolean hasInclude(SchemaModule schemaModule) {
+        List<SchemaModule> references = new ArrayList();
+        references.add(schemaModule);
+        return hasInclude(schemaModule, references);
+    }
+
+    public boolean hasInclude(SchemaModule schemaModule, List<SchemaModule> references) {
+        List<SchemaModule> nextReferences = null;
         try {
             if (this.equals(schemaModule)) {
                 return true;
@@ -50,17 +57,29 @@ public class SchemaModule {
             if (this.includeModules.indexOf(schemaModule) > -1) {
                 return true;
             }
+
             for (SchemaModule include : this.includeModules) {
-                if (include.hasInclude(schemaModule)) {
+                if (references.contains(include)) {
+                    references.add(include);
+
+                    throw new IllegalArgumentException("Circular reference found: " +
+                            references.stream().map(m -> m.module.getModulePath()).collect(Collectors.joining(" -> ")));
+                }
+
+                nextReferences = new ArrayList(references);
+                nextReferences.add(include);
+
+                if (include.hasInclude(schemaModule, nextReferences)) {
                     return true;
                 }
             }
             return false;
 
         } catch (StackOverflowError e) {
-            throw new IllegalArgumentException("Circular reference found, can not export schema.");
+            throw new IllegalArgumentException("Circular reference found: " +
+                    nextReferences.stream().map(m -> m.module.getModulePath()).collect(Collectors.joining(" -> "))
+                    , e);
         }
-
     }
 
     private boolean hasImport(SchemaModule schemaModule) {
