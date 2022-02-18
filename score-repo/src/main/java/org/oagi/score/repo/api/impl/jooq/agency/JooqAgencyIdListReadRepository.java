@@ -129,6 +129,7 @@ public class JooqAgencyIdListReadRepository
             ));
             agencyIdList.setDeprecated(e.get(AGENCY_ID_LIST.IS_DEPRECATED) == 1);
             agencyIdList.setState(CcState.valueOf(e.get(AGENCY_ID_LIST.STATE)));
+            agencyIdList.setReleaseState(e.get(RELEASE.STATE.as("release_state")));
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
             agencyIdList.setReleaseId(e.get(RELEASE.RELEASE_ID).toBigInteger());
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
