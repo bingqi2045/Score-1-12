@@ -467,37 +467,37 @@ public class DtScWriteRepository {
                         deleteList.stream().map(BdtScPriRestriRecord::getBdtScPriRestriId).collect(Collectors.toList())))
                 .execute();
 
-        BigInteger defaultValueDomainId = null;
-
         List<BdtScPriRestriRecord> insertedList = new ArrayList<>();
+        BdtScPriRestriRecord defaultBdtScPriRestriRecord = null;
 
         for (CcBdtScPriRestri restri : list) {
+            BdtScPriRestriRecord bdtScPriRestriRecord = null;
             if (restri.getBdtScPriRestriId() == null) {
                 // insert
-                BdtScPriRestriRecord newBdtScPriRestri = new BdtScPriRestriRecord();
-                newBdtScPriRestri.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
-                newBdtScPriRestri.setBdtScId(dtScId);
+                bdtScPriRestriRecord = new BdtScPriRestriRecord();
+                bdtScPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
+                bdtScPriRestriRecord.setBdtScId(dtScId);
                 if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
-                    newBdtScPriRestri.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    bdtScPriRestriRecord.setCodeListId(ULong.valueOf(restri.getCodeListId()));
                 } else if (restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
-                    newBdtScPriRestri.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                    bdtScPriRestriRecord.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
                 } else {
                     if (restri.getCdtScAwdPriXpsTypeMapId() == null) {
                         CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMapRecord = createCdtScAwdPriXpsTypeMap(restri, dtScId);
                         restri.setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapRecord.getCdtScAwdPriXpsTypeMapId().toBigInteger());
                     }
 
-                    newBdtScPriRestri.setCdtScAwdPriXpsTypeMapId(
+                    bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(
                             ULong.valueOf(restri.getCdtScAwdPriXpsTypeMapId()));
                 }
                 restri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
-                        .set(newBdtScPriRestri)
+                        .set(bdtScPriRestriRecord)
                         .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId().toBigInteger());
 
-                insertedList.add(newBdtScPriRestri);
+                insertedList.add(bdtScPriRestriRecord);
             } else {
                 // update
-                BdtScPriRestriRecord bdtScPriRestriRecord = dslContext.selectFrom(BDT_SC_PRI_RESTRI)
+                bdtScPriRestriRecord = dslContext.selectFrom(BDT_SC_PRI_RESTRI)
                         .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(restri.getBdtScPriRestriId())))
                         .fetchOne();
 
@@ -520,21 +520,48 @@ public class DtScWriteRepository {
             }
 
             if (restri.isDefault()) {
-                defaultValueDomainId = restri.getBdtScPriRestriId();
+                defaultBdtScPriRestriRecord = bdtScPriRestriRecord;
             }
         }
 
-        if (defaultValueDomainId == null) {
+        if (defaultBdtScPriRestriRecord == null) {
             throw new IllegalArgumentException("Default Value Domain required.");
         }
 
-        dslContext.update(BDT_SC_PRI_RESTRI).set(BDT_SC_PRI_RESTRI.IS_DEFAULT, (byte) 0)
-                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId)).execute();
-
-        dslContext.update(BDT_SC_PRI_RESTRI).set(BDT_SC_PRI_RESTRI.IS_DEFAULT, (byte) 1)
-                .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(defaultValueDomainId))).execute();
-
         insertDerivedValueDomain(dtScId, insertedList);
+        updateValueDomain(dtScId, defaultBdtScPriRestriRecord);
+    }
+
+    private void updateValueDomain(ULong dtScId, BdtScPriRestriRecord defaultBdtScPriRestriRecord) {
+        for (BdtScPriRestriRecord bdtScPriRestriRecord :
+                dslContext.selectFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId))) {
+            if (defaultBdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId() != null) {
+                if (defaultBdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId().equals(bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId())) {
+                    bdtScPriRestriRecord.setIsDefault((byte) 1);
+                } else {
+                    bdtScPriRestriRecord.setIsDefault((byte) 0);
+                }
+            } else if (defaultBdtScPriRestriRecord.getCodeListId() != null) {
+                if (defaultBdtScPriRestriRecord.getCodeListId().equals(bdtScPriRestriRecord.getCodeListId())) {
+                    bdtScPriRestriRecord.setIsDefault((byte) 1);
+                } else {
+                    bdtScPriRestriRecord.setIsDefault((byte) 0);
+                }
+            } else if (defaultBdtScPriRestriRecord.getAgencyIdListId() != null) {
+                if (defaultBdtScPriRestriRecord.getAgencyIdListId().equals(bdtScPriRestriRecord.getAgencyIdListId())) {
+                    bdtScPriRestriRecord.setIsDefault((byte) 1);
+                } else {
+                    bdtScPriRestriRecord.setIsDefault((byte) 0);
+                }
+            }
+
+            bdtScPriRestriRecord.update(BDT_SC_PRI_RESTRI.IS_DEFAULT);
+        }
+
+        for (DtScRecord derivedDtScRecord :
+                dslContext.selectFrom(DT_SC).where(DT_SC.BASED_DT_SC_ID.eq(dtScId)).fetch()) {
+            updateValueDomain(derivedDtScRecord.getDtScId(), defaultBdtScPriRestriRecord);
+        }
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
