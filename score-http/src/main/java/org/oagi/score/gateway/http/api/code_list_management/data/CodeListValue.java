@@ -8,6 +8,7 @@ import java.math.BigInteger;
 public class CodeListValue {
 
     private BigInteger codeListValueManifestId;
+    private BigInteger basedCodeListValueManifestId;
     private String guid;
     private String value;
     private String meaning;

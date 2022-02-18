@@ -297,6 +297,7 @@ public class CodeListService extends EventHandler {
 
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
+                CODE_LIST_VALUE_MANIFEST.BASED_CODE_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.GUID,

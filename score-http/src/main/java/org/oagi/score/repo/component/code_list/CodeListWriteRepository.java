@@ -142,6 +142,7 @@ public class CodeListWriteRepository {
                 CodeListValueRecord codeListValueRecord = basedCodeListValue.copy();
                 codeListValueRecord.setCodeListId(codeList.getCodeListId());
                 codeListValueRecord.setGuid(ScoreGuid.randomGuid());
+                codeListValueRecord.setBasedCodeListValueId(basedCodeListValue.getCodeListValueId());
                 codeListValueRecord.setCreatedBy(userId);
                 codeListValueRecord.setLastUpdatedBy(userId);
                 codeListValueRecord.setOwnerUserId(userId);
@@ -160,6 +161,7 @@ public class CodeListWriteRepository {
                 codeListValueManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
                 codeListValueManifestRecord.setCodeListValueId(codeListValueRecord.getCodeListValueId());
                 codeListValueManifestRecord.setCodeListManifestId(codeListManifest.getCodeListManifestId());
+                codeListValueManifestRecord.setBasedCodeListValueManifestId(basedCodeListValueManifest.getCodeListValueManifestId());
                 codeListValueManifestRecord.setPrevCodeListValueManifestId(null);
                 codeListValueManifestRecord.setNextCodeListValueManifestId(null);
 

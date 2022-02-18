@@ -113,6 +113,7 @@ public class JooqAgencyIdListWriteRepository
                 AgencyIdListValueRecord agencyIdListValueRecord = basedAgencyIdListValue.copy();
                 agencyIdListValueRecord.setOwnerListId(agencyIdListRecord.getAgencyIdListId());
                 agencyIdListValueRecord.setGuid(ScoreGuidUtils.randomGuid());
+                agencyIdListValueRecord.setBasedAgencyIdListValueId(basedAgencyIdListValue.getAgencyIdListValueId());
                 agencyIdListValueRecord.setCreatedBy(userId);
                 agencyIdListValueRecord.setLastUpdatedBy(userId);
                 agencyIdListValueRecord.setOwnerUserId(userId);
@@ -131,6 +132,7 @@ public class JooqAgencyIdListWriteRepository
                 agencyIdListValueManifestRecord.setReleaseId(basedAgencyIdListValueManifest.getReleaseId());
                 agencyIdListValueManifestRecord.setAgencyIdListValueId(agencyIdListValueRecord.getAgencyIdListValueId());
                 agencyIdListValueManifestRecord.setAgencyIdListManifestId(agencyIdListManifestRecord.getAgencyIdListManifestId());
+                agencyIdListValueManifestRecord.setBasedAgencyIdListValueManifestId(basedAgencyIdListValueManifest.getAgencyIdListValueManifestId());
                 agencyIdListValueManifestRecord.setPrevAgencyIdListValueManifestId(null);
                 agencyIdListValueManifestRecord.setNextAgencyIdListValueManifestId(null);
 
