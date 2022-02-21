@@ -10,6 +10,8 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.repo.api.user.model.ScoreRole;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -51,7 +53,8 @@ public class DtWriteRepository {
     private LogSerializer serializer;
 
     public CreateBdtRepositoryResponse createBdt(CreateBdtRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        ScoreUser requestor = sessionService.asScoreUser(request.getUser());
+        ULong userId = ULong.valueOf(requestor.getUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord basedBdtManifest = dslContext.selectFrom(DT_MANIFEST)
@@ -61,6 +64,13 @@ public class DtWriteRepository {
         DtRecord basedBdt = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(basedBdtManifest.getDtId()))
                 .fetchOne();
+
+        NamespaceRecord namespaceRecord = null;
+        if (basedBdt.getNamespaceId() != null) {
+            namespaceRecord = dslContext.selectFrom(NAMESPACE)
+                    .where(NAMESPACE.NAMESPACE_ID.eq(basedBdt.getNamespaceId()))
+                    .fetchOne();
+        }
 
         List<DtScManifestRecord> basedDtScManifestList = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(basedBdtManifest.getDtManifestId()))
@@ -82,7 +92,13 @@ public class DtWriteRepository {
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);
         bdt.setCommonlyUsed((byte) 0);
-        bdt.setNamespaceId(null);
+        if (namespaceRecord != null) {
+            if (requestor.hasRole(ScoreRole.DEVELOPER) && (namespaceRecord.getIsStdNmsp() == (byte) 1)) {
+                bdt.setNamespaceId(namespaceRecord.getNamespaceId());
+            } else if (requestor.hasRole(ScoreRole.END_USER) && (namespaceRecord.getIsStdNmsp() == (byte) 0)) {
+                bdt.setNamespaceId(namespaceRecord.getNamespaceId());
+            }
+        }
         bdt.setCreatedBy(userId);
         bdt.setLastUpdatedBy(userId);
         bdt.setOwnerUserId(userId);
