@@ -2,6 +2,7 @@ package org.oagi.score.repo.component.dt;
 
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
@@ -43,7 +44,9 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     }
 
     public void setQualifier(String qualifier) {
-        this.qualifier = qualifier;
+        if (StringUtils.hasLength(qualifier)) {
+            this.qualifier = qualifier;
+        }
     }
 
     public String getSixDigitId() {
@@ -59,7 +62,9 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     }
 
     public void setContentComponentDefinition(String contentComponentDefinition) {
-        this.contentComponentDefinition = contentComponentDefinition;
+        if (StringUtils.hasLength(contentComponentDefinition)) {
+            this.contentComponentDefinition = contentComponentDefinition;
+        }
     }
 
     public String getDefinition() {
@@ -67,7 +72,9 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     }
 
     public void setDefinition(String definition) {
-        this.definition = definition;
+        if (StringUtils.hasLength(definition)) {
+            this.definition = definition;
+        }
     }
 
     public String getDefinitionSource() {
@@ -75,7 +82,9 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     }
 
     public void setDefinitionSource(String definitionSource) {
-        this.definitionSource = definitionSource;
+        if (StringUtils.hasLength(definitionSource)) {
+            this.definitionSource = definitionSource;
+        }
     }
 
     public boolean isDeprecated() {

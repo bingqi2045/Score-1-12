@@ -9,6 +9,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriTy
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -423,9 +424,15 @@ public class DtWriteRepository {
         UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
         UpdateSetMoreStep<DtRecord> moreStep = null;
         if (compare(dtRecord.getQualifier_(), request.getQualifier()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.QUALIFIER, request.getQualifier())
-                    .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+            if (StringUtils.hasLength(request.getQualifier())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.QUALIFIER, request.getQualifier())
+                        .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.QUALIFIER)
+                        .set(DT.DEN, dtRecord.getRepresentationTerm() + ". Type");
+            }
         }
         if (compare(dtRecord.getSixDigitId(), request.getSixDigitId()) != 0) {
             DtRecord exist = dslContext.selectFrom(DT)
@@ -438,16 +445,31 @@ public class DtWriteRepository {
                     .set(DT.SIX_DIGIT_ID, request.getSixDigitId());
         }
         if (compare(dtRecord.getContentComponentDefinition(), request.getContentComponentDefinition()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+            if (StringUtils.hasLength(request.getContentComponentDefinition())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.CONTENT_COMPONENT_DEFINITION);
+            }
         }
         if (compare(dtRecord.getDefinition(), request.getDefinition()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.DEFINITION, request.getDefinition());
+            if (StringUtils.hasLength(request.getDefinition())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.DEFINITION, request.getDefinition());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.DEFINITION);
+            }
         }
         if (compare(dtRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+            if (StringUtils.hasLength(request.getDefinitionSource())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.DEFINITION_SOURCE);
+            }
         }
         if ((dtRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
