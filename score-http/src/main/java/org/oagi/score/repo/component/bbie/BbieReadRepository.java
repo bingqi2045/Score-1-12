@@ -172,7 +172,7 @@ public class BbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedBbieList(BigInteger topLevelAsbiepId) {
-        return dslContext.select(BBIE.BBIE_ID, BBIE.BASED_BCC_MANIFEST_ID, BBIE.HASH_PATH)
+        return dslContext.select(BBIE.BBIE_ID, BBIE.BASED_BCC_MANIFEST_ID, BBIE.HASH_PATH, BBIE.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(BBIE)
                 .join(BBIEP).on(and(
                         BBIE.TO_BBIEP_ID.eq(BBIEP.BBIEP_ID),
@@ -188,6 +188,7 @@ public class BbieReadRepository {
                     bieEditUsed.setBieId(record.get(BBIE.BBIE_ID).toBigInteger());
                     bieEditUsed.setManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID).toBigInteger());
                     bieEditUsed.setHashPath(record.get(BBIE.HASH_PATH));
+                    bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
                     return bieEditUsed;
                 })
                 .collect(Collectors.toList());
