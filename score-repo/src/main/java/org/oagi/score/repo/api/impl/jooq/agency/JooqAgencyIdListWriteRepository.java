@@ -945,8 +945,8 @@ public class JooqAgencyIdListWriteRepository
                         .collect(Collectors.toMap(AgencyIdListValueManifestRecord::getAgencyIdListValueId, Function.identity()));
 
         for (AgencyIdListValueRecord agencyIdListValueRecord : agencyIdListValueRecordMapByValue.values()) {
-            if (agencyIdListRecord.getAgencyIdListValueId().equals(agencyIdListValueRecord.getAgencyIdListValueId())) {
-                throw new IllegalArgumentException("The agency id list value in use can not be delete.");
+            if (agencyIdListValueRecord.getAgencyIdListValueId().equals(agencyIdListRecord.getAgencyIdListValueId())) {
+                throw new IllegalArgumentException("The agency ID list value in use cannot delete.");
             }
             agencyIdListValueManifestRecordMapById.get(
                     agencyIdListValueRecord.getAgencyIdListValueId()

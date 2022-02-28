@@ -67,6 +67,10 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private BigInteger nextAgencyIdListId;
 
+    private AgencyIdList prev;
+
+    private List<AgencyIdListValue> values;
+
     public BigInteger getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
@@ -155,8 +159,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.prev = prev;
     }
 
-    private AgencyIdList prev;
-
     public List<AgencyIdListValue> getValues() {
         return values;
     }
@@ -164,8 +166,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setValues(List<AgencyIdListValue> values) {
         this.values = values;
     }
-
-    private List<AgencyIdListValue> values;
 
     public BigInteger getAgencyIdListId() {
         return agencyIdListId;
