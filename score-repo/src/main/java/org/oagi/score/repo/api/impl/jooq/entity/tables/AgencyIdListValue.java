@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -93,6 +93,15 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * value belongs to.
      */
     public final TableField<AgencyIdListValueRecord, ULong> OWNER_LIST_ID = createField(DSL.name("owner_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.");
+
+    /**
+     * The column
+     * <code>oagi.agency_id_list_value.based_agency_id_list_value_id</code>.
+     * Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used
+     * when the AGENCY_ID_LIST_VALUE is derived from the based
+     * AGENCY_ID_LIST_VALUE.
+     */
+    public final TableField<AgencyIdListValueRecord, ULong> BASED_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("based_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.");
 
     /**
      * The column <code>oagi.agency_id_list_value.is_deprecated</code>.
@@ -208,10 +217,11 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
     @Override
     public List<ForeignKey<AgencyIdListValueRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
+        return Arrays.asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_BASED_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
     }
 
     private transient AgencyIdList _agencyIdList;
+    private transient AgencyIdListValue _agencyIdListValueBasedAgencyIdListValueIdFk;
     private transient AgencyIdListValue _agencyIdListValueReplacementAgencyIdListValueIdFk;
     private transient AppUser _agencyIdListValueCreatedByFk;
     private transient AppUser _agencyIdListValueOwnerUserIdFk;
@@ -224,6 +234,13 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
             _agencyIdList = new AgencyIdList(this, Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK);
 
         return _agencyIdList;
+    }
+
+    public AgencyIdListValue agencyIdListValueBasedAgencyIdListValueIdFk() {
+        if (_agencyIdListValueBasedAgencyIdListValueIdFk == null)
+            _agencyIdListValueBasedAgencyIdListValueIdFk = new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_BASED_AGENCY_ID_LIST_VALUE_ID_FK);
+
+        return _agencyIdListValueBasedAgencyIdListValueIdFk;
     }
 
     public AgencyIdListValue agencyIdListValueReplacementAgencyIdListValueIdFk() {
@@ -295,11 +312,11 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<ULong, String, String, String, String, String, ULong, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

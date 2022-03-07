@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -73,6 +73,13 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * to.
      */
     public final TableField<CodeListValueRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.");
+
+    /**
+     * The column <code>oagi.code_list_value.based_code_list_value_id</code>.
+     * Foreign key to the CODE_LIST_VALUE table itself. This column is used when
+     * the CODE_LIST is derived from the based CODE_LIST.
+     */
+    public final TableField<CodeListValueRecord, ULong> BASED_CODE_LIST_VALUE_ID = createField(DSL.name("based_code_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.");
 
     /**
      * The column <code>oagi.code_list_value.value</code>. The code list value
@@ -240,10 +247,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     @Override
     public List<ForeignKey<CodeListValueRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
+        return Arrays.asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_BASED_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     private transient CodeList _codeList;
+    private transient CodeListValue _codeListValueBasedCodeListValueIdFk;
     private transient CodeListValue _codeListValueReplacementCodeListValueIdFk;
     private transient AppUser _codeListValueCreatedByFk;
     private transient AppUser _codeListValueOwnerUserIdFk;
@@ -256,6 +264,13 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
             _codeList = new CodeList(this, Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK);
 
         return _codeList;
+    }
+
+    public CodeListValue codeListValueBasedCodeListValueIdFk() {
+        if (_codeListValueBasedCodeListValueIdFk == null)
+            _codeListValueBasedCodeListValueIdFk = new CodeListValue(this, Keys.CODE_LIST_VALUE_BASED_CODE_LIST_VALUE_ID_FK);
+
+        return _codeListValueBasedCodeListValueIdFk;
     }
 
     public CodeListValue codeListValueReplacementCodeListValueIdFk() {
@@ -327,11 +342,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row20<ULong, String, ULong, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }
