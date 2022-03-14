@@ -18,6 +18,7 @@ public class CcListRequest {
     private Boolean deprecated;
     private List<String> ownerLoginIds;
     private List<String> updaterLoginIds;
+    private List<String> dtTypes;
     private List<String> asccpTypes;
     private String den;
     private String definition;

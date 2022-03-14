@@ -12,6 +12,8 @@ public class CcListTypes {
     private boolean ascc;
     private boolean bcc;
     private boolean dt;
+    private boolean cdt;
+    private boolean bdt;
 
     public static CcListTypes fromString(String str) {
         if (str != null) {
@@ -26,6 +28,8 @@ public class CcListTypes {
             types.setAscc(true);
             types.setBcc(true);
             types.setDt(true);
+            types.setCdt(true);
+            types.setBdt(true);
         } else {
             for (String type : str.split(",")) {
                 switch (CcType.valueOf(type.toUpperCase())) {
@@ -49,9 +53,22 @@ public class CcListTypes {
                         types.setBcc(true);
                         break;
 
-                    case DT:
+                    case CDT:
+                        types.setCdt(true);
                         types.setDt(true);
                         break;
+
+                    case BDT:
+                        types.setBdt(true);
+                        types.setDt(true);
+                        break;
+
+                    case DT:
+                        types.setCdt(true);
+                        types.setBdt(true);
+                        types.setDt(true);
+                        break;
+
                     default:
                         break;
                 }

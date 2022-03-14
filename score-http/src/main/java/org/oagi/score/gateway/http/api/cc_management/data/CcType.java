@@ -6,6 +6,8 @@ public enum CcType {
     BCCP,
     ASCC,
     BCC,
+    CDT,
+    BDT,
     DT,
     DT_SC,
     XBT,

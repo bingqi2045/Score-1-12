@@ -1,12 +1,12 @@
 package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
+import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -99,18 +99,23 @@ public class JooqContextSchemeReadRepository
         };
     }
 
-    private SelectConditionStep selectForValues(BigInteger contextSchemeId) {
+    private SelectHavingStep selectForValues(BigInteger contextSchemeId) {
         return dslContext().select(
                 CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
                 CTX_SCHEME_VALUE.GUID,
                 CTX_SCHEME_VALUE.VALUE,
                 CTX_SCHEME_VALUE.MEANING,
                 CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID,
-                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID)
+                count(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID).as("used_cnt"))
                 .from(CTX_SCHEME_VALUE)
                 .leftJoin(BIZ_CTX_VALUE)
                 .on(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID))
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)));
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                .groupBy(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                        CTX_SCHEME_VALUE.GUID,
+                        CTX_SCHEME_VALUE.VALUE,
+                        CTX_SCHEME_VALUE.MEANING,
+                        CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID);
     }
 
     private RecordMapper<Record, ContextSchemeValue> mapperForValue() {
@@ -121,7 +126,8 @@ public class JooqContextSchemeReadRepository
             contextSchemeValue.setGuid(record.get(CTX_SCHEME_VALUE.GUID));
             contextSchemeValue.setValue(record.get(CTX_SCHEME_VALUE.VALUE));
             contextSchemeValue.setMeaning(record.get(CTX_SCHEME_VALUE.MEANING));
-            contextSchemeValue.setUsed(record.get(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID) != null);
+            Integer usedCnt = record.get("used_cnt", Integer.class);
+            contextSchemeValue.setUsed(usedCnt != null && usedCnt > 0);
             contextSchemeValue.setOwnerContextSchemeId(record.get(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID).toBigInteger());
             return contextSchemeValue;
         };

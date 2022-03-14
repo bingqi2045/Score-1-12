@@ -9,6 +9,9 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriTy
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.repo.api.user.model.ScoreRole;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -50,7 +53,8 @@ public class DtWriteRepository {
     private LogSerializer serializer;
 
     public CreateBdtRepositoryResponse createBdt(CreateBdtRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        ScoreUser requestor = sessionService.asScoreUser(request.getUser());
+        ULong userId = ULong.valueOf(requestor.getUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord basedBdtManifest = dslContext.selectFrom(DT_MANIFEST)
@@ -60,6 +64,13 @@ public class DtWriteRepository {
         DtRecord basedBdt = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(basedBdtManifest.getDtId()))
                 .fetchOne();
+
+        NamespaceRecord namespaceRecord = null;
+        if (basedBdt.getNamespaceId() != null) {
+            namespaceRecord = dslContext.selectFrom(NAMESPACE)
+                    .where(NAMESPACE.NAMESPACE_ID.eq(basedBdt.getNamespaceId()))
+                    .fetchOne();
+        }
 
         List<DtScManifestRecord> basedDtScManifestList = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(basedBdtManifest.getDtManifestId()))
@@ -81,7 +92,13 @@ public class DtWriteRepository {
         bdt.setState(CcState.WIP.name());
         bdt.setIsDeprecated((byte) 0);
         bdt.setCommonlyUsed((byte) 0);
-        bdt.setNamespaceId(null);
+        if (namespaceRecord != null) {
+            if (requestor.hasRole(ScoreRole.DEVELOPER) && (namespaceRecord.getIsStdNmsp() == (byte) 1)) {
+                bdt.setNamespaceId(namespaceRecord.getNamespaceId());
+            } else if (requestor.hasRole(ScoreRole.END_USER) && (namespaceRecord.getIsStdNmsp() == (byte) 0)) {
+                bdt.setNamespaceId(namespaceRecord.getNamespaceId());
+            }
+        }
         bdt.setCreatedBy(userId);
         bdt.setLastUpdatedBy(userId);
         bdt.setOwnerUserId(userId);
@@ -423,9 +440,15 @@ public class DtWriteRepository {
         UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
         UpdateSetMoreStep<DtRecord> moreStep = null;
         if (compare(dtRecord.getQualifier_(), request.getQualifier()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.QUALIFIER, request.getQualifier())
-                    .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+            if (StringUtils.hasLength(request.getQualifier())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.QUALIFIER, request.getQualifier())
+                        .set(DT.DEN, request.getQualifier() + "_ " + dtRecord.getRepresentationTerm() + ". Type");
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.QUALIFIER)
+                        .set(DT.DEN, dtRecord.getRepresentationTerm() + ". Type");
+            }
         }
         if (compare(dtRecord.getSixDigitId(), request.getSixDigitId()) != 0) {
             DtRecord exist = dslContext.selectFrom(DT)
@@ -438,16 +461,31 @@ public class DtWriteRepository {
                     .set(DT.SIX_DIGIT_ID, request.getSixDigitId());
         }
         if (compare(dtRecord.getContentComponentDefinition(), request.getContentComponentDefinition()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+            if (StringUtils.hasLength(request.getContentComponentDefinition())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.CONTENT_COMPONENT_DEFINITION);
+            }
         }
         if (compare(dtRecord.getDefinition(), request.getDefinition()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.DEFINITION, request.getDefinition());
+            if (StringUtils.hasLength(request.getDefinition())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.DEFINITION, request.getDefinition());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.DEFINITION);
+            }
         }
         if (compare(dtRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+            if (StringUtils.hasLength(request.getDefinitionSource())) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+            } else {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(DT.DEFINITION_SOURCE);
+            }
         }
         if ((dtRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
@@ -485,7 +523,47 @@ public class DtWriteRepository {
         bdtManifestRecord.setLogId(logRecord.getLogId());
         bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
+        for (DtManifestRecord derivedDtManifestRecord : dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(bdtManifestRecord.getDtManifestId()))
+                .fetch()) {
+            propagateUpdateDtRecord(derivedDtManifestRecord, request, user);
+        }
+
         return new UpdateDtPropertiesRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+    }
+
+    private void propagateUpdateDtRecord(DtManifestRecord dtManifestRecord,
+                                         UpdateDtPropertiesRepositoryRequest request,
+                                         AppUser user) {
+        DtRecord dtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(dtManifestRecord.getDtId()))
+                .fetchOne();
+
+        UpdateSetFirstStep<DtRecord> firstStep = dslContext.update(DT);
+        UpdateSetMoreStep<DtRecord> moreStep = null;
+        if (compare(dtRecord.getContentComponentDefinition(), request.getContentComponentDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.CONTENT_COMPONENT_DEFINITION, request.getContentComponentDefinition());
+        }
+        if (compare(dtRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.DEFINITION, request.getDefinition());
+        }
+        if (compare(dtRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(DT.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+
+        if (moreStep != null) {
+            moreStep.where(DT.DT_ID.eq(dtRecord.getDtId()))
+                    .execute();
+        }
+
+        for (DtManifestRecord derivedDtManifestRecord : dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .fetch()) {
+            propagateUpdateDtRecord(derivedDtManifestRecord, request, user);
+        }
     }
 
     private void deleteDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> deleteList) {
@@ -500,19 +578,19 @@ public class DtWriteRepository {
         List<ULong> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
-        for (DtRecord dt: derivedDtList) {
+        for (DtRecord dt : derivedDtList) {
             deleteDerivedValueDomain(dt.getDtId(), deleteList);
             dslContext.deleteFrom(BDT_PRI_RESTRI).where(
-                    and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
-                        BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.in(cdtAwdPriXpsTypeMapIdList))
+                            and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
+                            BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.in(cdtAwdPriXpsTypeMapIdList))
                     .execute();
             dslContext.deleteFrom(BDT_PRI_RESTRI).where(
-                    and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
-                    BDT_PRI_RESTRI.CODE_LIST_ID.in(codeListId))
+                            and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
+                            BDT_PRI_RESTRI.CODE_LIST_ID.in(codeListId))
                     .execute();
             dslContext.deleteFrom(BDT_PRI_RESTRI).where(
-                    and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
-                    BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.in(agencyIdList))
+                            and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
+                            BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.in(agencyIdList))
                     .execute();
             BdtPriRestriRecord defaultRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                     and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
@@ -542,6 +620,42 @@ public class DtWriteRepository {
         }
     }
 
+    private void updateDefaultValueDomainForDerivedDt(
+            ULong dtId, CcBdtPriRestri defaultValueDomain) {
+        List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
+        for (DtRecord derivedDt : derivedDtList) {
+            for (BdtPriRestriRecord bdtPriRestriRecord : dslContext.selectFrom(BDT_PRI_RESTRI)
+                    .where(BDT_PRI_RESTRI.BDT_ID.eq(derivedDt.getDtId()))
+                    .fetch()) {
+                if (defaultValueDomain.getCdtAwdPriXpsTypeMapId() != null) {
+                    if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null &&
+                        bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId().toBigInteger().equals(defaultValueDomain.getCdtAwdPriXpsTypeMapId())) {
+                        bdtPriRestriRecord.setIsDefault((byte) 1);
+                    } else {
+                        bdtPriRestriRecord.setIsDefault((byte) 0);
+                    }
+                } else if (defaultValueDomain.getCodeListId() != null) {
+                    if (bdtPriRestriRecord.getCodeListId() != null &&
+                        bdtPriRestriRecord.getCodeListId().toBigInteger().equals(defaultValueDomain.getCodeListId())) {
+                        bdtPriRestriRecord.setIsDefault((byte) 1);
+                    } else {
+                        bdtPriRestriRecord.setIsDefault((byte) 0);
+                    }
+                } else if (defaultValueDomain.getAgencyIdListId() != null) {
+                    if (bdtPriRestriRecord.getAgencyIdListId() != null &&
+                        bdtPriRestriRecord.getAgencyIdListId().toBigInteger().equals(defaultValueDomain.getAgencyIdListId())) {
+                        bdtPriRestriRecord.setIsDefault((byte) 1);
+                    } else {
+                        bdtPriRestriRecord.setIsDefault((byte) 0);
+                    }
+                }
+                bdtPriRestriRecord.update(BDT_PRI_RESTRI.IS_DEFAULT);
+            }
+
+            updateDefaultValueDomainForDerivedDt(derivedDt.getDtId(), defaultValueDomain);
+        }
+    }
+
     private void insertDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> insertList) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
 
@@ -554,7 +668,7 @@ public class DtWriteRepository {
         List<ULong> agencyIdList = insertList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
-        for (DtRecord dt: derivedDtList) {
+        for (DtRecord dt : derivedDtList) {
             for (ULong cdtAwdPriXpsTypeMapId: cdtAwdPriXpsTypeMapIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
@@ -567,7 +681,7 @@ public class DtWriteRepository {
                 }
             }
 
-            for (ULong codeListId: codeListIdList) {
+            for (ULong codeListId : codeListIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
                         BDT_PRI_RESTRI.CODE_LIST_ID.eq(codeListId)).fetchOne();
@@ -579,7 +693,7 @@ public class DtWriteRepository {
                 }
             }
 
-            for (ULong agencyId: agencyIdList) {
+            for (ULong agencyId : agencyIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
                         BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(agencyId)).fetchOne();
@@ -615,7 +729,7 @@ public class DtWriteRepository {
                 deleteList.stream().map(BdtPriRestriRecord::getBdtPriRestriId).collect(Collectors.toList())))
                 .execute();
 
-        BigInteger defaultValueDomainId = null;
+        CcBdtPriRestri defaultValueDomain = null;
 
         List<BdtPriRestriRecord> insertedList = new ArrayList<>();
 
@@ -657,17 +771,32 @@ public class DtWriteRepository {
 
                 bdtPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
                 bdtPriRestriRecord.update();
+
+                if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null) {
+                    restri.setCdtAwdPriXpsTypeMapId(bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId().toBigInteger());
+                    restri.setCodeListId(null);
+                    restri.setAgencyIdListId(null);
+                } else if (bdtPriRestriRecord.getCodeListId() != null) {
+                    restri.setCdtAwdPriXpsTypeMapId(null);
+                    restri.setCodeListId(bdtPriRestriRecord.getCodeListId().toBigInteger());
+                    restri.setAgencyIdListId(null);
+                } else if (bdtPriRestriRecord.getAgencyIdListId() != null) {
+                    restri.setCdtAwdPriXpsTypeMapId(null);
+                    restri.setCodeListId(null);
+                    restri.setAgencyIdListId(bdtPriRestriRecord.getAgencyIdListId().toBigInteger());
+                }
             }
 
             if (restri.isDefault()) {
-                defaultValueDomainId = restri.getBdtPriRestriId();
+                defaultValueDomain = restri;
             }
         }
 
-        if (defaultValueDomainId == null) {
+        if (defaultValueDomain == null) {
             throw new IllegalArgumentException("Default Value Domain required.");
         }
 
+        BigInteger defaultValueDomainId = defaultValueDomain.getBdtPriRestriId();
         dslContext.update(BDT_PRI_RESTRI).set(BDT_PRI_RESTRI.IS_DEFAULT, (byte) 0)
                 .where(BDT_PRI_RESTRI.BDT_ID.eq(dtId)).execute();
 
@@ -675,6 +804,7 @@ public class DtWriteRepository {
                 .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(ULong.valueOf(defaultValueDomainId))).execute();
 
         insertDerivedValueDomain(dtId, insertedList);
+        updateDefaultValueDomainForDerivedDt(dtId, defaultValueDomain);
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {

@@ -11,6 +11,66 @@ import java.util.List;
 
 public class AgencyIdList extends Auditable implements CoreComponent, Serializable {
 
+    private BigInteger releaseId;
+
+    private String releaseNum;
+
+    private String releaseState;
+
+    private String revisionNum;
+
+    public String modulePath;
+
+    private BigInteger agencyIdListManifestId;
+
+    private BigInteger agencyIdListId;
+
+    private String guid;
+
+    private String enumTypeGuid;
+
+    private String name;
+
+    private String listId;
+
+    private BigInteger agencyIdListValueId;
+
+    private BigInteger agencyIdListValueManifestId;
+
+    private String agencyIdListValueName;
+
+    private BigInteger basedAgencyIdListManifestId;
+
+    private String basedAgencyIdListName;
+
+    private BigInteger basedAgencyIdListId;
+
+    private String versionId;
+
+    private String definition;
+
+    private String definitionSource;
+
+    private String remark;
+
+    private BigInteger namespaceId;
+
+    private ScoreUser owner;
+
+    private CcState state;
+
+    private String access;
+
+    private boolean deprecated;
+
+    private BigInteger prevAgencyIdListId;
+
+    private BigInteger nextAgencyIdListId;
+
+    private AgencyIdList prev;
+
+    private List<AgencyIdListValue> values;
+
     public BigInteger getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
@@ -27,7 +87,13 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.releaseNum = releaseNum;
     }
 
-    private String releaseNum;
+    public String getReleaseState() {
+        return releaseState;
+    }
+
+    public void setReleaseState(String releaseState) {
+        this.releaseState = releaseState;
+    }
 
     public BigInteger getReleaseId() {
         return releaseId;
@@ -36,10 +102,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setReleaseId(BigInteger releaseId) {
         this.releaseId = releaseId;
     }
-
-    private BigInteger releaseId;
-
-    private String revisionNum;
 
     public String getRevisionNum() {
         return revisionNum;
@@ -53,25 +115,9 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.modulePath = modulePath;
     }
 
-    public String modulePath;
-
     public void setRevisionNum(String revisionNum) {
         this.revisionNum = revisionNum;
     }
-
-    private BigInteger agencyIdListManifestId;
-
-    private BigInteger agencyIdListId;
-
-    private String guid;
-
-    private String enumTypeGuid;
-
-    private String name;
-
-    private String listId;
-
-    private BigInteger agencyIdListValueId;
 
     public BigInteger getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
@@ -80,16 +126,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
-
-    private BigInteger agencyIdListValueManifestId;
-
-    private String versionId;
-
-    private String definition;
-
-    private String definitionSource;
-
-    private String remark;
 
     public String getDefinitionSource() {
         return definitionSource;
@@ -107,18 +143,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.remark = remark;
     }
 
-    private BigInteger namespaceId;
-
-    private ScoreUser owner;
-
-    private CcState state;
-
-    private boolean deprecated;
-
-    private BigInteger prevAgencyIdListId;
-
-    private BigInteger nextAgencyIdListId;
-
     public String getAccess() {
         return access;
     }
@@ -126,8 +150,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setAccess(String access) {
         this.access = access;
     }
-
-    private String access;
 
     public AgencyIdList getPrev() {
         return prev;
@@ -137,8 +159,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.prev = prev;
     }
 
-    private AgencyIdList prev;
-
     public List<AgencyIdListValue> getValues() {
         return values;
     }
@@ -146,8 +166,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setValues(List<AgencyIdListValue> values) {
         this.values = values;
     }
-
-    private List<AgencyIdListValue> values;
 
     public BigInteger getAgencyIdListId() {
         return agencyIdListId;
@@ -267,8 +285,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.nextAgencyIdListId = nextAgencyIdListId;
     }
 
-    private String agencyIdListValueName;
-
     public String getAgencyIdListValueName() {
         return agencyIdListValueName;
     }
@@ -293,9 +309,6 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.basedAgencyIdListName = basedAgencyIdListName;
     }
 
-    private BigInteger basedAgencyIdListManifestId;
-    private String basedAgencyIdListName;
-
     public BigInteger getBasedAgencyIdListId() {
         return basedAgencyIdListId;
     }
@@ -303,7 +316,5 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
     public void setBasedAgencyIdListId(BigInteger basedAgencyIdListId) {
         this.basedAgencyIdListId = basedAgencyIdListId;
     }
-
-    private BigInteger basedAgencyIdListId;
 
 }

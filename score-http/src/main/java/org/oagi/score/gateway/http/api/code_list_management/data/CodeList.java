@@ -35,6 +35,7 @@ public class CodeList {
 
     private String owner;
     private BigInteger releaseId;
+    private String releaseState;
     private String releaseNum;
     private BigInteger logId;
     private int revisionNum;

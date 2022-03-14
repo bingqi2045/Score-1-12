@@ -198,7 +198,9 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             List<BigInteger> accManifestIds,
             List<BigInteger> asccpManifestIds,
             List<BigInteger> bccpManifestIds,
-            List<BigInteger> bdtManifestIds) {
+            List<BigInteger> bdtManifestIds,
+            List<BigInteger> codeListManifestIds,
+            List<BigInteger> agencyIdListManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -211,12 +213,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             throw new IllegalStateException("Cannot find 'Working' release");
         }
 
-        List<BigInteger> bdtScManifestIds = Collections.emptyList();
         List<BigInteger> xbtManifestIds = Collections.emptyList();
-        List<BigInteger> codeListManifestIds = Collections.emptyList();
-        List<BigInteger> codeListValueManifestIds = Collections.emptyList();
-        List<BigInteger> agencyIdListManifestIds = Collections.emptyList();
-        List<BigInteger> agencyIdListValueManifestIds = Collections.emptyList();
 
         try {
             // copying manifests from 'Working' release
@@ -224,7 +221,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                     workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
 
             copyDtScManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtScManifestIds);
+                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
             updateBdtScDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
@@ -262,7 +259,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             updateCodeListDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyCodeListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListValueManifestIds);
+                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListManifestIds);
             updateCodeListValueDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyAgencyIdListManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
@@ -270,7 +267,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             updateAgencyIdListDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyAgencyIdListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
-                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListValueManifestIds);
+                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListManifestIds);
             updateAgencyIdListValueDependencies(releaseRecord.getReleaseId().toBigInteger());
 
         } catch (Exception e) {
@@ -587,7 +584,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyDtScManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                    List<BigInteger> dtScManifestIds) {
+                                                    List<BigInteger> dtManifestIds) {
         dslContext.insertInto(DT_SC_MANIFEST,
                 DT_SC_MANIFEST.RELEASE_ID,
                 DT_SC_MANIFEST.DT_SC_ID,
@@ -605,7 +602,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(DT_SC_MANIFEST)
                         .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
                                 (or(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.isNotNull(),
-                                        DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(dtScManifestIds)))))).execute();
+                                        DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.in(dtManifestIds)))))).execute();
     }
 
     private void copyXbtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
