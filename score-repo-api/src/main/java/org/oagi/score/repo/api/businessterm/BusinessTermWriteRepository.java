@@ -1,17 +1,17 @@
 package org.oagi.score.repo.api.businessterm;
 
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.businesscontext.model.*;
+import org.oagi.score.repo.api.businessterm.model.*;
 
 public interface BusinessTermWriteRepository {
 
-    CreateBusinessContextResponse createBusinessContext(
-            CreateBusinessContextRequest request) throws ScoreDataAccessException;
-//
-//    UpdateBusinessContextResponse updateBusinessContext(
-//            UpdateBusinessContextRequest request) throws ScoreDataAccessException;
-//
-//    DeleteBusinessContextResponse deleteBusinessContext(
-//            DeleteBusinessContextRequest request) throws ScoreDataAccessException;
+    CreateBusinessTermResponse createBusinessTerm(
+            CreateBusinessTermRequest request) throws ScoreDataAccessException;
+
+    UpdateBusinessTermResponse updateBusinessTerm(
+            UpdateBusinessTermRequest request) throws ScoreDataAccessException;
+
+    DeleteBusinessTermResponse deleteBusinessTerm(
+            DeleteBusinessTermRequest request) throws ScoreDataAccessException;
     
 }

@@ -112,4 +112,7 @@ public class BusinessTerm extends Auditable {
         this.createdBy = createdBy;
         this.lastUpdatedBy = lastUpdatedBy;
     }
+
+    public BusinessTerm() {
+    }
 }

@@ -77,8 +77,12 @@ public class BusinessTermController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @RequestBody PostBusinessTermRequest postBusinessTermRequest) {
-        return businessTermService.hasSameTermDefinitionAndExternalRefId(postBusinessTermRequest.getBusinessTerm());
+            @RequestBody CreateBusinessTermRequest createBusinessTermRequest) {
+        return businessTermService.hasSameTermDefinitionAndExternalRefId(
+                createBusinessTermRequest.getBusinessTerm(),
+                createBusinessTermRequest.getDefinition(),
+                createBusinessTermRequest.getExternalReferenceId()
+                );
     }
 
     @RequestMapping(value = "/business_terms/assign", method = RequestMethod.GET,
@@ -131,6 +135,140 @@ public class BusinessTermController {
         pageResponse.setLength(response.getLength());
         return pageResponse;
     }
+
+    @RequestMapping(value = "/business_term", method = RequestMethod.PUT)
+    public ResponseEntity create(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody BusinessTerm businessTerm) {
+
+        CreateBusinessTermRequest request =
+                new CreateBusinessTermRequest(authenticationService.asScoreUser(requester));
+        request.setBusinessTerm(businessTerm.getBusinessTerm());
+        request.setDefinition(businessTerm.getDefinition());
+        request.setExternalReferenceId(businessTerm.getExternalReferenceId());
+        request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
+
+        CreateBusinessTermResponse response =
+                businessTermService.createBusinessTerm(request);
+
+        if (response.getBusinessTermId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/business_term/{id}", method = RequestMethod.POST)
+    public ResponseEntity update(
+            @PathVariable("id") BigInteger businessTermId,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody BusinessTerm businessTerm) {
+
+        UpdateBusinessTermRequest request =
+                new UpdateBusinessTermRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessTermId(businessTermId);
+        request.setBusinessTerm(businessTerm.getBusinessTerm());
+        request.setDefinition(businessTerm.getDefinition());
+        request.setExternalReferenceId(businessTerm.getExternalReferenceId());
+        request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
+
+        UpdateBusinessTermResponse response =
+                businessTermService.updateBusinessTerm(request);
+
+        if (response.getBusinessTermId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/business_term/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity delete(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger businessTermId) {
+
+        DeleteBusinessTermRequest request =
+                new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessTermIdList(Arrays.asList(businessTermId));
+
+        DeleteBusinessTermResponse response =
+                businessTermService.deleteBusinessTerm(request);
+
+        if (response.contains(businessTermId)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public static class DeleteBusinessTermRequestData {
+        private List<BigInteger> businessTermIdList = Collections.emptyList();
+
+        public List<BigInteger> getBusinessTermIdList() {
+            return businessTermIdList;
+        }
+
+        public void setBusinessTermIdList(List<BigInteger> businessTermIdList) {
+            this.businessTermIdList = businessTermIdList;
+        }
+    }
+
+    @RequestMapping(value = "/business_term/delete", method = RequestMethod.POST)
+    public ResponseEntity deletes(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody DeleteBusinessTermRequestData requestData) {
+        DeleteBusinessTermRequest request =
+                new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessTermIdList(requestData.getBusinessTermIdList());
+
+        DeleteBusinessTermResponse response =
+                businessTermService.deleteBusinessTerm(request);
+
+        if (response.containsAll(requestData.getBusinessTermIdList())) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+//    todo: maybe use for create assignment
+//    @RequestMapping(value = "/business_term/{id}", method = RequestMethod.PUT)
+//    public ResponseEntity assign(
+//            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+//            @PathVariable("id") BigInteger businessTermId,
+//            @RequestParam(name = "topLevelAsbiepId", required = true) BigInteger topLevelAsbiepId) {
+//
+//        businessTermService.assign(businessTermId, topLevelAsbiepId);
+//        return ResponseEntity.noContent().build();
+//    }
+
+//    todo: maybe use for delete assignment / unassign
+//    @RequestMapping(value = "/business_term/{id}", method = RequestMethod.DELETE)
+//    public ResponseEntity delete(
+//            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+//            @PathVariable("id") BigInteger businessTermId,
+//            @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId) {
+//
+//        if (topLevelAsbiepId != null) {
+//            businessTermService.dismiss(businessTermId, topLevelAsbiepId);
+//            return ResponseEntity.noContent().build();
+//        } else {
+//            DeleteBusinessTermRequest request =
+//                    new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
+//                            .withBusinessTermIdList(Arrays.asList(businessTermId));
+//
+//            DeleteBusinessTermResponse response =
+//                    businessTermService.deleteBusinessTerm(request);
+//
+//            if (response.contains(businessTermId)) {
+//                return ResponseEntity.noContent().build();
+//            } else {
+//                return ResponseEntity.badRequest().build();
+//            }
+//        }
+//
+//    }
 
 //    @RequestMapping(value = "/context_scheme_values", method = RequestMethod.GET,
 //            produces = MediaType.APPLICATION_JSON_VALUE)

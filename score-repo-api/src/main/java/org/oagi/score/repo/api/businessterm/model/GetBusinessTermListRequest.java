@@ -12,6 +12,8 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
     private Collection<BigInteger> businessTermIdList;
     private String businessTerm;
     private String definition;
+    private String externalRefUri;
+    private String externalRefId;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
@@ -42,6 +44,22 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
 
     public void setDefinition(String definition) {
         this.definition = definition;
+    }
+
+    public String getExternalRefUri() {
+        return externalRefUri;
+    }
+
+    public void setExternalRefUri(String externalRefUri) {
+        this.externalRefUri = externalRefUri;
+    }
+
+    public String getExternalRefId() {
+        return externalRefId;
+    }
+
+    public void setExternalRefId(String externalRefId) {
+        this.externalRefId = externalRefId;
     }
 
     public Collection<String> getUpdaterUsernameList() {
