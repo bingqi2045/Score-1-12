@@ -303,7 +303,10 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST_VALUE.VALUE,
                 AGENCY_ID_LIST_VALUE.DEFINITION,
                 AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
-                AGENCY_ID_LIST_VALUE.IS_DEPRECATED.as("deprecated"))
+                AGENCY_ID_LIST_VALUE.IS_DEPRECATED.as("deprecated"),
+                AGENCY_ID_LIST_VALUE.USED_INDICATOR.as("used"),
+                AGENCY_ID_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
+                AGENCY_ID_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
                 .from(AGENCY_ID_LIST_VALUE)
                 .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(ULong.valueOf(agencyIdListId)))
                 .fetchInto(AgencyIdListValue.class));
