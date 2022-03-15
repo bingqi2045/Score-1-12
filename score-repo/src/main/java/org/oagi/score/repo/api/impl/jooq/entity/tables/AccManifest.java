@@ -157,6 +157,9 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     private transient AccManifest _accManifestPrevAccManifestIdFk;
     private transient AccManifest _accManifestNextAccManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.ACC_MANIFEST_RELEASE_ID_FK);
@@ -164,6 +167,9 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table.
+     */
     public Acc acc() {
         if (_acc == null)
             _acc = new Acc(this, Keys.ACC_MANIFEST_ACC_ID_FK);
@@ -171,6 +177,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _acc;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table,
+     * via the <code>acc_manifest_based_acc_manifest_id_fk</code> key.
+     */
     public AccManifest accManifestBasedAccManifestIdFk() {
         if (_accManifestBasedAccManifestIdFk == null)
             _accManifestBasedAccManifestIdFk = new AccManifest(this, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK);
@@ -178,6 +188,9 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _accManifestBasedAccManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.ACC_MANIFEST_LOG_ID_FK);
@@ -185,6 +198,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table,
+     * via the <code>acc_replacement_acc_manifest_id_fk</code> key.
+     */
     public AccManifest accReplacementAccManifestIdFk() {
         if (_accReplacementAccManifestIdFk == null)
             _accReplacementAccManifestIdFk = new AccManifest(this, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK);
@@ -192,6 +209,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _accReplacementAccManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table,
+     * via the <code>acc_manifest_prev_acc_manifest_id_fk</code> key.
+     */
     public AccManifest accManifestPrevAccManifestIdFk() {
         if (_accManifestPrevAccManifestIdFk == null)
             _accManifestPrevAccManifestIdFk = new AccManifest(this, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK);
@@ -199,6 +220,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         return _accManifestPrevAccManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table,
+     * via the <code>acc_manifest_next_acc_manifest_id_fk</code> key.
+     */
     public AccManifest accManifestNextAccManifestIdFk() {
         if (_accManifestNextAccManifestIdFk == null)
             _accManifestNextAccManifestIdFk = new AccManifest(this, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);

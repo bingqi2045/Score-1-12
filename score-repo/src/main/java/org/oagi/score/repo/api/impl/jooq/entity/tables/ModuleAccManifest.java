@@ -157,6 +157,10 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
     private transient AppUser _moduleAccManifestCreatedByFk;
     private transient AppUser _moduleAccManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_ACC_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -164,6 +168,9 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table.
+     */
     public AccManifest accManifest() {
         if (_accManifest == null)
             _accManifest = new AccManifest(this, Keys.MODULE_ACC_MANIFEST_ACC_MANIFEST_ID_FK);
@@ -171,6 +178,9 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
         return _accManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_ACC_MANIFEST_MODULE_ID_FK);
@@ -178,6 +188,10 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_acc_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleAccManifestCreatedByFk() {
         if (_moduleAccManifestCreatedByFk == null)
             _moduleAccManifestCreatedByFk = new AppUser(this, Keys.MODULE_ACC_MANIFEST_CREATED_BY_FK);
@@ -185,6 +199,10 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
         return _moduleAccManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_acc_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleAccManifestLastUpdatedByFk() {
         if (_moduleAccManifestLastUpdatedByFk == null)
             _moduleAccManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_ACC_MANIFEST_LAST_UPDATED_BY_FK);

@@ -177,6 +177,9 @@ public class Release extends TableImpl<ReleaseRecord> {
     private transient AppUser _releaseCreatedByFk;
     private transient AppUser _releaseLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.RELEASE_NAMESPACE_ID_FK);
@@ -184,6 +187,10 @@ public class Release extends TableImpl<ReleaseRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>release_created_by_fk</code> key.
+     */
     public AppUser releaseCreatedByFk() {
         if (_releaseCreatedByFk == null)
             _releaseCreatedByFk = new AppUser(this, Keys.RELEASE_CREATED_BY_FK);
@@ -191,6 +198,10 @@ public class Release extends TableImpl<ReleaseRecord> {
         return _releaseCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>release_last_updated_by_fk</code> key.
+     */
     public AppUser releaseLastUpdatedByFk() {
         if (_releaseLastUpdatedByFk == null)
             _releaseLastUpdatedByFk = new AppUser(this, Keys.RELEASE_LAST_UPDATED_BY_FK);

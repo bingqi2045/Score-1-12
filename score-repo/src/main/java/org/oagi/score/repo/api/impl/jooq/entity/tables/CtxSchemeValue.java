@@ -140,6 +140,9 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
     private transient CtxScheme _ctxScheme;
 
+    /**
+     * Get the implicit join path to the <code>oagi.ctx_scheme</code> table.
+     */
     public CtxScheme ctxScheme() {
         if (_ctxScheme == null)
             _ctxScheme = new CtxScheme(this, Keys.CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK);

@@ -147,6 +147,9 @@ public class Exception extends TableImpl<ExceptionRecord> {
 
     private transient AppUser _appUser;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table.
+     */
     public AppUser appUser() {
         if (_appUser == null)
             _appUser = new AppUser(this, Keys.EXCEPTION_CREATED_BY_FK);

@@ -163,6 +163,9 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
     private transient CodeList _codeList;
     private transient AgencyIdList _agencyIdList;
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table.
+     */
     public DtSc dtSc() {
         if (_dtSc == null)
             _dtSc = new DtSc(this, Keys.BDT_SC_PRI_RESTRI_BDT_SC_ID_FK);
@@ -170,6 +173,10 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
         return _dtSc;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.cdt_sc_awd_pri_xps_type_map</code> table.
+     */
     public CdtScAwdPriXpsTypeMap cdtScAwdPriXpsTypeMap() {
         if (_cdtScAwdPriXpsTypeMap == null)
             _cdtScAwdPriXpsTypeMap = new CdtScAwdPriXpsTypeMap(this, Keys.BDT_SC_PRI_RESTRI_CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID_FK);
@@ -177,6 +184,9 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
         return _cdtScAwdPriXpsTypeMap;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table.
+     */
     public CodeList codeList() {
         if (_codeList == null)
             _codeList = new CodeList(this, Keys.BDT_SC_PRI_RESTRI_CODE_LIST_ID_FK);
@@ -184,6 +194,9 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
         return _codeList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table.
+     */
     public AgencyIdList agencyIdList() {
         if (_agencyIdList == null)
             _agencyIdList = new AgencyIdList(this, Keys.BDT_SC_PRI_RESTRI_AGENCY_ID_LIST_ID_FK);

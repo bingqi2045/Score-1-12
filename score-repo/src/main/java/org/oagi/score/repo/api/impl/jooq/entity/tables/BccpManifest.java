@@ -157,6 +157,9 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     private transient BccpManifest _bccpManifestPrevBccpManifestIdFk;
     private transient BccpManifest _bccpManifestNextBccpManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.BCCP_MANIFEST_RELEASE_ID_FK);
@@ -164,6 +167,9 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp</code> table.
+     */
     public Bccp bccp() {
         if (_bccp == null)
             _bccp = new Bccp(this, Keys.BCCP_MANIFEST_BCCP_ID_FK);
@@ -171,6 +177,9 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _bccp;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table.
+     */
     public DtManifest dtManifest() {
         if (_dtManifest == null)
             _dtManifest = new DtManifest(this, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK);
@@ -178,6 +187,9 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _dtManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.BCCP_MANIFEST_LOG_ID_FK);
@@ -185,6 +197,10 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp_manifest</code> table,
+     * via the <code>bccp_replacement_bccp_manifest_id_fk</code> key.
+     */
     public BccpManifest bccpReplacementBccpManifestIdFk() {
         if (_bccpReplacementBccpManifestIdFk == null)
             _bccpReplacementBccpManifestIdFk = new BccpManifest(this, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK);
@@ -192,6 +208,10 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _bccpReplacementBccpManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp_manifest</code> table,
+     * via the <code>bccp_manifest_prev_bccp_manifest_id_fk</code> key.
+     */
     public BccpManifest bccpManifestPrevBccpManifestIdFk() {
         if (_bccpManifestPrevBccpManifestIdFk == null)
             _bccpManifestPrevBccpManifestIdFk = new BccpManifest(this, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK);
@@ -199,6 +219,10 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         return _bccpManifestPrevBccpManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp_manifest</code> table,
+     * via the <code>bccp_manifest_next_bccp_manifest_id_fk</code> key.
+     */
     public BccpManifest bccpManifestNextBccpManifestIdFk() {
         if (_bccpManifestNextBccpManifestIdFk == null)
             _bccpManifestNextBccpManifestIdFk = new BccpManifest(this, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);

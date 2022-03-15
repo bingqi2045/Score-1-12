@@ -161,6 +161,9 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     private transient CodeListManifest _codeListManifestPrevCodeListManifestIdFk;
     private transient CodeListManifest _codeListManifestNextCodeListManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK);
@@ -168,6 +171,9 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table.
+     */
     public CodeList codeList() {
         if (_codeList == null)
             _codeList = new CodeList(this, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK);
@@ -175,6 +181,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _codeList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_manifest</code>
+     * table, via the
+     * <code>code_list_manifest_based_code_list_manifest_id_fk</code> key.
+     */
     public CodeListManifest codeListManifestBasedCodeListManifestIdFk() {
         if (_codeListManifestBasedCodeListManifestIdFk == null)
             _codeListManifestBasedCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK);
@@ -182,6 +193,9 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _codeListManifestBasedCodeListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.CODE_LIST_MANIFEST_LOG_ID_FK);
@@ -189,6 +203,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_manifest</code>
+     * table, via the
+     * <code>code_list_replacement_code_list_manifest_id_fk</code> key.
+     */
     public CodeListManifest codeListReplacementCodeListManifestIdFk() {
         if (_codeListReplacementCodeListManifestIdFk == null)
             _codeListReplacementCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK);
@@ -196,6 +215,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _codeListReplacementCodeListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_manifest</code>
+     * table, via the
+     * <code>code_list_manifest_prev_code_list_manifest_id_fk</code> key.
+     */
     public CodeListManifest codeListManifestPrevCodeListManifestIdFk() {
         if (_codeListManifestPrevCodeListManifestIdFk == null)
             _codeListManifestPrevCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK);
@@ -203,6 +227,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return _codeListManifestPrevCodeListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_manifest</code>
+     * table, via the
+     * <code>code_list_manifest_next_code_list_manifest_id_fk</code> key.
+     */
     public CodeListManifest codeListManifestNextCodeListManifestIdFk() {
         if (_codeListManifestNextCodeListManifestIdFk == null)
             _codeListManifestNextCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);

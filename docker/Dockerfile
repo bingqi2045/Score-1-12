@@ -12,7 +12,7 @@ ENV REDIS_PORT 6379
 
 RUN yum -y update
 
-COPY mysql-connector-java-8.0.27.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.27.jar
+COPY mysql-connector-java-8.0.28.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.28.jar
 
 RUN rm -rf /usr/local/tomcat/webapps/* && \
     chgrp -R 0 /usr/local/tomcat/ && \

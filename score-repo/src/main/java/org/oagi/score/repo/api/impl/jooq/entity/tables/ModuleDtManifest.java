@@ -157,6 +157,10 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
     private transient AppUser _moduleDtManifestCreatedByFk;
     private transient AppUser _moduleDtManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_DT_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -164,6 +168,9 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table.
+     */
     public DtManifest dtManifest() {
         if (_dtManifest == null)
             _dtManifest = new DtManifest(this, Keys.MODULE_DT_MANIFEST_DT_MANIFEST_ID_FK);
@@ -171,6 +178,9 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         return _dtManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_DT_MANIFEST_MODULE_ID_FK);
@@ -178,6 +188,10 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_dt_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleDtManifestCreatedByFk() {
         if (_moduleDtManifestCreatedByFk == null)
             _moduleDtManifestCreatedByFk = new AppUser(this, Keys.MODULE_DT_MANIFEST_CREATED_BY_FK);
@@ -185,6 +199,10 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         return _moduleDtManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_dt_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleDtManifestLastUpdatedByFk() {
         if (_moduleDtManifestLastUpdatedByFk == null)
             _moduleDtManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_DT_MANIFEST_LAST_UPDATED_BY_FK);

@@ -194,6 +194,9 @@ public class Module extends TableImpl<ModuleRecord> {
     private transient AppUser _moduleLastUpdatedByFk;
     private transient AppUser _moduleOwnerUserIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set</code> table.
+     */
     public ModuleSet moduleSet() {
         if (_moduleSet == null)
             _moduleSet = new ModuleSet(this, Keys.MODULE_MODULE_SET_ID_FK);
@@ -201,6 +204,9 @@ public class Module extends TableImpl<ModuleRecord> {
         return _moduleSet;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_PARENT_MODULE_ID_FK);
@@ -208,6 +214,9 @@ public class Module extends TableImpl<ModuleRecord> {
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.MODULE_NAMESPACE_ID_FK);
@@ -215,6 +224,10 @@ public class Module extends TableImpl<ModuleRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_created_by_fk</code> key.
+     */
     public AppUser moduleCreatedByFk() {
         if (_moduleCreatedByFk == null)
             _moduleCreatedByFk = new AppUser(this, Keys.MODULE_CREATED_BY_FK);
@@ -222,6 +235,10 @@ public class Module extends TableImpl<ModuleRecord> {
         return _moduleCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_last_updated_by_fk</code> key.
+     */
     public AppUser moduleLastUpdatedByFk() {
         if (_moduleLastUpdatedByFk == null)
             _moduleLastUpdatedByFk = new AppUser(this, Keys.MODULE_LAST_UPDATED_BY_FK);
@@ -229,6 +246,10 @@ public class Module extends TableImpl<ModuleRecord> {
         return _moduleLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_owner_user_id_fk</code> key.
+     */
     public AppUser moduleOwnerUserIdFk() {
         if (_moduleOwnerUserIdFk == null)
             _moduleOwnerUserIdFk = new AppUser(this, Keys.MODULE_OWNER_USER_ID_FK);

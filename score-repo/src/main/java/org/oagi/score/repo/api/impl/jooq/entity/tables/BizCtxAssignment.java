@@ -132,6 +132,9 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     private transient BizCtx _bizCtx;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
+     */
     public BizCtx bizCtx() {
         if (_bizCtx == null)
             _bizCtx = new BizCtx(this, Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK);
@@ -139,6 +142,10 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
         return _bizCtx;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);

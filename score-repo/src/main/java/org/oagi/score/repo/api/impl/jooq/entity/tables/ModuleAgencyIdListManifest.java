@@ -167,6 +167,10 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
     private transient AppUser _moduleAgencyIdListManifestCreatedByFk;
     private transient AppUser _moduleAgencyIdListManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_AGENCY_ID_LIST_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -174,6 +178,10 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table.
+     */
     public AgencyIdListManifest agencyIdListManifest() {
         if (_agencyIdListManifest == null)
             _agencyIdListManifest = new AgencyIdListManifest(this, Keys.MODULE_AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK);
@@ -181,6 +189,9 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
         return _agencyIdListManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_AGENCY_ID_LIST_MANIFEST_MODULE_ID_FK);
@@ -188,6 +199,10 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_agency_id_list_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleAgencyIdListManifestCreatedByFk() {
         if (_moduleAgencyIdListManifestCreatedByFk == null)
             _moduleAgencyIdListManifestCreatedByFk = new AppUser(this, Keys.MODULE_AGENCY_ID_LIST_MANIFEST_CREATED_BY_FK);
@@ -195,6 +210,10 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
         return _moduleAgencyIdListManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_agency_id_list_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleAgencyIdListManifestLastUpdatedByFk() {
         if (_moduleAgencyIdListManifestLastUpdatedByFk == null)
             _moduleAgencyIdListManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_AGENCY_ID_LIST_MANIFEST_LAST_UPDATED_BY_FK);

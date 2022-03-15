@@ -157,6 +157,9 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     private transient DtScManifest _dtScPrevDtScManifestIdFk;
     private transient DtScManifest _dtScNextDtScManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.DT_SC_MANIFEST_RELEASE_ID_FK);
@@ -164,6 +167,9 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table.
+     */
     public DtSc dtSc() {
         if (_dtSc == null)
             _dtSc = new DtSc(this, Keys.DT_SC_MANIFEST_DT_SC_ID_FK);
@@ -171,6 +177,9 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _dtSc;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table.
+     */
     public DtManifest dtManifest() {
         if (_dtManifest == null)
             _dtManifest = new DtManifest(this, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK);
@@ -178,6 +187,10 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _dtManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc_manifest</code> table,
+     * via the <code>based_dt_sc_manifest_id_fk</code> key.
+     */
     public DtScManifest basedDtScManifestIdFk() {
         if (_basedDtScManifestIdFk == null)
             _basedDtScManifestIdFk = new DtScManifest(this, Keys.BASED_DT_SC_MANIFEST_ID_FK);
@@ -185,6 +198,10 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _basedDtScManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc_manifest</code> table,
+     * via the <code>dt_sc_replacement_dt_sc_manifest_id_fk</code> key.
+     */
     public DtScManifest dtScReplacementDtScManifestIdFk() {
         if (_dtScReplacementDtScManifestIdFk == null)
             _dtScReplacementDtScManifestIdFk = new DtScManifest(this, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
@@ -192,6 +209,10 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _dtScReplacementDtScManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc_manifest</code> table,
+     * via the <code>dt_sc_prev_dt_sc_manifest_id_fk</code> key.
+     */
     public DtScManifest dtScPrevDtScManifestIdFk() {
         if (_dtScPrevDtScManifestIdFk == null)
             _dtScPrevDtScManifestIdFk = new DtScManifest(this, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK);
@@ -199,6 +220,10 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return _dtScPrevDtScManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc_manifest</code> table,
+     * via the <code>dt_sc_next_dt_sc_manifest_id_fk</code> key.
+     */
     public DtScManifest dtScNextDtScManifestIdFk() {
         if (_dtScNextDtScManifestIdFk == null)
             _dtScNextDtScManifestIdFk = new DtScManifest(this, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);

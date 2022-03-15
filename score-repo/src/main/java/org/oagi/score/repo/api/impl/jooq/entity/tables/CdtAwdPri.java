@@ -132,6 +132,9 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
     private transient Dt _dt;
     private transient CdtPri _cdtPri;
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.CDT_AWD_PRI_CDT_ID_FK);
@@ -139,6 +142,9 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.cdt_pri</code> table.
+     */
     public CdtPri cdtPri() {
         if (_cdtPri == null)
             _cdtPri = new CdtPri(this, Keys.CDT_AWD_PRI_CDT_PRI_ID_FK);

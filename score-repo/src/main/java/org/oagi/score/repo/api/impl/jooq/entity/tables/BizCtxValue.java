@@ -124,6 +124,9 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
     private transient BizCtx _bizCtx;
     private transient CtxSchemeValue _ctxSchemeValue;
 
+    /**
+     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
+     */
     public BizCtx bizCtx() {
         if (_bizCtx == null)
             _bizCtx = new BizCtx(this, Keys.BIZ_CTX_VALUE_BIZ_CTX_ID_FK);
@@ -131,6 +134,10 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
         return _bizCtx;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ctx_scheme_value</code>
+     * table.
+     */
     public CtxSchemeValue ctxSchemeValue() {
         if (_ctxSchemeValue == null)
             _ctxSchemeValue = new CtxSchemeValue(this, Keys.BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK);

@@ -171,6 +171,9 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
     private transient AppUser _appUser;
     private transient Oauth2App _oauth2App;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table.
+     */
     public AppUser appUser() {
         if (_appUser == null)
             _appUser = new AppUser(this, Keys.APP_OAUTH2_USER_APP_USER_ID_FK);
@@ -178,6 +181,9 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
         return _appUser;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.oauth2_app</code> table.
+     */
     public Oauth2App oauth2App() {
         if (_oauth2App == null)
             _oauth2App = new Oauth2App(this, Keys.APP_OAUTH2_USER_OAUTH2_APP_ID_FK);

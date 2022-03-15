@@ -195,6 +195,9 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     private transient AppUser _ctxSchemeCreatedByFk;
     private transient AppUser _ctxSchemeLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.ctx_category</code> table.
+     */
     public CtxCategory ctxCategory() {
         if (_ctxCategory == null)
             _ctxCategory = new CtxCategory(this, Keys.CTX_SCHEME_CTX_CATEGORY_ID_FK);
@@ -202,6 +205,9 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
         return _ctxCategory;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table.
+     */
     public CodeList codeList() {
         if (_codeList == null)
             _codeList = new CodeList(this, Keys.CTX_SCHEME_CODE_LIST_ID_FK);
@@ -209,6 +215,10 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
         return _codeList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ctx_scheme_created_by_fk</code> key.
+     */
     public AppUser ctxSchemeCreatedByFk() {
         if (_ctxSchemeCreatedByFk == null)
             _ctxSchemeCreatedByFk = new AppUser(this, Keys.CTX_SCHEME_CREATED_BY_FK);
@@ -216,6 +226,10 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
         return _ctxSchemeCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ctx_scheme_last_updated_by_fk</code> key.
+     */
     public AppUser ctxSchemeLastUpdatedByFk() {
         if (_ctxSchemeLastUpdatedByFk == null)
             _ctxSchemeLastUpdatedByFk = new AppUser(this, Keys.CTX_SCHEME_LAST_UPDATED_BY_FK);

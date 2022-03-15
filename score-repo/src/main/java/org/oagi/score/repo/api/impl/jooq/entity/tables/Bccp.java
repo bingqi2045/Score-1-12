@@ -282,6 +282,9 @@ public class Bccp extends TableImpl<BccpRecord> {
     private transient Bccp _bccpPrevBccpIdFk;
     private transient Bccp _bccpNextBccpIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.BCCP_BDT_ID_FK);
@@ -289,6 +292,9 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.BCCP_NAMESPACE_ID_FK);
@@ -296,6 +302,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp</code> table, via the
+     * <code>bccp_replacement_bccp_id_fk</code> key.
+     */
     public Bccp bccpReplacementBccpIdFk() {
         if (_bccpReplacementBccpIdFk == null)
             _bccpReplacementBccpIdFk = new Bccp(this, Keys.BCCP_REPLACEMENT_BCCP_ID_FK);
@@ -303,6 +313,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _bccpReplacementBccpIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bccp_created_by_fk</code> key.
+     */
     public AppUser bccpCreatedByFk() {
         if (_bccpCreatedByFk == null)
             _bccpCreatedByFk = new AppUser(this, Keys.BCCP_CREATED_BY_FK);
@@ -310,6 +324,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _bccpCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bccp_owner_user_id_fk</code> key.
+     */
     public AppUser bccpOwnerUserIdFk() {
         if (_bccpOwnerUserIdFk == null)
             _bccpOwnerUserIdFk = new AppUser(this, Keys.BCCP_OWNER_USER_ID_FK);
@@ -317,6 +335,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _bccpOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bccp_last_updated_by_fk</code> key.
+     */
     public AppUser bccpLastUpdatedByFk() {
         if (_bccpLastUpdatedByFk == null)
             _bccpLastUpdatedByFk = new AppUser(this, Keys.BCCP_LAST_UPDATED_BY_FK);
@@ -324,6 +346,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _bccpLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp</code> table, via the
+     * <code>bccp_prev_bccp_id_fk</code> key.
+     */
     public Bccp bccpPrevBccpIdFk() {
         if (_bccpPrevBccpIdFk == null)
             _bccpPrevBccpIdFk = new Bccp(this, Keys.BCCP_PREV_BCCP_ID_FK);
@@ -331,6 +357,10 @@ public class Bccp extends TableImpl<BccpRecord> {
         return _bccpPrevBccpIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp</code> table, via the
+     * <code>bccp_next_bccp_id_fk</code> key.
+     */
     public Bccp bccpNextBccpIdFk() {
         if (_bccpNextBccpIdFk == null)
             _bccpNextBccpIdFk = new Bccp(this, Keys.BCCP_NEXT_BCCP_ID_FK);

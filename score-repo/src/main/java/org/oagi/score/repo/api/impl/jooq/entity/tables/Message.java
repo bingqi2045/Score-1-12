@@ -150,6 +150,10 @@ public class Message extends TableImpl<MessageRecord> {
     private transient AppUser _messageSenderIdFk;
     private transient AppUser _messageRecipientIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>message_sender_id_fk</code> key.
+     */
     public AppUser messageSenderIdFk() {
         if (_messageSenderIdFk == null)
             _messageSenderIdFk = new AppUser(this, Keys.MESSAGE_SENDER_ID_FK);
@@ -157,6 +161,10 @@ public class Message extends TableImpl<MessageRecord> {
         return _messageSenderIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>message_recipient_id_fk</code> key.
+     */
     public AppUser messageRecipientIdFk() {
         if (_messageRecipientIdFk == null)
             _messageRecipientIdFk = new AppUser(this, Keys.MESSAGE_RECIPIENT_ID_FK);

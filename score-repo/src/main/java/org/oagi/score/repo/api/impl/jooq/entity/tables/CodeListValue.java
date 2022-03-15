@@ -259,6 +259,9 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     private transient CodeListValue _codeListValuePrevCodeListValueIdFk;
     private transient CodeListValue _codeListValueNextCodeListValueIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table.
+     */
     public CodeList codeList() {
         if (_codeList == null)
             _codeList = new CodeList(this, Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK);
@@ -266,6 +269,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_value</code>
+     * table, via the <code>code_list_value_based_code_list_value_id_fk</code>
+     * key.
+     */
     public CodeListValue codeListValueBasedCodeListValueIdFk() {
         if (_codeListValueBasedCodeListValueIdFk == null)
             _codeListValueBasedCodeListValueIdFk = new CodeListValue(this, Keys.CODE_LIST_VALUE_BASED_CODE_LIST_VALUE_ID_FK);
@@ -273,6 +281,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValueBasedCodeListValueIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_value</code>
+     * table, via the
+     * <code>code_list_value_replacement_code_list_value_id_fk</code> key.
+     */
     public CodeListValue codeListValueReplacementCodeListValueIdFk() {
         if (_codeListValueReplacementCodeListValueIdFk == null)
             _codeListValueReplacementCodeListValueIdFk = new CodeListValue(this, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_ID_FK);
@@ -280,6 +293,10 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValueReplacementCodeListValueIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_value_created_by_fk</code> key.
+     */
     public AppUser codeListValueCreatedByFk() {
         if (_codeListValueCreatedByFk == null)
             _codeListValueCreatedByFk = new AppUser(this, Keys.CODE_LIST_VALUE_CREATED_BY_FK);
@@ -287,6 +304,10 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValueCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_value_owner_user_id_fk</code> key.
+     */
     public AppUser codeListValueOwnerUserIdFk() {
         if (_codeListValueOwnerUserIdFk == null)
             _codeListValueOwnerUserIdFk = new AppUser(this, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK);
@@ -294,6 +315,10 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValueOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_value_last_updated_by_fk</code> key.
+     */
     public AppUser codeListValueLastUpdatedByFk() {
         if (_codeListValueLastUpdatedByFk == null)
             _codeListValueLastUpdatedByFk = new AppUser(this, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK);
@@ -301,6 +326,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValueLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_value</code>
+     * table, via the <code>code_list_value_prev_code_list_value_id_fk</code>
+     * key.
+     */
     public CodeListValue codeListValuePrevCodeListValueIdFk() {
         if (_codeListValuePrevCodeListValueIdFk == null)
             _codeListValuePrevCodeListValueIdFk = new CodeListValue(this, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK);
@@ -308,6 +338,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
         return _codeListValuePrevCodeListValueIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_value</code>
+     * table, via the <code>code_list_value_next_code_list_value_id_fk</code>
+     * key.
+     */
     public CodeListValue codeListValueNextCodeListValueIdFk() {
         if (_codeListValueNextCodeListValueIdFk == null)
             _codeListValueNextCodeListValueIdFk = new CodeListValue(this, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);

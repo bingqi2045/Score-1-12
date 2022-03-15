@@ -267,6 +267,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     private transient AgencyIdList _agencyIdListPrevAgencyIdListIdFk;
     private transient AgencyIdList _agencyIdListNextAgencyIdListIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list_value</code>
+     * table.
+     */
     public AgencyIdListValue agencyIdListValue() {
         if (_agencyIdListValue == null)
             _agencyIdListValue = new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK);
@@ -274,6 +278,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListValue;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table,
+     * via the <code>agency_id_list_based_agency_id_list_id_fk</code> key.
+     */
     public AgencyIdList agencyIdListBasedAgencyIdListIdFk() {
         if (_agencyIdListBasedAgencyIdListIdFk == null)
             _agencyIdListBasedAgencyIdListIdFk = new AgencyIdList(this, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK);
@@ -281,6 +289,9 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListBasedAgencyIdListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.AGENCY_ID_LIST_NAMESPACE_ID_FK);
@@ -288,6 +299,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>agency_id_list_created_by_fk</code> key.
+     */
     public AppUser agencyIdListCreatedByFk() {
         if (_agencyIdListCreatedByFk == null)
             _agencyIdListCreatedByFk = new AppUser(this, Keys.AGENCY_ID_LIST_CREATED_BY_FK);
@@ -295,6 +310,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>agency_id_list_last_updated_by_fk</code> key.
+     */
     public AppUser agencyIdListLastUpdatedByFk() {
         if (_agencyIdListLastUpdatedByFk == null)
             _agencyIdListLastUpdatedByFk = new AppUser(this, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK);
@@ -302,6 +321,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table,
+     * via the <code>agency_id_list_replacement_agency_id_list_id_fk</code> key.
+     */
     public AgencyIdList agencyIdListReplacementAgencyIdListIdFk() {
         if (_agencyIdListReplacementAgencyIdListIdFk == null)
             _agencyIdListReplacementAgencyIdListIdFk = new AgencyIdList(this, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_ID_FK);
@@ -309,6 +332,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListReplacementAgencyIdListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>agency_id_list_owner_user_id_fk</code> key.
+     */
     public AppUser agencyIdListOwnerUserIdFk() {
         if (_agencyIdListOwnerUserIdFk == null)
             _agencyIdListOwnerUserIdFk = new AppUser(this, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK);
@@ -316,6 +343,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table,
+     * via the <code>agency_id_list_prev_agency_id_list_id_fk</code> key.
+     */
     public AgencyIdList agencyIdListPrevAgencyIdListIdFk() {
         if (_agencyIdListPrevAgencyIdListIdFk == null)
             _agencyIdListPrevAgencyIdListIdFk = new AgencyIdList(this, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK);
@@ -323,6 +354,10 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
         return _agencyIdListPrevAgencyIdListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table,
+     * via the <code>agency_id_list_next_agency_id_list_id_fk</code> key.
+     */
     public AgencyIdList agencyIdListNextAgencyIdListIdFk() {
         if (_agencyIdListNextAgencyIdListIdFk == null)
             _agencyIdListNextAgencyIdListIdFk = new AgencyIdList(this, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);

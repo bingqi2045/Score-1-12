@@ -159,6 +159,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     private transient Bbie _bbie;
     private transient Bbiep _bbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.usage_rule</code> table.
+     */
     public UsageRule usageRule() {
         if (_usageRule == null)
             _usageRule = new UsageRule(this, Keys.BIE_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK);
@@ -166,6 +169,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         return _usageRule;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.abie</code> table.
+     */
     public Abie abie() {
         if (_abie == null)
             _abie = new Abie(this, Keys.BIE_USAGE_RULE_TARGET_ABIE_ID_FK);
@@ -173,6 +179,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         return _abie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asbie</code> table.
+     */
     public Asbie asbie() {
         if (_asbie == null)
             _asbie = new Asbie(this, Keys.BIE_USAGE_RULE_TARGET_ASBIE_ID_FK);
@@ -180,6 +189,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         return _asbie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asbiep</code> table.
+     */
     public Asbiep asbiep() {
         if (_asbiep == null)
             _asbiep = new Asbiep(this, Keys.BIE_USAGE_RULE_TARGET_ASBIEP_ID_FK);
@@ -187,6 +199,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         return _asbiep;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bbie</code> table.
+     */
     public Bbie bbie() {
         if (_bbie == null)
             _bbie = new Bbie(this, Keys.BIE_USAGE_RULE_TARGET_BBIE_ID_FK);
@@ -194,6 +209,9 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         return _bbie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bbiep</code> table.
+     */
     public Bbiep bbiep() {
         if (_bbiep == null)
             _bbiep = new Bbiep(this, Keys.BIE_USAGE_RULE_TARGET_BBIEP_ID_FK);

@@ -167,6 +167,9 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     private transient AppUser _topLevelAsbiepLastUpdatedByFk;
     private transient Release _release;
 
+    /**
+     * Get the implicit join path to the <code>oagi.asbiep</code> table.
+     */
     public Asbiep asbiep() {
         if (_asbiep == null)
             _asbiep = new Asbiep(this, Keys.TOP_LEVEL_ASBIEP_ASBIEP_ID_FK);
@@ -174,6 +177,10 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
         return _asbiep;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>top_level_asbiep_owner_user_id_fk</code> key.
+     */
     public AppUser topLevelAsbiepOwnerUserIdFk() {
         if (_topLevelAsbiepOwnerUserIdFk == null)
             _topLevelAsbiepOwnerUserIdFk = new AppUser(this, Keys.TOP_LEVEL_ASBIEP_OWNER_USER_ID_FK);
@@ -181,6 +188,10 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
         return _topLevelAsbiepOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>top_level_asbiep_last_updated_by_fk</code> key.
+     */
     public AppUser topLevelAsbiepLastUpdatedByFk() {
         if (_topLevelAsbiepLastUpdatedByFk == null)
             _topLevelAsbiepLastUpdatedByFk = new AppUser(this, Keys.TOP_LEVEL_ASBIEP_LAST_UPDATED_BY_FK);
@@ -188,6 +199,9 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
         return _topLevelAsbiepLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.TOP_LEVEL_ASBIEP_RELEASE_ID_FK);

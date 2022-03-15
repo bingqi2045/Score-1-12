@@ -165,6 +165,10 @@ public class ModuleCodeListManifest extends TableImpl<ModuleCodeListManifestReco
     private transient AppUser _moduleCodeListManifestCreatedByFk;
     private transient AppUser _moduleCodeListManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_CODE_LIST_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -172,6 +176,10 @@ public class ModuleCodeListManifest extends TableImpl<ModuleCodeListManifestReco
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list_manifest</code>
+     * table.
+     */
     public CodeListManifest codeListManifest() {
         if (_codeListManifest == null)
             _codeListManifest = new CodeListManifest(this, Keys.MODULE_CODE_LIST_MANIFEST_CODE_LIST_MANIFEST_ID_FK);
@@ -179,6 +187,9 @@ public class ModuleCodeListManifest extends TableImpl<ModuleCodeListManifestReco
         return _codeListManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_CODE_LIST_MANIFEST_MODULE_ID_FK);
@@ -186,6 +197,10 @@ public class ModuleCodeListManifest extends TableImpl<ModuleCodeListManifestReco
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_code_list_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleCodeListManifestCreatedByFk() {
         if (_moduleCodeListManifestCreatedByFk == null)
             _moduleCodeListManifestCreatedByFk = new AppUser(this, Keys.MODULE_CODE_LIST_MANIFEST_CREATED_BY_FK);
@@ -193,6 +208,10 @@ public class ModuleCodeListManifest extends TableImpl<ModuleCodeListManifestReco
         return _moduleCodeListManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_code_list_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleCodeListManifestLastUpdatedByFk() {
         if (_moduleCodeListManifestLastUpdatedByFk == null)
             _moduleCodeListManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_CODE_LIST_MANIFEST_LAST_UPDATED_BY_FK);

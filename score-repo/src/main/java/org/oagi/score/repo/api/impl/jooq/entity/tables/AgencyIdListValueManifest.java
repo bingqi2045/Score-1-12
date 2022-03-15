@@ -165,6 +165,9 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     private transient AgencyIdListValueManifest _agencyIdListValueManifestPrevAgencyIdListValueManifFk;
     private transient AgencyIdListValueManifest _agencyIdListValueManifestNextAgencyIdListValueManifFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK);
@@ -172,6 +175,10 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list_value</code>
+     * table.
+     */
     public AgencyIdListValue agencyIdListValue() {
         if (_agencyIdListValue == null)
             _agencyIdListValue = new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK);
@@ -179,6 +186,10 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _agencyIdListValue;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table.
+     */
     public AgencyIdListManifest agencyIdListManifest() {
         if (_agencyIdListManifest == null)
             _agencyIdListManifest = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK);
@@ -186,6 +197,12 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _agencyIdListManifest;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_value_manifest</code> table, via the
+     * <code>agency_id_list_value_manifest_based_agency_id_list_val_mnf_id_fk</code>
+     * key.
+     */
     public AgencyIdListValueManifest agencyIdListValueManifestBasedAgencyIdListValMnfIdFk() {
         if (_agencyIdListValueManifestBasedAgencyIdListValMnfIdFk == null)
             _agencyIdListValueManifestBasedAgencyIdListValMnfIdFk = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_BASED_AGENCY_ID_LIST_VAL_MNF_ID_FK);
@@ -193,6 +210,12 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _agencyIdListValueManifestBasedAgencyIdListValMnfIdFk;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_value_manifest</code> table, via the
+     * <code>agency_id_list_value_replacement_agency_id_list_manif_fk</code>
+     * key.
+     */
     public AgencyIdListValueManifest agencyIdListValueReplacementAgencyIdListManifFk() {
         if (_agencyIdListValueReplacementAgencyIdListManifFk == null)
             _agencyIdListValueReplacementAgencyIdListManifFk = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_MANIF_FK);
@@ -200,6 +223,12 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _agencyIdListValueReplacementAgencyIdListManifFk;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_value_manifest</code> table, via the
+     * <code>agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk</code>
+     * key.
+     */
     public AgencyIdListValueManifest agencyIdListValueManifestPrevAgencyIdListValueManifFk() {
         if (_agencyIdListValueManifestPrevAgencyIdListValueManifFk == null)
             _agencyIdListValueManifestPrevAgencyIdListValueManifFk = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK);
@@ -207,6 +236,12 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         return _agencyIdListValueManifestPrevAgencyIdListValueManifFk;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_value_manifest</code> table, via the
+     * <code>agency_id_list_value_manifest_next_agency_id_list_value_manif_fk</code>
+     * key.
+     */
     public AgencyIdListValueManifest agencyIdListValueManifestNextAgencyIdListValueManifFk() {
         if (_agencyIdListValueManifestNextAgencyIdListValueManifFk == null)
             _agencyIdListValueManifestNextAgencyIdListValueManifFk = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);

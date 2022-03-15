@@ -273,6 +273,9 @@ public class Asccp extends TableImpl<AsccpRecord> {
     private transient Asccp _asccpPrevAsccpIdFk;
     private transient Asccp _asccpNextAsccpIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table.
+     */
     public Acc acc() {
         if (_acc == null)
             _acc = new Acc(this, Keys.ASCCP_ROLE_OF_ACC_ID_FK);
@@ -280,6 +283,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _acc;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asccp_created_by_fk</code> key.
+     */
     public AppUser asccpCreatedByFk() {
         if (_asccpCreatedByFk == null)
             _asccpCreatedByFk = new AppUser(this, Keys.ASCCP_CREATED_BY_FK);
@@ -287,6 +294,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _asccpCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asccp_owner_user_id_fk</code> key.
+     */
     public AppUser asccpOwnerUserIdFk() {
         if (_asccpOwnerUserIdFk == null)
             _asccpOwnerUserIdFk = new AppUser(this, Keys.ASCCP_OWNER_USER_ID_FK);
@@ -294,6 +305,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _asccpOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asccp_last_updated_by_fk</code> key.
+     */
     public AppUser asccpLastUpdatedByFk() {
         if (_asccpLastUpdatedByFk == null)
             _asccpLastUpdatedByFk = new AppUser(this, Keys.ASCCP_LAST_UPDATED_BY_FK);
@@ -301,6 +316,9 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _asccpLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.ASCCP_NAMESPACE_ID_FK);
@@ -308,6 +326,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp</code> table, via the
+     * <code>asccp_replacement_asccp_id_fk</code> key.
+     */
     public Asccp asccpReplacementAsccpIdFk() {
         if (_asccpReplacementAsccpIdFk == null)
             _asccpReplacementAsccpIdFk = new Asccp(this, Keys.ASCCP_REPLACEMENT_ASCCP_ID_FK);
@@ -315,6 +337,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _asccpReplacementAsccpIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp</code> table, via the
+     * <code>asccp_prev_asccp_id_fk</code> key.
+     */
     public Asccp asccpPrevAsccpIdFk() {
         if (_asccpPrevAsccpIdFk == null)
             _asccpPrevAsccpIdFk = new Asccp(this, Keys.ASCCP_PREV_ASCCP_ID_FK);
@@ -322,6 +348,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
         return _asccpPrevAsccpIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp</code> table, via the
+     * <code>asccp_next_asccp_id_fk</code> key.
+     */
     public Asccp asccpNextAsccpIdFk() {
         if (_asccpNextAsccpIdFk == null)
             _asccpNextAsccpIdFk = new Asccp(this, Keys.ASCCP_NEXT_ASCCP_ID_FK);

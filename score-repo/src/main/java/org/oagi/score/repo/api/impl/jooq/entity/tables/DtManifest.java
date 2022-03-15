@@ -157,6 +157,9 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     private transient DtManifest _dtManifestPrevDtManifestIdFk;
     private transient DtManifest _dtManifestNextDtManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.DT_MANIFEST_RELEASE_ID_FK);
@@ -164,6 +167,9 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.DT_MANIFEST_DT_ID_FK);
@@ -171,6 +177,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table,
+     * via the <code>dt_manifest_based_dt_manifest_id_fk</code> key.
+     */
     public DtManifest dtManifestBasedDtManifestIdFk() {
         if (_dtManifestBasedDtManifestIdFk == null)
             _dtManifestBasedDtManifestIdFk = new DtManifest(this, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK);
@@ -178,6 +188,9 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _dtManifestBasedDtManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.DT_MANIFEST_LOG_ID_FK);
@@ -185,6 +198,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table,
+     * via the <code>dt_replacement_dt_manifest_id_fk</code> key.
+     */
     public DtManifest dtReplacementDtManifestIdFk() {
         if (_dtReplacementDtManifestIdFk == null)
             _dtReplacementDtManifestIdFk = new DtManifest(this, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK);
@@ -192,6 +209,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _dtReplacementDtManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table,
+     * via the <code>dt_manifest_prev_dt_manifest_id_fk</code> key.
+     */
     public DtManifest dtManifestPrevDtManifestIdFk() {
         if (_dtManifestPrevDtManifestIdFk == null)
             _dtManifestPrevDtManifestIdFk = new DtManifest(this, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK);
@@ -199,6 +220,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
         return _dtManifestPrevDtManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_manifest</code> table,
+     * via the <code>dt_manifest_next_dt_manifest_id_fk</code> key.
+     */
     public DtManifest dtManifestNextDtManifestIdFk() {
         if (_dtManifestNextDtManifestIdFk == null)
             _dtManifestNextDtManifestIdFk = new DtManifest(this, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);

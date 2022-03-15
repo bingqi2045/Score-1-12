@@ -144,6 +144,9 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     private transient XbtManifest _xbtManifestPrevXbtManifestIdFk;
     private transient XbtManifest _xbtManifestNextXbtManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.XBT_MANIFEST_RELEASE_ID_FK);
@@ -151,6 +154,9 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.xbt</code> table.
+     */
     public Xbt xbt() {
         if (_xbt == null)
             _xbt = new Xbt(this, Keys.XBT_MANIFEST_XBT_ID_FK);
@@ -158,6 +164,9 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
         return _xbt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.XBT_MANIFEST_LOG_ID_FK);
@@ -165,6 +174,10 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.xbt_manifest</code> table,
+     * via the <code>xbt_manifest_prev_xbt_manifest_id_fk</code> key.
+     */
     public XbtManifest xbtManifestPrevXbtManifestIdFk() {
         if (_xbtManifestPrevXbtManifestIdFk == null)
             _xbtManifestPrevXbtManifestIdFk = new XbtManifest(this, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK);
@@ -172,6 +185,10 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
         return _xbtManifestPrevXbtManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.xbt_manifest</code> table,
+     * via the <code>xbt_manifest_next_xbt_manifest_id_fk</code> key.
+     */
     public XbtManifest xbtManifestNextXbtManifestIdFk() {
         if (_xbtManifestNextXbtManifestIdFk == null)
             _xbtManifestNextXbtManifestIdFk = new XbtManifest(this, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
