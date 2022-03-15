@@ -77,7 +77,7 @@ public class CodeListWriteRepository {
             } else {
                 codeList.setExtensibleIndicator((byte) 0);
             }
-            codeList.setIsDeprecated(basedCodeListRecord.getIsDeprecated());
+            codeList.setIsDeprecated((byte) 0);
 
             basedCodeListValueManifestList =
                     dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
