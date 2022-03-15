@@ -90,13 +90,6 @@ public class JooqAgencyIdListWriteRepository
                 .set(agencyIdListManifestRecord).returning()
                 .fetchOne();
 
-        LogRecord logRecord = insertAgencyIdListLog(agencyIdListManifestRecord, agencyIdListRecord, null, LogAction.Added, ULong.valueOf(user.getUserId()), timestamp);
-
-        dslContext().update(AGENCY_ID_LIST_MANIFEST)
-                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, logRecord.getLogId())
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
-                .execute();
-
         if (basedAgencyIdListManifest != null) {
             List<AgencyIdListValueManifestRecord> basedAgencyIdListValueManifestList =
                     dslContext().selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
@@ -150,6 +143,13 @@ public class JooqAgencyIdListWriteRepository
                 }
             }
         }
+
+        LogRecord logRecord = insertAgencyIdListLog(agencyIdListManifestRecord, agencyIdListRecord, null, LogAction.Added, ULong.valueOf(user.getUserId()), timestamp);
+
+        dslContext().update(AGENCY_ID_LIST_MANIFEST)
+                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, logRecord.getLogId())
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                .execute();
 
         return agencyIdListManifestRecord.getAgencyIdListManifestId().toBigInteger();
     }
