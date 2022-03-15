@@ -321,6 +321,9 @@ public class JooqAgencyIdListReadRepository
                 AGENCY_ID_LIST_VALUE.VALUE,
                 AGENCY_ID_LIST_VALUE.DEFINITION,
                 AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
+                AGENCY_ID_LIST_VALUE.USED_INDICATOR,
+                AGENCY_ID_LIST_VALUE.LOCKED_INDICATOR,
+                AGENCY_ID_LIST_VALUE.EXTENSION_INDICATOR,
                 AGENCY_ID_LIST_VALUE.IS_DEPRECATED)
                 .from(AGENCY_ID_LIST_VALUE)
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID))
@@ -332,6 +335,9 @@ public class JooqAgencyIdListReadRepository
             if (basedAgencyIdListValueManifestId != null) {
                 agencyIdListValue.setBasedAgencyIdListValueManifestId(basedAgencyIdListValueManifestId.toBigInteger());
             }
+            agencyIdListValue.setUsed(e.get(AGENCY_ID_LIST_VALUE.USED_INDICATOR) == 1);
+            agencyIdListValue.setLocked(e.get(AGENCY_ID_LIST_VALUE.LOCKED_INDICATOR) == 1);
+            agencyIdListValue.setExtension(e.get(AGENCY_ID_LIST_VALUE.EXTENSION_INDICATOR) == 1);
             agencyIdListValue.setDeprecated(e.get(AGENCY_ID_LIST_VALUE.IS_DEPRECATED) == 1);
             agencyIdListValue.setGuid(e.get(AGENCY_ID_LIST_VALUE.GUID));
             agencyIdListValue.setValue(e.get(AGENCY_ID_LIST_VALUE.VALUE));
