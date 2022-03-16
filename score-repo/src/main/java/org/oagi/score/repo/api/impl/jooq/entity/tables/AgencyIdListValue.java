@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -102,34 +102,6 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * AGENCY_ID_LIST_VALUE.
      */
     public final TableField<AgencyIdListValueRecord, ULong> BASED_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("based_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.");
-
-    /**
-     * The column <code>oagi.agency_id_list_value.used_indicator</code>. This
-     * indicates whether the agency ID value is allowed to be used or not in
-     * that agency ID list context. In other words, this flag allows a user to
-     * enable or disable a agency ID list value.
-     */
-    public final TableField<AgencyIdListValueRecord, Byte> USED_INDICATOR = createField(DSL.name("used_indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("1", SQLDataType.TINYINT)), this, "This indicates whether the agency ID value is allowed to be used or not in that agency ID list context. In other words, this flag allows a user to enable or disable a agency ID list value.");
-
-    /**
-     * The column <code>oagi.agency_id_list_value.locked_indicator</code>. This
-     * indicates whether the USED_INDICATOR can be changed from False to True.
-     * In other words, if the agency ID value is derived from its base agency ID
-     * list and the USED_INDICATOR of the agency ID value in the base is False,
-     * then the USED_INDICATOR cannot be changed from False to True for this
-     * agency ID value; and this is indicated using this LOCKED_INDICATOR flag
-     * in the derived agency ID list.
-     */
-    public final TableField<AgencyIdListValueRecord, Byte> LOCKED_INDICATOR = createField(DSL.name("locked_indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates whether the USED_INDICATOR can be changed from False to True. In other words, if the agency ID value is derived from its base agency ID list and the USED_INDICATOR of the agency ID value in the base is False, then the USED_INDICATOR cannot be changed from False to True for this agency ID value; and this is indicated using this LOCKED_INDICATOR flag in the derived agency ID list.");
-
-    /**
-     * The column <code>oagi.agency_id_list_value.extension_indicator</code>.
-     * This indicates whether this agency ID value has just been added in this
-     * agency ID list. It is used particularly in the derived agency ID list. If
-     * the agency ID value has only been added to the derived agency ID list,
-     * then it can be deleted; otherwise, it cannot be deleted.
-     */
-    public final TableField<AgencyIdListValueRecord, Byte> EXTENSION_INDICATOR = createField(DSL.name("extension_indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates whether this agency ID value has just been added in this agency ID list. It is used particularly in the derived agency ID list. If the agency ID value has only been added to the derived agency ID list, then it can be deleted; otherwise, it cannot be deleted.");
 
     /**
      * The column <code>oagi.agency_id_list_value.is_deprecated</code>.
@@ -376,11 +348,11 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, String, ULong, ULong, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row17<ULong, String, String, String, String, String, ULong, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

@@ -43,9 +43,6 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
         private String definitionSource;
 
         private boolean deprecated;
-        private boolean used;
-        private boolean locked;
-        private boolean extension;
 
         public String getValue() {
             return value;
@@ -77,30 +74,6 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
 
         public void setDeprecated(boolean deprecated) {
             this.deprecated = deprecated;
-        }
-
-        public boolean isUsed() {
-            return used;
-        }
-
-        public void setUsed(boolean used) {
-            this.used = used;
-        }
-
-        public boolean isLocked() {
-            return locked;
-        }
-
-        public void setLocked(boolean locked) {
-            this.locked = locked;
-        }
-
-        public boolean isExtension() {
-            return extension;
-        }
-
-        public void setExtension(boolean extension) {
-            this.extension = extension;
         }
     }
 

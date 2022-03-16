@@ -291,9 +291,6 @@ public class CodeListService extends EventHandler {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)));
-        if (isPublished) {
-            conditions.add(CODE_LIST_VALUE.LOCKED_INDICATOR.eq((byte) 0));
-        }
 
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
@@ -303,10 +300,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
-                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"),
-                CODE_LIST_VALUE.USED_INDICATOR.as("used"),
-                CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
-                CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
+                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"))
                 .from(CODE_LIST_VALUE)
                 .join(CODE_LIST_VALUE_MANIFEST).on(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID))
                 .join(CODE_LIST_MANIFEST)
@@ -346,23 +340,12 @@ public class CodeListService extends EventHandler {
     private void createCodeList(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                                 CodeListValue codeListValue) {
 
-        boolean locked = codeListValue.isLocked();
-        boolean used = codeListValue.isUsed();
-        boolean extension = codeListValue.isExtension();
-        if (locked) {
-            used = false;
-            extension = false;
-        }
-
         ULong codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
                 CODE_LIST_VALUE.CODE_LIST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.MEANING,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
-                CODE_LIST_VALUE.USED_INDICATOR,
-                CODE_LIST_VALUE.LOCKED_INDICATOR,
-                CODE_LIST_VALUE.EXTENSION_INDICATOR,
                 CODE_LIST_VALUE.CREATED_BY,
                 CODE_LIST_VALUE.OWNER_USER_ID,
                 CODE_LIST_VALUE.LAST_UPDATED_BY,
@@ -373,9 +356,6 @@ public class CodeListService extends EventHandler {
                 codeListValue.getMeaning(),
                 codeListValue.getDefinition(),
                 codeListValue.getDefinitionSource(),
-                (byte) ((used) ? 1 : 0),
-                (byte) ((locked) ? 1 : 0),
-                (byte) ((extension) ? 1 : 0),
                 codeListRecord.getCreatedBy(),
                 codeListRecord.getOwnerUserId(),
                 codeListRecord.getLastUpdatedBy(),
@@ -475,10 +455,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
-                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"),
-                CODE_LIST_VALUE.USED_INDICATOR.as("used"),
-                CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
-                CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
+                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"))
                 .from(CODE_LIST_VALUE)
                 .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(lastPublishedCodeListId))
                 .fetchInto(CodeListValue.class);
@@ -532,17 +509,7 @@ public class CodeListService extends EventHandler {
                     codeListValue.setValue(e.getValue());
                     codeListValue.setDefinition(e.getDefinition());
                     codeListValue.setDefinitionSource(e.getDefinitionSource());
-                    codeListValue.setUsed(e.isUsed());
                     codeListValue.setDeprecated(e.isDeprecated());
-
-                    if (codeListValue.isLocked()) {
-                        codeListValue.setUsed(false);
-                        codeListValue.setExtension(false);
-                    }
-
-                    codeListValue.setLocked(e.isLocked());
-                    codeListValue.setUsed(e.isUsed());
-                    codeListValue.setExtension(e.isExtension());
 
                     return codeListValue;
                 }).collect(Collectors.toList())
@@ -647,10 +614,6 @@ public class CodeListService extends EventHandler {
 
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
-
-            codeListValueRecord.setUsedIndicator((byte) (codeListValue.isUsed() ? 1 : 0));
-            codeListValueRecord.setExtensionIndicator((byte) (codeListValue.isExtension() ? 1 : 0));
-            codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
 
             ULong requesterId = codeListRecord.getOwnerUserId();
             LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();

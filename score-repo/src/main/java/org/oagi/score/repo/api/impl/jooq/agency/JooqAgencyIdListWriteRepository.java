@@ -192,14 +192,7 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValue.setValue(e.getValue());
             agencyIdListValue.setDefinition(e.getDefinition());
             agencyIdListValue.setDefinitionSource(e.getDefinitionSource());
-            agencyIdListValue.setUsed(e.isUsed());
-            agencyIdListValue.setLocked(e.isLocked());
-            agencyIdListValue.setExtension(e.isExtension());
             agencyIdListValue.setDeprecated(e.isDeprecated());
-
-            if (agencyIdListValue.isLocked()) {
-                agencyIdListValue.setUsed(false);
-            }
 
             return agencyIdListValue;
         }).collect(Collectors.toList()));
@@ -792,9 +785,6 @@ public class JooqAgencyIdListWriteRepository
         properties.put("name", agencyIdListValueRecord.getName());
         properties.put("definition", agencyIdListValueRecord.getDefinition());
         properties.put("definitionSource", agencyIdListValueRecord.getDefinitionSource());
-        properties.put("used", (byte) 1 == agencyIdListValueRecord.getUsedIndicator());
-        properties.put("locked", (byte) 1 == agencyIdListValueRecord.getLockedIndicator());
-        properties.put("extension", (byte) 1 == agencyIdListValueRecord.getExtensionIndicator());
         properties.put("deprecated", (byte) 1 == agencyIdListValueRecord.getIsDeprecated());
 
         return properties;
@@ -875,9 +865,6 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValueRecord.setLastUpdatedBy(userId);
             agencyIdListValueRecord.setCreationTimestamp(timestamp);
             agencyIdListValueRecord.setLastUpdateTimestamp(timestamp);
-            agencyIdListValueRecord.setUsedIndicator((byte) 1);
-            agencyIdListValueRecord.setLockedIndicator((byte) 0);
-            agencyIdListValueRecord.setExtensionIndicator((byte) 0);
             agencyIdListValueRecord.setIsDeprecated((byte) 0);
 
             agencyIdListValueRecord.setAgencyIdListValueId(
@@ -923,17 +910,12 @@ public class JooqAgencyIdListWriteRepository
             agencyIdListValueRecord.setName(agencyIdListValue.getName());
             agencyIdListValueRecord.setDefinition(agencyIdListValue.getDefinition());
             agencyIdListValueRecord.setDefinitionSource(agencyIdListValue.getDefinitionSource());
-            agencyIdListValueRecord.setUsedIndicator((byte) (agencyIdListValue.isUsed() ? 1 : 0));
-            agencyIdListValueRecord.setLockedIndicator((byte) (agencyIdListValue.isLocked() ? 1 : 0));
-            agencyIdListValueRecord.setExtensionIndicator((byte) (agencyIdListValue.isExtension() ? 1 : 0));
             agencyIdListValueRecord.setIsDeprecated((byte) (agencyIdListValue.isDeprecated() ? 1 : 0));
             agencyIdListValueRecord.setLastUpdatedBy(userId);
             agencyIdListValueRecord.setLastUpdateTimestamp(timestamp);
 
             agencyIdListValueRecord.update(
                     AGENCY_ID_LIST_VALUE.NAME, AGENCY_ID_LIST_VALUE.IS_DEPRECATED,
-                    AGENCY_ID_LIST_VALUE.USED_INDICATOR, AGENCY_ID_LIST_VALUE.LOCKED_INDICATOR,
-                    AGENCY_ID_LIST_VALUE.EXTENSION_INDICATOR,
                     AGENCY_ID_LIST_VALUE.DEFINITION, AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE,
                     AGENCY_ID_LIST_VALUE.LAST_UPDATED_BY, AGENCY_ID_LIST_VALUE.LAST_UPDATE_TIMESTAMP);
         }

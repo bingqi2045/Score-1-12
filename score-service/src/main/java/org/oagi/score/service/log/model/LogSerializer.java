@@ -466,9 +466,6 @@ public class LogSerializer {
         properties.put("definition", codeListValueRecord.getDefinition());
         properties.put("definitionSource", codeListValueRecord.getDefinitionSource());
         properties.put("deprecated", (byte) 1 == codeListValueRecord.getIsDeprecated());
-        properties.put("used", (byte) 1 == codeListValueRecord.getUsedIndicator());
-        properties.put("locked", (byte) 1 == codeListValueRecord.getLockedIndicator());
-        properties.put("extension", (byte) 1 == codeListValueRecord.getExtensionIndicator());
 
         return properties;
     }

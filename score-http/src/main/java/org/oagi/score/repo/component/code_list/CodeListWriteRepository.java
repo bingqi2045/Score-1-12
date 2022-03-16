@@ -360,9 +360,6 @@ public class CodeListWriteRepository {
             codeListValueRecord.setValue(codeListValue.getValue());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
-            codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
-            codeListValueRecord.setUsedIndicator((byte) (codeListValue.isUsed() ? 1 : 0));
-            codeListValueRecord.setExtensionIndicator((byte) (codeListValue.isExtension() ? 1 : 0));
             codeListValueRecord.setCreatedBy(userId);
             codeListValueRecord.setOwnerUserId(userId);
             codeListValueRecord.setLastUpdatedBy(userId);
@@ -413,9 +410,6 @@ public class CodeListWriteRepository {
             codeListValueRecord.setMeaning(codeListValue.getMeaning());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
-            codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
-            codeListValueRecord.setUsedIndicator((byte) (codeListValue.isUsed() ? 1 : 0));
-            codeListValueRecord.setExtensionIndicator((byte) (codeListValue.isExtension() ? 1 : 0));
             codeListValueRecord.setIsDeprecated((byte) (codeListValue.isDeprecated() ? 1 : 0));
             codeListValueRecord.setLastUpdatedBy(userId);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
@@ -423,8 +417,7 @@ public class CodeListWriteRepository {
             codeListValueRecord.update(
                     CODE_LIST_VALUE.MEANING,
                     CODE_LIST_VALUE.DEFINITION, CODE_LIST_VALUE.DEFINITION_SOURCE,
-                    CODE_LIST_VALUE.LOCKED_INDICATOR, CODE_LIST_VALUE.USED_INDICATOR,
-                    CODE_LIST_VALUE.EXTENSION_INDICATOR, CODE_LIST_VALUE.IS_DEPRECATED,
+                    CODE_LIST_VALUE.IS_DEPRECATED,
                     CODE_LIST_VALUE.LAST_UPDATED_BY, CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP);
         }
     }

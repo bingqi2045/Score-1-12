@@ -102,9 +102,9 @@ public class AgencyIdService {
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST)
                 .on(and(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID),
                         AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(
+                .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(
                         simpleAgencyIdLists.stream().map(e -> ULong.valueOf(e.getAgencyIdListManifestId())).collect(Collectors.toList())
-                ), AGENCY_ID_LIST_VALUE.USED_INDICATOR.eq((byte) 1)))
+                ))
                 .fetchStreamInto(SimpleAgencyIdListValue.class)
                 .sorted(Comparator.comparing(SimpleAgencyIdListValue::getName))
                 .collect(Collectors.toList());

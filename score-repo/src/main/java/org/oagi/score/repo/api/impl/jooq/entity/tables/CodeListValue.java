@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -107,34 +107,6 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * typically a URL identifying the source of the DEFINITION column.
      */
     public final TableField<CodeListValueRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(100), this, "This is typically a URL identifying the source of the DEFINITION column.");
-
-    /**
-     * The column <code>oagi.code_list_value.used_indicator</code>. This
-     * indicates whether the code value is allowed to be used or not in that
-     * code list context. In other words, this flag allows a user to enable or
-     * disable a code list value.
-     */
-    public final TableField<CodeListValueRecord, Byte> USED_INDICATOR = createField(DSL.name("used_indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("1", SQLDataType.TINYINT)), this, "This indicates whether the code value is allowed to be used or not in that code list context. In other words, this flag allows a user to enable or disable a code list value.");
-
-    /**
-     * The column <code>oagi.code_list_value.locked_indicator</code>. This
-     * indicates whether the USED_INDICATOR can be changed from False to True.
-     * In other words, if the code value is derived from its base code list and
-     * the USED_INDICATOR of the code value in the base is False, then the
-     * USED_iNDICATOR cannot be changed from False to True for this code value;
-     * and this is indicated using this LOCKED_INDICATOR flag in the derived
-     * code list.
-     */
-    public final TableField<CodeListValueRecord, Byte> LOCKED_INDICATOR = createField(DSL.name("locked_indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates whether the USED_INDICATOR can be changed from False to True. In other words, if the code value is derived from its base code list and the USED_INDICATOR of the code value in the base is False, then the USED_iNDICATOR cannot be changed from False to True for this code value; and this is indicated using this LOCKED_INDICATOR flag in the derived code list.");
-
-    /**
-     * The column <code>oagi.code_list_value.extension_Indicator</code>. This
-     * indicates whether this code value has just been added in this code list.
-     * It is used particularly in the derived code list. If the code value has
-     * only been added to the derived code list, then it can be deleted;
-     * otherwise, it cannot be deleted.
-     */
-    public final TableField<CodeListValueRecord, Byte> EXTENSION_INDICATOR = createField(DSL.name("extension_Indicator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates whether this code value has just been added in this code list. It is used particularly in the derived code list. If the code value has only been added to the derived code list, then it can be deleted; otherwise, it cannot be deleted.");
 
     /**
      * The column <code>oagi.code_list_value.is_deprecated</code>. Indicates
@@ -377,11 +349,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, ULong, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

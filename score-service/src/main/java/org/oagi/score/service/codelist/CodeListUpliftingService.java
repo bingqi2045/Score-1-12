@@ -234,9 +234,6 @@ public class CodeListUpliftingService {
         newCodeListValue.setMeaning(codeListValue.getMeaning());
         newCodeListValue.setDefinition(codeListValue.getDefinition());
         newCodeListValue.setDefinitionSource(codeListValue.getDefinitionSource());
-        newCodeListValue.setUsedIndicator(codeListValue.getUsedIndicator());
-        newCodeListValue.setLockedIndicator(codeListValue.getLockedIndicator());
-        newCodeListValue.setExtensionIndicator(codeListValue.getExtensionIndicator());
         newCodeListValue.setIsDeprecated(codeListValue.getIsDeprecated());
         newCodeListValue.setOwnerUserId(ULong.valueOf(requester.getUserId()));
         newCodeListValue.setCreatedBy(ULong.valueOf(requester.getUserId()));

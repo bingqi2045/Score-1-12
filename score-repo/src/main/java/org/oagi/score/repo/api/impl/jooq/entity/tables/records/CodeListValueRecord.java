@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record20;
-import org.jooq.Row20;
+import org.jooq.Record17;
+import org.jooq.Row17;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
  * can no longer be changed.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record20<ULong, String, ULong, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
+public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -168,80 +168,12 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     /**
-     * Setter for <code>oagi.code_list_value.used_indicator</code>. This
-     * indicates whether the code value is allowed to be used or not in that
-     * code list context. In other words, this flag allows a user to enable or
-     * disable a code list value.
-     */
-    public void setUsedIndicator(Byte value) {
-        set(8, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.used_indicator</code>. This
-     * indicates whether the code value is allowed to be used or not in that
-     * code list context. In other words, this flag allows a user to enable or
-     * disable a code list value.
-     */
-    public Byte getUsedIndicator() {
-        return (Byte) get(8);
-    }
-
-    /**
-     * Setter for <code>oagi.code_list_value.locked_indicator</code>. This
-     * indicates whether the USED_INDICATOR can be changed from False to True.
-     * In other words, if the code value is derived from its base code list and
-     * the USED_INDICATOR of the code value in the base is False, then the
-     * USED_iNDICATOR cannot be changed from False to True for this code value;
-     * and this is indicated using this LOCKED_INDICATOR flag in the derived
-     * code list.
-     */
-    public void setLockedIndicator(Byte value) {
-        set(9, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.locked_indicator</code>. This
-     * indicates whether the USED_INDICATOR can be changed from False to True.
-     * In other words, if the code value is derived from its base code list and
-     * the USED_INDICATOR of the code value in the base is False, then the
-     * USED_iNDICATOR cannot be changed from False to True for this code value;
-     * and this is indicated using this LOCKED_INDICATOR flag in the derived
-     * code list.
-     */
-    public Byte getLockedIndicator() {
-        return (Byte) get(9);
-    }
-
-    /**
-     * Setter for <code>oagi.code_list_value.extension_Indicator</code>. This
-     * indicates whether this code value has just been added in this code list.
-     * It is used particularly in the derived code list. If the code value has
-     * only been added to the derived code list, then it can be deleted;
-     * otherwise, it cannot be deleted.
-     */
-    public void setExtensionIndicator(Byte value) {
-        set(10, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.extension_Indicator</code>. This
-     * indicates whether this code value has just been added in this code list.
-     * It is used particularly in the derived code list. If the code value has
-     * only been added to the derived code list, then it can be deleted;
-     * otherwise, it cannot be deleted.
-     */
-    public Byte getExtensionIndicator() {
-        return (Byte) get(10);
-    }
-
-    /**
      * Setter for <code>oagi.code_list_value.is_deprecated</code>. Indicates
      * whether the code list value is deprecated and should not be reused (i.e.,
      * no new reference to this record should be allowed).
      */
     public void setIsDeprecated(Byte value) {
-        set(11, value);
+        set(8, value);
     }
 
     /**
@@ -250,7 +182,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * no new reference to this record should be allowed).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(11);
+        return (Byte) get(8);
     }
 
     /**
@@ -259,7 +191,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * refers to a replacement if the record is deprecated.
      */
     public void setReplacementCodeListValueId(ULong value) {
-        set(12, value);
+        set(9, value);
     }
 
     /**
@@ -268,7 +200,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * refers to a replacement if the record is deprecated.
      */
     public ULong getReplacementCodeListValueId() {
-        return (ULong) get(12);
+        return (ULong) get(9);
     }
 
     /**
@@ -276,7 +208,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(ULong value) {
-        set(13, value);
+        set(10, value);
     }
 
     /**
@@ -284,7 +216,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * the APP_USER table. It indicates the user who created the code list.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(13);
+        return (ULong) get(10);
     }
 
     /**
@@ -296,7 +228,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(14, value);
+        set(11, value);
     }
 
     /**
@@ -308,7 +240,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(14);
+        return (ULong) get(11);
     }
 
     /**
@@ -317,7 +249,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * list.
      */
     public void setLastUpdatedBy(ULong value) {
-        set(15, value);
+        set(12, value);
     }
 
     /**
@@ -326,7 +258,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * list.
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(15);
+        return (ULong) get(12);
     }
 
     /**
@@ -334,7 +266,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * Timestamp when the code list was created.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(16, value);
+        set(13, value);
     }
 
     /**
@@ -342,7 +274,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * Timestamp when the code list was created.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(16);
+        return (LocalDateTime) get(13);
     }
 
     /**
@@ -350,7 +282,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * Timestamp when the code list was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(17, value);
+        set(14, value);
     }
 
     /**
@@ -358,7 +290,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * Timestamp when the code list was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(17);
+        return (LocalDateTime) get(14);
     }
 
     /**
@@ -366,7 +298,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * self-foreign key to indicate the previous history record.
      */
     public void setPrevCodeListValueId(ULong value) {
-        set(18, value);
+        set(15, value);
     }
 
     /**
@@ -374,7 +306,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * self-foreign key to indicate the previous history record.
      */
     public ULong getPrevCodeListValueId() {
-        return (ULong) get(18);
+        return (ULong) get(15);
     }
 
     /**
@@ -382,7 +314,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * self-foreign key to indicate the next history record.
      */
     public void setNextCodeListValueId(ULong value) {
-        set(19, value);
+        set(16, value);
     }
 
     /**
@@ -390,7 +322,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * self-foreign key to indicate the next history record.
      */
     public ULong getNextCodeListValueId() {
-        return (ULong) get(19);
+        return (ULong) get(16);
     }
 
     // -------------------------------------------------------------------------
@@ -403,17 +335,17 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     // -------------------------------------------------------------------------
-    // Record20 type implementation
+    // Record17 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, ULong, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, ULong, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
-        return (Row20) super.valuesRow();
+    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+        return (Row17) super.valuesRow();
     }
 
     @Override
@@ -458,61 +390,46 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public Field<Byte> field9() {
-        return CodeListValue.CODE_LIST_VALUE.USED_INDICATOR;
-    }
-
-    @Override
-    public Field<Byte> field10() {
-        return CodeListValue.CODE_LIST_VALUE.LOCKED_INDICATOR;
-    }
-
-    @Override
-    public Field<Byte> field11() {
-        return CodeListValue.CODE_LIST_VALUE.EXTENSION_INDICATOR;
-    }
-
-    @Override
-    public Field<Byte> field12() {
         return CodeListValue.CODE_LIST_VALUE.IS_DEPRECATED;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<ULong> field10() {
         return CodeListValue.CODE_LIST_VALUE.REPLACEMENT_CODE_LIST_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<ULong> field11() {
         return CodeListValue.CODE_LIST_VALUE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field15() {
+    public Field<ULong> field12() {
         return CodeListValue.CODE_LIST_VALUE.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field16() {
+    public Field<ULong> field13() {
         return CodeListValue.CODE_LIST_VALUE.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field17() {
+    public Field<LocalDateTime> field14() {
         return CodeListValue.CODE_LIST_VALUE.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field18() {
+    public Field<LocalDateTime> field15() {
         return CodeListValue.CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<ULong> field16() {
         return CodeListValue.CODE_LIST_VALUE.PREV_CODE_LIST_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field17() {
         return CodeListValue.CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID;
     }
 
@@ -558,61 +475,46 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public Byte component9() {
-        return getUsedIndicator();
-    }
-
-    @Override
-    public Byte component10() {
-        return getLockedIndicator();
-    }
-
-    @Override
-    public Byte component11() {
-        return getExtensionIndicator();
-    }
-
-    @Override
-    public Byte component12() {
         return getIsDeprecated();
     }
 
     @Override
-    public ULong component13() {
+    public ULong component10() {
         return getReplacementCodeListValueId();
     }
 
     @Override
-    public ULong component14() {
+    public ULong component11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component15() {
+    public ULong component12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component16() {
+    public ULong component13() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component17() {
+    public LocalDateTime component14() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component18() {
+    public LocalDateTime component15() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong component19() {
+    public ULong component16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component17() {
         return getNextCodeListValueId();
     }
 
@@ -658,61 +560,46 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public Byte value9() {
-        return getUsedIndicator();
-    }
-
-    @Override
-    public Byte value10() {
-        return getLockedIndicator();
-    }
-
-    @Override
-    public Byte value11() {
-        return getExtensionIndicator();
-    }
-
-    @Override
-    public Byte value12() {
         return getIsDeprecated();
     }
 
     @Override
-    public ULong value13() {
+    public ULong value10() {
         return getReplacementCodeListValueId();
     }
 
     @Override
-    public ULong value14() {
+    public ULong value11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value15() {
+    public ULong value12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value16() {
+    public ULong value13() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value17() {
+    public LocalDateTime value14() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value18() {
+    public LocalDateTime value15() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong value19() {
+    public ULong value16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value17() {
         return getNextCodeListValueId();
     }
 
@@ -766,78 +653,60 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public CodeListValueRecord value9(Byte value) {
-        setUsedIndicator(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value10(Byte value) {
-        setLockedIndicator(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value11(Byte value) {
-        setExtensionIndicator(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value12(Byte value) {
         setIsDeprecated(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value13(ULong value) {
+    public CodeListValueRecord value10(ULong value) {
         setReplacementCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value14(ULong value) {
+    public CodeListValueRecord value11(ULong value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value15(ULong value) {
+    public CodeListValueRecord value12(ULong value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value16(ULong value) {
+    public CodeListValueRecord value13(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value17(LocalDateTime value) {
+    public CodeListValueRecord value14(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value18(LocalDateTime value) {
+    public CodeListValueRecord value15(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value19(ULong value) {
+    public CodeListValueRecord value16(ULong value) {
         setPrevCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value20(ULong value) {
+    public CodeListValueRecord value17(ULong value) {
         setNextCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord values(ULong value1, String value2, ULong value3, ULong value4, String value5, String value6, String value7, String value8, Byte value9, Byte value10, Byte value11, Byte value12, ULong value13, ULong value14, ULong value15, ULong value16, LocalDateTime value17, LocalDateTime value18, ULong value19, ULong value20) {
+    public CodeListValueRecord values(ULong value1, String value2, ULong value3, ULong value4, String value5, String value6, String value7, String value8, Byte value9, ULong value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, ULong value16, ULong value17) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -855,9 +724,6 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
         value15(value15);
         value16(value16);
         value17(value17);
-        value18(value18);
-        value19(value19);
-        value20(value20);
         return this;
     }
 
@@ -875,7 +741,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, ULong basedCodeListValueId, String value, String meaning, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, ULong basedCodeListValueId, String value, String meaning, String definition, String definitionSource, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         setCodeListValueId(codeListValueId);
@@ -886,9 +752,6 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
         setMeaning(meaning);
         setDefinition(definition);
         setDefinitionSource(definitionSource);
-        setUsedIndicator(usedIndicator);
-        setLockedIndicator(lockedIndicator);
-        setExtensionIndicator(extensionIndicator);
         setIsDeprecated(isDeprecated);
         setReplacementCodeListValueId(replacementCodeListValueId);
         setCreatedBy(createdBy);
