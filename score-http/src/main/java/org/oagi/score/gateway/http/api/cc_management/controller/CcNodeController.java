@@ -129,33 +129,57 @@ public class CcNodeController {
 
         switch (resp.getType()) {
             case ACC:
-                resp.setManifestId(
-                        service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Discard".equals(ccUpdateStateRequest.getState())) {
+                    service.discardAcc(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case ASCCP:
-                resp.setManifestId(
-                        service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Discard".equals(ccUpdateStateRequest.getState())) {
+                    service.discardAsccp(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case BCCP:
-                resp.setManifestId(
-                        service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Discard".equals(ccUpdateStateRequest.getState())) {
+                    service.discardBccp(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case DT:
-                resp.setManifestId(
-                        service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Discard".equals(ccUpdateStateRequest.getState())) {
+                    service.discardDt(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
         resp.setState(ccUpdateStateRequest.getState());
-        resp.setAccess(
-                ((CcState.WIP == CcState.valueOf(resp.getState())) ? AccessPrivilege.CanEdit : AccessPrivilege.CanMove).name()
-        );
+        if ("Discard".equals(resp.getState())) {
+            resp.setAccess(AccessPrivilege.Prohibited.name());
+        } else {
+            resp.setAccess(
+                    ((CcState.WIP == CcState.valueOf(resp.getState())) ? AccessPrivilege.CanEdit : AccessPrivilege.CanMove).name()
+            );
+        }
 
         return resp;
     }

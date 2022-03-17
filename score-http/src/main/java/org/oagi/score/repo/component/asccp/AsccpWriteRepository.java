@@ -28,6 +28,7 @@ import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.ASCCP;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest.ASCCP_MANIFEST;
 
@@ -516,6 +517,61 @@ public class AsccpWriteRepository {
         asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
         return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+    }
+
+    public DiscardAsccpRepositoryResponse discardAsccp(DiscardAsccpRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAsccpManifestId())
+                ))
+                .fetchOne();
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                .fetchOne();
+
+        if (!CcState.Deleted.equals(CcState.valueOf(asccpRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+        }
+
+        List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                .fetch();
+        if (!asccManifestRecords.isEmpty()) {
+            throw new IllegalArgumentException("Please discard ASCCs used the ASCCP '" + asccpRecord.getDen() + "'.");
+        }
+
+        // discard Log
+        ULong logId = asccpManifestRecord.getLogId();
+        dslContext.update(ASCCP_MANIFEST)
+                .setNull(ASCCP_MANIFEST.LOG_ID)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                .execute();
+
+        dslContext.update(LOG)
+                .setNull(LOG.PREV_LOG_ID)
+                .setNull(LOG.NEXT_LOG_ID)
+                .where(LOG.REFERENCE.eq(asccpRecord.getGuid()))
+                .execute();
+
+        dslContext.deleteFrom(LOG)
+                .where(LOG.REFERENCE.eq(asccpRecord.getGuid()))
+                .execute();
+
+        // discard ASCCP
+        dslContext.deleteFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpRecord.getAsccpId()))
+                .execute();
+
+        return new DiscardAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {

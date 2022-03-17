@@ -784,6 +784,108 @@ public class AccWriteRepository {
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
+    public DiscardAccRepositoryResponse discardAcc(DiscardAccRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAccManifestId())
+                ))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        if (!CcState.Deleted.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+        }
+
+        List<AsccpManifestRecord> asccpManifestRecords = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+        if (!asccpManifestRecords.isEmpty()) {
+            throw new IllegalArgumentException("Please discard ASCCPs used the ACC '" + accRecord.getDen() + "'.");
+        }
+
+        // discard Log
+        ULong logId = accManifestRecord.getLogId();
+        dslContext.update(ACC_MANIFEST)
+                .setNull(ACC_MANIFEST.LOG_ID)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.update(LOG)
+                .setNull(LOG.PREV_LOG_ID)
+                .setNull(LOG.NEXT_LOG_ID)
+                .where(LOG.REFERENCE.eq(accRecord.getGuid()))
+                .execute();
+
+        dslContext.deleteFrom(LOG)
+                .where(LOG.REFERENCE.eq(accRecord.getGuid()))
+                .execute();
+
+        // discard SEQ_KEYs
+        dslContext.update(ASCC_MANIFEST)
+                .setNull(ASCC_MANIFEST.SEQ_KEY_ID)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.update(BCC_MANIFEST)
+                .setNull(BCC_MANIFEST.SEQ_KEY_ID)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.update(SEQ_KEY)
+                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(SEQ_KEY)
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        // discard ASCCs
+        List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+
+        dslContext.deleteFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(ASCC)
+                .where(ASCC.ASCC_ID.in(asccManifestRecords.stream().map(e -> e.getAsccId()).collect(Collectors.toList())))
+                .execute();
+
+        // discard BCCs
+        List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+
+        dslContext.deleteFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(BCC)
+                .where(BCC.BCC_ID.in(bccManifestRecords.stream().map(e -> e.getBccId()).collect(Collectors.toList())))
+                .execute();
+
+        // discard ACC
+        dslContext.deleteFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(ACC)
+                .where(ACC.ACC_ID.eq(accRecord.getAccId()))
+                .execute();
+
+        return new DiscardAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
+
     public DeleteAccRepositoryResponse removeAcc(DeleteAccRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());

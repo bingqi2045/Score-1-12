@@ -213,6 +213,49 @@ public class CcNodeService extends EventHandler {
         fireEvent(new DeletedDtScEvent());
     }
 
+    @Transactional
+    public void discardAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
+        DiscardAccRepositoryRequest repositoryRequest =
+                new DiscardAccRepositoryRequest(user, manifestId);
+
+        DiscardAccRepositoryResponse repositoryResponse =
+                accWriteRepository.discardAcc(repositoryRequest);
+
+        fireEvent(new DeletedAccEvent());
+    }
+
+    @Transactional
+    public void discardAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+        DiscardAsccpRepositoryRequest repositoryRequest =
+                new DiscardAsccpRepositoryRequest(user, manifestId);
+
+        DiscardAsccpRepositoryResponse repositoryResponse =
+                asccpWriteRepository.discardAsccp(repositoryRequest);
+
+        fireEvent(new DeletedAsccpEvent());
+    }
+
+    @Transactional
+    public void discardBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+        DiscardBccpRepositoryRequest repositoryRequest =
+                new DiscardBccpRepositoryRequest(user, manifestId);
+
+        DiscardBccpRepositoryResponse repositoryResponse =
+                bccpWriteRepository.discardBccp(repositoryRequest);
+
+        fireEvent(new DeletedBccpEvent());
+    }
+
+    @Transactional
+    public void discardDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        DiscardDtRepositoryRequest request =
+                new DiscardDtRepositoryRequest(user, dtManifestId);
+
+        dtWriteRepository.discardDt(request);
+
+        fireEvent(new DeletedDtEvent());
+    }
+
     public CcAccNodeDetail getAccNodeDetail(AuthenticatedPrincipal user, CcAccNode accNode) {
         return repository.getAccNodeDetail(user, accNode);
     }

@@ -7,6 +7,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.component.asccp.DiscardAsccpRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.common.data.CcState;
@@ -29,6 +30,8 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.ASCCP;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest.ASCCP_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BCCP;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BCCP_MANIFEST;
 
@@ -471,6 +474,61 @@ public class BccpWriteRepository {
         bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
 
         return new DeleteBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+    }
+
+    public DiscardBccpRepositoryResponse discardBccp(DiscardBccpRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getBccpManifestId())
+                ))
+                .fetchOne();
+
+        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                .fetchOne();
+
+        if (!CcState.Deleted.equals(CcState.valueOf(bccpRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+        }
+
+        List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
+                .fetch();
+        if (!bccManifestRecords.isEmpty()) {
+            throw new IllegalArgumentException("Please discard BCCs used the BCCP '" + bccpRecord.getDen() + "'.");
+        }
+
+        // discard Log
+        ULong logId = bccpManifestRecord.getLogId();
+        dslContext.update(BCCP_MANIFEST)
+                .setNull(BCCP_MANIFEST.LOG_ID)
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
+                .execute();
+
+        dslContext.update(LOG)
+                .setNull(LOG.PREV_LOG_ID)
+                .setNull(LOG.NEXT_LOG_ID)
+                .where(LOG.REFERENCE.eq(bccpRecord.getGuid()))
+                .execute();
+
+        dslContext.deleteFrom(LOG)
+                .where(LOG.REFERENCE.eq(bccpRecord.getGuid()))
+                .execute();
+
+        // discard BCCP
+        dslContext.deleteFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpRecord.getBccpId()))
+                .execute();
+
+        return new DiscardBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
 
     public UpdateBccpOwnerRepositoryResponse updateBccpOwner(UpdateBccpOwnerRepositoryRequest request) {

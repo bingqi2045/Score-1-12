@@ -12,6 +12,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.repo.component.acc.DiscardAccRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -33,6 +34,8 @@ import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 
 @Repository
 public class DtWriteRepository {
@@ -912,7 +915,73 @@ public class DtWriteRepository {
         return new DeleteDtRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
     }
 
+    public DiscardDtRepositoryResponse discardDt(DiscardDtRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
 
+        DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getDtManifestId())
+                ))
+                .fetchOne();
+
+        DtRecord dtRecord = dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(dtManifestRecord.getDtId()))
+                .fetchOne();
+
+        if (!CcState.Deleted.equals(CcState.valueOf(dtRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+        }
+
+        List<BccpManifestRecord> bccpManifestRecords = dslContext.selectFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .fetch();
+        if (!bccpManifestRecords.isEmpty()) {
+            throw new IllegalArgumentException("Please discard BCCPs used the DT '" + dtRecord.getDen() + "'.");
+        }
+
+        // discard Log
+        ULong logId = dtManifestRecord.getLogId();
+        dslContext.update(DT_MANIFEST)
+                .setNull(DT_MANIFEST.LOG_ID)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
+        dslContext.update(LOG)
+                .setNull(LOG.PREV_LOG_ID)
+                .setNull(LOG.NEXT_LOG_ID)
+                .where(LOG.REFERENCE.eq(dtRecord.getGuid()))
+                .execute();
+
+        dslContext.deleteFrom(LOG)
+                .where(LOG.REFERENCE.eq(dtRecord.getGuid()))
+                .execute();
+
+        // discard DT_SCs
+        List<DtScManifestRecord> dtScManifestRecords = dslContext.selectFrom(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .fetch();
+
+        dslContext.deleteFrom(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(DT_SC)
+                .where(DT_SC.DT_SC_ID.in(dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())))
+                .execute();
+
+        // discard DT
+        dslContext.deleteFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
+        dslContext.deleteFrom(DT)
+                .where(DT.DT_ID.eq(dtRecord.getDtId()))
+                .execute();
+
+        return new DiscardDtRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
+    }
 
     public UpdateDtOwnerRepositoryResponse updateDtOwner(UpdateDtOwnerRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
