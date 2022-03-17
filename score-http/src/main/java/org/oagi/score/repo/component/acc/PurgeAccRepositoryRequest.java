@@ -6,19 +6,19 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-public class DiscardAccRepositoryRequest extends RepositoryRequest {
+public class PurgeAccRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger accManifestId;
 
-    public DiscardAccRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger accManifestId) {
+    public PurgeAccRepositoryRequest(AuthenticatedPrincipal user,
+                                     BigInteger accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }
 
-    public DiscardAccRepositoryRequest(AuthenticatedPrincipal user,
-                                       LocalDateTime localDateTime,
-                                       BigInteger accManifestId) {
+    public PurgeAccRepositoryRequest(AuthenticatedPrincipal user,
+                                     LocalDateTime localDateTime,
+                                     BigInteger accManifestId) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
     }

@@ -129,8 +129,8 @@ public class CcNodeController {
 
         switch (resp.getType()) {
             case ACC:
-                if ("Discard".equals(ccUpdateStateRequest.getState())) {
-                    service.discardAcc(user, manifestId);
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeAcc(user, manifestId);
                     resp.setManifestId(manifestId);
                 } else {
                     resp.setManifestId(
@@ -139,8 +139,8 @@ public class CcNodeController {
                 }
                 break;
             case ASCCP:
-                if ("Discard".equals(ccUpdateStateRequest.getState())) {
-                    service.discardAsccp(user, manifestId);
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeAsccp(user, manifestId);
                     resp.setManifestId(manifestId);
                 } else {
                     resp.setManifestId(
@@ -149,8 +149,8 @@ public class CcNodeController {
                 }
                 break;
             case BCCP:
-                if ("Discard".equals(ccUpdateStateRequest.getState())) {
-                    service.discardBccp(user, manifestId);
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeBccp(user, manifestId);
                     resp.setManifestId(manifestId);
                 } else {
                     resp.setManifestId(
@@ -159,8 +159,8 @@ public class CcNodeController {
                 }
                 break;
             case DT:
-                if ("Discard".equals(ccUpdateStateRequest.getState())) {
-                    service.discardDt(user, manifestId);
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeDt(user, manifestId);
                     resp.setManifestId(manifestId);
                 } else {
                     resp.setManifestId(
@@ -173,7 +173,7 @@ public class CcNodeController {
         }
 
         resp.setState(ccUpdateStateRequest.getState());
-        if ("Discard".equals(resp.getState())) {
+        if ("Purge".equals(resp.getState())) {
             resp.setAccess(AccessPrivilege.Prohibited.name());
         } else {
             resp.setAccess(

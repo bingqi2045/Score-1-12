@@ -12,7 +12,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
-import org.oagi.score.repo.component.acc.DiscardAccRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -27,15 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 
 @Repository
 public class DtWriteRepository {
@@ -915,7 +911,7 @@ public class DtWriteRepository {
         return new DeleteDtRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
     }
 
-    public DiscardDtRepositoryResponse discardDt(DiscardDtRepositoryRequest request) {
+    public DiscardDtRepositoryResponse purgeDt(PurgeDtRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -931,14 +927,14 @@ public class DtWriteRepository {
                 .fetchOne();
 
         if (!CcState.Deleted.equals(CcState.valueOf(dtRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
         }
 
         List<BccpManifestRecord> bccpManifestRecords = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
                 .fetch();
         if (!bccpManifestRecords.isEmpty()) {
-            throw new IllegalArgumentException("Please discard BCCPs used the DT '" + dtRecord.getDen() + "'.");
+            throw new IllegalArgumentException("Please purge deleted BCCPs used the DT '" + dtRecord.getDen() + "'.");
         }
 
         // discard Log
@@ -967,14 +963,64 @@ public class DtWriteRepository {
                 .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
                 .execute();
 
-        dslContext.deleteFrom(DT_SC)
-                .where(DT_SC.DT_SC_ID.in(dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())))
-                .execute();
+        if (!dtScManifestRecords.isEmpty()) {
+            // discard BDT_SC_PRI_RESTRIs
+            List<BdtScPriRestriRecord> bdtScPriRestriRecords = dslContext.selectFrom(BDT_SC_PRI_RESTRI)
+                    .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.in(dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())))
+                    .fetch();
+
+            if (!bdtScPriRestriRecords.isEmpty()) {
+                List<ULong> bdtScIdList = bdtScPriRestriRecords.stream().map(e -> e.getBdtScId()).collect(Collectors.toList());
+                dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
+                        .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.in(bdtScIdList))
+                        .execute();
+
+                List<CdtScAwdPriRecord> cdtScAwdPriRecords = dslContext.selectFrom(CDT_SC_AWD_PRI)
+                        .where(CDT_SC_AWD_PRI.CDT_SC_ID.in(bdtScIdList))
+                        .fetch();
+                if (!cdtScAwdPriRecords.isEmpty()) {
+                    dslContext.deleteFrom(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                            .where(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.in(
+                                    cdtScAwdPriRecords.stream().map(e -> e.getCdtScAwdPriId()).collect(Collectors.toList())))
+                            .execute();
+
+                    dslContext.deleteFrom(CDT_SC_AWD_PRI)
+                            .where(CDT_SC_AWD_PRI.CDT_SC_ID.in(bdtScIdList))
+                            .execute();
+                }
+            }
+
+            dslContext.deleteFrom(DT_SC)
+                    .where(DT_SC.DT_SC_ID.in(dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())))
+                    .execute();
+        }
 
         // discard DT
         dslContext.deleteFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
                 .execute();
+
+        List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(dtRecord.getDtId()))
+                .fetch();
+        if (!bdtPriRestriRecords.isEmpty()) {
+            dslContext.deleteFrom(BDT_PRI_RESTRI)
+                    .where(BDT_PRI_RESTRI.BDT_ID.eq(dtRecord.getDtId()))
+                    .execute();
+
+            List<CdtAwdPriRecord> cdtAwdPriRecords = dslContext.selectFrom(CDT_AWD_PRI)
+                    .where(CDT_AWD_PRI.CDT_ID.eq(dtRecord.getDtId()))
+                    .fetch();
+            if (!cdtAwdPriRecords.isEmpty()) {
+                dslContext.deleteFrom(CDT_AWD_PRI_XPS_TYPE_MAP)
+                        .where(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.in(cdtAwdPriRecords.stream().map(e -> e.getCdtAwdPriId()).collect(Collectors.toList())))
+                        .execute();
+
+                dslContext.deleteFrom(CDT_AWD_PRI)
+                        .where(CDT_AWD_PRI.CDT_ID.eq(dtRecord.getDtId()))
+                        .execute();
+            }
+        }
 
         dslContext.deleteFrom(DT)
                 .where(DT.DT_ID.eq(dtRecord.getDtId()))

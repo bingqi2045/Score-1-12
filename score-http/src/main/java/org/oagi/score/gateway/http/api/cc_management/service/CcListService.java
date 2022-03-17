@@ -267,16 +267,16 @@ public class CcListService {
     @Transactional
     public void discardCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
         request.getAccManifestIds().forEach(e -> {
-            ccNodeService.discardAcc(user, e);
+            ccNodeService.purgeAcc(user, e);
         });
         request.getAsccpManifestIds().forEach(e -> {
-            ccNodeService.discardAsccp(user, e);
+            ccNodeService.purgeAsccp(user, e);
         });
         request.getBccpManifestIds().forEach(e -> {
-            ccNodeService.discardBccp(user, e);
+            ccNodeService.purgeBccp(user, e);
         });
         request.getDtManifestIds().forEach(e -> {
-            ccNodeService.discardDt(user, e);
+            ccNodeService.purgeDt(user, e);
         });
     }
 

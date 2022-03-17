@@ -519,7 +519,7 @@ public class AsccpWriteRepository {
         return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
-    public DiscardAsccpRepositoryResponse discardAsccp(DiscardAsccpRepositoryRequest request) {
+    public PurgeAsccpRepositoryResponse purgeAsccp(PurgeAsccpRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -535,14 +535,14 @@ public class AsccpWriteRepository {
                 .fetchOne();
 
         if (!CcState.Deleted.equals(CcState.valueOf(asccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
         }
 
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
                 .fetch();
         if (!asccManifestRecords.isEmpty()) {
-            throw new IllegalArgumentException("Please discard ASCCs used the ASCCP '" + asccpRecord.getDen() + "'.");
+            throw new IllegalArgumentException("Please purge deleted ASCCs used the ASCCP '" + asccpRecord.getDen() + "'.");
         }
 
         // discard Log
@@ -571,7 +571,7 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpRecord.getAsccpId()))
                 .execute();
 
-        return new DiscardAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new PurgeAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {

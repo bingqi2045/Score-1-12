@@ -214,44 +214,44 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void discardAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
-        DiscardAccRepositoryRequest repositoryRequest =
-                new DiscardAccRepositoryRequest(user, manifestId);
+    public void purgeAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
+        PurgeAccRepositoryRequest repositoryRequest =
+                new PurgeAccRepositoryRequest(user, manifestId);
 
-        DiscardAccRepositoryResponse repositoryResponse =
-                accWriteRepository.discardAcc(repositoryRequest);
+        PurgeAccRepositoryResponse repositoryResponse =
+                accWriteRepository.purgeAcc(repositoryRequest);
 
         fireEvent(new DeletedAccEvent());
     }
 
     @Transactional
-    public void discardAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
-        DiscardAsccpRepositoryRequest repositoryRequest =
-                new DiscardAsccpRepositoryRequest(user, manifestId);
+    public void purgeAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+        PurgeAsccpRepositoryRequest repositoryRequest =
+                new PurgeAsccpRepositoryRequest(user, manifestId);
 
-        DiscardAsccpRepositoryResponse repositoryResponse =
-                asccpWriteRepository.discardAsccp(repositoryRequest);
+        PurgeAsccpRepositoryResponse repositoryResponse =
+                asccpWriteRepository.purgeAsccp(repositoryRequest);
 
         fireEvent(new DeletedAsccpEvent());
     }
 
     @Transactional
-    public void discardBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
-        DiscardBccpRepositoryRequest repositoryRequest =
-                new DiscardBccpRepositoryRequest(user, manifestId);
+    public void purgeBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+        PurgeBccpRepositoryRequest repositoryRequest =
+                new PurgeBccpRepositoryRequest(user, manifestId);
 
-        DiscardBccpRepositoryResponse repositoryResponse =
-                bccpWriteRepository.discardBccp(repositoryRequest);
+        PurgeBccpRepositoryResponse repositoryResponse =
+                bccpWriteRepository.purgeBccp(repositoryRequest);
 
         fireEvent(new DeletedBccpEvent());
     }
 
     @Transactional
-    public void discardDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
-        DiscardDtRepositoryRequest request =
-                new DiscardDtRepositoryRequest(user, dtManifestId);
+    public void purgeDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+        PurgeDtRepositoryRequest request =
+                new PurgeDtRepositoryRequest(user, dtManifestId);
 
-        dtWriteRepository.discardDt(request);
+        dtWriteRepository.purgeDt(request);
 
         fireEvent(new DeletedDtEvent());
     }

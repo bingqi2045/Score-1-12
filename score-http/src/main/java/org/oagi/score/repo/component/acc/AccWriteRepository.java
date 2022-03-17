@@ -784,7 +784,7 @@ public class AccWriteRepository {
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
-    public DiscardAccRepositoryResponse discardAcc(DiscardAccRepositoryRequest request) {
+    public PurgeAccRepositoryResponse purgeAcc(PurgeAccRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -800,21 +800,21 @@ public class AccWriteRepository {
                 .fetchOne();
 
         if (!CcState.Deleted.equals(CcState.valueOf(accRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be discarded.");
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
         }
 
         List<AsccpManifestRecord> asccpManifestRecords = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
         if (!asccpManifestRecords.isEmpty()) {
-            throw new IllegalArgumentException("Please discard ASCCPs used the ACC '" + accRecord.getDen() + "'.");
+            throw new IllegalArgumentException("Please purge deleted ASCCPs used the ACC '" + accRecord.getDen() + "'.");
         }
 
         List<AccManifestRecord> basedAccManifestRecords = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
         if (!basedAccManifestRecords.isEmpty()) {
-            throw new IllegalArgumentException("Please discard ACCs used the ACC '" + accRecord.getDen() + "'.");
+            throw new IllegalArgumentException("Please purge deleted ACCs used the ACC '" + accRecord.getDen() + "'.");
         }
 
         // discard Log
@@ -864,9 +864,11 @@ public class AccWriteRepository {
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .execute();
 
-        dslContext.deleteFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccManifestRecords.stream().map(e -> e.getAsccId()).collect(Collectors.toList())))
-                .execute();
+        if (!asccManifestRecords.isEmpty()) {
+            dslContext.deleteFrom(ASCC)
+                    .where(ASCC.ASCC_ID.in(asccManifestRecords.stream().map(e -> e.getAsccId()).collect(Collectors.toList())))
+                    .execute();
+        }
 
         // discard BCCs
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
@@ -877,9 +879,11 @@ public class AccWriteRepository {
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .execute();
 
-        dslContext.deleteFrom(BCC)
-                .where(BCC.BCC_ID.in(bccManifestRecords.stream().map(e -> e.getBccId()).collect(Collectors.toList())))
-                .execute();
+        if (!bccManifestRecords.isEmpty()) {
+            dslContext.deleteFrom(BCC)
+                    .where(BCC.BCC_ID.in(bccManifestRecords.stream().map(e -> e.getBccId()).collect(Collectors.toList())))
+                    .execute();
+        }
 
         // discard ACC
         dslContext.deleteFrom(ACC_MANIFEST)
@@ -890,7 +894,7 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accRecord.getAccId()))
                 .execute();
 
-        return new DiscardAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+        return new PurgeAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     public DeleteAccRepositoryResponse removeAcc(DeleteAccRepositoryRequest request) {
