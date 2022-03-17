@@ -356,7 +356,6 @@ public class CoreComponentGraphContext implements GraphContext {
 
     public FindUsagesResponse findUsages(Node node) {
         FindUsagesResponse response = new FindUsagesResponse();
-        response.setRootNodeKey(node.getKey());
 
         Graph graph = new Graph();
         graph.addNode(node);
@@ -392,9 +391,14 @@ public class CoreComponentGraphContext implements GraphContext {
                 graph.addNode(_node);
             });
             graph.addEdges(node, asccpUsages);
+
+            Object componentType = node.getProperties().get("componentType");
+            if (OagisComponentType.UserExtensionGroup.name().equals(componentType)) {
+                node = asccpUsages.get(0);
+            }
         }
 
-        else if (node.getType() == Node.NodeType.ASCCP) {
+        if (node.getType() == Node.NodeType.ASCCP) {
             List<Node> asccpUsages = accManifestMapByToAsccpManifestId.getOrDefault(
                     node.getManifestId(), Collections.emptySet())
                     .stream().map(e -> toNode(e)).collect(Collectors.toList());
@@ -417,6 +421,7 @@ public class CoreComponentGraphContext implements GraphContext {
         }
 
         response.setGraph(graph);
+        response.setRootNodeKey(node.getKey());
         return response;
     }
 
