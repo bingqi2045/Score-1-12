@@ -1262,6 +1262,8 @@ public class DtWriteRepository {
 
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
@@ -1302,6 +1304,17 @@ public class DtWriteRepository {
                         .set(dtScManifestRecord)
                         .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
         );
+
+        // creates new log for updated record.
+        LogRecord logRecord =
+                logRepository.insertBdtLog(
+                        ownerDtManifest,
+                        targetDtRecord, ownerDtManifest.getLogId(),
+                        LogAction.Modified,
+                        userId, timestamp);
+
+        ownerDtManifest.setLogId(logRecord.getLogId());
+        ownerDtManifest.update(DT_MANIFEST.LOG_ID);
 
         dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(ownerDtManifest.getDtManifestId()))
                 .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
