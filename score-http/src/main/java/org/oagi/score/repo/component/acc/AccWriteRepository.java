@@ -810,6 +810,13 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Please discard ASCCPs used the ACC '" + accRecord.getDen() + "'.");
         }
 
+        List<AccManifestRecord> basedAccManifestRecords = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+        if (!basedAccManifestRecords.isEmpty()) {
+            throw new IllegalArgumentException("Please discard ACCs used the ACC '" + accRecord.getDen() + "'.");
+        }
+
         // discard Log
         ULong logId = accManifestRecord.getLogId();
         dslContext.update(ACC_MANIFEST)
