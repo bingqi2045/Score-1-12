@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class PurgeAsccpRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger asccpManifestId;
+    private boolean ignoreState;
 
     public PurgeAsccpRepositoryRequest(AuthenticatedPrincipal user,
                                        BigInteger asccpManifestId) {
@@ -25,5 +26,13 @@ public class PurgeAsccpRepositoryRequest extends RepositoryRequest {
 
     public BigInteger getAsccpManifestId() {
         return asccpManifestId;
+    }
+
+    public boolean isIgnoreState() {
+        return ignoreState;
+    }
+
+    public void setIgnoreState(boolean ignoreState) {
+        this.ignoreState = ignoreState;
     }
 }

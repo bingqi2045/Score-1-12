@@ -166,15 +166,21 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId) {
-        deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified);
+    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, boolean ignoreState) {
+        deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified, ignoreState);
     }
 
     @Transactional
-    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, String logHash, LogAction action) {
+    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId) {
+        deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified, false);
+    }
+
+    @Transactional
+    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, String logHash, LogAction action, boolean ignoreState) {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
+        request.setIgnoreState(ignoreState);
         request.setLogHash(logHash);
         request.setLogAction(action);
 
@@ -226,8 +232,15 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void purgeAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+        purgeAsccp(user, manifestId, false);
+    }
+
+    @Transactional
+    public void purgeAsccp(AuthenticatedPrincipal user, BigInteger manifestId, boolean ignoreState) {
         PurgeAsccpRepositoryRequest repositoryRequest =
                 new PurgeAsccpRepositoryRequest(user, manifestId);
+
+        repositoryRequest.setIgnoreState(ignoreState);
 
         PurgeAsccpRepositoryResponse repositoryResponse =
                 asccpWriteRepository.purgeAsccp(repositoryRequest);
@@ -1529,7 +1542,7 @@ public class CcNodeService extends EventHandler {
             }
         }
 
-        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger(), logHash, LogAction.Ungrouped);
+        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger(), logHash, LogAction.Ungrouped, false);
 
         CcUngroupResponse response = new CcUngroupResponse();
         response.setAccManifestId(accManifestRecord.getAccManifestId().toBigInteger());

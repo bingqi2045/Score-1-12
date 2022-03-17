@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class DeleteAsccRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger asccManifestId;
+    private boolean ignoreState;
     private String logHash;
     private LogAction logAction;
 
@@ -28,6 +29,14 @@ public class DeleteAsccRepositoryRequest extends RepositoryRequest {
 
     public BigInteger getAsccManifestId() {
         return asccManifestId;
+    }
+
+    public boolean isIgnoreState() {
+        return ignoreState;
+    }
+
+    public void setIgnoreState(boolean ignoreState) {
+        this.ignoreState = ignoreState;
     }
 
     public String getLogHash() {

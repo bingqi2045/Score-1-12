@@ -534,8 +534,10 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
-        if (!CcState.Deleted.equals(CcState.valueOf(asccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
+        if (!request.isIgnoreState()) {
+            if (!CcState.Deleted.equals(CcState.valueOf(asccpRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
+            }
         }
 
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)

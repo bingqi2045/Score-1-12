@@ -803,6 +803,10 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Only the core component in 'Deleted' state can be purged.");
         }
 
+        if (accRecord.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
+
+        }
+
         List<AsccpManifestRecord> asccpManifestRecords = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
