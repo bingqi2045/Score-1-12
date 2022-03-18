@@ -265,7 +265,7 @@ public class CcListService {
     }
 
     @Transactional
-    public void discardCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
+    public void purgeCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
         request.getAccManifestIds().forEach(e -> {
             ccNodeService.purgeAcc(user, e);
         });
