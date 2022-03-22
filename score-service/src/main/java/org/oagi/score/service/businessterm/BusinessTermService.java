@@ -51,6 +51,7 @@ public class BusinessTermService {
 
     @Transactional
     public UpdateBusinessTermResponse updateBusinessTerm(UpdateBusinessTermRequest request) {
+        System.out.println(request.toString());
         UpdateBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermWriteRepository()
                         .updateBusinessTerm(request);
@@ -185,7 +186,7 @@ public class BusinessTermService {
         } else {
 //          todo
 //            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(businessTerm.getContextSchemeId()));
-            return true;
+            return false;
         }
     }
 //
@@ -197,9 +198,13 @@ public class BusinessTermService {
 //                .fetchOneInto(Integer.class) > 0;
 //    }
 //
-//    public boolean hasSameCtxSchemeName(ContextScheme contextScheme) {
+
+//todo
+    public boolean hasSameBusinessTermName(BusinessTerm businessTerm) {
+        return false;
+    }
 //        Condition idMatch = trueCondition();
-//        if (contextScheme.getContextSchemeId() != null) {
+//        if (businessTerm.getBusinessTermId() != null) {
 //            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getContextSchemeId()));
 //        }
 //        return dslContext.selectCount().from(CTX_SCHEME).where(

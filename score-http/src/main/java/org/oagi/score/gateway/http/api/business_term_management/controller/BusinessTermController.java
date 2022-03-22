@@ -33,7 +33,7 @@ public class BusinessTermController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<BusinessTerm> getBusinessTermList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @RequestParam(name = "term", required = false) String term,
+            @RequestParam(name = "businessTerm", required = false) String term,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -73,16 +73,27 @@ public class BusinessTermController {
         pageResponse.setLength(response.getLength());
         return pageResponse;
     }
+
+//    todo
     @RequestMapping(value = "/business_terms/check_uniqueness", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @RequestBody CreateBusinessTermRequest createBusinessTermRequest) {
+            @RequestBody BusinessTerm businessTerm) {
         return businessTermService.hasSameTermDefinitionAndExternalRefId(
-                createBusinessTermRequest.getBusinessTerm(),
-                createBusinessTermRequest.getDefinition(),
-                createBusinessTermRequest.getExternalReferenceId()
+                businessTerm.getBusinessTerm(),
+                businessTerm.getDefinition(),
+                businessTerm.getExternalReferenceId()
                 );
+    }
+
+
+    @RequestMapping(value = "/business_terms/check_name_uniqueness", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkNameUniqueness(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody BusinessTerm businessTerm) {
+        return businessTermService.hasSameBusinessTermName(businessTerm);
     }
 
     @RequestMapping(value = "/business_terms/assign", method = RequestMethod.GET,
@@ -463,14 +474,6 @@ public class BusinessTermController {
 //    }
 //
 
-//
-//    @RequestMapping(value = "/context_scheme/check_name_uniqueness", method = RequestMethod.POST,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public boolean checkNameUniqueness(
-//            @AuthenticationPrincipal AuthenticatedPrincipal requester,
-//            @RequestBody ContextScheme contextScheme) {
-//        return contextSchemeService.hasSameCtxSchemeName(contextScheme);
-//    }
 //
 //    @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,
 //            produces = MediaType.APPLICATION_JSON_VALUE)

@@ -32,7 +32,8 @@ public class CreateBusinessTermRequest extends Request {
         this.externalReferenceId = externalReferenceId;
     }
 
-
+    public CreateBusinessTermRequest() {
+    }
 
     public String getBusinessTerm() {
         return businessTerm;

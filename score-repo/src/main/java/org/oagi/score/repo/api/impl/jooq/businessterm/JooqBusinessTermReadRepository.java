@@ -103,7 +103,7 @@ public class JooqBusinessTermReadRepository
     private Collection<Condition> getConditions(GetBusinessTermListRequest request) {
         List<Condition> conditions = new ArrayList();
 
-        if (!request.getBusinessTermIdList().isEmpty()) {
+        if (request.getBusinessTermIdList() != null && !request.getBusinessTermIdList().isEmpty()) {
             if (request.getBusinessTermIdList().size() == 1) {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.eq(
                         ULong.valueOf(request.getBusinessTermIdList().iterator().next())
