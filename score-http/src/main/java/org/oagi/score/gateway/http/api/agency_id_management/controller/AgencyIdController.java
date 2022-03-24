@@ -185,14 +185,14 @@ public class AgencyIdController {
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
             @RequestParam(name = "listId") String listId,
-            @RequestParam(name = "agencyId", required = false) Long agencyId,
+            @RequestParam(name = "agencyIdListValueManifestId", required = false) Long agencyIdListValueManifestId,
             @RequestParam(name = "versionId") String versionId) {
 
         SameAgencyIdListParams params = new SameAgencyIdListParams();
         params.setReleaseId(releaseId);
         params.setAgencyIdListManifestId(agencyIdListManifestId);
+        params.setAgencyIdListValueManifestId(agencyIdListValueManifestId);
         params.setListId(listId);
-        params.setAgencyId(agencyId);
         params.setVersionId(versionId);
 
         return service.hasSameAgencyIdList(params);
