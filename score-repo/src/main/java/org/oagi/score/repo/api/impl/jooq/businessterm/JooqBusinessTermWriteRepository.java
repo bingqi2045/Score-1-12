@@ -76,22 +76,21 @@ public class JooqBusinessTermWriteRepository
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
         }
-
         List<Field<?>> changedField = new ArrayList();
         if (!StringUtils.equals(request.getBusinessTerm(), record.getBusinessTerm())) {
             record.setBusinessTerm(request.getBusinessTerm());
             changedField.add(BUSINESS_TERM.BUSINESS_TERM_);
         }
         if (!StringUtils.equals(request.getDefinition(), record.getDefinition())) {
-            record.setBusinessTerm(request.getDefinition());
+            record.setDefinition(request.getDefinition());
             changedField.add(BUSINESS_TERM.DEFINITION);
         }
         if (!StringUtils.equals(request.getExternalReferenceId(), record.getExternalRefId())) {
-            record.setBusinessTerm(request.getExternalReferenceId());
+            record.setExternalRefId(request.getExternalReferenceId());
             changedField.add(BUSINESS_TERM.EXTERNAL_REF_ID);
         }
         if (!StringUtils.equals(request.getExternalReferenceUri(), record.getExternalRefUri())) {
-            record.setBusinessTerm(request.getExternalReferenceUri());
+            record.setExternalRefUri(request.getExternalReferenceUri());
             changedField.add(BUSINESS_TERM.EXTERNAL_REF_URI);
         }
         if (!changedField.isEmpty()) {

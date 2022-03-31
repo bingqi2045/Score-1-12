@@ -51,7 +51,6 @@ public class BusinessTermService {
 
     @Transactional
     public UpdateBusinessTermResponse updateBusinessTerm(UpdateBusinessTermRequest request) {
-        System.out.println(request.toString());
         UpdateBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermWriteRepository()
                         .updateBusinessTerm(request);
@@ -69,8 +68,8 @@ public class BusinessTermService {
 
     public GetAssignedBusinessTermListResponse getAssignedBusinessTermList(GetAssignedBusinessTermListRequest request) {
 //        GetBusinessTermListResponse response =
-//                scoreRepositoryFactory.createBusinessTermReadRepository()
-//                        .getBusinessTermList(request);
+//                scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
+//                        .assignBusinessTerm(request);
         List<AssignedBusinessTerm> termList = new ArrayList<>();
         termList.add(new AssignedBusinessTerm(
                 BigInteger.valueOf(1),
@@ -127,27 +126,13 @@ public class BusinessTermService {
         return response;
     }
 
+    @Transactional
     public AssignBusinessTermResponse assignBusinessTerm(AssignBusinessTermRequest request) {
-//        GetBusinessTermListResponse response =
-//                scoreRepositoryFactory.createBusinessTermReadRepository()
-//                        .getBusinessTermList(request);
-        AssignedBusinessTerm assignedBusinessTerm = new AssignedBusinessTerm(
-                BigInteger.valueOf(1),
-                true,
-                BigInteger.valueOf(1),
-                "Sync Invoice",
-                "ABIE",
-                BigInteger.valueOf(1),
-                "term1",
-                "definition",
-                "http://test.com/123",
-                "123",
-                "123",
-                new Date(Long.valueOf("1639759181187")),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ));
+        System.out.println(request.getRequester().toString());
 
-        AssignBusinessTermResponse response = new AssignBusinessTermResponse(assignedBusinessTerm);
+        AssignBusinessTermResponse response =
+                scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
+                        .assignBusinessTerm(request);
         return response;
     }
 

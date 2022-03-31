@@ -13,7 +13,9 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
     private String businessTerm;
     private BigInteger bieId;
     private String biePropertyTerm;
-    private String definition;
+    private String isPrimary;
+    private String typeCode;
+    private String searchByCC;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
@@ -54,14 +56,6 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
         this.biePropertyTerm = biePropertyTerm;
     }
 
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
     public Collection<String> getUpdaterUsernameList() {
         return updaterUsernameList;
     }
@@ -84,5 +78,29 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
 
     public void setUpdateEndDate(LocalDateTime updateEndDate) {
         this.updateEndDate = updateEndDate;
+    }
+
+    public String getIsPrimary() {
+        return isPrimary;
+    }
+
+    public void setIsPrimary(String isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
+    }
+
+    public String getSearchByCC() {
+        return searchByCC;
+    }
+
+    public void setSearchByCC(String searchByCC) {
+        this.searchByCC = searchByCC;
     }
 }

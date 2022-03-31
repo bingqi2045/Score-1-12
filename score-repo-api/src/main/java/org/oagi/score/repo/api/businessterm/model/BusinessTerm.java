@@ -115,4 +115,19 @@ public class BusinessTerm extends Auditable {
 
     public BusinessTerm() {
     }
+
+    @Override
+    public String toString() {
+        return "BusinessTerm{" +
+                "businessTermId=" + businessTermId +
+                ", businessTerm='" + businessTerm + '\'' +
+                ", definition='" + definition + '\'' +
+                ", externalReferenceUri='" + externalReferenceUri + '\'' +
+                ", externalReferenceId='" + externalReferenceId + '\'' +
+                ", guid='" + guid + '\'' +
+                ", lastUpdateTimestamp=" + lastUpdateTimestamp +
+                ", createdBy=" + createdBy +
+                ", lastUpdatedBy=" + lastUpdatedBy +
+                '}';
+    }
 }

@@ -62,10 +62,6 @@ public class JooqBusinessTermReadRepository
             businessTerm.setDefinition(record.get(BUSINESS_TERM.DEFINITION));
             businessTerm.setExternalReferenceId(record.get(BUSINESS_TERM.EXTERNAL_REF_ID));
             businessTerm.setExternalReferenceUri(record.get(BUSINESS_TERM.EXTERNAL_REF_URI));
-//            todo add if it's needed
-//            businessTerm.setUsed(dslTerm().selectCount().from(BUSINESS_TERM_ASSIGNMENT)
-//                    .where(BUSINESS_TERM_ASSIGNMENT.BUSINESS_TERM_ID.eq(record.get(BUSINESS_TERM.BUSINESS_TERM_ID)))
-//                    .fetchOneInto(Integer.class) > 0);
             businessTerm.setCreatedBy(new ScoreUser(
                     record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
@@ -123,9 +119,6 @@ public class JooqBusinessTermReadRepository
         }
         if (StringUtils.hasLength(request.getExternalRefId())) {
             conditions.addAll(contains(request.getExternalRefId(), BUSINESS_TERM.EXTERNAL_REF_ID));
-        }
-        if (StringUtils.hasLength(request.getExternalRefUri())) {
-            conditions.addAll(contains(request.getExternalRefUri(), BUSINESS_TERM.EXTERNAL_REF_URI));
         }
         if (StringUtils.hasLength(request.getExternalRefUri())) {
             conditions.addAll(contains(request.getExternalRefUri(), BUSINESS_TERM.EXTERNAL_REF_URI));

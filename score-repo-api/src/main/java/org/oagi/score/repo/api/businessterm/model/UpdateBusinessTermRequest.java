@@ -68,4 +68,15 @@ public class UpdateBusinessTermRequest extends Request {
     public void setExternalReferenceId(String externalReferenceId) {
         this.externalReferenceId = externalReferenceId;
     }
+
+    @Override
+    public String toString() {
+        return "UpdateBusinessTermRequest{" +
+                "businessTermId=" + businessTermId +
+                ", businessTerm='" + businessTerm + '\'' +
+                ", definition='" + definition + '\'' +
+                ", externalReferenceUri='" + externalReferenceUri + '\'' +
+                ", externalReferenceId='" + externalReferenceId + '\'' +
+                '}';
+    }
 }

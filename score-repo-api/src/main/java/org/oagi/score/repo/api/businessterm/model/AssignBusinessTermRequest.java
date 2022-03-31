@@ -1,20 +1,34 @@
 package org.oagi.score.repo.api.businessterm.model;
 
+import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.bie.model.Abie;
 
 import java.math.BigInteger;
+import java.util.List;
 
-public class AssignBusinessTermRequest {
+public class AssignBusinessTermRequest extends Request {
 
-    private Abie abie;
+    private List<BieToAssign> biesToAssign;
     private BigInteger businessTermId;
+    private String typeCode;
+    private boolean isPrimary;
 
-    public Abie getAbie() {
-        return abie;
+    public AssignBusinessTermRequest() {
     }
 
-    public void setAbie(Abie abie) {
-        this.abie = abie;
+    public AssignBusinessTermRequest(List<BieToAssign> biesToAssign, BigInteger businessTermId, String typeCode, boolean isPrimary) {
+        this.biesToAssign = biesToAssign;
+        this.businessTermId = businessTermId;
+        this.typeCode = typeCode;
+        this.isPrimary = isPrimary;
+    }
+
+    public List<BieToAssign> getBiesToAssign() {
+        return biesToAssign;
+    }
+
+    public void setBiesToAssign(List<BieToAssign> biesToAssign) {
+        this.biesToAssign = biesToAssign;
     }
 
     public BigInteger getBusinessTermId() {
@@ -25,11 +39,19 @@ public class AssignBusinessTermRequest {
         this.businessTermId = businessTermId;
     }
 
-    public AssignBusinessTermRequest(Abie abie, BigInteger businessTermId) {
-        this.abie = abie;
-        this.businessTermId = businessTermId;
+    public String getTypeCode() {
+        return typeCode;
     }
 
-    public AssignBusinessTermRequest() {
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
+    }
+
+    public boolean isPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(boolean primary) {
+        isPrimary = primary;
     }
 }

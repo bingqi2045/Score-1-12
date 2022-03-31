@@ -85,4 +85,6 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
     public void setUpdateEndDate(LocalDateTime updateEndDate) {
         this.updateEndDate = updateEndDate;
     }
+
+
 }

@@ -2,16 +2,18 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Response;
 
+import java.math.BigInteger;
+import java.util.List;
+
 public class AssignBusinessTermResponse extends Response {
 
-    private final AssignedBusinessTerm assignedBusinessTerm;
+    private final List<BigInteger> assignedBusinessTermId;
 
-    public AssignBusinessTermResponse(AssignedBusinessTerm assignedBusinessTerm) {
-        this.assignedBusinessTerm = assignedBusinessTerm;
+    public AssignBusinessTermResponse(List<BigInteger> assignedBusinessTermId) {
+        this.assignedBusinessTermId = assignedBusinessTermId;
     }
 
-    public final AssignedBusinessTerm getAssignedBusinessTerm() {
-        return assignedBusinessTerm;
+    public List<BigInteger> getAssignedBusinessTermId() {
+        return assignedBusinessTermId;
     }
-
 }

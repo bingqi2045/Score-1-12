@@ -34,6 +34,9 @@ public class BusinessTermController {
     public PageResponse<BusinessTerm> getBusinessTermList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "businessTerm", required = false) String term,
+            @RequestParam(name = "externalReferenceUri", required = false) String externalReferenceUri,
+            @RequestParam(name = "externalReferenceId", required = false) String externalReferenceId,
+            @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -46,6 +49,9 @@ public class BusinessTermController {
                 authenticationService.asScoreUser(requester));
 
         request.setBusinessTerm(term);
+        request.setExternalRefUri(externalReferenceUri);
+        request.setExternalRefId(externalReferenceId);
+        request.setDefinition(definition);
         request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
                 Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
                         .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
@@ -103,6 +109,9 @@ public class BusinessTermController {
             @RequestParam(name = "bieId", required = false) Optional<BigInteger> bieId,
             @RequestParam(name = "biePropertyTerm", required = false) String biePropertyTerm,
             @RequestParam(name = "term", required = false) String term,
+            @RequestParam(name = "searchByCC", required = false) String searchByCC,
+            @RequestParam(name = "typeCode", required = false) String typeCode,
+            @RequestParam(name = "isPrimary", required = false) String isPrimary,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -331,10 +340,11 @@ public class BusinessTermController {
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody AssignBusinessTermRequest request) {
 
+        request.setRequester(authenticationService.asScoreUser(requester));
         AssignBusinessTermResponse response =
                 businessTermService.assignBusinessTerm(request);
 
-        if (response.getAssignedBusinessTerm() != null) {
+        if (response.getAssignedBusinessTermId() != null) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.badRequest().build();
