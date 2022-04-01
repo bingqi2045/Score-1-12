@@ -10,13 +10,13 @@ public class AssignBusinessTermRequest extends Request {
 
     private List<BieToAssign> biesToAssign;
     private BigInteger businessTermId;
+    private String isPrimary;
     private String typeCode;
-    private boolean isPrimary;
 
     public AssignBusinessTermRequest() {
     }
 
-    public AssignBusinessTermRequest(List<BieToAssign> biesToAssign, BigInteger businessTermId, String typeCode, boolean isPrimary) {
+    public AssignBusinessTermRequest(List<BieToAssign> biesToAssign, BigInteger businessTermId, String typeCode, String isPrimary) {
         this.biesToAssign = biesToAssign;
         this.businessTermId = businessTermId;
         this.typeCode = typeCode;
@@ -47,11 +47,11 @@ public class AssignBusinessTermRequest extends Request {
         this.typeCode = typeCode;
     }
 
-    public boolean isPrimary() {
+    public String getIsPrimary() {
         return isPrimary;
     }
 
-    public void setPrimary(boolean primary) {
-        isPrimary = primary;
+    public void setIsPrimary(String isPrimary) {
+        this.isPrimary = isPrimary;
     }
 }

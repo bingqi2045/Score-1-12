@@ -5,7 +5,6 @@ import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentWriteRepository;
-import org.oagi.score.repo.api.businessterm.BusinessTermReadRepository;
 import org.oagi.score.repo.api.businessterm.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -52,6 +51,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 asccBiztermRecord.setCreationTimestamp(timestamp);
                 asccBiztermRecord.setLastUpdateTimestamp(timestamp);
 
+//                todo upsert
                 ULong asccBiztermRecordId = dslContext().insertInto(ASCC_BIZTERM)
                         .set(asccBiztermRecord)
                         .returning(ASCC_BIZTERM.ASCC_BIZTERM_ID)
@@ -60,7 +60,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 AsbieBiztermRecord asbieBiztermRecord = new AsbieBiztermRecord();
                 asbieBiztermRecord.setAsbieId(ULong.valueOf(bieToAssign.getBieId()));
                 asbieBiztermRecord.setAsccBiztermId(asccBiztermRecordId);
-                asbieBiztermRecord.setPrimaryIndicator(request.isPrimary() ? "1" : "0");
+                asbieBiztermRecord.setPrimaryIndicator(request.getIsPrimary().equals("true") ? "1" : "0");
                 asbieBiztermRecord.setTypeCode(request.getTypeCode());
                 asbieBiztermRecord.setCreatedBy(requesterUserId);
                 asbieBiztermRecord.setLastUpdatedBy(requesterUserId);
@@ -82,6 +82,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 bccBiztermRecord.setCreationTimestamp(timestamp);
                 bccBiztermRecord.setLastUpdateTimestamp(timestamp);
 
+//                todo upsert
                 ULong bccBiztermRecordId = dslContext().insertInto(BCC_BIZTERM)
                         .set(bccBiztermRecord)
                         .returning(BCC_BIZTERM.BCC_BIZTERM_ID)
@@ -90,7 +91,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 BbieBiztermRecord bbieBiztermRecord = new BbieBiztermRecord();
                 bbieBiztermRecord.setBbieId(ULong.valueOf(bieToAssign.getBieId()));
                 bbieBiztermRecord.setBccBiztermId(bccBiztermRecordId);
-                bbieBiztermRecord.setPrimaryIndicator(request.isPrimary() ? "1" : "0");
+                bbieBiztermRecord.setPrimaryIndicator(request.getIsPrimary().equals("true") ? "1" : "0");
                 bbieBiztermRecord.setTypeCode(request.getTypeCode());
                 bbieBiztermRecord.setCreatedBy(requesterUserId);
                 bbieBiztermRecord.setLastUpdatedBy(requesterUserId);
@@ -182,24 +183,39 @@ public class JooqBusinessTermAssignmentWriteRepository
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public DeleteBusinessTermResponse deleteBusinessTermAssignment(
-            DeleteBusinessTermRequest request) throws ScoreDataAccessException {
+    public DeleteAssignedBusinessTermResponse deleteBusinessTermAssignment(
+            DeleteAssignedBusinessTermRequest request) throws ScoreDataAccessException {
 
-        List<BigInteger> businessTermIdList = request.getBusinessTermIdList();
-        if (businessTermIdList == null || businessTermIdList.isEmpty()) {
-            return new DeleteBusinessTermResponse(Collections.emptyList());
+        List<BieToAssign> assignedBtIdList = request.getAssignedBtList();
+        if (assignedBtIdList == null || assignedBtIdList.isEmpty()) {
+            return new DeleteAssignedBusinessTermResponse(Collections.emptyList());
         }
-        dslContext().delete(BUSINESS_TERM)
-                .where(
-                        businessTermIdList.size() == 1 ?
-                                BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermIdList.get(0))) :
-                                BUSINESS_TERM.BUSINESS_TERM_ID.in(
-                                        businessTermIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
-                )
-                .execute();
 
-        DeleteBusinessTermResponse response = new DeleteBusinessTermResponse(businessTermIdList);
+        List<ULong> asbieIds = assignedBtIdList.stream().filter(a -> a.getBieType().equals("ASBIE"))
+                .map(e -> ULong.valueOf(e.getBieId())).collect(Collectors.toList());
+        if(!asbieIds.isEmpty()) {
+            dslContext().delete(ASBIE_BIZTERM)
+                    .where(
+                            asbieIds.size() == 1 ?
+                                    ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(asbieIds.get(0)) :
+                                    ASBIE_BIZTERM.ASBIE_BIZTERM_ID.in(asbieIds)
+                    )
+                    .execute();
+        }
+
+        List<ULong> bbieIds = assignedBtIdList.stream().filter(a -> a.getBieType().equals("BBIE"))
+                .map(e -> ULong.valueOf(e.getBieId())).collect(Collectors.toList());
+        if(!bbieIds.isEmpty()){
+            dslContext().delete(BBIE_BIZTERM)
+                    .where(
+                            asbieIds.size() == 1 ?
+                                    BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(bbieIds.get(0)):
+                                    BBIE_BIZTERM.BBIE_BIZTERM_ID.in(bbieIds)
+                    )
+                    .execute();
+        }
+
+        DeleteAssignedBusinessTermResponse response = new DeleteAssignedBusinessTermResponse(assignedBtIdList);
         return response;
     }
 }

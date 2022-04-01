@@ -6,13 +6,16 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 public class GetAssignedBusinessTermListRequest extends PaginationRequest<BusinessTerm> {
 
-    private Collection<BigInteger> businessTermIdList;
+    private Collection<BigInteger> assignedBtIdList;
     private String businessTerm;
+    private String externalReferenceUri;
     private BigInteger bieId;
-    private String biePropertyTerm;
+    private String bieDen;
+    private List<String> bieTypes;
     private String isPrimary;
     private String typeCode;
     private String searchByCC;
@@ -24,12 +27,12 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
         super(requester, BusinessTerm.class);
     }
 
-    public Collection<BigInteger> getBusinessTermIdList() {
-        return businessTermIdList;
+    public Collection<BigInteger> getAssignedBtIdList() {
+        return assignedBtIdList;
     }
 
-    public void setBusinessTermIdList(Collection<BigInteger> businessTermIdList) {
-        this.businessTermIdList = businessTermIdList;
+    public void setAssignedBtIdList(Collection<BigInteger> assignedBtIdList) {
+        this.assignedBtIdList = assignedBtIdList;
     }
 
     public String getBusinessTerm() {
@@ -48,12 +51,12 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
         this.bieId = bieId;
     }
 
-    public String getBiePropertyTerm() {
-        return biePropertyTerm;
+    public String getBieDen() {
+        return bieDen;
     }
 
-    public void setBiePropertyTerm(String biePropertyTerm) {
-        this.biePropertyTerm = biePropertyTerm;
+    public void setBieDen(String bieDen) {
+        this.bieDen = bieDen;
     }
 
     public Collection<String> getUpdaterUsernameList() {
@@ -102,5 +105,21 @@ public class GetAssignedBusinessTermListRequest extends PaginationRequest<Busine
 
     public void setSearchByCC(String searchByCC) {
         this.searchByCC = searchByCC;
+    }
+
+    public List<String> getBieTypes() {
+        return bieTypes;
+    }
+
+    public void setBieTypes(List<String> bieTypes) {
+        this.bieTypes = bieTypes;
+    }
+
+    public String getExternalReferenceUri() {
+        return externalReferenceUri;
+    }
+
+    public void setExternalReferenceUri(String externalReferenceUri) {
+        this.externalReferenceUri = externalReferenceUri;
     }
 }

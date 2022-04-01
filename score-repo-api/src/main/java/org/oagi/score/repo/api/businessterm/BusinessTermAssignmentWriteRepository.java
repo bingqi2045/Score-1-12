@@ -12,7 +12,7 @@ public interface BusinessTermAssignmentWriteRepository {
     UpdateBusinessTermResponse updateBusinessTermAssignment(
             UpdateBusinessTermRequest request) throws ScoreDataAccessException;
 
-    DeleteBusinessTermResponse deleteBusinessTermAssignment(
-            DeleteBusinessTermRequest request) throws ScoreDataAccessException;
+    DeleteAssignedBusinessTermResponse deleteBusinessTermAssignment(
+            DeleteAssignedBusinessTermRequest request) throws ScoreDataAccessException;
     
 }

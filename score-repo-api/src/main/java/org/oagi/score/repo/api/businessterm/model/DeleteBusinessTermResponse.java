@@ -17,8 +17,8 @@ public class DeleteBusinessTermResponse extends Response {
         return businessTermIdList;
     }
 
-    public boolean contains(BigInteger contextSchemeId) {
-        return this.businessTermIdList.contains(contextSchemeId);
+    public boolean contains(BigInteger businessTermId) {
+        return this.businessTermIdList.contains(businessTermId);
     }
 
     public boolean containsAll(List<BigInteger> businessTermIdList) {

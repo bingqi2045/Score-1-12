@@ -1,20 +1,27 @@
-package org.oagi.score.service.businessterm;
+package org.oagi.score.gateway.http.api.business_term_management.service;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
+import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.BusinessTermRepository;
+import org.oagi.score.repo.PaginationResponse;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListRequest;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListResponse;
 import org.oagi.score.repo.api.businessterm.model.*;
-import org.oagi.score.repo.api.user.model.ScoreRole;
-import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.service.authentication.AuthenticationService;
+import org.oagi.score.service.businesscontext.BusinessContextService;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.trueCondition;
 
@@ -23,10 +30,22 @@ import static org.jooq.impl.DSL.trueCondition;
 public class BusinessTermService {
 
     @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private SessionService sessionService;
+
+    @Autowired
+    private BusinessContextService businessContextService;
+
+    @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
     @Autowired
     private DSLContext dslContext;
+
+    @Autowired
+    private BusinessTermRepository businessTermRepository;
 
     public GetBusinessTermResponse getBusinessTerm(GetBusinessTermRequest request) {
         GetBusinessTermResponse response =
@@ -66,104 +85,53 @@ public class BusinessTermService {
         return response;
     }
 
-    public GetAssignedBusinessTermListResponse getAssignedBusinessTermList(GetAssignedBusinessTermListRequest request) {
-//        GetBusinessTermListResponse response =
-//                scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
-//                        .assignBusinessTerm(request);
-        List<AssignedBusinessTerm> termList = new ArrayList<>();
-        termList.add(new AssignedBusinessTerm(
-                BigInteger.valueOf(1),
-                false,
-                BigInteger.valueOf(1),
-                "Test BIE",
-                "ABIE",
-                BigInteger.valueOf(1),
-                "term1",
-                "definition",
-                "http://test.com/123",
-                "1",
-                "1",
-                new Date(Long.valueOf("1639759181187")),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER )));
-        termList.add(new AssignedBusinessTerm(
-                BigInteger.valueOf(2),
-                true,
-                BigInteger.valueOf(2),
-                "Release Identifier",
-                "ABIE",
-                BigInteger.valueOf(2),
-                "Release ID",
-                "Release Identifier definition.",
-                "http://amundsen.local/124",
-                "124",
-                "124",
-                new Date(Long.valueOf("1639759181187")),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER )));
-        termList.add(new AssignedBusinessTerm(
-                BigInteger.valueOf(3),
-                true,
-                BigInteger.valueOf(3),
-                "Sync Invoice",
-                "ABIE",
-                BigInteger.valueOf(3),
-                "Synchronize",
-                "The data model for Synchronization message of available quantity.",
-                "http://amundsen.local/123",
-                "123",
-                "123",
-                new Date(Long.valueOf("1639759181187")),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER ),
-                new ScoreUser(BigInteger.ONE, "oagis", ScoreRole.DEVELOPER )));
+    public PageResponse<AssignedBusinessTermListRecord> getAssignedBusinessTermList(AuthenticatedPrincipal user, AssignedBusinessTermListRequest request) {
+        PageRequest pageRequest = request.getPageRequest();
+        AppUser requester = sessionService.getAppUser(user);
 
-        if(request.getBieId() != null){
-            termList = termList.stream().filter(term -> term.getBieId().equals(request.getBieId())).collect(Collectors.toList());
-            termList.stream().forEach(row -> System.out.println("bieid: " + row.getBieId()));
-        }
+        PaginationResponse<AssignedBusinessTermListRecord> result = businessTermRepository
+                .getBieBiztermList(request, AssignedBusinessTermListRecord.class);
 
-        GetAssignedBusinessTermListResponse response = new GetAssignedBusinessTermListResponse(termList, 0, 1, 1);
+        List<AssignedBusinessTermListRecord> assignedBtList = result.getResult();
+        assignedBtList.forEach(assignedBt -> {
+
+            GetBusinessContextListRequest getBusinessContextListRequest =
+                    new GetBusinessContextListRequest(authenticationService.asScoreUser(user))
+                            .withName(request.getBusinessContext());
+
+            getBusinessContextListRequest.setPageIndex(-1);
+            getBusinessContextListRequest.setPageSize(-1);
+
+            GetBusinessContextListResponse getBusinessContextListResponse = businessContextService
+                    .getBusinessContextList(getBusinessContextListRequest);
+
+            assignedBt.setBusinessContexts(getBusinessContextListResponse.getResults());
+        });
+
+        PageResponse<AssignedBusinessTermListRecord> response = new PageResponse();
+        response.setList(assignedBtList);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(result.getPageCount());
         return response;
     }
 
     @Transactional
     public AssignBusinessTermResponse assignBusinessTerm(AssignBusinessTermRequest request) {
-        System.out.println(request.getRequester().toString());
-
         AssignBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
                         .assignBusinessTerm(request);
         return response;
     }
 
-//
-//    @Transactional
-//    public CreateContextSchemeResponse createContextScheme(CreateContextSchemeRequest request) {
-//        CreateContextSchemeResponse response =
-//                scoreRepositoryFactory.createContextSchemeWriteRepository()
-//                        .createContextScheme(request);
-//
-//        return response;
-//    }
-//
-//    @Transactional
-//    public UpdateContextSchemeResponse updateContextScheme(UpdateContextSchemeRequest request) {
-//        UpdateContextSchemeResponse response =
-//                scoreRepositoryFactory.createContextSchemeWriteRepository()
-//                        .updateContextScheme(request);
-//
-//        return response;
-//    }
-//
-//    @Transactional
-//    public DeleteContextSchemeResponse deleteContextScheme(DeleteContextSchemeRequest request) {
-//        DeleteContextSchemeResponse response =
-//                scoreRepositoryFactory.createContextSchemeWriteRepository()
-//                        .deleteContextScheme(request);
-//
-//        return response;
-//    }
-//
+    @Transactional
+    public DeleteAssignedBusinessTermResponse deleteAssignedBusinessTerm(DeleteAssignedBusinessTermRequest request) {
+        DeleteAssignedBusinessTermResponse response =
+                scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
+                        .deleteBusinessTermAssignment(request);
+        return response;
+    }
+
     public boolean hasSameTermDefinitionAndExternalRefId(String businessTerm, String definition, String externalRefId) {
         Condition idMatch = trueCondition();
         if (businessTerm != null && definition != null && externalRefId != null) {
@@ -184,7 +152,7 @@ public class BusinessTermService {
 //    }
 //
 
-//todo
+    //todo
     public boolean hasSameBusinessTermName(BusinessTerm businessTerm) {
         return false;
     }

@@ -436,6 +436,9 @@ public class BusinessInformationEntityRepository {
         private int offset = -1;
         private int numberOfRows = -1;
 
+        private String den;
+        private String type;
+
         public SelectBieListArguments setPropertyTerm(String propertyTerm) {
             if (StringUtils.hasLength(propertyTerm)) {
                 conditions.addAll(contains(propertyTerm, ASCCP.PROPERTY_TERM));
@@ -502,16 +505,12 @@ public class BusinessInformationEntityRepository {
         }
 
         public SelectBieListArguments setAsccBccDen(String den) {
-            if (StringUtils.hasLength(den)) {
-                conditions.add(ASCC.DEN.contains(den).or(BCC.DEN.contains(den)));
-            }
+            this.den = den;
             return this;
         }
 
         public SelectBieListArguments setType(String type) {
-            if (StringUtils.hasLength(type)) {
-                conditions.add(field("type", String.class).eq(type));
-            }
+            this.type = type;
             return this;
         }
 
@@ -654,6 +653,14 @@ public class BusinessInformationEntityRepository {
             return numberOfRows;
         }
 
+        public String getDen() {
+            return den;
+        }
+
+        public String getType() {
+            return type;
+        }
+
         public <E> PaginationResponse<E> fetchInto(Class<? extends E> type) {
             return selectBieList(this, type);
         }
@@ -780,8 +787,11 @@ public class BusinessInformationEntityRepository {
                 .fetchInto(BigInteger.class);
     }
 
-    public SelectOrderByStep getAsbieList(List<Condition> conditions) {
-
+    public SelectOrderByStep getAsbieList(SelectBieListArguments arguments) {
+        List<Condition> conditions = arguments.getConditions().stream().collect(Collectors.toList());;
+        if(arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())){
+            conditions.add(ASCC.DEN.contains(arguments.getDen()));
+        }
         return dslContext.select(
                 inline("ASBIE").as("type"),
                 ASBIE.ASBIE_ID.as("bieId"),
@@ -825,8 +835,11 @@ public class BusinessInformationEntityRepository {
                 .where(conditions);
     }
 
-    public SelectOrderByStep getBbieList(List<Condition> conditions) {
-
+    public SelectOrderByStep getBbieList(SelectBieListArguments arguments) {
+        List<Condition> conditions = arguments.getConditions().stream().collect(Collectors.toList());
+        if(arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())){
+            conditions.add(BCC.DEN.contains(arguments.getDen()));
+        }
         return dslContext.select(
                 inline("BBIE").as("type"),
                 BBIE.BBIE_ID.as("bieId"),
@@ -874,11 +887,11 @@ public class BusinessInformationEntityRepository {
 
         SelectOrderByStep select = null;
         if (types.contains("ASBIE")) {
-            select = getAsbieList(arguments.getConditions());
+            select = getAsbieList(arguments);
         }
         if (types.contains("BBIE")) {
-            select = (select != null) ? select.union(getBbieList(arguments.getConditions())) :
-                    getBbieList(arguments.getConditions());
+            select = (select != null) ? select.union(getBbieList(arguments)) :
+                    getBbieList(arguments);
         }
 
         int pageCount = dslContext.fetchCount(select);
