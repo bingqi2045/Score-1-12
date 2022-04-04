@@ -60,7 +60,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 AsbieBiztermRecord asbieBiztermRecord = new AsbieBiztermRecord();
                 asbieBiztermRecord.setAsbieId(ULong.valueOf(bieToAssign.getBieId()));
                 asbieBiztermRecord.setAsccBiztermId(asccBiztermRecordId);
-                asbieBiztermRecord.setPrimaryIndicator(request.getIsPrimary().equals("true") ? "1" : "0");
+                asbieBiztermRecord.setPrimaryIndicator(request.getPrimaryIndicator());
                 asbieBiztermRecord.setTypeCode(request.getTypeCode());
                 asbieBiztermRecord.setCreatedBy(requesterUserId);
                 asbieBiztermRecord.setLastUpdatedBy(requesterUserId);
@@ -91,7 +91,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 BbieBiztermRecord bbieBiztermRecord = new BbieBiztermRecord();
                 bbieBiztermRecord.setBbieId(ULong.valueOf(bieToAssign.getBieId()));
                 bbieBiztermRecord.setBccBiztermId(bccBiztermRecordId);
-                bbieBiztermRecord.setPrimaryIndicator(request.getIsPrimary().equals("true") ? "1" : "0");
+                bbieBiztermRecord.setPrimaryIndicator(request.getPrimaryIndicator());
                 bbieBiztermRecord.setTypeCode(request.getTypeCode());
                 bbieBiztermRecord.setCreatedBy(requesterUserId);
                 bbieBiztermRecord.setLastUpdatedBy(requesterUserId);
@@ -133,52 +133,103 @@ public class JooqBusinessTermAssignmentWriteRepository
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public UpdateBusinessTermResponse updateBusinessTermAssignment(
-            UpdateBusinessTermRequest request) throws ScoreDataAccessException {
+    public UpdateBusinessTermAssignmentResponse updateBusinessTermAssignment(
+            UpdateBusinessTermAssignmentRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
         ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
-        BusinessTermRecord record = dslContext().selectFrom(BUSINESS_TERM)
-                .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(request.getBusinessTermId())))
-                .fetchOptional().orElse(null);
-        if (record == null) {
-            throw new ScoreDataAccessException(new IllegalArgumentException());
-        }
-        List<Field<?>> changedField = new ArrayList();
-        if (!StringUtils.equals(request.getBusinessTerm(), record.getBusinessTerm())) {
-            record.setBusinessTerm(request.getBusinessTerm());
-            changedField.add(BUSINESS_TERM.BUSINESS_TERM_);
-        }
-        if (!StringUtils.equals(request.getDefinition(), record.getDefinition())) {
-            record.setDefinition(request.getDefinition());
-            changedField.add(BUSINESS_TERM.DEFINITION);
-        }
-        if (!StringUtils.equals(request.getExternalReferenceId(), record.getExternalRefId())) {
-            record.setExternalRefId(request.getExternalReferenceId());
-            changedField.add(BUSINESS_TERM.EXTERNAL_REF_ID);
-        }
-        if (!StringUtils.equals(request.getExternalReferenceUri(), record.getExternalRefUri())) {
-            record.setExternalRefUri(request.getExternalReferenceUri());
-            changedField.add(BUSINESS_TERM.EXTERNAL_REF_URI);
-        }
-        if (!changedField.isEmpty()) {
-            record.setLastUpdatedBy(requesterUserId);
-            changedField.add(BUSINESS_TERM.LAST_UPDATED_BY);
-
-            record.setLastUpdateTimestamp(timestamp);
-            changedField.add(BUSINESS_TERM.LAST_UPDATE_TIMESTAMP);
-
-            int affectedRows = record.update(changedField);
-            if (affectedRows != 1) {
-                throw new ScoreDataAccessException(new IllegalStateException());
+        if(request.getBieType().equals("ASBIE")){
+            AsbieBiztermRecord record = dslContext().selectFrom(ASBIE_BIZTERM)
+                    .where(ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(ULong.valueOf(request.getAssignedBtId())))
+                    .fetchOptional().orElse(null);
+            if (record == null) {
+                throw new ScoreDataAccessException(new IllegalArgumentException());
             }
-        }
+            List<Field<?>> changedField = new ArrayList();
+            if (!StringUtils.equals(request.getTypeCode(), record.getTypeCode())) {
+                record.setTypeCode(request.getTypeCode());
+                changedField.add(ASBIE_BIZTERM.TYPE_CODE);
+            }
+            if (!StringUtils.equals(request.getPrimaryIndicator(), record.getPrimaryIndicator())) {
+                record.setPrimaryIndicator(request.getPrimaryIndicator());
+                changedField.add(ASBIE_BIZTERM.PRIMARY_INDICATOR);
+                if(request.getPrimaryIndicator().equals("1")) {
+                    updateOtherBieBiztermToNotPrimary(request);
+                }
+            }
+            if (!changedField.isEmpty()) {
+                record.setLastUpdatedBy(requesterUserId);
+                changedField.add(ASBIE_BIZTERM.LAST_UPDATED_BY);
 
-        return new UpdateBusinessTermResponse(
-                record.getBusinessTermId().toBigInteger(),
-                !changedField.isEmpty());
+                record.setLastUpdateTimestamp(timestamp);
+                changedField.add(ASBIE_BIZTERM.LAST_UPDATE_TIMESTAMP);
+
+                int affectedRows = record.update(changedField);
+                if (affectedRows != 1) {
+                    throw new ScoreDataAccessException(new IllegalStateException());
+                }
+            }
+            return new UpdateBusinessTermAssignmentResponse(
+                    record.getAsbieId().toBigInteger(), "BBIE", !changedField.isEmpty());
+        }
+        else if (request.getBieType().equals("BBIE")){
+            BbieBiztermRecord record = dslContext().selectFrom(BBIE_BIZTERM)
+                    .where(BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(ULong.valueOf(request.getAssignedBtId())))
+                    .fetchOptional().orElse(null);
+            if (record == null) {
+                throw new ScoreDataAccessException(new IllegalArgumentException());
+            }
+            List<Field<?>> changedField = new ArrayList();
+            if (!StringUtils.equals(request.getTypeCode(), record.getTypeCode())) {
+                record.setTypeCode(request.getTypeCode());
+                changedField.add(BBIE_BIZTERM.TYPE_CODE);
+            }
+            if (!StringUtils.equals(request.getPrimaryIndicator(), record.getPrimaryIndicator())) {
+                record.setPrimaryIndicator(request.getPrimaryIndicator());
+                changedField.add(BBIE_BIZTERM.PRIMARY_INDICATOR);
+                if(request.getPrimaryIndicator().equals("1")) {
+                    updateOtherBieBiztermToNotPrimary(request);
+                }
+            }
+            if (!changedField.isEmpty()) {
+                record.setLastUpdatedBy(requesterUserId);
+                changedField.add(BBIE_BIZTERM.LAST_UPDATED_BY);
+
+                record.setLastUpdateTimestamp(timestamp);
+                changedField.add(BBIE_BIZTERM.LAST_UPDATE_TIMESTAMP);
+
+                int affectedRows = record.update(changedField);
+                if (affectedRows != 1) {
+                    throw new ScoreDataAccessException(new IllegalStateException());
+                }
+            }
+            return new UpdateBusinessTermAssignmentResponse(
+                    record.getBbieBiztermId().toBigInteger(), "BBIE", !changedField.isEmpty());
+        }
+        else throw new ScoreDataAccessException("Wrong BIE type");
+    }
+
+    private int updateOtherBieBiztermToNotPrimary(UpdateBusinessTermAssignmentRequest request)
+            throws ScoreDataAccessException {
+        ScoreUser requester = request.getRequester();
+        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        if(request.getBieType().equals("ASBIE")){
+            return dslContext().update(ASBIE_BIZTERM)
+                    .set(ASBIE_BIZTERM.PRIMARY_INDICATOR, "0")
+                    .where(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(request.getBieId())))
+                    .execute();
+        }
+        else if (request.getBieType().equals("BBIE")) {
+            return dslContext().update(BBIE_BIZTERM)
+                    .set(BBIE_BIZTERM.PRIMARY_INDICATOR, "0")
+                    .where(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(request.getBieId())))
+                    .execute();
+        }
+        else throw new ScoreDataAccessException("Wrong BIE type");
     }
 
     @Override

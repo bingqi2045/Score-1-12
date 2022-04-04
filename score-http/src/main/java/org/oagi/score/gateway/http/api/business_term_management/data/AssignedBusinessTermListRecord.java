@@ -10,12 +10,13 @@ import java.util.List;
 public class AssignedBusinessTermListRecord {
     private List<BusinessContext> businessContexts;
     private BigInteger assignedBtId;
-    private String bieId;
+    private BigInteger bieId;
     private String bieType;
-    private String bieDen;
-    private String isPrimary;
-    private String typeCode;
     private String den;
+    private String primaryIndicator;
+    private Boolean isPrimary;
+    private String typeCode;
+    private BigInteger businessTermId;
     private String businessTerm;
     private String externalReferenceUri;
     private String lastUpdatedBy;

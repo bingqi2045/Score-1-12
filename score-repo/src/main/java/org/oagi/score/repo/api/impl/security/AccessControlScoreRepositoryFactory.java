@@ -8,7 +8,6 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.businesscontext.*;
-import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentReadRepository;
 import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentWriteRepository;
 import org.oagi.score.repo.api.businessterm.BusinessTermReadRepository;
 import org.oagi.score.repo.api.businessterm.BusinessTermWriteRepository;
@@ -212,12 +211,6 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public BusinessTermWriteRepository createBusinessTermWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createBusinessTermWriteRepository(), BusinessTermWriteRepository.class);
-    }
-
-
-    @Override
-    public BusinessTermAssignmentReadRepository createBusinessTermAssignmentReadRepository() throws ScoreDataAccessException {
-        return wrapForAccessControl(delegate.createBusinessTermAssignmentReadRepository(), BusinessTermAssignmentReadRepository.class);
     }
 
     @Override

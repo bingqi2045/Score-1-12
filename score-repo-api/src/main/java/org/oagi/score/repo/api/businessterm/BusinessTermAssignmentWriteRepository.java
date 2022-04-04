@@ -9,8 +9,8 @@ public interface BusinessTermAssignmentWriteRepository {
             AssignBusinessTermRequest request) throws ScoreDataAccessException;
 
 //    todo
-    UpdateBusinessTermResponse updateBusinessTermAssignment(
-            UpdateBusinessTermRequest request) throws ScoreDataAccessException;
+    UpdateBusinessTermAssignmentResponse updateBusinessTermAssignment(
+            UpdateBusinessTermAssignmentRequest request) throws ScoreDataAccessException;
 
     DeleteAssignedBusinessTermResponse deleteBusinessTermAssignment(
             DeleteAssignedBusinessTermRequest request) throws ScoreDataAccessException;

@@ -9,7 +9,6 @@ import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentWriteRepository;
 import org.oagi.score.repo.api.businessterm.BusinessTermReadRepository;
 import org.oagi.score.repo.api.businessterm.BusinessTermWriteRepository;
-import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentReadRepository;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
@@ -64,7 +63,6 @@ public interface ScoreRepositoryFactory {
     BusinessTermReadRepository createBusinessTermReadRepository() throws ScoreDataAccessException;
     BusinessTermWriteRepository createBusinessTermWriteRepository() throws ScoreDataAccessException;
 
-    BusinessTermAssignmentReadRepository createBusinessTermAssignmentReadRepository() throws ScoreDataAccessException;
     BusinessTermAssignmentWriteRepository createBusinessTermAssignmentWriteRepository() throws ScoreDataAccessException;
 
 }

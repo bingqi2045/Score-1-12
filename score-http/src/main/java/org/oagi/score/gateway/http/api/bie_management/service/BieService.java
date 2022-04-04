@@ -267,8 +267,6 @@ public class BieService {
 
         List<AsbieListRecord> bieLists = result.getResult();
         bieLists.forEach(bieList -> {
-
-            System.out.println(bieList.getTopLevelAsbiepId());
             GetBusinessContextListRequest getBusinessContextListRequest =
                     new GetBusinessContextListRequest(authenticationService.asScoreUser(user))
                             .withTopLevelAsbiepIdList(

@@ -9,8 +9,8 @@ public class UpdateBusinessTermResponse extends Response {
     private final BigInteger businessTermId;
     private final boolean changed;
 
-    public UpdateBusinessTermResponse(BigInteger businessContextId, boolean changed) {
-        this.businessTermId = businessContextId;
+    public UpdateBusinessTermResponse(BigInteger businessTermId, boolean changed) {
+        this.businessTermId = businessTermId;
         this.changed = changed;
     }
 

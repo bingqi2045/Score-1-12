@@ -49,4 +49,12 @@ public class BieToAssign extends Auditable {
     public int hashCode() {
         return Objects.hash(bieId, bieType);
     }
+
+    @Override
+    public String toString() {
+        return "BieToAssign{" +
+                "bieId=" + bieId +
+                ", bieType='" + bieType + '\'' +
+                '}';
+    }
 }

@@ -160,7 +160,7 @@ public class BusinessTermController {
         pageRequest.setPageIndex(pageIndex);
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
-        return businessTermService.getAssignedBusinessTermList(requester, request);
+        return businessTermService.getBusinessTermAssignmentList(requester, request);
     }
 
     @RequestMapping(value = "/business_term", method = RequestMethod.PUT)
@@ -288,6 +288,53 @@ public class BusinessTermController {
         }
     }
 
+    @RequestMapping(value = "/business_terms/assign/check_uniqueness", method = RequestMethod.POST)
+    public boolean checkAssignmentUniqueness(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody AssignBusinessTermRequest request) {
+        request.setRequester(authenticationService.asScoreUser(requester));
+        return businessTermService.checkAssignmentUniqueness(request);
+    }
+
+    @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public AssignedBusinessTerm getAssignedBusinessTerm(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("type") String bieType,
+            @PathVariable("id") BigInteger assignedBtId) {
+        GetAssignedBusinessTermRequest request = new GetAssignedBusinessTermRequest(
+                authenticationService.asScoreUser(requester))
+                .withAssignedBtId(assignedBtId)
+                .withBieType(bieType);
+
+        return businessTermService.getBusinessTermAssignment(request);
+    }
+
+    @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.POST)
+    public ResponseEntity updateAssignment(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger assignedBtId,
+            @PathVariable("type") String bieType,
+            @RequestBody AssignedBusinessTerm assignedBusinessTerm) {
+
+        UpdateBusinessTermAssignmentRequest request =
+                new UpdateBusinessTermAssignmentRequest(authenticationService.asScoreUser(requester))
+                        .withAssignedBtId(assignedBtId);
+        request.setBieType(bieType);
+        request.setBieId(assignedBusinessTerm.getBieId());
+        request.setTypeCode(assignedBusinessTerm.getTypeCode());
+        request.setPrimaryIndicator(assignedBusinessTerm.getPrimaryIndicator());
+
+        UpdateBusinessTermAssignmentResponse response =
+                businessTermService.updateBusinessTermAssignment(request);
+
+        if (response.getAssignedBtId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAssignment(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
@@ -300,7 +347,7 @@ public class BusinessTermController {
                         .withAssignedBtList(Arrays.asList(assToDelete));
 
         DeleteAssignedBusinessTermResponse response =
-                businessTermService.deleteAssignedBusinessTerm(request);
+                businessTermService.deleteBusinessTermAssignment(request);
 
         if (response.contains(assToDelete)) {
             return ResponseEntity.noContent().build();
@@ -329,7 +376,7 @@ public class BusinessTermController {
                 new DeleteAssignedBusinessTermRequest(authenticationService.asScoreUser(requester))
                         .withAssignedBtList(requestData.getAssignedBtList());
 
-        DeleteAssignedBusinessTermResponse response = businessTermService.deleteAssignedBusinessTerm(request);
+        DeleteAssignedBusinessTermResponse response = businessTermService.deleteBusinessTermAssignment(request);
 
         if (response.containsAll(requestData.getAssignedBtList())) {
             return ResponseEntity.noContent().build();

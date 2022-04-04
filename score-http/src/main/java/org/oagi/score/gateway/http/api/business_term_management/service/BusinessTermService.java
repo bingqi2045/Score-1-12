@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.business_term_management.service;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Update;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -85,7 +86,11 @@ public class BusinessTermService {
         return response;
     }
 
-    public PageResponse<AssignedBusinessTermListRecord> getAssignedBusinessTermList(AuthenticatedPrincipal user, AssignedBusinessTermListRequest request) {
+    public AssignedBusinessTerm getBusinessTermAssignment(GetAssignedBusinessTermRequest request) {
+        AssignedBusinessTerm response = businessTermRepository.getBusinessTermAssignment(request);
+        return response;
+    }
+    public PageResponse<AssignedBusinessTermListRecord> getBusinessTermAssignmentList(AuthenticatedPrincipal user, AssignedBusinessTermListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
         AppUser requester = sessionService.getAppUser(user);
 
@@ -106,6 +111,8 @@ public class BusinessTermService {
                     .getBusinessContextList(getBusinessContextListRequest);
 
             assignedBt.setBusinessContexts(getBusinessContextListResponse.getResults());
+
+            assignedBt.setIsPrimary(assignedBt.getPrimaryIndicator().equals("1"));
         });
 
         PageResponse<AssignedBusinessTermListRecord> response = new PageResponse();
@@ -125,22 +132,36 @@ public class BusinessTermService {
     }
 
     @Transactional
-    public DeleteAssignedBusinessTermResponse deleteAssignedBusinessTerm(DeleteAssignedBusinessTermRequest request) {
+    public UpdateBusinessTermAssignmentResponse updateBusinessTermAssignment(UpdateBusinessTermAssignmentRequest request) {
+        UpdateBusinessTermAssignmentResponse response =
+                scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
+                        .updateBusinessTermAssignment(request);
+        return response;
+    }
+
+    @Transactional
+    public DeleteAssignedBusinessTermResponse deleteBusinessTermAssignment(DeleteAssignedBusinessTermRequest request) {
         DeleteAssignedBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermAssignmentWriteRepository()
                         .deleteBusinessTermAssignment(request);
         return response;
     }
 
+    @Transactional
+    public boolean checkAssignmentUniqueness(AssignBusinessTermRequest assignBusinessTermRequest) {
+        return businessTermRepository.checkAssignmentUniqueness(assignBusinessTermRequest);
+    }
+
+
     public boolean hasSameTermDefinitionAndExternalRefId(String businessTerm, String definition, String externalRefId) {
-        Condition idMatch = trueCondition();
-        if (businessTerm != null && definition != null && externalRefId != null) {
-            return false;
-        } else {
+    Condition idMatch = trueCondition();
+    if (businessTerm != null && definition != null && externalRefId != null) {
+        return false;
+    } else {
 //          todo
 //            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(businessTerm.getContextSchemeId()));
-            return false;
-        }
+        return false;
+    }
     }
 //
 //        return dslContext.selectCount().from(CTX_SCHEME).where(

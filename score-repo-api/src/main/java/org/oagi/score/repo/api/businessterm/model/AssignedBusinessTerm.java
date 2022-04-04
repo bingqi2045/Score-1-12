@@ -8,10 +8,13 @@ import java.util.Date;
 public class AssignedBusinessTerm extends Auditable {
 
     private BigInteger assignedBtId;
+    private BigInteger bieId;
     private String bieType;
-    private String isPrimary;
+    private Boolean isPrimary;
+    private String primaryIndicator;
     private String typeCode;
     private String den;
+    private BigInteger businessTermId;
     private String businessTerm;
     private String externalReferenceUri;
     private Date lastUpdateTimestamp;
@@ -27,6 +30,30 @@ public class AssignedBusinessTerm extends Auditable {
         this.assignedBtId = assignedBtId;
     }
 
+    public BigInteger getBieId() {
+        return bieId;
+    }
+
+    public void setBieId(BigInteger bieId) {
+        this.bieId = bieId;
+    }
+
+    public Boolean getPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        isPrimary = primary;
+    }
+
+    public BigInteger getBusinessTermId() {
+        return businessTermId;
+    }
+
+    public void setBusinessTermId(BigInteger businessTermId) {
+        this.businessTermId = businessTermId;
+    }
+
     public String getBieType() {
         return bieType;
     }
@@ -35,11 +62,11 @@ public class AssignedBusinessTerm extends Auditable {
         this.bieType = bieType;
     }
 
-    public String getIsPrimary() {
+    public Boolean getIsPrimary() {
         return isPrimary;
     }
 
-    public void setIsPrimary(String isPrimary) {
+    public void setIsPrimary(Boolean isPrimary) {
         this.isPrimary = isPrimary;
     }
 
@@ -97,6 +124,33 @@ public class AssignedBusinessTerm extends Auditable {
     }
 
     public void setLastUpdateUser(String lastUpdateUser) {
+        this.lastUpdateUser = lastUpdateUser;
+    }
+
+    public String getPrimaryIndicator() {
+        return primaryIndicator;
+    }
+
+    public void setPrimaryIndicator(String primaryIndicator) {
+        this.primaryIndicator = primaryIndicator;
+    }
+
+    public AssignedBusinessTerm() {
+    }
+
+    public AssignedBusinessTerm(BigInteger assignedBtId, BigInteger bieId, String bieType, Boolean isPrimary, String primaryIndicator, String typeCode, String den, BigInteger businessTermId, String businessTerm, String externalReferenceUri, Date lastUpdateTimestamp, String owner, String lastUpdateUser) {
+        this.assignedBtId = assignedBtId;
+        this.bieId = bieId;
+        this.bieType = bieType;
+        this.isPrimary = isPrimary;
+        this.primaryIndicator = primaryIndicator;
+        this.typeCode = typeCode;
+        this.den = den;
+        this.businessTermId = businessTermId;
+        this.businessTerm = businessTerm;
+        this.externalReferenceUri = externalReferenceUri;
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
+        this.owner = owner;
         this.lastUpdateUser = lastUpdateUser;
     }
 }
