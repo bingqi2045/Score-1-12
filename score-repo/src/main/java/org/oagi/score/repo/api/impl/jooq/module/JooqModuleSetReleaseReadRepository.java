@@ -41,8 +41,9 @@ public class JooqModuleSetReleaseReadRepository
         return dslContext().select(
                 MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID,
                 MODULE_SET_RELEASE.MODULE_SET_ID,
-                MODULE_SET.NAME,
+                MODULE_SET_RELEASE.NAME,
                 MODULE_SET_RELEASE.RELEASE_ID,
+                MODULE_SET.NAME,
                 RELEASE.RELEASE_NUM,
                 MODULE_SET_RELEASE.IS_DEFAULT,
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
@@ -65,6 +66,7 @@ public class JooqModuleSetReleaseReadRepository
             ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
             moduleSetRelease.setModuleSetReleaseId(record.get(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID).toBigInteger());
             moduleSetRelease.setModuleSetId(record.get(MODULE_SET_RELEASE.MODULE_SET_ID).toBigInteger());
+            moduleSetRelease.setModuleSetReleaseName(record.get(MODULE_SET_RELEASE.NAME));
             moduleSetRelease.setModuleSetName(record.get(MODULE_SET.NAME));
             moduleSetRelease.setReleaseId(record.get(MODULE_SET_RELEASE.RELEASE_ID).toBigInteger());
             moduleSetRelease.setReleaseNum(record.get(RELEASE.RELEASE_NUM));
@@ -143,7 +145,7 @@ public class JooqModuleSetReleaseReadRepository
         List<Condition> conditions = new ArrayList();
 
         if (StringUtils.hasLength(request.getName())) {
-            conditions.addAll(contains(request.getName(), MODULE_SET.NAME));
+            conditions.addAll(contains(request.getName(), MODULE_SET_RELEASE.NAME));
         }
 
         if (!request.getUpdaterUsernameList().isEmpty()) {
