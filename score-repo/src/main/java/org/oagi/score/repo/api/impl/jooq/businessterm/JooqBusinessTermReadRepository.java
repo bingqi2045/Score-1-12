@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BUSINESS_TERM;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIE_BIZTERM;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
@@ -192,5 +192,109 @@ public class JooqBusinessTermReadRepository
                 request.getPageSize(),
                 length
         );
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public GetBusinessTermListResponse getBusinessTermListByAssignedBie(
+            GetBusinessTermListRequest request) throws ScoreDataAccessException {
+
+        SelectOrderByStep select = null;
+        if (request.getAssignedBies() != null && !request.getAssignedBies().isEmpty()) {
+            List<BieToAssign> byAssignedAsbies = request.getAssignedBies().stream()
+                    .filter(bieToAssign -> bieToAssign.getBieType().equals("ASBIE")).collect(Collectors.toList());
+            if(!byAssignedAsbies.isEmpty()){
+                Collection<Condition> conditionsAsbie = getConditions(request);
+                conditionsAsbie.add(ASBIE_BIZTERM.ASBIE_ID.in(byAssignedAsbies.stream()
+                                .map(bieToAssign -> bieToAssign.getBieId()).collect(Collectors.toList())));
+                select = (select != null) ? select.union(getBusinessTermByAssignedAsbie(conditionsAsbie)) :
+                        getBusinessTermByAssignedAsbie(conditionsAsbie);
+            }
+            List<BieToAssign> byAssignedBbies = request.getAssignedBies().stream()
+                    .filter(bieToAssign -> bieToAssign.getBieType().equals("BBIE")).collect(Collectors.toList());
+            if(!byAssignedBbies.isEmpty()){
+                Collection<Condition> conditionsBbie = getConditions(request);
+                conditionsBbie.add(BBIE_BIZTERM.BBIE_ID.in(byAssignedBbies.stream()
+                        .map(bieToAssign -> bieToAssign.getBieId()).collect(Collectors.toList())));
+                select = (select != null) ? select.union(getBusinessTermByAssignedBbie(conditionsBbie)) :
+                        getBusinessTermByAssignedBbie(conditionsBbie);
+            }
+        }
+
+        SortField sortField = getSortField(request);
+        int length = dslContext().fetchCount(select);
+        SelectFinalStep finalStep;
+        if (sortField == null) {
+            if (request.isPagination()) {
+                finalStep = select.limit(request.getPageOffset(), request.getPageSize());
+            } else {
+                finalStep = select;
+            }
+        } else {
+            if (request.isPagination()) {
+                finalStep = select.orderBy(sortField)
+                        .limit(request.getPageOffset(), request.getPageSize());
+            } else {
+                finalStep = select.orderBy(sortField);
+            }
+        }
+
+        return new GetBusinessTermListResponse(
+                finalStep.fetch(mapper()),
+                request.getPageIndex(),
+                request.getPageSize(),
+                length
+        );
+    }
+
+
+    private SelectConditionStep getBusinessTermByAssignedAsbie(Collection<Condition> conditions) {
+        return dslContext().selectDistinct(
+                        BUSINESS_TERM.BUSINESS_TERM_ID,
+                        BUSINESS_TERM.GUID,
+                        BUSINESS_TERM.BUSINESS_TERM_,
+                        BUSINESS_TERM.DEFINITION,
+                        BUSINESS_TERM.EXTERNAL_REF_ID,
+                        BUSINESS_TERM.EXTERNAL_REF_URI,
+                        APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
+                        APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
+                        APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                        APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
+                        APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
+                        APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                        BUSINESS_TERM.CREATION_TIMESTAMP,
+                        BUSINESS_TERM.LAST_UPDATE_TIMESTAMP
+                )
+                .from(BUSINESS_TERM)
+                .join(ASCC_BIZTERM).on(ASCC_BIZTERM.BUSINESS_TERM_ID.eq(BUSINESS_TERM.BUSINESS_TERM_ID))
+                .join(ASBIE_BIZTERM).on(ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(ASCC_BIZTERM.ASCC_BIZTERM_ID))
+                .join(APP_USER.as("creator")).on(BUSINESS_TERM.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
+                .join(APP_USER.as("updater")).on(BUSINESS_TERM.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .where(conditions);
+    }
+
+    private SelectConditionStep getBusinessTermByAssignedBbie(Collection<Condition> conditions) {
+        return dslContext().selectDistinct(
+                        BUSINESS_TERM.BUSINESS_TERM_ID,
+                        BUSINESS_TERM.GUID,
+                        BUSINESS_TERM.BUSINESS_TERM_,
+                        BUSINESS_TERM.DEFINITION,
+                        BUSINESS_TERM.EXTERNAL_REF_ID,
+                        BUSINESS_TERM.EXTERNAL_REF_URI,
+                        APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
+                        APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
+                        APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                        APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
+                        APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
+                        APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                        BUSINESS_TERM.CREATION_TIMESTAMP,
+                        BUSINESS_TERM.LAST_UPDATE_TIMESTAMP
+                )
+                .from(BUSINESS_TERM)
+                .join(BCC_BIZTERM).on(BCC_BIZTERM.BUSINESS_TERM_ID.eq(BUSINESS_TERM.BUSINESS_TERM_ID))
+                .join(BBIE_BIZTERM).on(BBIE_BIZTERM.BCC_BIZTERM_ID.eq(BCC_BIZTERM.BCC_BIZTERM_ID))
+                .join(APP_USER.as("creator")).on(BUSINESS_TERM.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
+                .join(APP_USER.as("updater")).on(BUSINESS_TERM.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .where(conditions);
     }
 }

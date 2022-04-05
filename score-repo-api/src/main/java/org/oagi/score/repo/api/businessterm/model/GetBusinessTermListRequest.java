@@ -6,6 +6,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> {
 
@@ -14,6 +15,7 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
     private String definition;
     private String externalRefUri;
     private String externalRefId;
+    private List<BieToAssign> assignedBies;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
@@ -86,5 +88,11 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
         this.updateEndDate = updateEndDate;
     }
 
+    public List<BieToAssign> getAssignedBies() {
+        return assignedBies;
+    }
 
+    public void setAssignedBies(List<BieToAssign> assignedBies) {
+        this.assignedBies = assignedBies;
+    }
 }

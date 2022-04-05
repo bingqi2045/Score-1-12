@@ -56,9 +56,15 @@ public class BusinessTermService {
     }
 
     public GetBusinessTermListResponse getBusinessTermList(GetBusinessTermListRequest request) {
-        GetBusinessTermListResponse response =
-                scoreRepositoryFactory.createBusinessTermReadRepository()
-                        .getBusinessTermList(request);
+        GetBusinessTermListResponse response;
+        if(request.getAssignedBies() != null && !request.getAssignedBies().isEmpty()) {
+            response = scoreRepositoryFactory.createBusinessTermReadRepository()
+                    .getBusinessTermListByAssignedBie(request);
+        }
+        else {
+            response = scoreRepositoryFactory.createBusinessTermReadRepository()
+                    .getBusinessTermList(request);
+        }
         return response;
     }
 

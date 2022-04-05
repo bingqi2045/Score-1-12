@@ -1,6 +1,5 @@
 package org.oagi.score.repo;
 
-import io.reactivex.rxjava3.core.Single;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
@@ -8,7 +7,6 @@ import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBus
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.model.AssignBusinessTermRequest;
 import org.oagi.score.repo.api.businessterm.model.AssignedBusinessTerm;
-import org.oagi.score.repo.api.businessterm.model.BieToAssign;
 import org.oagi.score.repo.api.businessterm.model.GetAssignedBusinessTermRequest;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,10 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;

@@ -13,5 +13,8 @@ public interface BusinessTermReadRepository {
 
     GetBusinessTermListResponse getBusinessTermList(
             GetBusinessTermListRequest request) throws ScoreDataAccessException;
+
+    GetBusinessTermListResponse getBusinessTermListByAssignedBie(
+            GetBusinessTermListRequest request) throws ScoreDataAccessException;
     
 }
