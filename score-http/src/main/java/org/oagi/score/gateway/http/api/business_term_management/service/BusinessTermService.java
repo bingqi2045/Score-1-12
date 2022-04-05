@@ -159,40 +159,11 @@ public class BusinessTermService {
     }
 
 
-    public boolean hasSameTermDefinitionAndExternalRefId(String businessTerm, String definition, String externalRefId) {
-    Condition idMatch = trueCondition();
-    if (businessTerm != null && definition != null && externalRefId != null) {
-        return false;
-    } else {
-//          todo
-//            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(businessTerm.getContextSchemeId()));
-        return false;
+    public boolean checkBusinessTermUniqueness(String businessTerm, String externalRefUri) {
+        return businessTermRepository.checkBusinessTermUniqueness(businessTerm, externalRefUri);
     }
-    }
-//
-//        return dslContext.selectCount().from(CTX_SCHEME).where(
-//                        and(CTX_SCHEME.SCHEME_ID.eq(contextScheme.getSchemeId()),
-//                                CTX_SCHEME.SCHEME_AGENCY_ID.eq(contextScheme.getSchemeAgencyId()),
-//                                CTX_SCHEME.SCHEME_VERSION_ID.eq(contextScheme.getSchemeVersionId()),
-//                                idMatch))
-//                .fetchOneInto(Integer.class) > 0;
-//    }
-//
 
-    //todo
-    public boolean hasSameBusinessTermName(BusinessTerm businessTerm) {
-        return false;
+    public boolean checkBusinessTermNameUniqueness(String businessTerm) {
+        return businessTermRepository.checkBusinessTermNameUniqueness(businessTerm);
     }
-//        Condition idMatch = trueCondition();
-//        if (businessTerm.getBusinessTermId() != null) {
-//            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getContextSchemeId()));
-//        }
-//        return dslContext.selectCount().from(CTX_SCHEME).where(
-//                        and(CTX_SCHEME.SCHEME_ID.eq(contextScheme.getSchemeId()),
-//                                CTX_SCHEME.SCHEME_AGENCY_ID.eq(contextScheme.getSchemeAgencyId()),
-//                                CTX_SCHEME.SCHEME_VERSION_ID.notEqual(contextScheme.getSchemeVersionId()),
-//                                CTX_SCHEME.SCHEME_NAME.notEqual(contextScheme.getSchemeName()),
-//                                idMatch))
-//                .fetchOneInto(Integer.class) > 0;
-//    }
 }

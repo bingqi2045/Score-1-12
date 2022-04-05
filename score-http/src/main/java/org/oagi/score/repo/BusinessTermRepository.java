@@ -58,7 +58,6 @@ public class BusinessTermRepository {
         if (request.getUpdateEndDate() != null) {
             conditions.add(ASBIE_BIZTERM.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
-        conditions.stream().forEach(System.out::println);
 
         return dslContext.select(
                         inline("ASBIE").as("bieType"),
@@ -306,7 +305,7 @@ public class BusinessTermRepository {
                                 ASCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
                                 ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
                                 ASBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())))
-                        .fetchOneInto(Integer.class) > 0;
+                        .fetchOneInto(Integer.class) == 0;
                 }
                 else if(bieToAssign.getBieType().equals("BBIE")) {
                     return dslContext.selectCount()
@@ -317,10 +316,39 @@ public class BusinessTermRepository {
                                     BCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
                                     BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
                                     BBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())))
-                            .fetchOneInto(Integer.class) > 0;
+                            .fetchOneInto(Integer.class) == 0;
                 } else throw new ScoreDataAccessException("Wrong BIE type: " + bieToAssign.getBieType());
             }).allMatch(isUniqueRecord -> isUniqueRecord );
             return isUnique;
+        } else
+            throw new ScoreDataAccessException("Wrong input data");
+    }
+
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public boolean checkBusinessTermUniqueness(String businessTerm, String externalRefUri)
+            throws ScoreDataAccessException {
+
+        if(businessTerm != null && externalRefUri != null){
+            return dslContext.selectCount()
+                            .from(BUSINESS_TERM)
+                            .where(
+                                    and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm),
+                                            BUSINESS_TERM.EXTERNAL_REF_URI.eq(externalRefUri))
+                            )
+                            .fetchOneInto(Integer.class) == 0;
+        } else
+            throw new ScoreDataAccessException("Wrong input data");
+    }
+
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public boolean checkBusinessTermNameUniqueness(String businessTerm)
+            throws ScoreDataAccessException {
+
+        if(businessTerm != null){
+            return dslContext.selectCount()
+                    .from(BUSINESS_TERM)
+                    .where(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm))
+                    .fetchOneInto(Integer.class) == 0;
         } else
             throw new ScoreDataAccessException("Wrong input data");
     }

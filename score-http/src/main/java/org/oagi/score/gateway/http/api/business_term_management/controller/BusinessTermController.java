@@ -81,7 +81,6 @@ public class BusinessTermController {
                         .range(0, byAssignedBieIdList.size())
                         .mapToObj(index -> new BieToAssign(byAssignedBieIdList.get(index), byAssignedBieTypeList.get(index)))
                         .collect(Collectors.toList());
-                byAssignedBies.stream().forEach(System.out::println);
                 request.setAssignedBies(byAssignedBies);
             } else {
                 System.out.println("ERROR: Assigned bie lists of id and types are different size: "
@@ -104,72 +103,14 @@ public class BusinessTermController {
         return pageResponse;
     }
 
-//    @RequestMapping(value = "/business_terms_filter_by_bie", method = RequestMethod.GET,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public PageResponse<BusinessTerm> getBusinessTermListByBie(
-//            @AuthenticationPrincipal AuthenticatedPrincipal requester,
-//            @RequestParam(name = "businessTerm", required = false) String term,
-//            @RequestParam(name = "externalReferenceUri", required = false) String externalReferenceUri,
-//            @RequestParam(name = "externalReferenceId", required = false) String externalReferenceId,
-//            @RequestParam(name = "definition", required = false) String definition,
-//            @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
-//            @RequestParam(name = "updateStart", required = false) String updateStart,
-//            @RequestParam(name = "updateEnd", required = false) String updateEnd,
-//            @RequestParam(name = "sortActive") String sortActive,
-//            @RequestParam(name = "sortDirection") String sortDirection,
-//            @RequestParam(name = "pageIndex") int pageIndex,
-//            @RequestParam(name = "pageSize") int pageSize,
-//            @RequestParam(name = "byAssignedBie") List<BieToAssign> byAssignedBie) {
-//
-//        byAssignedBie.stream().forEach(System.out::println);
-//
-//        GetBusinessTermListRequest request = new GetBusinessTermListRequest(
-//                authenticationService.asScoreUser(requester));
-//
-//        request.setBusinessTerm(term);
-//        request.setExternalRefUri(externalReferenceUri);
-//        request.setExternalRefId(externalReferenceId);
-//        request.setDefinition(definition);
-//        request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
-//                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
-//                        .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
-//        if (StringUtils.hasLength(updateStart)) {
-//            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
-//        }
-//        if (StringUtils.hasLength(updateEnd)) {
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTimeInMillis(Long.valueOf(updateEnd));
-//            calendar.add(Calendar.DATE, 1);
-//            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
-//        }
-//        if(byAssignedBie != null && !byAssignedBie.isEmpty()) {
-//            request.setAssignedBies(byAssignedBie);
-//        }
-//        request.setPageIndex(pageIndex);
-//        request.setPageSize(pageSize);
-//        request.setSortActive(sortActive);
-//        request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
-//
-//        GetBusinessTermListResponse response = businessTermService.getBusinessTermList(request);
-//
-//        PageResponse<BusinessTerm> pageResponse = new PageResponse<>();
-//        pageResponse.setList(response.getResults());
-//        pageResponse.setPage(response.getPage());
-//        pageResponse.setSize(response.getSize());
-//        pageResponse.setLength(response.getLength());
-//        return pageResponse;
-//    }
-
-//    todo
     @RequestMapping(value = "/business_terms/check_uniqueness", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessTerm businessTerm) {
-        return businessTermService.hasSameTermDefinitionAndExternalRefId(
+        return businessTermService.checkBusinessTermUniqueness(
                 businessTerm.getBusinessTerm(),
-                businessTerm.getDefinition(),
-                businessTerm.getExternalReferenceId()
+                businessTerm.getExternalReferenceUri()
                 );
     }
 
@@ -179,7 +120,7 @@ public class BusinessTermController {
     public boolean checkNameUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessTerm businessTerm) {
-        return businessTermService.hasSameBusinessTermName(businessTerm);
+        return businessTermService.checkBusinessTermNameUniqueness(businessTerm.getBusinessTerm());
     }
 
     @RequestMapping(value = "/business_terms/assign", method = RequestMethod.GET,
