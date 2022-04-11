@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -80,6 +80,12 @@ public class AppUser extends TableImpl<AppUserRecord> {
      * The column <code>oagi.app_user.is_developer</code>.
      */
     public final TableField<AppUserRecord, Byte> IS_DEVELOPER = createField(DSL.name("is_developer"), SQLDataType.TINYINT, this, "");
+
+    /**
+     * The column <code>oagi.app_user.is_admin</code>. Indicator whether the
+     * user has an admin role or not.
+     */
+    public final TableField<AppUserRecord, Byte> IS_ADMIN = createField(DSL.name("is_admin"), SQLDataType.TINYINT.defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "Indicator whether the user has an admin role or not.");
 
     /**
      * The column <code>oagi.app_user.is_enabled</code>.
@@ -166,11 +172,11 @@ public class AppUser extends TableImpl<AppUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, String, String, Byte, Byte> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }
