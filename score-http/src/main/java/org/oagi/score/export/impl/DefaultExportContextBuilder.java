@@ -78,14 +78,17 @@ public class DefaultExportContextBuilder {
     }
 
     private void createAgencyIdList(Map<ULong, SchemaModule> moduleMap) {
-        importedDataProvider.findAgencyIdList().forEach(agencyIdList -> {
+        for (AgencyIdListRecord agencyIdList : importedDataProvider.findAgencyIdList()) {
             List<AgencyIdListValueRecord> agencyIdListValues =
                     importedDataProvider.findAgencyIdListValueByOwnerListId(agencyIdList.getAgencyIdListId());
 
             ModuleCCID moduleCCID = importedDataProvider.findModuleAgencyIdList(agencyIdList.getAgencyIdListId());
+            if (moduleCCID == null) {
+                throw new IllegalStateException("Did you assign the agency ID list ''" + agencyIdList.getName() + "'?");
+            }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
             schemaModule.addAgencyId(new AgencyId(agencyIdList, agencyIdListValues));
-        });
+        }
     }
 
     private void createCodeLists(Map<ULong, SchemaModule> moduleMap) {
