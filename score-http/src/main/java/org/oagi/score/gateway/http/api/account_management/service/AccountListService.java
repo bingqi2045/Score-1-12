@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 
@@ -67,17 +68,25 @@ public class AccountListService {
         if (request.getEnabled() != null) {
             conditions.add(APP_USER.IS_ENABLED.eq((byte) (request.getEnabled() ? 1 : 0)));
         }
+        List<Condition> roleConditions = new ArrayList();
         for (String role : request.getRoles()) {
             switch (role) {
                 case "developer":
-                    conditions.add(APP_USER.IS_DEVELOPER.eq((byte) 1));
+                    roleConditions.add(APP_USER.IS_DEVELOPER.eq((byte) 1));
                     break;
                 case "end-user":
-                    conditions.add(APP_USER.IS_DEVELOPER.eq((byte) 0));
+                    roleConditions.add(APP_USER.IS_DEVELOPER.eq((byte) 0));
                     break;
                 case "admin":
-                    conditions.add(APP_USER.IS_ADMIN.eq((byte) 1));
+                    roleConditions.add(APP_USER.IS_ADMIN.eq((byte) 1));
                     break;
+            }
+        }
+        if (!roleConditions.isEmpty()) {
+            if (roleConditions.size() == 1) {
+                conditions.add(roleConditions.get(0));
+            } else {
+                conditions.add(or(roleConditions));
             }
         }
         if (request.isExcludeSSO()) {
