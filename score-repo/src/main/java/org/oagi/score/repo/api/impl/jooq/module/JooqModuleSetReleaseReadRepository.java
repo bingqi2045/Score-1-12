@@ -166,6 +166,14 @@ public class JooqModuleSetReleaseReadRepository
             conditions.addAll(contains(request.getName(), MODULE_SET_RELEASE.NAME));
         }
 
+        if (request.getReleaseId() != null) {
+            conditions.add(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        }
+
+        if (request.getDefault() != null) {
+            conditions.add(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) (request.getDefault() == true ? 1 : 0)));
+        }
+
         if (!request.getUpdaterUsernameList().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(
                     new HashSet<>(request.getUpdaterUsernameList()).stream()
