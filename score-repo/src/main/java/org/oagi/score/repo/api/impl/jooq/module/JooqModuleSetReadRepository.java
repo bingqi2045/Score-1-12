@@ -210,7 +210,7 @@ public class JooqModuleSetReadRepository
                 MODULE.CREATION_TIMESTAMP,
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
-                .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                .leftJoin(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .where(and(MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)), MODULE.PARENT_MODULE_ID.eq(rootModule.getModuleId())))
                 .fetchStream().map(record -> {
                     Module module = new Module();
@@ -219,8 +219,10 @@ public class JooqModuleSetReadRepository
                         module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID).toBigInteger());
                     }
                     module.setPath(record.get(MODULE.PATH));
-                    module.setNamespaceUri(record.get(NAMESPACE.URI));
-                    module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                    if (record.get(MODULE.NAMESPACE_ID) != null) {
+                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                        module.setNamespaceUri(record.get(NAMESPACE.URI));
+                    }
                     module.setName(record.get(MODULE.NAME));
                     module.setType(record.get(MODULE.TYPE));
                     module.setVersionNum(record.get(MODULE.VERSION_NUM));
@@ -247,7 +249,7 @@ public class JooqModuleSetReadRepository
                 MODULE.CREATION_TIMESTAMP,
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
-                .join(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
+                .leftJoin(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
                 .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))
                 .fetchStream().map(record -> {
                     Module module = new Module();
@@ -256,8 +258,10 @@ public class JooqModuleSetReadRepository
                         module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID).toBigInteger());
                     }
                     module.setPath(record.get(MODULE.PATH));
-                    module.setNamespaceUri(record.get(NAMESPACE.URI));
-                    module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                    if (record.get(MODULE.NAMESPACE_ID) != null) {
+                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                        module.setNamespaceUri(record.get(NAMESPACE.URI));
+                    }
                     module.setName(record.get(MODULE.NAME));
                     module.setType(record.get(MODULE.TYPE));
                     module.setVersionNum(record.get(MODULE.VERSION_NUM));

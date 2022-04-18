@@ -58,7 +58,7 @@ public class DefaultExportContextBuilder {
         if (source.equals(target)) {
             return;
         }
-        if (source.getNamespace().equals(target.getNamespace())) {
+        if (source.getNamespaceId().equals(target.getNamespaceId())) {
             source.addInclude(target);
         } else {
             source.addImport(target);

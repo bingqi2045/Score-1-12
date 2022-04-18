@@ -93,7 +93,7 @@ public class Module extends TableImpl<ModuleRecord> {
      * overrides the release's namespace. However, the NAMESPACE_ID associated
      * with the component takes the highest precedence.
      */
-    public final TableField<ModuleRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Note that a release record has a namespace associated. The NAMESPACE_ID, if specified here, overrides the release's namespace. However, the NAMESPACE_ID associated with the component takes the highest precedence.");
+    public final TableField<ModuleRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Note that a release record has a namespace associated. The NAMESPACE_ID, if specified here, overrides the release's namespace. However, the NAMESPACE_ID associated with the component takes the highest precedence.");
 
     /**
      * The column <code>oagi.module.version_num</code>. This is the version
