@@ -995,6 +995,11 @@ public class DtWriteRepository {
                     .execute();
         }
 
+        // discard assigned DT in modules
+        dslContext.deleteFrom(MODULE_DT_MANIFEST)
+                .where(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                .execute();
+
         // discard DT
         dslContext.deleteFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))

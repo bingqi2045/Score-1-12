@@ -230,10 +230,10 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_ACC_MANIFEST).on(
                         and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID),
                             MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(ACC.STATE.eq(CcState.Published.name()),
-                            ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                            ACC.OBJECT_CLASS_TERM.notEqual("Any Structured Content"),
-                            MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
+                .where(and(
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ACC.OBJECT_CLASS_TERM.notEqual("Any Structured Content"),
+                        MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
                     node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
@@ -288,7 +288,7 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_ASCCP_MANIFEST).on(
                         and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID),
                                 MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(ASCCP.STATE.eq(CcState.Published.name()),
+                .where(and(
                         ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         ASCCP.PROPERTY_TERM.notEqual("Any Property"),
                         MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID.isNull()))
@@ -353,7 +353,7 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_BCCP_MANIFEST).on(
                         and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID),
                                 MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(BCCP.STATE.eq(CcState.Published.name()),
+                .where(and(
                         BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         BCCP_MANIFEST.BCCP_MANIFEST_ID.in(elementBccpManifestList),
                         MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID.isNull()))
@@ -411,9 +411,9 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_DT_MANIFEST).on(
                         and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID),
                                 MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(DT.STATE.eq(CcState.Published.name()),
+                .where(and(
                         DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        DT.DT_ID.greaterThan(ULong.valueOf(23)),
+                        DT.BASED_DT_ID.isNotNull(),
                         MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
@@ -469,7 +469,7 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_CODE_LIST_MANIFEST).on(
                         and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID),
                                 MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(CODE_LIST.STATE.eq(CcState.Published.name()),
+                .where(and(
                         CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
@@ -526,7 +526,7 @@ public class JooqModuleSetReleaseReadRepository
                 .leftJoin(MODULE_AGENCY_ID_LIST_MANIFEST).on(
                         and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID),
                                 MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(AGENCY_ID_LIST.STATE.eq(CcState.Published.name()),
+                .where(and(
                         AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {

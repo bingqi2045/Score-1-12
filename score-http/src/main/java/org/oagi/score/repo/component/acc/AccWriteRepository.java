@@ -889,6 +889,11 @@ public class AccWriteRepository {
                     .execute();
         }
 
+        // discard assigned ACC in modules
+        dslContext.deleteFrom(MODULE_ACC_MANIFEST)
+                .where(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
         // discard ACC
         dslContext.deleteFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))

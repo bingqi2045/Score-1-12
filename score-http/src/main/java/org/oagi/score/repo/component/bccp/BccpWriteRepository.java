@@ -516,6 +516,11 @@ public class BccpWriteRepository {
                 .where(LOG.REFERENCE.eq(bccpRecord.getGuid()))
                 .execute();
 
+        // discard assigned BCCP in modules
+        dslContext.deleteFrom(MODULE_BCCP_MANIFEST)
+                .where(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
+                .execute();
+
         // discard BCCP
         dslContext.deleteFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))

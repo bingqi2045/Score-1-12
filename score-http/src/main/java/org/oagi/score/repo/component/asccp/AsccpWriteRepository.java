@@ -564,6 +564,11 @@ public class AsccpWriteRepository {
                 .where(LOG.REFERENCE.eq(asccpRecord.getGuid()))
                 .execute();
 
+        // discard assigned ASCCP in modules
+        dslContext.deleteFrom(MODULE_ASCCP_MANIFEST)
+                .where(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                .execute();
+
         // discard ASCCP
         dslContext.deleteFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
