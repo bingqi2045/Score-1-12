@@ -182,6 +182,7 @@ public class AgencyIdService {
         if (params.getAgencyIdListValueManifestId() == null) {
             conditions.add(and(
                     AGENCY_ID_LIST.LIST_ID.eq(params.getListId()),
+                    AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.isNull(),
                     AGENCY_ID_LIST.VERSION_ID.eq(params.getVersionId())
             ));
             return dslContext.selectCount()
