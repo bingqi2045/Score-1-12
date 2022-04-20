@@ -37,7 +37,6 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-lang.version>3.12.0</commons-lang.version>
         <saxon.version>10.6</saxon.version>
-        <jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
     </properties>
 
     <dependencies>
@@ -121,12 +120,6 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen</artifactId>
             <version>${jOOQ.version}</version>
-        </dependency>
-        <!-- https://github.com/jOOQ/jOOQ/issues/12286 -->
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jakarta.xml.bind-api.version}</version>
         </dependency>
 
         <dependency>
