@@ -9,6 +9,10 @@ import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateEx
 import org.oagi.score.gateway.http.api.bie_management.service.generate_expression.*;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Zip;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +145,7 @@ public class BieGenerateService {
         BieGenerateExpression generateExpression = createBieGenerateExpression(option);
         GenerationContext generationContext = generateExpression.generateContext(topLevelAsbieps, option);
 
+        Map<String, Integer> filenames = new HashMap();
         for (TopLevelAsbiep topLevelAsbiep : topLevelAsbieps) {
             try {
                 generateExpression.reset();
@@ -149,6 +155,12 @@ public class BieGenerateService {
 
             generateExpression.generate(topLevelAsbiep, generationContext, option);
             String filename = getFilenameByTopLevelAsbiep(topLevelAsbiep);
+            int numOfFilenames = filenames.getOrDefault(filename, 0);
+            filenames.put(filename, numOfFilenames + 1);
+
+            if (numOfFilenames > 0) {
+                filename = filename + " (" + numOfFilenames + ")";
+            }
 
             File schemaExpressionFile;
             try {
@@ -184,7 +196,25 @@ public class BieGenerateService {
 
         String asbiepGuid = getGuidWithPrefix(result.get(ASBIEP.GUID));
 
-        return propertyTerm.replaceAll(" ", "-") + "-" + asbiepGuid;
+        /*
+         * Issue 1267
+         */
+        BizCtxAssignmentRecord bizCtxAssignmentRecord = dslContext.selectFrom(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
+                .fetchAny();
+        BizCtxRecord bizCtxRecord = dslContext.selectFrom(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(bizCtxAssignmentRecord.getBizCtxId()))
+                .fetchOne();
+        CtxSchemeRecord ctxSchemeRecord = dslContext.select(CTX_SCHEME.fields())
+                .from(BIZ_CTX_VALUE)
+                .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(CTX_SCHEME.CTX_SCHEME_ID))
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(bizCtxRecord.getBizCtxId()))
+                .fetchAnyInto(CtxSchemeRecord.class);
+
+        return propertyTerm.replaceAll(" ", "-") + "-" +
+                ctxSchemeRecord.getSchemeId().replaceAll(" ", "-") + "-" +
+                bizCtxRecord.getName().replaceAll(" ", "-");
     }
 
     private BieGenerateExpression createBieGenerateExpression(GenerateExpressionOption option) {
