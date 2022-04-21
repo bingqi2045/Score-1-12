@@ -28,21 +28,22 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
     private ScoreUser requester;
 
     public static class AgencyIdListValue {
+
+        private BigInteger agencyIdListValueManifestId;
         private String value;
         private String name;
         private String definition;
 
-        public String getDefinitionSource() {
-            return definitionSource;
-        }
-
-        public void setDefinitionSource(String definitionSource) {
-            this.definitionSource = definitionSource;
-        }
-
         private String definitionSource;
-
         private boolean deprecated;
+
+        public BigInteger getAgencyIdListValueManifestId() {
+            return agencyIdListValueManifestId;
+        }
+
+        public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+            this.agencyIdListValueManifestId = agencyIdListValueManifestId;
+        }
 
         public String getValue() {
             return value;
@@ -66,6 +67,14 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
 
         public void setDefinition(String definition) {
             this.definition = definition;
+        }
+
+        public String getDefinitionSource() {
+            return definitionSource;
+        }
+
+        public void setDefinitionSource(String definitionSource) {
+            this.definitionSource = definitionSource;
         }
 
         public boolean isDeprecated() {

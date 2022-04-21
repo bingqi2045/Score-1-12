@@ -169,7 +169,7 @@ public class LogSnapshotResolver {
         userProperties.put("guid", codeListRecord.getGuid());
         userProperties.put("name", codeListRecord.getName());
         userProperties.put("listId", codeListRecord.getListId());
-        userProperties.put("agencyId", getAgencyIdListValue(codeListRecord.getAgencyId()));
+        userProperties.put("agencyIdListValueId", getAgencyIdListValue(codeListRecord.getAgencyIdListValueId()));
         userProperties.put("versionId", codeListRecord.getVersionId());
         return userProperties;
     }
@@ -208,6 +208,7 @@ public class LogSnapshotResolver {
 
         Map<String, Object> userProperties = new HashMap();
         userProperties.put("guid", agencyIdListValueRecord.getGuid());
+        userProperties.put("value", agencyIdListValueRecord.getValue());
         userProperties.put("name", agencyIdListValueRecord.getName());
         return userProperties;
     }

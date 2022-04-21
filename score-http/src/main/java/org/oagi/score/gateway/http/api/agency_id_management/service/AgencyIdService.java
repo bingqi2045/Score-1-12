@@ -98,6 +98,7 @@ public class AgencyIdService {
                         AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                         AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                         AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
+                        AGENCY_ID_LIST_VALUE.VALUE,
                         AGENCY_ID_LIST_VALUE.NAME)
                 .from(AGENCY_ID_LIST_VALUE)
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST)

@@ -401,7 +401,7 @@ public class LogSerializer {
         properties.put("guid", codeListRecord.getGuid());
         properties.put("name", codeListRecord.getName());
         properties.put("listId", codeListRecord.getListId());
-        properties.put("agencyId", resolver.getAgencyIdListValue(codeListRecord.getAgencyId()));
+        properties.put("agencyId", resolver.getAgencyIdListValue(codeListRecord.getAgencyIdListValueId()));
         properties.put("versionId", codeListRecord.getVersionId());
         properties.put("remark", codeListRecord.getRemark());
         properties.put("definition", codeListRecord.getDefinition());

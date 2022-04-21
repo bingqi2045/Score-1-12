@@ -105,20 +105,20 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     }
 
     /**
-     * Setter for <code>oagi.code_list.agency_id</code>. Foreign key to the
-     * AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains
-     * the code list.
+     * Setter for <code>oagi.code_list.agency_id_list_value_id</code>. Foreign
+     * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
+     * which maintains the code list.
      */
-    public void setAgencyId(ULong value) {
+    public void setAgencyIdListValueId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list.agency_id</code>. Foreign key to the
-     * AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains
-     * the code list.
+     * Getter for <code>oagi.code_list.agency_id_list_value_id</code>. Foreign
+     * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
+     * which maintains the code list.
      */
-    public ULong getAgencyId() {
+    public ULong getAgencyIdListValueId() {
         return (ULong) get(5);
     }
 
@@ -439,7 +439,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     /**
      * Create a detached, initialised CodeListRecord
      */
-    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacementCodeListId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
+    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacementCodeListId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
         super(CodeList.CODE_LIST);
 
         setCodeListId(codeListId);
@@ -447,7 +447,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
         setEnumTypeGuid(enumTypeGuid);
         setName(name);
         setListId(listId);
-        setAgencyId(agencyId);
+        setAgencyIdListValueId(agencyIdListValueId);
         setVersionId(versionId);
         setDefinition(definition);
         setRemark(remark);

@@ -253,7 +253,7 @@ public class CodeListUpliftingService {
         newCodeList.setBasedCodeListId(codeList.getBasedCodeListId());
         newCodeList.setName(codeList.getName());
         newCodeList.setListId(codeList.getListId());
-        newCodeList.setAgencyId(codeList.getAgencyId());
+        newCodeList.setAgencyIdListValueId(codeList.getAgencyIdListValueId());
         newCodeList.setVersionId(codeList.getVersionId());
         newCodeList.setRemark(codeList.getRemark());
         newCodeList.setDefinition(codeList.getDefinition());

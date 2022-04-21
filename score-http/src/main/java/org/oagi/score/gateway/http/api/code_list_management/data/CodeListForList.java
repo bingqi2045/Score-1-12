@@ -18,9 +18,10 @@ public class CodeListForList {
     private String guid;
     private BigInteger basedCodeListManifestId;
     private String basedCodeListName;
-    private BigInteger agencyId;
+    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueValue;
+    private String agencyIdListValueName;
     private String listId;
-    private String agencyIdName;
     private String versionId;
     private boolean extensible;
     private boolean deprecated;

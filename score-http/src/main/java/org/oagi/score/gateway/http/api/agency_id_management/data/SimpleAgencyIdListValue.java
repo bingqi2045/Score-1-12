@@ -10,6 +10,7 @@ public class SimpleAgencyIdListValue {
     private BigInteger agencyIdListValueManifestId;
     private BigInteger agencyIdListManifestId;
     private BigInteger agencyIdListValueId;
+    private String value;
     private String name;
 
 }

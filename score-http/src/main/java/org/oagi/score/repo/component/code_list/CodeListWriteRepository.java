@@ -53,6 +53,7 @@ public class CodeListWriteRepository {
 
         List<CodeListValueManifestRecord> basedCodeListValueManifestList = null;
         CodeListManifestRecord basedCodeListManifestRecord = null;
+        AgencyIdListValueManifestRecord agencyIdListValueManifestRecord;
 
         if (request.getbasedCodeListManifestId() != null) {
             basedCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
@@ -60,7 +61,7 @@ public class CodeListWriteRepository {
                             .eq(ULong.valueOf(request.getbasedCodeListManifestId())))
                     .fetchOne();
             if (basedCodeListManifestRecord == null) {
-                throw new IllegalArgumentException("Cannot find Based Code List");
+                throw new IllegalArgumentException("Cannot find a based Code List [codeListManifestId=" + request.getbasedCodeListManifestId() + "]");
             }
 
             CodeListRecord basedCodeListRecord = dslContext.selectFrom(CODE_LIST)
@@ -69,7 +70,11 @@ public class CodeListWriteRepository {
                     .fetchOne();
 
             codeList.setName(basedCodeListRecord.getName());
-            codeList.setAgencyId(basedCodeListRecord.getAgencyId());
+            codeList.setAgencyIdListValueId(basedCodeListRecord.getAgencyIdListValueId());
+            agencyIdListValueManifestRecord = dslContext.selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(basedCodeListManifestRecord.getAgencyIdListValueManifestId()))
+                    .fetchOne();
+
             codeList.setVersionId(basedCodeListRecord.getVersionId());
             codeList.setBasedCodeListId(basedCodeListRecord.getCodeListId());
             if (user.isDeveloper()) {
@@ -92,16 +97,19 @@ public class CodeListWriteRepository {
             } else {
                 initialAgencyIdValueName = "Mutually defined";
             }
-            codeList.setAgencyId(dslContext.select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID)
-                    .from(AGENCY_ID_LIST_VALUE)
-                    .join(AGENCY_ID_LIST_VALUE_MANIFEST)
+
+            agencyIdListValueManifestRecord = dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.fields())
+                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .join(AGENCY_ID_LIST_VALUE)
                     .on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
                     .join(APP_USER)
                     .on(AGENCY_ID_LIST_VALUE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                     .where(and(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName),
                             APP_USER.IS_DEVELOPER.eq((byte) 1),
                             AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(AgencyIdListValueManifestRecord.class);
+
+            codeList.setAgencyIdListValueId(agencyIdListValueManifestRecord.getAgencyIdListValueId());
             codeList.setVersionId("1");
             if (user.isDeveloper()) {
                 codeList.setExtensibleIndicator((byte) 1);
@@ -127,6 +135,7 @@ public class CodeListWriteRepository {
         if (basedCodeListManifestRecord != null) {
             codeListManifest.setBasedCodeListManifestId(basedCodeListManifestRecord.getCodeListManifestId());
         }
+        codeListManifest.setAgencyIdListValueManifestId(agencyIdListValueManifestRecord.getAgencyIdListValueManifestId());
 
         codeListManifest = dslContext.insertInto(CODE_LIST_MANIFEST)
                 .set(codeListManifest)
@@ -206,8 +215,20 @@ public class CodeListWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
+        if (request.getAgencyIdListValueManifestId() != null) {
+            ULong agencyIdListValueManifestId = ULong.valueOf(request.getAgencyIdListValueManifestId());
+            ULong agencyIdListValueId = dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
+                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(agencyIdListValueManifestId))
+                    .fetchOneInto(ULong.class);
+            codeListRecord.setAgencyIdListValueId(agencyIdListValueId);
+            codeListManifestRecord.setAgencyIdListValueManifestId(agencyIdListValueManifestId);
+        } else {
+            codeListRecord.setAgencyIdListValueId(null);
+            codeListManifestRecord.setAgencyIdListValueManifestId(null);
+        }
+
         codeListRecord.setName(request.getCodeListName());
-        codeListRecord.setAgencyId((request.getAgencyId() != null) ? ULong.valueOf(request.getAgencyId()) : null);
         codeListRecord.setVersionId(request.getVersionId());
         codeListRecord.setListId(request.getListId());
         codeListRecord.setNamespaceId((request.getNamespaceId() != null) ? ULong.valueOf(request.getNamespaceId()) : null);
@@ -218,7 +239,7 @@ public class CodeListWriteRepository {
         codeListRecord.setIsDeprecated((byte) (request.isDeprecated() ? 1 : 0));
         codeListRecord.setLastUpdatedBy(userId);
         codeListRecord.setLastUpdateTimestamp(timestamp);
-        codeListRecord.update(CODE_LIST.NAME, CODE_LIST.AGENCY_ID,
+        codeListRecord.update(CODE_LIST.NAME, CODE_LIST.AGENCY_ID_LIST_VALUE_ID,
                 CODE_LIST.VERSION_ID, CODE_LIST.LIST_ID, CODE_LIST.NAMESPACE_ID,
                 CODE_LIST.DEFINITION, CODE_LIST.DEFINITION_SOURCE, CODE_LIST.REMARK,
                 CODE_LIST.EXTENSIBLE_INDICATOR, CODE_LIST.IS_DEPRECATED,
@@ -233,7 +254,7 @@ public class CodeListWriteRepository {
                         userId, timestamp);
 
         codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID, CODE_LIST_MANIFEST.LOG_ID);
 
         return new UpdateCodeListPropertiesRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }

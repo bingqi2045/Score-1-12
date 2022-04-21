@@ -313,7 +313,7 @@ public class JooqAgencyIdListReadRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public List<AgencyIdListValue> getAgencyIdListValueList(BigInteger agencyIdListManifestId) throws ScoreDataAccessException {
-        return dslContext().select(
+        List<AgencyIdListValue> agencyIdListValueList = dslContext().select(
                 AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                 AGENCY_ID_LIST_VALUE_MANIFEST.BASED_AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                 AGENCY_ID_LIST_VALUE.GUID,
@@ -340,5 +340,19 @@ public class JooqAgencyIdListReadRepository
             agencyIdListValue.setDefinitionSource(e.get(AGENCY_ID_LIST_VALUE.DEFINITION_SOURCE));
             return agencyIdListValue;
         });
+
+        for (AgencyIdListValue agencyIdListValue : agencyIdListValueList) {
+            boolean used = dslContext().selectCount()
+                    .from(CODE_LIST_MANIFEST)
+                    .where(CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(agencyIdListValue.getAgencyIdListValueManifestId())))
+                    .fetchOptionalInto(Integer.class).orElse(0) +
+                    dslContext().selectCount()
+                    .from(AGENCY_ID_LIST_MANIFEST)
+                    .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(agencyIdListValue.getAgencyIdListValueManifestId())))
+                    .fetchOptionalInto(Integer.class).orElse(0) > 0;
+            agencyIdListValue.setUsed(used);
+        }
+
+        return agencyIdListValueList;
     }
 }
