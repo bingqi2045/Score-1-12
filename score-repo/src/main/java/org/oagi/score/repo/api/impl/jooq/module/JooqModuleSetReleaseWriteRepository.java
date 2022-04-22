@@ -15,6 +15,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.jooq.impl.DSL.and;
@@ -37,15 +38,19 @@ public class JooqModuleSetReleaseWriteRepository
                 .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))
                 .fetchOneInto(String.class);
         // Issue #1276
-        if (moduleSetReleaseName.endsWith("Module Set Release")) {
-            return moduleSetReleaseName;
-        } else if (moduleSetReleaseName.endsWith("Module Set")) {
-            return moduleSetReleaseName + " Release";
-        } else if (moduleSetReleaseName.endsWith("Module")) {
-            return moduleSetReleaseName + " Set Release";
-        } else {
-            return moduleSetReleaseName + " Module Set Release";
+        return concatWithDuplicateElimination(moduleSetReleaseName, "Module Set Release");
+    }
+
+    private String concatWithDuplicateElimination(String str1, String str2) {
+        String[] str2Tokens = str2.split(" ");
+        String partialStr2 = "";
+        for (int i = 0, len = str2Tokens.length; i < len; ++i) {
+            partialStr2 += ((i == 0) ? "" : " ") + str2Tokens[i];
+            if (str1.endsWith(partialStr2)) {
+                return str1 + " " + String.join(" ", Arrays.copyOfRange(str2Tokens, i + 1, len));
+            }
         }
+        return str1 + " " + str2;
     }
 
     @Override
