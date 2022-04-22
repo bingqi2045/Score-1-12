@@ -13,6 +13,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentR
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -125,7 +126,7 @@ public class BieGenerateService {
 
         String filename;
         if (topLevelAsbiepList.size() == 1) {
-            filename = getFilenameByTopLevelAsbiep(topLevelAsbiepList.get(0));
+            filename = getFilenameByTopLevelAsbiep(topLevelAsbiepList.get(0), option);
         } else {
             filename = ScoreGuid.randomGuid();
         }
@@ -154,7 +155,7 @@ public class BieGenerateService {
             }
 
             generateExpression.generate(topLevelAsbiep, generationContext, option);
-            String filename = getFilenameByTopLevelAsbiep(topLevelAsbiep);
+            String filename = getFilenameByTopLevelAsbiep(topLevelAsbiep, option);
             int numOfFilenames = filenames.getOrDefault(filename, 0);
             filenames.put(filename, numOfFilenames + 1);
 
@@ -173,7 +174,12 @@ public class BieGenerateService {
         return targetFiles;
     }
 
-    private String getFilenameByTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
+    private String getFilenameByTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep, GenerateExpressionOption option) {
+        Map<BigInteger, String> filenames = option.getFilenames();
+        if (filenames != null && filenames.containsKey(topLevelAsbiep.getTopLevelAsbiepId())) {
+            return filenames.get(topLevelAsbiep.getTopLevelAsbiepId());
+        }
+
         /*
          * Issue 566
          */
@@ -205,16 +211,18 @@ public class BieGenerateService {
         BizCtxRecord bizCtxRecord = dslContext.selectFrom(BIZ_CTX)
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(bizCtxAssignmentRecord.getBizCtxId()))
                 .fetchOne();
-        CtxSchemeRecord ctxSchemeRecord = dslContext.select(CTX_SCHEME.fields())
-                .from(BIZ_CTX_VALUE)
-                .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
-                .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(CTX_SCHEME.CTX_SCHEME_ID))
-                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(bizCtxRecord.getBizCtxId()))
-                .fetchAnyInto(CtxSchemeRecord.class);
 
-        return propertyTerm.replaceAll(" ", "-") + "-" +
-                ctxSchemeRecord.getSchemeId().replaceAll(" ", "-") + "-" +
-                bizCtxRecord.getName().replaceAll(" ", "-");
+        StringBuilder sb = new StringBuilder();
+        sb.append(propertyTerm.replaceAll(" ", "-"));
+        if (bizCtxRecord != null) {
+            sb.append('-').append(bizCtxRecord.getName().replaceAll(" ", "-"));
+        }
+        String version = StringUtils.trim(topLevelAsbiep.getVersion());
+        if (StringUtils.hasLength(version)) {
+            sb.append('-').append(version.replaceAll(".", "_"));
+        }
+
+        return sb.toString();
     }
 
     private BieGenerateExpression createBieGenerateExpression(GenerateExpressionOption option) {
