@@ -8,6 +8,8 @@ public interface BusinessTermWriteRepository {
     CreateBusinessTermResponse createBusinessTerm(
             CreateBusinessTermRequest request) throws ScoreDataAccessException;
 
+    CreateBulkBusinessTermResponse createBusinessTermsFromFile(CreateBulkBusinessTermRequest request) throws ScoreDataAccessException;
+
     UpdateBusinessTermResponse updateBusinessTerm(
             UpdateBusinessTermRequest request) throws ScoreDataAccessException;
 

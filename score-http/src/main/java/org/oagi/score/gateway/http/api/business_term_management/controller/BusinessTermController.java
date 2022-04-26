@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -33,6 +34,8 @@ public class BusinessTermController {
     @Autowired
     private BusinessTermService businessTermService;
 
+    private static String TYPE = "text/csv";
+
     @RequestMapping(value = "/business_terms", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<BusinessTerm> getBusinessTermList(
@@ -40,7 +43,7 @@ public class BusinessTermController {
             @RequestParam(name = "businessTerm", required = false) String term,
             @RequestParam(name = "externalReferenceUri", required = false) String externalReferenceUri,
             @RequestParam(name = "externalReferenceId", required = false) String externalReferenceId,
-            @RequestParam(name = "definition", required = false) String definition,
+            @RequestParam(name = "comment", required = false) String comment,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -59,7 +62,7 @@ public class BusinessTermController {
         request.setBusinessTerm(term);
         request.setExternalRefUri(externalReferenceUri);
         request.setExternalRefId(externalReferenceId);
-        request.setDefinition(definition);
+        request.setComment(comment);
         request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
                 Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
                         .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
@@ -108,10 +111,7 @@ public class BusinessTermController {
     public boolean checkUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessTerm businessTerm) {
-        return businessTermService.checkBusinessTermUniqueness(
-                businessTerm.getBusinessTerm(),
-                businessTerm.getExternalReferenceUri()
-                );
+        return businessTermService.checkBusinessTermUniqueness(businessTerm);
     }
 
 
@@ -120,7 +120,7 @@ public class BusinessTermController {
     public boolean checkNameUniqueness(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessTerm businessTerm) {
-        return businessTermService.checkBusinessTermNameUniqueness(businessTerm.getBusinessTerm());
+        return businessTermService.checkBusinessTermNameUniqueness(businessTerm);
     }
 
     @RequestMapping(value = "/business_terms/assign", method = RequestMethod.GET,
@@ -189,7 +189,7 @@ public class BusinessTermController {
         CreateBusinessTermRequest request =
                 new CreateBusinessTermRequest(authenticationService.asScoreUser(requester));
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setDefinition(businessTerm.getDefinition());
+        request.setComment(businessTerm.getComment());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 
@@ -203,6 +203,33 @@ public class BusinessTermController {
         }
     }
 
+    @RequestMapping(value = "/csv/business_terms", method = RequestMethod.POST)
+    public ResponseEntity uploadFile(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestParam("file") MultipartFile file) {
+        if (TYPE.equals(file.getContentType())) {
+            try {
+                CreateBulkBusinessTermRequest request = new CreateBulkBusinessTermRequest(authenticationService.asScoreUser(requester));
+                request.setInputStream(file.getInputStream());
+                CreateBulkBusinessTermResponse response = businessTermService.createBusinessTermsFromFile(request);
+                if (response.getBusinessTermIds() != null && !response.getBusinessTermIds().isEmpty()) {
+                    System.out.println("Uploaded the file successfully: " + file.getOriginalFilename()
+                            + "Created record ids: ");
+                    response.getBusinessTermIds().stream().forEach(System.out::println);
+                    return ResponseEntity.noContent().build();
+                } else {
+                    return ResponseEntity.badRequest().build();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.badRequest().body(
+                        "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Please upload a csv file!");
+        }
+    }
+
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
             @PathVariable("id") BigInteger businessTermId,
@@ -213,7 +240,7 @@ public class BusinessTermController {
                 new UpdateBusinessTermRequest(authenticationService.asScoreUser(requester))
                         .withBusinessTermId(businessTermId);
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setDefinition(businessTerm.getDefinition());
+        request.setDefinition(businessTerm.getComment());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 

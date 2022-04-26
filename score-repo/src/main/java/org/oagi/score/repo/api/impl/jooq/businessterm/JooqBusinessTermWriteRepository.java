@@ -45,7 +45,7 @@ public class JooqBusinessTermWriteRepository
 
         record.setGuid(randomGuid());
         record.setBusinessTerm(request.getBusinessTerm());
-        record.setDefinition(request.getDefinition());
+        record.setDefinition(request.getComment());
         record.setExternalRefId(request.getExternalReferenceId());
         record.setExternalRefUri(request.getExternalReferenceUri());
         record.setCreatedBy(requesterUserId);
@@ -60,6 +60,39 @@ public class JooqBusinessTermWriteRepository
 
         return new CreateBusinessTermResponse(businessTermId);
     }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public CreateBulkBusinessTermResponse createBusinessTermsFromFile(CreateBulkBusinessTermRequest request)
+            throws ScoreDataAccessException {
+
+        ScoreUser requester = request.getRequester();
+        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        List<BigInteger> createdRecordIds = request.getBusinessTermList().stream().map(businessTerm -> {
+            BusinessTermRecord record = new BusinessTermRecord();
+            record.setGuid(randomGuid());
+            record.setBusinessTerm(businessTerm.getBusinessTerm());
+            record.setDefinition(businessTerm.getComment());
+            record.setExternalRefId(businessTerm.getExternalReferenceId());
+            record.setExternalRefUri(businessTerm.getExternalReferenceUri());
+            record.setCreatedBy(requesterUserId);
+            record.setLastUpdatedBy(requesterUserId);
+            record.setCreationTimestamp(timestamp);
+            record.setLastUpdateTimestamp(timestamp);
+
+            BigInteger recordId = dslContext().insertInto(BUSINESS_TERM)
+                    .set(record)
+                    .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
+                    .fetchOne().getBusinessTermId().toBigInteger();
+            return recordId;
+        }).collect(Collectors.toList());
+
+        return new CreateBulkBusinessTermResponse(createdRecordIds);
+    }
+
+
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})

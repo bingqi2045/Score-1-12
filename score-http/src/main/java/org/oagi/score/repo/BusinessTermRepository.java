@@ -7,6 +7,7 @@ import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBus
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.model.AssignBusinessTermRequest;
 import org.oagi.score.repo.api.businessterm.model.AssignedBusinessTerm;
+import org.oagi.score.repo.api.businessterm.model.BusinessTerm;
 import org.oagi.score.repo.api.businessterm.model.GetAssignedBusinessTermRequest;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -297,25 +298,27 @@ public class BusinessTermRepository {
                 && assignBusinessTermRequest.getPrimaryIndicator() != null){
             boolean isUnique = assignBusinessTermRequest.getBiesToAssign().stream().map(bieToAssign -> {
                 if(bieToAssign.getBieType().equals("ASBIE")) {
+                    List<Condition> conditions = new ArrayList<>();
+                    conditions.add(and(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
+                            ASCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
+                            ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
+                            ASBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
                     return dslContext.selectCount()
                             .from(ASBIE_BIZTERM)
                             .leftJoin(ASCC_BIZTERM).on(ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(ASCC_BIZTERM.ASCC_BIZTERM_ID))
-                            .where(
-                                and(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
-                                ASCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
-                                ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
-                                ASBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())))
-                        .fetchOneInto(Integer.class) == 0;
+                            .where(conditions)
+                            .fetchOneInto(Integer.class) == 0;
                 }
                 else if(bieToAssign.getBieType().equals("BBIE")) {
+                    List<Condition> conditions = new ArrayList<>();
+                    conditions.add(and(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
+                            BCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
+                            BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
+                            BBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
                     return dslContext.selectCount()
                             .from(BBIE_BIZTERM)
                             .leftJoin(BCC_BIZTERM).on(BBIE_BIZTERM.BCC_BIZTERM_ID.eq(BCC_BIZTERM.BCC_BIZTERM_ID))
-                            .where(
-                                    and(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
-                                    BCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
-                                    BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
-                                    BBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())))
+                            .where(conditions)
                             .fetchOneInto(Integer.class) == 0;
                 } else throw new ScoreDataAccessException("Wrong BIE type: " + bieToAssign.getBieType());
             }).allMatch(isUniqueRecord -> isUniqueRecord );
@@ -325,29 +328,38 @@ public class BusinessTermRepository {
     }
 
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public boolean checkBusinessTermUniqueness(String businessTerm, String externalRefUri)
+    public boolean checkBusinessTermUniqueness(BusinessTerm businessTerm)
             throws ScoreDataAccessException {
 
-        if(businessTerm != null && externalRefUri != null){
+        if(businessTerm.getBusinessTerm() != null && businessTerm.getExternalReferenceUri() != null){
+            List<Condition> conditions = new ArrayList<>();
+            conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
+                    BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri())));
+            if(businessTerm.getBusinessTermId() != null) {
+                conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(ULong.valueOf(businessTerm.getBusinessTermId())));
+            }
             return dslContext.selectCount()
                             .from(BUSINESS_TERM)
-                            .where(
-                                    and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm),
-                                            BUSINESS_TERM.EXTERNAL_REF_URI.eq(externalRefUri))
-                            )
+                            .where(conditions)
                             .fetchOneInto(Integer.class) == 0;
         } else
             throw new ScoreDataAccessException("Wrong input data");
     }
 
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public boolean checkBusinessTermNameUniqueness(String businessTerm)
+    public boolean checkBusinessTermNameUniqueness(BusinessTerm businessTerm)
             throws ScoreDataAccessException {
+
+        List<Condition> conditions = new ArrayList<>();
+        conditions.add(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()));
+        if(businessTerm.getBusinessTermId() != null) {
+            conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(ULong.valueOf(businessTerm.getBusinessTermId())));
+        }
 
         if(businessTerm != null){
             return dslContext.selectCount()
                     .from(BUSINESS_TERM)
-                    .where(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm))
+                    .where(conditions)
                     .fetchOneInto(Integer.class) == 0;
         } else
             throw new ScoreDataAccessException("Wrong input data");

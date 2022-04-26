@@ -1,14 +1,14 @@
 package org.oagi.score.gateway.http.api.business_term_management.service;
 
-import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Update;
+import org.jooq.tools.csv.CSVReader;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.BusinessTermRepository;
 import org.oagi.score.repo.PaginationResponse;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListRequest;
 import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListResponse;
 import org.oagi.score.repo.api.businessterm.model.*;
@@ -22,9 +22,11 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.jooq.impl.DSL.trueCondition;
 
 @Service
 @Transactional(readOnly = true)
@@ -72,6 +74,39 @@ public class BusinessTermService {
     public CreateBusinessTermResponse createBusinessTerm(CreateBusinessTermRequest request) {
         CreateBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermWriteRepository().createBusinessTerm(request);
+        return response;
+    }
+
+    @Transactional
+    public CreateBulkBusinessTermResponse createBusinessTermsFromFile(CreateBulkBusinessTermRequest request)
+            throws ScoreDataAccessException {
+        try (CSVReader reader = new CSVReader(
+                new BufferedReader(
+                        new InputStreamReader(request.getInputStream(), "UTF-8"), ','))) {
+            List<BusinessTerm> businessTerms = new ArrayList<BusinessTerm>();
+
+            List<String[]> list = reader.readAll();
+            list.remove(0); // remove header with column names
+            for (String[] recordStr : list) {
+                BusinessTerm term = new BusinessTerm();
+                term.setBusinessTerm(recordStr[0]);
+                term.setComment(recordStr[3]);
+                term.setExternalReferenceId(recordStr[2]);
+                term.setExternalReferenceUri(recordStr[1]);
+
+                if(checkBusinessTermUniqueness(term)) {
+                    businessTerms.add(term);
+                }
+            }
+            request.setBusinessTermList(businessTerms);
+        }
+        catch (IOException e) {
+            throw new ScoreDataAccessException("Fail to parse CSV file: " + e.getMessage());
+        }
+
+        CreateBulkBusinessTermResponse response =
+                scoreRepositoryFactory.createBusinessTermWriteRepository()
+                        .createBusinessTermsFromFile(request);
         return response;
     }
 
@@ -159,11 +194,11 @@ public class BusinessTermService {
     }
 
 
-    public boolean checkBusinessTermUniqueness(String businessTerm, String externalRefUri) {
-        return businessTermRepository.checkBusinessTermUniqueness(businessTerm, externalRefUri);
+    public boolean checkBusinessTermUniqueness(BusinessTerm businessTerm) {
+        return businessTermRepository.checkBusinessTermUniqueness(businessTerm);
     }
 
-    public boolean checkBusinessTermNameUniqueness(String businessTerm) {
+    public boolean checkBusinessTermNameUniqueness(BusinessTerm businessTerm) {
         return businessTermRepository.checkBusinessTermNameUniqueness(businessTerm);
     }
 }
