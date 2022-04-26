@@ -22,6 +22,9 @@ public class GenerateExpressionOption {
     private String expressionOption;
     private String packageOption;
 
+    private boolean includeBusinessContextInFilename;
+    private boolean includeVersionInFilename;
+
     private boolean arrayForJsonExpression;
     private boolean includeMetaHeaderForJson;
     private BigInteger metaHeaderTopLevelAsbiepId;

@@ -205,21 +205,27 @@ public class BieGenerateService {
         /*
          * Issue 1267
          */
-        BizCtxAssignmentRecord bizCtxAssignmentRecord = dslContext.selectFrom(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
-                .fetchAny();
-        BizCtxRecord bizCtxRecord = dslContext.selectFrom(BIZ_CTX)
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(bizCtxAssignmentRecord.getBizCtxId()))
-                .fetchOne();
-
         StringBuilder sb = new StringBuilder();
         sb.append(propertyTerm.replaceAll(" ", "-"));
-        if (bizCtxRecord != null) {
-            sb.append('-').append(bizCtxRecord.getName().replaceAll(" ", "-"));
+
+        if (option.isIncludeBusinessContextInFilename()) {
+            BizCtxAssignmentRecord bizCtxAssignmentRecord = dslContext.selectFrom(BIZ_CTX_ASSIGNMENT)
+                    .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
+                    .fetchAny();
+            BizCtxRecord bizCtxRecord = dslContext.selectFrom(BIZ_CTX)
+                    .where(BIZ_CTX.BIZ_CTX_ID.eq(bizCtxAssignmentRecord.getBizCtxId()))
+                    .fetchOne();
+
+            if (bizCtxRecord != null) {
+                sb.append('-').append(bizCtxRecord.getName().replaceAll(" ", "-"));
+            }
         }
-        String version = StringUtils.trim(topLevelAsbiep.getVersion());
-        if (StringUtils.hasLength(version)) {
-            sb.append('-').append(version.replaceAll(".", "_"));
+        
+        if (option.isIncludeVersionInFilename()) {
+            String version = StringUtils.trim(topLevelAsbiep.getVersion());
+            if (StringUtils.hasLength(version)) {
+                sb.append('-').append(version.replaceAll(".", "_"));
+            }
         }
 
         return sb.toString();
