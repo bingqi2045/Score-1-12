@@ -52,6 +52,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     @Override
     public void afterPropertiesSet() {
+        this.processedElements.clear();
         this.document = new Document();
         this.schemaNode = generateSchema(document);
     }
