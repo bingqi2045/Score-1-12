@@ -1305,92 +1305,97 @@ public class CcNodeService extends EventHandler {
 
         CreateOagisBodResponse response = new CreateOagisBodResponse();
 
-        BigInteger bodManifestId = _createOagisBod(user, request);
-        response.setManifestId(bodManifestId);
+        List<BigInteger> bodManifestIdList = _createOagisBod(user, request);
+        response.setManifestIdList(bodManifestIdList);
 
         return response;
     }
 
-    private BigInteger _createOagisBod(AuthenticatedPrincipal user, CreateOagisBodRequest request) {
+    private List<BigInteger> _createOagisBod(AuthenticatedPrincipal user, CreateOagisBodRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new IllegalArgumentException();
         }
 
-        AsccpManifestRecord verbManifestRecord = asccpReadRepository.getAsccpManifestById(request.getVerbManifestId());
-        BigInteger releaseId = verbManifestRecord.getReleaseId().toBigInteger();
-        AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(request.getVerbManifestId());
-        AsccpRecord noun = asccpReadRepository.getAsccpByManifestId(request.getNounManifestId());
+        List<BigInteger> bodManifestIdList = new ArrayList();
+        for (BigInteger verbManifestId : request.getVerbManifestIdList()) {
+            for (BigInteger nounManifestId : request.getNounManifestIdList()) {
+                AsccpManifestRecord verbManifestRecord = asccpReadRepository.getAsccpManifestById(verbManifestId);
+                BigInteger releaseId = verbManifestRecord.getReleaseId().toBigInteger();
+                AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(verbManifestId);
+                AsccpRecord noun = asccpReadRepository.getAsccpByManifestId(nounManifestId);
 
-        if(verb.getNamespaceId() == null) {
-            throw new IllegalArgumentException("'" + verb.getPropertyTerm() + "' dose not have Namespace Id.");
-        }
+                if (verb.getNamespaceId() == null) {
+                    throw new IllegalArgumentException("'" + verb.getPropertyTerm() + "' dose not have a namespace.");
+                }
 
-        if(noun.getNamespaceId() == null) {
-            throw new IllegalArgumentException("'" + noun.getPropertyTerm() + "' dose not have Namespace Id.");
-        }
+                if (noun.getNamespaceId() == null) {
+                    throw new IllegalArgumentException("'" + noun.getPropertyTerm() + "' dose not have a namespace.");
+                }
 
-        BigInteger namespaceId = verb.getNamespaceId().toBigInteger();
+                BigInteger namespaceId = verb.getNamespaceId().toBigInteger();
 
-        CreateAccRepositoryRequest dataAreaAccRequest = new CreateAccRepositoryRequest(user, releaseId);
-        dataAreaAccRequest.setInitialComponentType(OagisComponentType.Semantics);
-        dataAreaAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm(), "Data Area")));
-        dataAreaAccRequest.setNamespaceId(namespaceId);
-        BigInteger dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
+                CreateAccRepositoryRequest dataAreaAccRequest = new CreateAccRepositoryRequest(user, releaseId);
+                dataAreaAccRequest.setInitialComponentType(OagisComponentType.Semantics);
+                dataAreaAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm(), "Data Area")));
+                dataAreaAccRequest.setNamespaceId(namespaceId);
+                BigInteger dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
 
-        CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
-                dataAreaAccManifestId, request.getVerbManifestId());
-        verbAsccRequest.setCardinalityMin(1);
-        verbAsccRequest.setCardinalityMax(1);
-        asccWriteRepository.createAscc(verbAsccRequest);
+                CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
+                        dataAreaAccManifestId, verbManifestId);
+                verbAsccRequest.setCardinalityMin(1);
+                verbAsccRequest.setCardinalityMax(1);
+                asccWriteRepository.createAscc(verbAsccRequest);
 
-        CreateAsccRepositoryRequest nounAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
-                dataAreaAccManifestId, request.getNounManifestId());
-        nounAsccRequest.setCardinalityMin(1);
-        nounAsccRequest.setCardinalityMax(-1);
-        asccWriteRepository.createAscc(nounAsccRequest);
+                CreateAsccRepositoryRequest nounAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
+                        dataAreaAccManifestId, nounManifestId);
+                nounAsccRequest.setCardinalityMin(1);
+                nounAsccRequest.setCardinalityMax(-1);
+                asccWriteRepository.createAscc(nounAsccRequest);
 
-        CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, releaseId);
-        dataAreaAsccpRequest.setInitialPropertyTerm("Data Area");
-        dataAreaAsccpRequest.setNamespaceId(namespaceId);
-        dataAreaAsccpRequest.setReusable(false);
-        String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
-                .replaceAll(" ", "");
-        dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
-        dataAreaAsccpRequest.setDefinitionSource("http://www.openapplications.org/oagis/10");
-        BigInteger dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
+                CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, releaseId);
+                dataAreaAsccpRequest.setInitialPropertyTerm("Data Area");
+                dataAreaAsccpRequest.setNamespaceId(namespaceId);
+                dataAreaAsccpRequest.setReusable(false);
+                String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
+                        .replaceAll(" ", "");
+                dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
+                dataAreaAsccpRequest.setDefinitionSource("http://www.openapplications.org/oagis/10");
+                BigInteger dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
 
+                ULong bodBasedAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                        .from(ACC_MANIFEST)
+                        .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .where(and(
+                                ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                ACC.OBJECT_CLASS_TERM.eq("Business Object Document")
+                        ))
+                        .fetchOneInto(ULong.class);
 
-        ULong bodBasedAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
-                .from(ACC_MANIFEST)
-                .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .where(and(
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        ACC.OBJECT_CLASS_TERM.eq("Business Object Document")
-                ))
-                .fetchOneInto(ULong.class);
+                CreateAccRepositoryRequest bodAccRequest = new CreateAccRepositoryRequest(user, releaseId);
+                bodAccRequest.setBasedAccManifestId(bodBasedAccManifestId.toBigInteger());
+                bodAccRequest.setInitialComponentType(OagisComponentType.Semantics);
+                bodAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm())));
+                bodAccRequest.setNamespaceId(namespaceId);
+                BigInteger bodAccManifestId = accWriteRepository.createAcc(bodAccRequest).getAccManifestId();
 
-        CreateAccRepositoryRequest bodAccRequest = new CreateAccRepositoryRequest(user, releaseId);
-        bodAccRequest.setBasedAccManifestId(bodBasedAccManifestId.toBigInteger());
-        bodAccRequest.setInitialComponentType(OagisComponentType.Semantics);
-        bodAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm())));
-        bodAccRequest.setNamespaceId(namespaceId);
-        BigInteger bodAccManifestId = accWriteRepository.createAcc(bodAccRequest).getAccManifestId();
-
-        CreateAsccRepositoryRequest dataAreaAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
-                bodAccManifestId, dataAreaAsccpManifestId);
-        dataAreaAsccRequest.setCardinalityMin(1);
-        dataAreaAsccRequest.setCardinalityMax(1);
+                CreateAsccRepositoryRequest dataAreaAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
+                        bodAccManifestId, dataAreaAsccpManifestId);
+                dataAreaAsccRequest.setCardinalityMin(1);
+                dataAreaAsccRequest.setCardinalityMax(1);
 //        dataAreaAsccRequest.setDefinition(dataAreaAsccpRequest.getDefinition());
 //        dataAreaAsccRequest.setDefinitionSource(dataAreaAsccpRequest.getDefinitionSoruce());
-        asccWriteRepository.createAscc(dataAreaAsccRequest);
+                asccWriteRepository.createAscc(dataAreaAsccRequest);
 
-        CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, releaseId);
-        bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
-        bodAsccpRequest.setNamespaceId(namespaceId);
-        BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
+                CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, releaseId);
+                bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
+                bodAsccpRequest.setNamespaceId(namespaceId);
+                BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
+                bodManifestIdList.add(bodAsccpManifestId);
+            }
+        }
 
-        return bodAsccpManifestId;
+        return bodManifestIdList;
     }
 
     @Transactional
