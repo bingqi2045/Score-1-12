@@ -62,6 +62,10 @@ public class JooqBusinessTermAssignmentWriteRepository
                             .fetchOne().getAsccBiztermId();
                 }
 
+                if(request.getPrimaryIndicator().equals("1")) {
+                    updateOtherBieBiztermToNotPrimary(bieToAssign.getBieId(), bieToAssign.getBieType(),
+                            request.getTypeCode(), requesterUserId);
+                }
                 AsbieBiztermRecord asbieBiztermRecord = new AsbieBiztermRecord();
                 asbieBiztermRecord.setAsbieId(ULong.valueOf(bieToAssign.getBieId()));
                 asbieBiztermRecord.setAsccBiztermId(asccBiztermRecordId);
@@ -96,6 +100,10 @@ public class JooqBusinessTermAssignmentWriteRepository
                             .fetchOne().getBccBiztermId();
                 }
 
+                if(request.getPrimaryIndicator().equals("1")) {
+                    updateOtherBieBiztermToNotPrimary(bieToAssign.getBieId(), bieToAssign.getBieType(),
+                            request.getTypeCode(), requesterUserId);
+                }
                 BbieBiztermRecord bbieBiztermRecord = new BbieBiztermRecord();
                 bbieBiztermRecord.setBbieId(ULong.valueOf(bieToAssign.getBieId()));
                 bbieBiztermRecord.setBccBiztermId(bccBiztermRecordId);
@@ -186,7 +194,8 @@ public class JooqBusinessTermAssignmentWriteRepository
                 record.setPrimaryIndicator(request.getPrimaryIndicator());
                 changedField.add(ASBIE_BIZTERM.PRIMARY_INDICATOR);
                 if(request.getPrimaryIndicator().equals("1")) {
-                    updateOtherBieBiztermToNotPrimary(request);
+                    updateOtherBieBiztermToNotPrimary(request.getBieId(), request.getBieType(),
+                            request.getTypeCode(), requesterUserId);
                 }
             }
             if (!changedField.isEmpty()) {
@@ -220,7 +229,8 @@ public class JooqBusinessTermAssignmentWriteRepository
                 record.setPrimaryIndicator(request.getPrimaryIndicator());
                 changedField.add(BBIE_BIZTERM.PRIMARY_INDICATOR);
                 if(request.getPrimaryIndicator().equals("1")) {
-                    updateOtherBieBiztermToNotPrimary(request);
+                    updateOtherBieBiztermToNotPrimary(request.getBieId(), request.getBieType(),
+                            request.getTypeCode(), requesterUserId);
                 }
             }
             if (!changedField.isEmpty()) {
@@ -241,22 +251,24 @@ public class JooqBusinessTermAssignmentWriteRepository
         else throw new ScoreDataAccessException("Wrong BIE type");
     }
 
-    private int updateOtherBieBiztermToNotPrimary(UpdateBusinessTermAssignmentRequest request)
+    private int updateOtherBieBiztermToNotPrimary(BigInteger bieId, String bieType, String typeCode, ULong requesterUserId)
             throws ScoreDataAccessException {
-        ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
         LocalDateTime timestamp = LocalDateTime.now();
 
-        if(request.getBieType().equals("ASBIE")){
+        if(bieType.equals("ASBIE")){
             return dslContext().update(ASBIE_BIZTERM)
                     .set(ASBIE_BIZTERM.PRIMARY_INDICATOR, "0")
-                    .where(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(request.getBieId())))
+                    .set(ASBIE_BIZTERM.LAST_UPDATED_BY, requesterUserId)
+                    .set(ASBIE_BIZTERM.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(and(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(bieId)), ASBIE_BIZTERM.TYPE_CODE.eq(typeCode)))
                     .execute();
         }
-        else if (request.getBieType().equals("BBIE")) {
+        else if (bieType.equals("BBIE")) {
             return dslContext().update(BBIE_BIZTERM)
                     .set(BBIE_BIZTERM.PRIMARY_INDICATOR, "0")
-                    .where(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(request.getBieId())))
+                    .set(BBIE_BIZTERM.LAST_UPDATED_BY, requesterUserId)
+                    .set(BBIE_BIZTERM.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(and(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(bieId)), BBIE_BIZTERM.TYPE_CODE.eq(typeCode)))
                     .execute();
         }
         else throw new ScoreDataAccessException("Wrong BIE type");
