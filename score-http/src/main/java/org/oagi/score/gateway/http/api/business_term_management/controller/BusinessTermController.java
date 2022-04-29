@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.business_term_management.controller;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
 import org.oagi.score.gateway.http.api.business_term_management.service.BusinessTermService;
+import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.model.*;
 import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.common.data.PageRequest;
@@ -257,7 +258,7 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessTermId) {
+            @PathVariable("id") BigInteger businessTermId) throws ScoreDataAccessException  {
 
         DeleteBusinessTermRequest request =
                 new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
@@ -428,5 +429,10 @@ public class BusinessTermController {
         } else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @ExceptionHandler(ScoreDataAccessException.class)
+    public ResponseEntity handleAllException(Exception ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

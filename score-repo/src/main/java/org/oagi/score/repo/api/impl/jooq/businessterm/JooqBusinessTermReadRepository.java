@@ -146,8 +146,12 @@ public class JooqBusinessTermReadRepository
 
         Field field;
         switch (trim(request.getSortActive()).toLowerCase()) {
-            case "name":
+            case "businessterm":
                 field = BUSINESS_TERM.BUSINESS_TERM_;
+                break;
+
+            case "comment":
+                field = BUSINESS_TERM.DEFINITION;
                 break;
 
             case "lastupdatetimestamp":

@@ -13,6 +13,7 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -153,15 +154,19 @@ public class JooqBusinessTermWriteRepository
         if (businessTermIdList == null || businessTermIdList.isEmpty()) {
             return new DeleteBusinessTermResponse(Collections.emptyList());
         }
-        dslContext().delete(BUSINESS_TERM)
-                .where(
-                        businessTermIdList.size() == 1 ?
-                                BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermIdList.get(0))) :
-                                BUSINESS_TERM.BUSINESS_TERM_ID.in(
-                                        businessTermIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
-                )
-                .execute();
+        try {
+            dslContext().delete(BUSINESS_TERM)
+                    .where(
+                            businessTermIdList.size() == 1 ?
+                                    BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermIdList.get(0))) :
+                                    BUSINESS_TERM.BUSINESS_TERM_ID.in(
+                                            businessTermIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                                    )
+                    )
+                    .execute();
+        } catch (Exception e) {
+            throw new ScoreDataAccessException("It's not possible to delete the used business term.");
+        }
 
         DeleteBusinessTermResponse response = new DeleteBusinessTermResponse(businessTermIdList);
         return response;

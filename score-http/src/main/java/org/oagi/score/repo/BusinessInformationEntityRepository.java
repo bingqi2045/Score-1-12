@@ -585,22 +585,21 @@ public class BusinessInformationEntityRepository {
 
                         break;
 
-                    case "propertyTerm":
+                    case "topLevelAsccpPropertyTerm":
                         if ("asc".equals(direction)) {
-                            this.sortField = ASCCP.PROPERTY_TERM.asc();
+                            this.sortField = field("topLevelAsccpPropertyTerm").asc();
                         } else if ("desc".equals(direction)) {
-                            this.sortField = ASCCP.PROPERTY_TERM.desc();
+                            this.sortField = field("topLevelAsccpPropertyTerm").desc();
                         }
 
                         break;
 
-                    case "releaseNum":
+                    case "den":
                         if ("asc".equals(direction)) {
-                            this.sortField = RELEASE.RELEASE_NUM.asc();
+                            this.sortField = field("den").asc();
                         } else if ("desc".equals(direction)) {
-                            this.sortField = RELEASE.RELEASE_NUM.desc();
+                            this.sortField = field("den").desc();
                         }
-
                         break;
 
                     case "lastUpdateTimestamp":

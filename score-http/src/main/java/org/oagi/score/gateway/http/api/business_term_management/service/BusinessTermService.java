@@ -120,7 +120,7 @@ public class BusinessTermService {
     }
 
     @Transactional
-    public DeleteBusinessTermResponse deleteBusinessTerm(DeleteBusinessTermRequest request) {
+    public DeleteBusinessTermResponse deleteBusinessTerm(DeleteBusinessTermRequest request) throws ScoreDataAccessException {
         DeleteBusinessTermResponse response =
                 scoreRepositoryFactory.createBusinessTermWriteRepository()
                         .deleteBusinessTerm(request);

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import javax.swing.text.html.Option;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -207,47 +210,31 @@ public class BusinessTermRepository {
     }
 
     public Optional<SortField> setSort(String field, String direction) {
-        Optional<SortField> sortField = Optional.empty();
+        Optional<Field> sortField = Optional.empty();
         if (StringUtils.hasLength(field)) {
             switch (field) {
                 case "bieType":
-                    if ("asc".equals(direction)) {
-                        sortField = Optional.of(field("type").asc());
-                    } else if ("desc".equals(direction)) {
-                        sortField = Optional.of(field("type").desc());
-                    }
-
+                    sortField = Optional.of(field("bieType"));
                     break;
 
-                case "den":
-                    if ("asc".equals(direction)) {
-                        sortField = Optional.of(field("den").asc());
-                    } else if ("desc".equals(direction)) {
-                        sortField = Optional.of(field("den").desc());
-                    }
-
+                case "bieDen":
+                    sortField = Optional.of(field("den"));
                     break;
 
-                case "releaseNum":
-                    if ("asc".equals(direction)) {
-                        sortField = Optional.of(RELEASE.RELEASE_NUM.asc());
-                    } else if ("desc".equals(direction)) {
-                        sortField = Optional.of(RELEASE.RELEASE_NUM.desc());
-                    }
-
+                case "businessTerm":
+                    sortField = Optional.of(BUSINESS_TERM.BUSINESS_TERM_);
                     break;
 
                 case "lastUpdateTimestamp":
-                    if ("asc".equals(direction)) {
-                        sortField = Optional.of(field("lastUpdateTimestamp").asc());
-                    } else if ("desc".equals(direction)) {
-                        sortField = Optional.of(field("lastUpdateTimestamp").desc());
-                    }
-
+                    sortField = Optional.of(field("lastUpdateTimestamp"));
                     break;
+
+                default:
+                    return Optional.empty();
             }
         }
-        return sortField;
+        return (direction.equals("asc")) ? Optional.of(sortField.get().asc()) : Optional.of(sortField.get().desc());
+
     }
 
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
@@ -294,15 +281,13 @@ public class BusinessTermRepository {
         if(assignBusinessTermRequest.getBusinessTermId() != null
                 && assignBusinessTermRequest.getBiesToAssign() != null
                 && assignBusinessTermRequest.getBiesToAssign().size() == 1
-                && assignBusinessTermRequest.getTypeCode() != null
-                && assignBusinessTermRequest.getPrimaryIndicator() != null){
+                && assignBusinessTermRequest.getTypeCode() != null){
             boolean isUnique = assignBusinessTermRequest.getBiesToAssign().stream().map(bieToAssign -> {
                 if(bieToAssign.getBieType().equals("ASBIE")) {
                     List<Condition> conditions = new ArrayList<>();
                     conditions.add(and(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
                             ASCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
-                            ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
-                            ASBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
+                            ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode())));
                     return dslContext.selectCount()
                             .from(ASBIE_BIZTERM)
                             .leftJoin(ASCC_BIZTERM).on(ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(ASCC_BIZTERM.ASCC_BIZTERM_ID))
@@ -313,8 +298,7 @@ public class BusinessTermRepository {
                     List<Condition> conditions = new ArrayList<>();
                     conditions.add(and(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
                             BCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
-                            BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
-                            BBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
+                            BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode())));
                     return dslContext.selectCount()
                             .from(BBIE_BIZTERM)
                             .leftJoin(BCC_BIZTERM).on(BBIE_BIZTERM.BCC_BIZTERM_ID.eq(BCC_BIZTERM.BCC_BIZTERM_ID))
@@ -323,8 +307,9 @@ public class BusinessTermRepository {
                 } else throw new ScoreDataAccessException("Wrong BIE type: " + bieToAssign.getBieType());
             }).allMatch(isUniqueRecord -> isUniqueRecord );
             return isUnique;
-        } else
+        } else {
             throw new ScoreDataAccessException("Wrong input data");
+        }
     }
 
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
