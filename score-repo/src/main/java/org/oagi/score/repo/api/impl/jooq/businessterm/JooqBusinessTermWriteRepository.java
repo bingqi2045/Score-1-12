@@ -45,7 +45,8 @@ public class JooqBusinessTermWriteRepository
 
         record.setGuid(randomGuid());
         record.setBusinessTerm(request.getBusinessTerm());
-        record.setDefinition(request.getComment());
+        record.setComment(request.getComment());
+        record.setDefinition(request.getDefinition());
         record.setExternalRefId(request.getExternalReferenceId());
         record.setExternalRefUri(request.getExternalReferenceUri());
         record.setCreatedBy(requesterUserId);

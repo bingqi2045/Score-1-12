@@ -162,6 +162,9 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
     private transient AsccBizterm _asccBizterm;
     private transient Asbie _asbie;
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc_bizterm</code> table.
+     */
     public AsccBizterm asccBizterm() {
         if (_asccBizterm == null)
             _asccBizterm = new AsccBizterm(this, Keys.ASBIE_BIZTERM_ASCC_BIZTERM_FK);
@@ -169,6 +172,9 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
         return _asccBizterm;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asbie</code> table.
+     */
     public Asbie asbie() {
         if (_asbie == null)
             _asbie = new Asbie(this, Keys.ASBIE_BIZTERM_ASBIE_FK);

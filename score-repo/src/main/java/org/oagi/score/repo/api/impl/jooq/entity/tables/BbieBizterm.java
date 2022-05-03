@@ -169,6 +169,9 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     private transient BccBizterm _bccBizterm;
     private transient Bbie _bbie;
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc_bizterm</code> table.
+     */
     public BccBizterm bccBizterm() {
         if (_bccBizterm == null)
             _bccBizterm = new BccBizterm(this, Keys.BBIE_BIZTERM_BCC_BIZTERM_FK);
@@ -176,6 +179,9 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
         return _bccBizterm;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bbie</code> table.
+     */
     public Bbie bbie() {
         if (_bbie == null)
             _bbie = new Bbie(this, Keys.BBIE_BIZTERM_BBIE_FK);

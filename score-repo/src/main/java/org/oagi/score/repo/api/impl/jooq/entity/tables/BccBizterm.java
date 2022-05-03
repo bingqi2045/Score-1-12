@@ -150,6 +150,9 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
     private transient BusinessTerm _businessTerm;
     private transient Bcc _bcc;
 
+    /**
+     * Get the implicit join path to the <code>oagi.business_term</code> table.
+     */
     public BusinessTerm businessTerm() {
         if (_businessTerm == null)
             _businessTerm = new BusinessTerm(this, Keys.BCC_BIZTERM_BUSINESS_TERM_FK);
@@ -157,6 +160,9 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
         return _businessTerm;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc</code> table.
+     */
     public Bcc bcc() {
         if (_bcc == null)
             _bcc = new Bcc(this, Keys.BCC_BIZTERM_BCC_FK);

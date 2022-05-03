@@ -9,27 +9,14 @@ public class CreateBusinessTermRequest extends Request {
 
     private String comment;
 
+    private String definition;
+
     private String externalReferenceUri;
 
     private String externalReferenceId;
 
     public CreateBusinessTermRequest(ScoreUser requester) {
         super(requester);
-    }
-
-    public CreateBusinessTermRequest(String businessTerm, String comment, String externalReferenceUri, String externalReferenceId) {
-        this.businessTerm = businessTerm;
-        this.comment = comment;
-        this.externalReferenceUri = externalReferenceUri;
-        this.externalReferenceId = externalReferenceId;
-    }
-
-    public CreateBusinessTermRequest(ScoreUser requester, String businessTerm, String comment, String externalReferenceUri, String externalReferenceId) {
-        super(requester);
-        this.businessTerm = businessTerm;
-        this.comment = comment;
-        this.externalReferenceUri = externalReferenceUri;
-        this.externalReferenceId = externalReferenceId;
     }
 
     public CreateBusinessTermRequest() {
@@ -49,6 +36,14 @@ public class CreateBusinessTermRequest extends Request {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public String getExternalReferenceUri() {

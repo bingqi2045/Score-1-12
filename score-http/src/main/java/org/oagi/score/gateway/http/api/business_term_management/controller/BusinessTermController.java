@@ -45,6 +45,7 @@ public class BusinessTermController {
             @RequestParam(name = "externalReferenceUri", required = false) String externalReferenceUri,
             @RequestParam(name = "externalReferenceId", required = false) String externalReferenceId,
             @RequestParam(name = "definition", required = false) String definition,
+            @RequestParam(name = "comment", required = false) String comment,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -64,6 +65,7 @@ public class BusinessTermController {
         request.setExternalRefUri(externalReferenceUri);
         request.setExternalRefId(externalReferenceId);
         request.setDefinition(definition);
+        request.setComment(comment);
         request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
                 Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
                         .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
@@ -190,7 +192,8 @@ public class BusinessTermController {
         CreateBusinessTermRequest request =
                 new CreateBusinessTermRequest(authenticationService.asScoreUser(requester));
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setComment(businessTerm.getDefinition());
+        request.setDefinition(businessTerm.getDefinition());
+        request.setComment(businessTerm.getComment());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 

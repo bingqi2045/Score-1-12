@@ -150,6 +150,9 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
     private transient BusinessTerm _businessTerm;
     private transient Ascc _ascc;
 
+    /**
+     * Get the implicit join path to the <code>oagi.business_term</code> table.
+     */
     public BusinessTerm businessTerm() {
         if (_businessTerm == null)
             _businessTerm = new BusinessTerm(this, Keys.ASCC_BIZTERM_BUSINESS_TERM_FK);
@@ -157,6 +160,9 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
         return _businessTerm;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc</code> table.
+     */
     public Ascc ascc() {
         if (_ascc == null)
             _ascc = new Ascc(this, Keys.ASCC_BIZTERM_ASCC_FK);

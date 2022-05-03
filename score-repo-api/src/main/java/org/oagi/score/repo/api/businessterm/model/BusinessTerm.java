@@ -14,6 +14,8 @@ public class BusinessTerm extends Auditable {
 
     private String definition;
 
+    private String comment;
+
     private String externalReferenceUri;
 
     private String externalReferenceId;
@@ -48,6 +50,14 @@ public class BusinessTerm extends Auditable {
 
     public void setDefinition(String definition) {
         this.definition = definition;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getExternalReferenceUri() {
@@ -101,10 +111,11 @@ public class BusinessTerm extends Auditable {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public BusinessTerm(BigInteger businessTermId, String businessTerm, String definition, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
+    public BusinessTerm(BigInteger businessTermId, String businessTerm, String definition, String comment, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
         this.businessTermId = businessTermId;
         this.businessTerm = businessTerm;
         this.definition = definition;
+        this.comment = comment;
         this.externalReferenceUri = externalReferenceUri;
         this.externalReferenceId = externalReferenceId;
         this.guid = guid;
@@ -122,6 +133,7 @@ public class BusinessTerm extends Auditable {
                 "businessTermId=" + businessTermId +
                 ", businessTerm='" + businessTerm + '\'' +
                 ", definition='" + definition + '\'' +
+                ", comment='" + comment + '\'' +
                 ", externalReferenceUri='" + externalReferenceUri + '\'' +
                 ", externalReferenceId='" + externalReferenceId + '\'' +
                 ", guid='" + guid + '\'' +

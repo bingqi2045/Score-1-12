@@ -11,7 +11,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -110,6 +110,12 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
      */
     public final TableField<BusinessTermRecord, String> EXTERNAL_REF_ID = createField(DSL.name("external_ref_id"), SQLDataType.VARCHAR(100), this, "TODO: Definition is missing.");
 
+    /**
+     * The column <code>oagi.business_term.comment</code>. Comment of the
+     * business term.
+     */
+    public final TableField<BusinessTermRecord, String> COMMENT = createField(DSL.name("comment"), SQLDataType.CLOB, this, "Comment of the business term.");
+
     private BusinessTerm(Name alias, Table<BusinessTermRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -185,11 +191,11 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }
