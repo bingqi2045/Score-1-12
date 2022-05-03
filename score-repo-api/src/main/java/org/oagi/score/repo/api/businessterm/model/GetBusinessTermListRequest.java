@@ -12,7 +12,7 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
 
     private Collection<BigInteger> businessTermIdList;
     private String businessTerm;
-    private String comment;
+    private String definition;
     private String externalRefUri;
     private String externalRefId;
     private List<BieToAssign> assignedBies;
@@ -40,12 +40,12 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
         this.businessTerm = businessTerm;
     }
 
-    public String getComment() {
-        return comment;
+    public String getDefinition() {
+        return definition;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public String getExternalRefUri() {

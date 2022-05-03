@@ -13,7 +13,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +74,7 @@ public class JooqBusinessTermWriteRepository
             BusinessTermRecord record = new BusinessTermRecord();
             record.setGuid(randomGuid());
             record.setBusinessTerm(businessTerm.getBusinessTerm());
-            record.setDefinition(businessTerm.getComment());
+            record.setDefinition(businessTerm.getDefinition());
             record.setExternalRefId(businessTerm.getExternalReferenceId());
             record.setExternalRefUri(businessTerm.getExternalReferenceUri());
             record.setCreatedBy(requesterUserId);

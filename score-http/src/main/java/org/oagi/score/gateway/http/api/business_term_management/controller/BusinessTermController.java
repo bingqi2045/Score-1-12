@@ -44,7 +44,7 @@ public class BusinessTermController {
             @RequestParam(name = "businessTerm", required = false) String term,
             @RequestParam(name = "externalReferenceUri", required = false) String externalReferenceUri,
             @RequestParam(name = "externalReferenceId", required = false) String externalReferenceId,
-            @RequestParam(name = "comment", required = false) String comment,
+            @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -63,7 +63,7 @@ public class BusinessTermController {
         request.setBusinessTerm(term);
         request.setExternalRefUri(externalReferenceUri);
         request.setExternalRefId(externalReferenceId);
-        request.setComment(comment);
+        request.setDefinition(definition);
         request.setUpdaterUsernameList(!StringUtils.hasLength(updaterUsernameList) ? Collections.emptyList() :
                 Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim())
                         .filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
@@ -190,7 +190,7 @@ public class BusinessTermController {
         CreateBusinessTermRequest request =
                 new CreateBusinessTermRequest(authenticationService.asScoreUser(requester));
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setComment(businessTerm.getComment());
+        request.setComment(businessTerm.getDefinition());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 
@@ -241,7 +241,7 @@ public class BusinessTermController {
                 new UpdateBusinessTermRequest(authenticationService.asScoreUser(requester))
                         .withBusinessTermId(businessTermId);
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setDefinition(businessTerm.getComment());
+        request.setDefinition(businessTerm.getDefinition());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 

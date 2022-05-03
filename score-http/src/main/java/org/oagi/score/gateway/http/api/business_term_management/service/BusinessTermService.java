@@ -90,7 +90,7 @@ public class BusinessTermService {
             for (String[] recordStr : list) {
                 BusinessTerm term = new BusinessTerm();
                 term.setBusinessTerm(recordStr[0]);
-                term.setComment(recordStr[3]);
+                term.setDefinition(recordStr[3]);
                 term.setExternalReferenceId(recordStr[2]);
                 term.setExternalReferenceUri(recordStr[1]);
 

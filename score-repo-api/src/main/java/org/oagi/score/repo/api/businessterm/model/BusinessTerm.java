@@ -12,7 +12,7 @@ public class BusinessTerm extends Auditable {
 
     private String businessTerm;
 
-    private String comment;
+    private String definition;
 
     private String externalReferenceUri;
 
@@ -42,12 +42,12 @@ public class BusinessTerm extends Auditable {
         this.businessTerm = businessTerm;
     }
 
-    public String getComment() {
-        return comment;
+    public String getDefinition() {
+        return definition;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public String getExternalReferenceUri() {
@@ -101,10 +101,10 @@ public class BusinessTerm extends Auditable {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public BusinessTerm(BigInteger businessTermId, String businessTerm, String comment, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
+    public BusinessTerm(BigInteger businessTermId, String businessTerm, String definition, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
         this.businessTermId = businessTermId;
         this.businessTerm = businessTerm;
-        this.comment = comment;
+        this.definition = definition;
         this.externalReferenceUri = externalReferenceUri;
         this.externalReferenceId = externalReferenceId;
         this.guid = guid;
@@ -121,7 +121,7 @@ public class BusinessTerm extends Auditable {
         return "BusinessTerm{" +
                 "businessTermId=" + businessTermId +
                 ", businessTerm='" + businessTerm + '\'' +
-                ", definition='" + comment + '\'' +
+                ", definition='" + definition + '\'' +
                 ", externalReferenceUri='" + externalReferenceUri + '\'' +
                 ", externalReferenceId='" + externalReferenceId + '\'' +
                 ", guid='" + guid + '\'' +
