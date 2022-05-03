@@ -167,6 +167,9 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     private transient Acc _bieUserExtRevisionUserExtAccIdFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.abie</code> table.
+     */
     public Abie abie() {
         if (_abie == null)
             _abie = new Abie(this, Keys.BIE_USER_EXT_REVISION_EXT_ABIE_ID_FK);
@@ -174,6 +177,10 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
         return _abie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>bie_user_ext_revision_ext_acc_id_fk</code> key.
+     */
     public Acc bieUserExtRevisionExtAccIdFk() {
         if (_bieUserExtRevisionExtAccIdFk == null)
             _bieUserExtRevisionExtAccIdFk = new Acc(this, Keys.BIE_USER_EXT_REVISION_EXT_ACC_ID_FK);
@@ -181,6 +188,10 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
         return _bieUserExtRevisionExtAccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>bie_user_ext_revision_user_ext_acc_id_fk</code> key.
+     */
     public Acc bieUserExtRevisionUserExtAccIdFk() {
         if (_bieUserExtRevisionUserExtAccIdFk == null)
             _bieUserExtRevisionUserExtAccIdFk = new Acc(this, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK);
@@ -188,6 +199,10 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
         return _bieUserExtRevisionUserExtAccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.BIE_USER_EXT_REVISION_TOP_LEVEL_ASBIEP_ID_FK);

@@ -11,6 +11,7 @@ import org.oagi.score.repo.api.agency.model.GetAgencyIdListListRequest;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
 
 import org.oagi.score.repo.api.corecomponent.model.CcState;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValueRecord;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.common.data.AccessPrivilege;
@@ -97,6 +98,7 @@ public class AgencyIdService {
                         AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                         AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                         AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID,
+                        AGENCY_ID_LIST_VALUE.VALUE,
                         AGENCY_ID_LIST_VALUE.NAME)
                 .from(AGENCY_ID_LIST_VALUE)
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST)
@@ -175,21 +177,40 @@ public class AgencyIdService {
                 AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
                 AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
-
         if (params.getAgencyIdListManifestId() != null) {
             conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getAgencyIdListManifestId())));
         }
-        conditions.add(and(
-                AGENCY_ID_LIST.LIST_ID.eq(params.getListId()),
-                params.getAgencyId() == null ? AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.isNull() :
-                AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.eq(ULong.valueOf(params.getAgencyId())),
-                AGENCY_ID_LIST.VERSION_ID.eq(params.getVersionId())
-        ));
+        if (params.getAgencyIdListValueManifestId() == null) {
+            conditions.add(and(
+                    AGENCY_ID_LIST.LIST_ID.eq(params.getListId()),
+                    AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID.isNull(),
+                    AGENCY_ID_LIST.VERSION_ID.eq(params.getVersionId())
+            ));
+            return dslContext.selectCount()
+                    .from(AGENCY_ID_LIST_MANIFEST)
+                    .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                    .where(conditions).fetchOneInto(Integer.class) > 0;
+        } else {
+            AgencyIdListValueRecord valueRecord = dslContext.select(AGENCY_ID_LIST_VALUE.fields())
+                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .join(AGENCY_ID_LIST_VALUE).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(params.getAgencyIdListValueManifestId())))
+                    .fetchOneInto(AgencyIdListValueRecord.class);
 
-        return dslContext.selectCount()
-                .from(AGENCY_ID_LIST_MANIFEST)
-                .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
-                .where(conditions).fetchOneInto(Integer.class) > 0;
+            conditions.add(and(
+                    AGENCY_ID_LIST.LIST_ID.eq(params.getListId()),
+                    AGENCY_ID_LIST.VERSION_ID.eq(params.getVersionId()),
+                    AGENCY_ID_LIST_VALUE.NAME.eq(valueRecord.getName()),
+                    AGENCY_ID_LIST_VALUE.VALUE.eq(valueRecord.getValue())
+            ));
+
+            return dslContext.selectCount()
+                    .from(AGENCY_ID_LIST_MANIFEST)
+                    .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                    .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID))
+                    .join(AGENCY_ID_LIST_VALUE).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                    .where(conditions).fetchOneInto(Integer.class) > 0;
+        }
     }
 
     public boolean hasSameNameAgencyIdList(SameNameAgencyIdListParams params) {

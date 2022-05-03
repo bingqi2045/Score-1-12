@@ -152,6 +152,10 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
     private transient AppUser _moduleSetCreatedByFk;
     private transient AppUser _moduleSetLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_set_created_by_fk</code> key.
+     */
     public AppUser moduleSetCreatedByFk() {
         if (_moduleSetCreatedByFk == null)
             _moduleSetCreatedByFk = new AppUser(this, Keys.MODULE_SET_CREATED_BY_FK);
@@ -159,6 +163,10 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
         return _moduleSetCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_set_last_updated_by_fk</code> key.
+     */
     public AppUser moduleSetLastUpdatedByFk() {
         if (_moduleSetLastUpdatedByFk == null)
             _moduleSetLastUpdatedByFk = new AppUser(this, Keys.MODULE_SET_LAST_UPDATED_BY_FK);

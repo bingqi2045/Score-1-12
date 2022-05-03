@@ -256,6 +256,9 @@ public class Asbie extends TableImpl<AsbieRecord> {
     private transient AppUser _asbieLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc_manifest</code> table.
+     */
     public AsccManifest asccManifest() {
         if (_asccManifest == null)
             _asccManifest = new AsccManifest(this, Keys.ASBIE_BASED_ASCC_MANIFEST_ID_FK);
@@ -263,6 +266,9 @@ public class Asbie extends TableImpl<AsbieRecord> {
         return _asccManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.abie</code> table.
+     */
     public Abie abie() {
         if (_abie == null)
             _abie = new Abie(this, Keys.ASBIE_FROM_ABIE_ID_FK);
@@ -270,6 +276,9 @@ public class Asbie extends TableImpl<AsbieRecord> {
         return _abie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asbiep</code> table.
+     */
     public Asbiep asbiep() {
         if (_asbiep == null)
             _asbiep = new Asbiep(this, Keys.ASBIE_TO_ASBIEP_ID_FK);
@@ -277,6 +286,10 @@ public class Asbie extends TableImpl<AsbieRecord> {
         return _asbiep;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asbie_created_by_fk</code> key.
+     */
     public AppUser asbieCreatedByFk() {
         if (_asbieCreatedByFk == null)
             _asbieCreatedByFk = new AppUser(this, Keys.ASBIE_CREATED_BY_FK);
@@ -284,6 +297,10 @@ public class Asbie extends TableImpl<AsbieRecord> {
         return _asbieCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asbie_last_updated_by_fk</code> key.
+     */
     public AppUser asbieLastUpdatedByFk() {
         if (_asbieLastUpdatedByFk == null)
             _asbieLastUpdatedByFk = new AppUser(this, Keys.ASBIE_LAST_UPDATED_BY_FK);
@@ -291,6 +308,10 @@ public class Asbie extends TableImpl<AsbieRecord> {
         return _asbieLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.ASBIE_OWNER_TOP_LEVEL_ASBIEP_ID_FK);

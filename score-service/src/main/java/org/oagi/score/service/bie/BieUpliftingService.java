@@ -534,6 +534,16 @@ public class BieUpliftingService {
             while (!stack.isEmpty()) {
                 String tag = stack.pop();
                 if (tag.startsWith("ACC") && !stack.lastElement().startsWith("ACC")) { // find the last tag of ACCs
+
+                    // Issue #1287
+                    // ABIE path does not end with a group ACC.
+                    BigInteger accManifestId = new BigInteger(tag.substring(tag.indexOf('-') + 1));
+                    AccManifest accManifest = this.targetCcDocument.getAccManifest(accManifestId);
+                    Acc acc = this.targetCcDocument.getAcc(accManifest);
+                    if (acc.isGroup()) {
+                        continue;
+                    }
+
                     stack.push(tag);
                     return String.join(">", stack);
                 }

@@ -265,6 +265,22 @@ public class CcListService {
     }
 
     @Transactional
+    public void purgeCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
+        request.getAccManifestIds().forEach(e -> {
+            ccNodeService.purgeAcc(user, e);
+        });
+        request.getAsccpManifestIds().forEach(e -> {
+            ccNodeService.purgeAsccp(user, e);
+        });
+        request.getBccpManifestIds().forEach(e -> {
+            ccNodeService.purgeBccp(user, e);
+        });
+        request.getDtManifestIds().forEach(e -> {
+            ccNodeService.purgeDt(user, e);
+        });
+    }
+
+    @Transactional
     public void restoreCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
         request.getAccManifestIds().forEach(e -> {
             ccNodeService.updateAccState(user, e, CcState.WIP);

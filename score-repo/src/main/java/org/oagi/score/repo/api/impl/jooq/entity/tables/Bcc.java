@@ -308,6 +308,9 @@ public class Bcc extends TableImpl<BccRecord> {
     private transient Bcc _bccPrevBccIdFk;
     private transient Bcc _bccNextBccIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp</code> table.
+     */
     public Bccp bccp() {
         if (_bccp == null)
             _bccp = new Bccp(this, Keys.BCC_TO_BCCP_ID_FK);
@@ -315,6 +318,9 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccp;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table.
+     */
     public Acc acc() {
         if (_acc == null)
             _acc = new Acc(this, Keys.BCC_FROM_ACC_ID_FK);
@@ -322,6 +328,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _acc;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bcc_created_by_fk</code> key.
+     */
     public AppUser bccCreatedByFk() {
         if (_bccCreatedByFk == null)
             _bccCreatedByFk = new AppUser(this, Keys.BCC_CREATED_BY_FK);
@@ -329,6 +339,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bcc_owner_user_id_fk</code> key.
+     */
     public AppUser bccOwnerUserIdFk() {
         if (_bccOwnerUserIdFk == null)
             _bccOwnerUserIdFk = new AppUser(this, Keys.BCC_OWNER_USER_ID_FK);
@@ -336,6 +350,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bcc_last_updated_by_fk</code> key.
+     */
     public AppUser bccLastUpdatedByFk() {
         if (_bccLastUpdatedByFk == null)
             _bccLastUpdatedByFk = new AppUser(this, Keys.BCC_LAST_UPDATED_BY_FK);
@@ -343,6 +361,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc</code> table, via the
+     * <code>bcc_replacement_bcc_id_fk</code> key.
+     */
     public Bcc bccReplacementBccIdFk() {
         if (_bccReplacementBccIdFk == null)
             _bccReplacementBccIdFk = new Bcc(this, Keys.BCC_REPLACEMENT_BCC_ID_FK);
@@ -350,6 +372,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccReplacementBccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc</code> table, via the
+     * <code>bcc_prev_bcc_id_fk</code> key.
+     */
     public Bcc bccPrevBccIdFk() {
         if (_bccPrevBccIdFk == null)
             _bccPrevBccIdFk = new Bcc(this, Keys.BCC_PREV_BCC_ID_FK);
@@ -357,6 +383,10 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccPrevBccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc</code> table, via the
+     * <code>bcc_next_bcc_id_fk</code> key.
+     */
     public Bcc bccNextBccIdFk() {
         if (_bccNextBccIdFk == null)
             _bccNextBccIdFk = new Bcc(this, Keys.BCC_NEXT_BCC_ID_FK);

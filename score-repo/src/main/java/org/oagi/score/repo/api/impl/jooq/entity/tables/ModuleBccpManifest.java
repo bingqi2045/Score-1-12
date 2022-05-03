@@ -158,6 +158,10 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     private transient AppUser _moduleBccpManifestCreatedByFk;
     private transient AppUser _moduleBccpManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_BCCP_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -165,6 +169,9 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp_manifest</code> table.
+     */
     public BccpManifest bccpManifest() {
         if (_bccpManifest == null)
             _bccpManifest = new BccpManifest(this, Keys.MODULE_BCCP_MANIFEST_BCCP_MANIFEST_ID_FK);
@@ -172,6 +179,9 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
         return _bccpManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_BCCP_MANIFEST_MODULE_ID_FK);
@@ -179,6 +189,10 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_bccp_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleBccpManifestCreatedByFk() {
         if (_moduleBccpManifestCreatedByFk == null)
             _moduleBccpManifestCreatedByFk = new AppUser(this, Keys.MODULE_BCCP_MANIFEST_CREATED_BY_FK);
@@ -186,6 +200,10 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
         return _moduleBccpManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_bccp_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleBccpManifestLastUpdatedByFk() {
         if (_moduleBccpManifestLastUpdatedByFk == null)
             _moduleBccpManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK);

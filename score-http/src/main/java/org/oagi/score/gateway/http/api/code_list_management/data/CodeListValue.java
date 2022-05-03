@@ -15,9 +15,6 @@ public class CodeListValue {
     private String definition;
     private String definitionSource;
 
-    private boolean used;
-    private boolean locked;
-    private boolean extension;
     private boolean deprecated;
     private boolean derived;
 

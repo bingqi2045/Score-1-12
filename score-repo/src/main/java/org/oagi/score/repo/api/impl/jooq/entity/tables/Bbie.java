@@ -315,6 +315,9 @@ public class Bbie extends TableImpl<BbieRecord> {
     private transient AppUser _bbieLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.bcc_manifest</code> table.
+     */
     public BccManifest bccManifest() {
         if (_bccManifest == null)
             _bccManifest = new BccManifest(this, Keys.BBIE_BASED_BCC_MANIFEST_ID_FK);
@@ -322,6 +325,9 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _bccManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.abie</code> table.
+     */
     public Abie abie() {
         if (_abie == null)
             _abie = new Abie(this, Keys.BBIE_FROM_ABIE_ID_FK);
@@ -329,6 +335,9 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _abie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bbiep</code> table.
+     */
     public Bbiep bbiep() {
         if (_bbiep == null)
             _bbiep = new Bbiep(this, Keys.BBIE_TO_BBIEP_ID_FK);
@@ -336,6 +345,9 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _bbiep;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.bdt_pri_restri</code> table.
+     */
     public BdtPriRestri bdtPriRestri() {
         if (_bdtPriRestri == null)
             _bdtPriRestri = new BdtPriRestri(this, Keys.BBIE_BDT_PRI_RESTRI_ID_FK);
@@ -343,6 +355,9 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _bdtPriRestri;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table.
+     */
     public CodeList codeList() {
         if (_codeList == null)
             _codeList = new CodeList(this, Keys.BBIE_CODE_LIST_ID_FK);
@@ -350,6 +365,9 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _codeList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table.
+     */
     public AgencyIdList agencyIdList() {
         if (_agencyIdList == null)
             _agencyIdList = new AgencyIdList(this, Keys.BBIE_AGENCY_ID_LIST_ID_FK);
@@ -357,6 +375,10 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _agencyIdList;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbie_created_by_fk</code> key.
+     */
     public AppUser bbieCreatedByFk() {
         if (_bbieCreatedByFk == null)
             _bbieCreatedByFk = new AppUser(this, Keys.BBIE_CREATED_BY_FK);
@@ -364,6 +386,10 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _bbieCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbie_last_updated_by_fk</code> key.
+     */
     public AppUser bbieLastUpdatedByFk() {
         if (_bbieLastUpdatedByFk == null)
             _bbieLastUpdatedByFk = new AppUser(this, Keys.BBIE_LAST_UPDATED_BY_FK);
@@ -371,6 +397,10 @@ public class Bbie extends TableImpl<BbieRecord> {
         return _bbieLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.BBIE_OWNER_TOP_LEVEL_ASBIEP_ID_FK);

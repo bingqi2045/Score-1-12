@@ -202,6 +202,9 @@ public class Xbt extends TableImpl<XbtRecord> {
     private transient AppUser _xbtOwnerUserIdFk;
     private transient AppUser _xbtLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.xbt</code> table.
+     */
     public Xbt xbt() {
         if (_xbt == null)
             _xbt = new Xbt(this, Keys.XBT_SUBTYPE_OF_XBT_ID_FK);
@@ -209,6 +212,10 @@ public class Xbt extends TableImpl<XbtRecord> {
         return _xbt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>xbt_created_by_fk</code> key.
+     */
     public AppUser xbtCreatedByFk() {
         if (_xbtCreatedByFk == null)
             _xbtCreatedByFk = new AppUser(this, Keys.XBT_CREATED_BY_FK);
@@ -216,6 +223,10 @@ public class Xbt extends TableImpl<XbtRecord> {
         return _xbtCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>xbt_owner_user_id_fk</code> key.
+     */
     public AppUser xbtOwnerUserIdFk() {
         if (_xbtOwnerUserIdFk == null)
             _xbtOwnerUserIdFk = new AppUser(this, Keys.XBT_OWNER_USER_ID_FK);
@@ -223,6 +234,10 @@ public class Xbt extends TableImpl<XbtRecord> {
         return _xbtOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>xbt_last_updated_by_fk</code> key.
+     */
     public AppUser xbtLastUpdatedByFk() {
         if (_xbtLastUpdatedByFk == null)
             _xbtLastUpdatedByFk = new AppUser(this, Keys.XBT_LAST_UPDATED_BY_FK);

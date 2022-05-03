@@ -160,6 +160,10 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
     private transient AppUser _ctxCategoryCreatedByFk;
     private transient AppUser _ctxCategoryLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ctx_category_created_by_fk</code> key.
+     */
     public AppUser ctxCategoryCreatedByFk() {
         if (_ctxCategoryCreatedByFk == null)
             _ctxCategoryCreatedByFk = new AppUser(this, Keys.CTX_CATEGORY_CREATED_BY_FK);
@@ -167,6 +171,10 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
         return _ctxCategoryCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ctx_category_last_updated_by_fk</code> key.
+     */
     public AppUser ctxCategoryLastUpdatedByFk() {
         if (_ctxCategoryLastUpdatedByFk == null)
             _ctxCategoryLastUpdatedByFk = new AppUser(this, Keys.CTX_CATEGORY_LAST_UPDATED_BY_FK);

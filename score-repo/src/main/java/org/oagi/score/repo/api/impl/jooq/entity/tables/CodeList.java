@@ -82,11 +82,11 @@ public class CodeList extends TableImpl<CodeListRecord> {
     public final TableField<CodeListRecord, String> LIST_ID = createField(DSL.name("list_id"), SQLDataType.VARCHAR(100).nullable(false), this, "External identifier.");
 
     /**
-     * The column <code>oagi.code_list.agency_id</code>. Foreign key to the
-     * AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains
-     * the code list.
+     * The column <code>oagi.code_list.agency_id_list_value_id</code>. Foreign
+     * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
+     * which maintains the code list.
      */
-    public final TableField<CodeListRecord, ULong> AGENCY_ID = createField(DSL.name("agency_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.");
+    public final TableField<CodeListRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.");
 
     /**
      * The column <code>oagi.code_list.version_id</code>. Code list version
@@ -251,7 +251,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
 
     @Override
     public List<ForeignKey<CodeListRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_NAMESPACE_ID_FK, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
+        return Arrays.asList(Keys.CODE_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.CODE_LIST_NAMESPACE_ID_FK, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
     }
 
     private transient AgencyIdListValue _agencyIdListValue;
@@ -264,13 +264,20 @@ public class CodeList extends TableImpl<CodeListRecord> {
     private transient CodeList _codeListPrevCodeListIdFk;
     private transient CodeList _codeListNextCodeListIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list_value</code>
+     * table.
+     */
     public AgencyIdListValue agencyIdListValue() {
         if (_agencyIdListValue == null)
-            _agencyIdListValue = new AgencyIdListValue(this, Keys.CODE_LIST_AGENCY_ID_FK);
+            _agencyIdListValue = new AgencyIdListValue(this, Keys.CODE_LIST_AGENCY_ID_LIST_VALUE_ID_FK);
 
         return _agencyIdListValue;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.CODE_LIST_NAMESPACE_ID_FK);
@@ -278,6 +285,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table, via
+     * the <code>code_list_based_code_list_id_fk</code> key.
+     */
     public CodeList codeListBasedCodeListIdFk() {
         if (_codeListBasedCodeListIdFk == null)
             _codeListBasedCodeListIdFk = new CodeList(this, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK);
@@ -285,6 +296,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListBasedCodeListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table, via
+     * the <code>code_list_replacement_code_list_id_fk</code> key.
+     */
     public CodeList codeListReplacementCodeListIdFk() {
         if (_codeListReplacementCodeListIdFk == null)
             _codeListReplacementCodeListIdFk = new CodeList(this, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_ID_FK);
@@ -292,6 +307,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListReplacementCodeListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_created_by_fk</code> key.
+     */
     public AppUser codeListCreatedByFk() {
         if (_codeListCreatedByFk == null)
             _codeListCreatedByFk = new AppUser(this, Keys.CODE_LIST_CREATED_BY_FK);
@@ -299,6 +318,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_owner_user_id_fk</code> key.
+     */
     public AppUser codeListOwnerUserIdFk() {
         if (_codeListOwnerUserIdFk == null)
             _codeListOwnerUserIdFk = new AppUser(this, Keys.CODE_LIST_OWNER_USER_ID_FK);
@@ -306,6 +329,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>code_list_last_updated_by_fk</code> key.
+     */
     public AppUser codeListLastUpdatedByFk() {
         if (_codeListLastUpdatedByFk == null)
             _codeListLastUpdatedByFk = new AppUser(this, Keys.CODE_LIST_LAST_UPDATED_BY_FK);
@@ -313,6 +340,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table, via
+     * the <code>code_list_prev_code_list_id_fk</code> key.
+     */
     public CodeList codeListPrevCodeListIdFk() {
         if (_codeListPrevCodeListIdFk == null)
             _codeListPrevCodeListIdFk = new CodeList(this, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK);
@@ -320,6 +351,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return _codeListPrevCodeListIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.code_list</code> table, via
+     * the <code>code_list_next_code_list_id_fk</code> key.
+     */
     public CodeList codeListNextCodeListIdFk() {
         if (_codeListNextCodeListIdFk == null)
             _codeListNextCodeListIdFk = new CodeList(this, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);

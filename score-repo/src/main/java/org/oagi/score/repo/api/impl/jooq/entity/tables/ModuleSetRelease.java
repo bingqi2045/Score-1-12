@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -66,6 +66,12 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
      * of the release.
      */
     public final TableField<ModuleSetReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the release.");
+
+    /**
+     * The column <code>oagi.module_set_release.name</code>. This is the name of
+     * the module set release.
+     */
+    public final TableField<ModuleSetReleaseRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the module set release.");
 
     /**
      * The column <code>oagi.module_set_release.is_default</code>. It would be a
@@ -158,6 +164,9 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     private transient AppUser _moduleSetReleaseAssignmentCreatedByFk;
     private transient AppUser _moduleSetReleaseAssignmentLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set</code> table.
+     */
     public ModuleSet moduleSet() {
         if (_moduleSet == null)
             _moduleSet = new ModuleSet(this, Keys.MODULE_SET_RELEASE_MODULE_SET_ID_FK);
@@ -165,6 +174,9 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
         return _moduleSet;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.MODULE_SET_RELEASE_RELEASE_ID_FK);
@@ -172,6 +184,10 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_set_release_assignment_created_by_fk</code> key.
+     */
     public AppUser moduleSetReleaseAssignmentCreatedByFk() {
         if (_moduleSetReleaseAssignmentCreatedByFk == null)
             _moduleSetReleaseAssignmentCreatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK);
@@ -179,6 +195,10 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
         return _moduleSetReleaseAssignmentCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_set_release_assignment_last_updated_by_fk</code> key.
+     */
     public AppUser moduleSetReleaseAssignmentLastUpdatedByFk() {
         if (_moduleSetReleaseAssignmentLastUpdatedByFk == null)
             _moduleSetReleaseAssignmentLastUpdatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK);
@@ -213,11 +233,11 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

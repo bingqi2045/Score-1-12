@@ -130,6 +130,9 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
     private transient CdtScAwdPri _cdtScAwdPri;
     private transient Xbt _xbt;
 
+    /**
+     * Get the implicit join path to the <code>oagi.cdt_sc_awd_pri</code> table.
+     */
     public CdtScAwdPri cdtScAwdPri() {
         if (_cdtScAwdPri == null)
             _cdtScAwdPri = new CdtScAwdPri(this, Keys.CDT_SC_AWD_PRI_XPS_TYPE_MAP_CDT_SC_AWD_PRI_ID_FK);
@@ -137,6 +140,9 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
         return _cdtScAwdPri;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.xbt</code> table.
+     */
     public Xbt xbt() {
         if (_xbt == null)
             _xbt = new Xbt(this, Keys.CDT_SC_AWD_PRI_XPS_TYPE_MAP_XBT_ID_FK);

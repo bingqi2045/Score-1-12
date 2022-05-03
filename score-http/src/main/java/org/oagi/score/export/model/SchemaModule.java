@@ -3,6 +3,7 @@ package org.oagi.score.export.model;
 import org.apache.commons.io.FilenameUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,8 +39,25 @@ public class SchemaModule {
         return module.getVersionNum();
     }
 
-    public ULong getNamespace() {
-        return module.getNamespaceId();
+    public ULong getNamespaceId() {
+        if (module.getModuleNamespaceId() != null) {
+            return module.getModuleNamespaceId();
+        }
+        return module.getReleaseNamespaceId();
+    }
+
+    public String getNamespaceUri() {
+        if (StringUtils.hasLength(module.getModuleNamespaceUri())) {
+            return module.getModuleNamespaceUri();
+        }
+        return module.getReleaseNamespaceUri();
+    }
+
+    public String getNamespacePrefix() {
+        if (StringUtils.hasLength(module.getModuleNamespacePrefix())) {
+            return module.getModuleNamespacePrefix();
+        }
+        return module.getReleaseNamespacePrefix();
     }
 
     public boolean hasInclude(SchemaModule schemaModule) {

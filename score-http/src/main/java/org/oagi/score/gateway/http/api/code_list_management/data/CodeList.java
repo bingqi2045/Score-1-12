@@ -18,8 +18,9 @@ public class CodeList {
     private BigInteger namespaceId;
     private String namespaceUri;
 
-    private BigInteger agencyId;
-    private String agencyIdName;
+    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueValue;
+    private String agencyIdListValueName;
     private String versionId;
 
     private String listId;

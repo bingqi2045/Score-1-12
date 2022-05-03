@@ -158,6 +158,10 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
     private transient AppUser _moduleAsccpManifestCreatedByFk;
     private transient AppUser _moduleAsccpManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_ASCCP_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -165,6 +169,9 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp_manifest</code> table.
+     */
     public AsccpManifest asccpManifest() {
         if (_asccpManifest == null)
             _asccpManifest = new AsccpManifest(this, Keys.MODULE_ASCCP_MANIFEST_ASCCP_MANIFEST_ID_FK);
@@ -172,6 +179,9 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
         return _asccpManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_ASCCP_MANIFEST_MODULE_ID_FK);
@@ -179,6 +189,10 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_asccp_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleAsccpManifestCreatedByFk() {
         if (_moduleAsccpManifestCreatedByFk == null)
             _moduleAsccpManifestCreatedByFk = new AppUser(this, Keys.MODULE_ASCCP_MANIFEST_CREATED_BY_FK);
@@ -186,6 +200,10 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
         return _moduleAsccpManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_asccp_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleAsccpManifestLastUpdatedByFk() {
         if (_moduleAsccpManifestLastUpdatedByFk == null)
             _moduleAsccpManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_ASCCP_MANIFEST_LAST_UPDATED_BY_FK);

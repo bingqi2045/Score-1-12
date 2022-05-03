@@ -178,6 +178,10 @@ public class Log extends TableImpl<LogRecord> {
     private transient Log _logNextLogIdFk;
     private transient AppUser _appUser;
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table, via the
+     * <code>log_prev_log_id_fk</code> key.
+     */
     public Log logPrevLogIdFk() {
         if (_logPrevLogIdFk == null)
             _logPrevLogIdFk = new Log(this, Keys.LOG_PREV_LOG_ID_FK);
@@ -185,6 +189,10 @@ public class Log extends TableImpl<LogRecord> {
         return _logPrevLogIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table, via the
+     * <code>log_next_log_id_fk</code> key.
+     */
     public Log logNextLogIdFk() {
         if (_logNextLogIdFk == null)
             _logNextLogIdFk = new Log(this, Keys.LOG_NEXT_LOG_ID_FK);
@@ -192,6 +200,9 @@ public class Log extends TableImpl<LogRecord> {
         return _logNextLogIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table.
+     */
     public AppUser appUser() {
         if (_appUser == null)
             _appUser = new AppUser(this, Keys.LOG_CREATED_BY_FK);

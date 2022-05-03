@@ -632,6 +632,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 CODE_LIST_MANIFEST.CODE_LIST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_MANIFEST.CONFLICT,
                 CODE_LIST_MANIFEST.LOG_ID,
                 CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
@@ -640,6 +641,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         inline(ULong.valueOf(releaseId)),
                         CODE_LIST_MANIFEST.CODE_LIST_ID,
                         CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID,
                         CODE_LIST_MANIFEST.CONFLICT,
                         CODE_LIST_MANIFEST.LOG_ID,
                         CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
@@ -953,6 +955,16 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .set(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID, AGENCY_ID_LIST_VALUE_MANIFEST.as("value").AGENCY_ID_LIST_VALUE_MANIFEST_ID)
                 .where(and(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         AGENCY_ID_LIST_VALUE_MANIFEST.as("value").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
+
+        // To update `code_list_manifest`.`agency_id_list_value_manifest_id`
+        dslContext.update(CODE_LIST_MANIFEST
+                        .join(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev")).on(CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev").AGENCY_ID_LIST_VALUE_MANIFEST_ID))
+                        .join(AGENCY_ID_LIST_VALUE).on(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev").AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                        .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)))
+                .set(CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID, AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .execute();
     }
 

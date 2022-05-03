@@ -179,6 +179,8 @@ public class CcListController {
             service.restoreCcs(user, request);
         } else if (request.getAction().equals("Delete")) {
             service.deleteCcs(user, request);
+        } else if (request.getAction().equals("Purge")) {
+            service.purgeCcs(user, request);
         } else {
             service.updateStateCcs(user, request);
         }

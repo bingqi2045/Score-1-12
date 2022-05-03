@@ -129,33 +129,57 @@ public class CcNodeController {
 
         switch (resp.getType()) {
             case ACC:
-                resp.setManifestId(
-                        service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeAcc(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case ASCCP:
-                resp.setManifestId(
-                        service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeAsccp(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case BCCP:
-                resp.setManifestId(
-                        service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeBccp(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             case DT:
-                resp.setManifestId(
-                        service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
-                );
+                if ("Purge".equals(ccUpdateStateRequest.getState())) {
+                    service.purgeDt(user, manifestId);
+                    resp.setManifestId(manifestId);
+                } else {
+                    resp.setManifestId(
+                            service.updateDtState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
+                    );
+                }
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
         resp.setState(ccUpdateStateRequest.getState());
-        resp.setAccess(
-                ((CcState.WIP == CcState.valueOf(resp.getState())) ? AccessPrivilege.CanEdit : AccessPrivilege.CanMove).name()
-        );
+        if ("Purge".equals(resp.getState())) {
+            resp.setAccess(AccessPrivilege.Prohibited.name());
+        } else {
+            resp.setAccess(
+                    ((CcState.WIP == CcState.valueOf(resp.getState())) ? AccessPrivilege.CanEdit : AccessPrivilege.CanMove).name()
+            );
+        }
 
         return resp;
     }

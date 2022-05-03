@@ -154,6 +154,10 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     private transient AppUser _bizCtxCreatedByFk;
     private transient AppUser _bizCtxLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>biz_ctx_created_by_fk</code> key.
+     */
     public AppUser bizCtxCreatedByFk() {
         if (_bizCtxCreatedByFk == null)
             _bizCtxCreatedByFk = new AppUser(this, Keys.BIZ_CTX_CREATED_BY_FK);
@@ -161,6 +165,10 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
         return _bizCtxCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>biz_ctx_last_updated_by_fk</code> key.
+     */
     public AppUser bizCtxLastUpdatedByFk() {
         if (_bizCtxLastUpdatedByFk == null)
             _bizCtxLastUpdatedByFk = new AppUser(this, Keys.BIZ_CTX_LAST_UPDATED_BY_FK);

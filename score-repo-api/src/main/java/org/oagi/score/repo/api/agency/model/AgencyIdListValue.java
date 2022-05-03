@@ -29,6 +29,8 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private boolean deprecated;
 
+    private boolean used;
+
     private BigInteger prevAgencyIdListValueId;
 
     private BigInteger nextAgencyIdListValueId;
@@ -116,6 +118,14 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
     public BigInteger getPrevAgencyIdListValueId() {

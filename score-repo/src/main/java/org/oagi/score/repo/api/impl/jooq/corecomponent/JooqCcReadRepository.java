@@ -8,6 +8,7 @@ import org.oagi.score.repo.api.corecomponent.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.security.AccessControl;
+import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import javax.print.DocFlavor;
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
-import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.*;
+import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 public class JooqCcReadRepository
         extends JooqScoreRepository
@@ -373,12 +374,15 @@ public class JooqCcReadRepository
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner_login_id"),
                 APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer"),
+                APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"),
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"),
                 APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                 APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                 APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"),
                 ACC.CREATION_TIMESTAMP,
                 ACC.LAST_UPDATE_TIMESTAMP)
                 .from(ACC)
@@ -411,21 +415,46 @@ public class JooqCcReadRepository
             if (record.get(ACC.NEXT_ACC_ID) != null) {
                 acc.setNextAccId(record.get(ACC.NEXT_ACC_ID).toBigInteger());
             }
-            acc.setOwner(new ScoreUser(
-                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER
-            ));
-            acc.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-            ));
-            acc.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-            ));
+
+            ScoreRole ownerRole = (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER;
+            boolean isOwnerAdmin = (byte) 1 == record.get(APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"));
+            acc.setOwner(
+                    (isOwnerAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    Arrays.asList(ownerRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    ownerRole));
+
+            ScoreRole creatorRole = (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER;
+            boolean isCreatorAdmin = (byte) 1 == record.get(APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"));
+            acc.setCreatedBy(
+                    (isCreatorAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    Arrays.asList(creatorRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    creatorRole));
+
+            ScoreRole updaterRole = (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER;
+            boolean isUpdaterAdmin = (byte) 1 == record.get(APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"));
+            acc.setLastUpdatedBy(
+                    (isUpdaterAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    Arrays.asList(updaterRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    updaterRole));
+
             acc.setCreationTimestamp(
                     Date.from(record.get(ACC.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             acc.setLastUpdateTimestamp(
@@ -533,12 +562,15 @@ public class JooqCcReadRepository
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner_login_id"),
                 APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer"),
+                APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"),
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"),
                 APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                 APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                 APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"),
                 ASCCP.CREATION_TIMESTAMP,
                 ASCCP.LAST_UPDATE_TIMESTAMP)
                 .from(ASCCP)
@@ -570,21 +602,46 @@ public class JooqCcReadRepository
             if (record.get(ASCCP.NEXT_ASCCP_ID) != null) {
                 asccp.setNextAsccpId(record.get(ASCCP.NEXT_ASCCP_ID).toBigInteger());
             }
-            asccp.setOwner(new ScoreUser(
-                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER
-            ));
-            asccp.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-            ));
-            asccp.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-            ));
+
+            ScoreRole ownerRole = (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER;
+            boolean isOwnerAdmin = (byte) 1 == record.get(APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"));
+            asccp.setOwner(
+                    (isOwnerAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    Arrays.asList(ownerRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    ownerRole));
+
+            ScoreRole creatorRole = (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER;
+            boolean isCreatorAdmin = (byte) 1 == record.get(APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"));
+            asccp.setCreatedBy(
+                    (isCreatorAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    Arrays.asList(creatorRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    creatorRole));
+
+            ScoreRole updaterRole = (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER;
+            boolean isUpdaterAdmin = (byte) 1 == record.get(APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"));
+            asccp.setLastUpdatedBy(
+                    (isUpdaterAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    Arrays.asList(updaterRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    updaterRole));
+
             asccp.setCreationTimestamp(
                     Date.from(record.get(ASCCP.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             asccp.setLastUpdateTimestamp(
@@ -613,12 +670,15 @@ public class JooqCcReadRepository
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner_login_id"),
                 APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer"),
+                APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"),
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"),
                 APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                 APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                 APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"),
                 BCCP.CREATION_TIMESTAMP,
                 BCCP.LAST_UPDATE_TIMESTAMP)
                 .from(BCCP)
@@ -651,21 +711,46 @@ public class JooqCcReadRepository
             if (record.get(BCCP.NEXT_BCCP_ID) != null) {
                 bccp.setNextBccpId(record.get(BCCP.NEXT_BCCP_ID).toBigInteger());
             }
-            bccp.setOwner(new ScoreUser(
-                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER
-            ));
-            bccp.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-            ));
-            bccp.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-            ));
+
+            ScoreRole ownerRole = (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER;
+            boolean isOwnerAdmin = (byte) 1 == record.get(APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"));
+            bccp.setOwner(
+                    (isOwnerAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    Arrays.asList(ownerRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    ownerRole));
+
+            ScoreRole creatorRole = (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER;
+            boolean isCreatorAdmin = (byte) 1 == record.get(APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"));
+            bccp.setCreatedBy(
+                    (isCreatorAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    Arrays.asList(creatorRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    creatorRole));
+
+            ScoreRole updaterRole = (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER;
+            boolean isUpdaterAdmin = (byte) 1 == record.get(APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"));
+            bccp.setLastUpdatedBy(
+                    (isUpdaterAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    Arrays.asList(updaterRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    updaterRole));
+
             bccp.setCreationTimestamp(
                     Date.from(record.get(BCCP.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             bccp.setLastUpdateTimestamp(
@@ -695,12 +780,15 @@ public class JooqCcReadRepository
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner_login_id"),
                 APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer"),
+                APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"),
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
+                APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"),
                 APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                 APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                 APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
+                APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"),
                 DT.CREATION_TIMESTAMP,
                 DT.LAST_UPDATE_TIMESTAMP)
                 .from(DT)
@@ -734,21 +822,46 @@ public class JooqCcReadRepository
             if (record.get(DT.NEXT_DT_ID) != null) {
                 dt.setNextDtId(record.get(DT.NEXT_DT_ID).toBigInteger());
             }
-            dt.setOwner(new ScoreUser(
-                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER
-            ));
-            dt.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
-            ));
-            dt.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
-                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
-                    (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
-            ));
+
+            ScoreRole ownerRole = (byte) 1 == record.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER;
+            boolean isOwnerAdmin = (byte) 1 == record.get(APP_USER.as("owner").IS_ADMIN.as("owner_is_admin"));
+            dt.setOwner(
+                    (isOwnerAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    Arrays.asList(ownerRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
+                                    ownerRole));
+
+            ScoreRole creatorRole = (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER;
+            boolean isCreatorAdmin = (byte) 1 == record.get(APP_USER.as("creator").IS_ADMIN.as("creator_is_admin"));
+            dt.setCreatedBy(
+                    (isCreatorAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    Arrays.asList(creatorRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
+                                    creatorRole));
+
+            ScoreRole updaterRole = (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER;
+            boolean isUpdaterAdmin = (byte) 1 == record.get(APP_USER.as("updater").IS_ADMIN.as("updater_is_admin"));
+            dt.setLastUpdatedBy(
+                    (isUpdaterAdmin) ?
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    Arrays.asList(updaterRole, ADMINISTRATOR)) :
+                            new ScoreUser(
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
+                                    updaterRole));
+
             dt.setCreationTimestamp(
                     Date.from(record.get(DT.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             dt.setLastUpdateTimestamp(

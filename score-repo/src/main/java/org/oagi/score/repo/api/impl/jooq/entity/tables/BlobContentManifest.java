@@ -140,6 +140,9 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     private transient BlobContentManifest _blobContentManifestPrevBlobContentManifestIdFk;
     private transient BlobContentManifest _blobContentManifestNextBlobContentManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.blob_content</code> table.
+     */
     public BlobContent blobContent() {
         if (_blobContent == null)
             _blobContent = new BlobContent(this, Keys.BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK);
@@ -147,6 +150,9 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
         return _blobContent;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.BLOB_CONTENT_MANIFEST_RELEASE_ID_FK);
@@ -154,6 +160,11 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.blob_content_manifest</code>
+     * table, via the
+     * <code>blob_content_manifest_prev_blob_content_manifest_id_fk</code> key.
+     */
     public BlobContentManifest blobContentManifestPrevBlobContentManifestIdFk() {
         if (_blobContentManifestPrevBlobContentManifestIdFk == null)
             _blobContentManifestPrevBlobContentManifestIdFk = new BlobContentManifest(this, Keys.BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK);
@@ -161,6 +172,11 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
         return _blobContentManifestPrevBlobContentManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.blob_content_manifest</code>
+     * table, via the
+     * <code>blob_content_manifest_next_blob_content_manifest_id_fk</code> key.
+     */
     public BlobContentManifest blobContentManifestNextBlobContentManifestIdFk() {
         if (_blobContentManifestNextBlobContentManifestIdFk == null)
             _blobContentManifestNextBlobContentManifestIdFk = new BlobContentManifest(this, Keys.BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK);

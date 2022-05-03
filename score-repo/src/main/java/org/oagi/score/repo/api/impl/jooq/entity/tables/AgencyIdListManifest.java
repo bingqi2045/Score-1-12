@@ -171,6 +171,9 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     private transient AgencyIdListManifest _agencyIdListManifestPrevAgencyIdListManifestIdFk;
     private transient AgencyIdListManifest _agencyIdListManifestNextAgencyIdListManifestIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.release</code> table.
+     */
     public Release release() {
         if (_release == null)
             _release = new Release(this, Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK);
@@ -178,6 +181,9 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _release;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.agency_id_list</code> table.
+     */
     public AgencyIdList agencyIdList() {
         if (_agencyIdList == null)
             _agencyIdList = new AgencyIdList(this, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK);
@@ -185,6 +191,10 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _agencyIdList;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_value_manifest</code> table.
+     */
     public AgencyIdListValueManifest agencyIdListValueManifest() {
         if (_agencyIdListValueManifest == null)
             _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
@@ -192,6 +202,12 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _agencyIdListValueManifest;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table, via the
+     * <code>agency_id_list_manifest_based_agency_id_list_manifest_id_fk</code>
+     * key.
+     */
     public AgencyIdListManifest agencyIdListManifestBasedAgencyIdListManifestIdFk() {
         if (_agencyIdListManifestBasedAgencyIdListManifestIdFk == null)
             _agencyIdListManifestBasedAgencyIdListManifestIdFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK);
@@ -199,6 +215,9 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _agencyIdListManifestBasedAgencyIdListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.log</code> table.
+     */
     public Log log() {
         if (_log == null)
             _log = new Log(this, Keys.AGENCY_ID_LIST_MANIFEST_LOG_ID_FK);
@@ -206,6 +225,12 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _log;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table, via the
+     * <code>agency_id_list_replacement_agency_id_list_manifest_id_fk</code>
+     * key.
+     */
     public AgencyIdListManifest agencyIdListReplacementAgencyIdListManifestIdFk() {
         if (_agencyIdListReplacementAgencyIdListManifestIdFk == null)
             _agencyIdListReplacementAgencyIdListManifestIdFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID_FK);
@@ -213,6 +238,12 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _agencyIdListReplacementAgencyIdListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table, via the
+     * <code>agency_id_list_manifest_prev_agency_id_list_manifest_id_fk</code>
+     * key.
+     */
     public AgencyIdListManifest agencyIdListManifestPrevAgencyIdListManifestIdFk() {
         if (_agencyIdListManifestPrevAgencyIdListManifestIdFk == null)
             _agencyIdListManifestPrevAgencyIdListManifestIdFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK);
@@ -220,6 +251,12 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
         return _agencyIdListManifestPrevAgencyIdListManifestIdFk;
     }
 
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.agency_id_list_manifest</code> table, via the
+     * <code>agency_id_list_manifest_next_agency_id_list_manifest_id_fk</code>
+     * key.
+     */
     public AgencyIdListManifest agencyIdListManifestNextAgencyIdListManifestIdFk() {
         if (_agencyIdListManifestNextAgencyIdListManifestIdFk == null)
             _agencyIdListManifestNextAgencyIdListManifestIdFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);

@@ -230,6 +230,9 @@ public class Abie extends TableImpl<AbieRecord> {
     private transient AppUser _abieLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc_manifest</code> table.
+     */
     public AccManifest accManifest() {
         if (_accManifest == null)
             _accManifest = new AccManifest(this, Keys.ABIE_BASED_ACC_MANIFEST_ID_FK);
@@ -237,6 +240,9 @@ public class Abie extends TableImpl<AbieRecord> {
         return _accManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
+     */
     public BizCtx bizCtx() {
         if (_bizCtx == null)
             _bizCtx = new BizCtx(this, Keys.ABIE_BIZ_CTX_ID_FK);
@@ -244,6 +250,10 @@ public class Abie extends TableImpl<AbieRecord> {
         return _bizCtx;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>abie_created_by_fk</code> key.
+     */
     public AppUser abieCreatedByFk() {
         if (_abieCreatedByFk == null)
             _abieCreatedByFk = new AppUser(this, Keys.ABIE_CREATED_BY_FK);
@@ -251,6 +261,10 @@ public class Abie extends TableImpl<AbieRecord> {
         return _abieCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>abie_last_updated_by_fk</code> key.
+     */
     public AppUser abieLastUpdatedByFk() {
         if (_abieLastUpdatedByFk == null)
             _abieLastUpdatedByFk = new AppUser(this, Keys.ABIE_LAST_UPDATED_BY_FK);
@@ -258,6 +272,10 @@ public class Abie extends TableImpl<AbieRecord> {
         return _abieLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.ABIE_OWNER_TOP_LEVEL_ASBIEP_ID_FK);

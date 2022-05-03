@@ -317,12 +317,14 @@ public class AsccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
-        }
+        if (!request.isIgnoreState()) {
+            if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+            }
 
-        if (!accRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            if (!accRecord.getOwnerUserId().equals(userId)) {
+                throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            }
         }
 
         int usedBieCount = dslContext.selectCount().from(ASBIE)

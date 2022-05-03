@@ -265,6 +265,9 @@ public class DtSc extends TableImpl<DtScRecord> {
     private transient DtSc _dtScPrevDtScIdFk;
     private transient DtSc _dtScNextDtScIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.DT_SC_OWNER_DT_ID_FK);
@@ -272,6 +275,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table, via the
+     * <code>dt_sc_based_dt_sc_id_fk</code> key.
+     */
     public DtSc dtScBasedDtScIdFk() {
         if (_dtScBasedDtScIdFk == null)
             _dtScBasedDtScIdFk = new DtSc(this, Keys.DT_SC_BASED_DT_SC_ID_FK);
@@ -279,6 +286,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScBasedDtScIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table, via the
+     * <code>dt_sc_replacement_dt_sc_id_fk</code> key.
+     */
     public DtSc dtScReplacementDtScIdFk() {
         if (_dtScReplacementDtScIdFk == null)
             _dtScReplacementDtScIdFk = new DtSc(this, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK);
@@ -286,6 +297,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScReplacementDtScIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>dt_sc_created_by_fk</code> key.
+     */
     public AppUser dtScCreatedByFk() {
         if (_dtScCreatedByFk == null)
             _dtScCreatedByFk = new AppUser(this, Keys.DT_SC_CREATED_BY_FK);
@@ -293,6 +308,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>dt_sc_owner_user_id_fk</code> key.
+     */
     public AppUser dtScOwnerUserIdFk() {
         if (_dtScOwnerUserIdFk == null)
             _dtScOwnerUserIdFk = new AppUser(this, Keys.DT_SC_OWNER_USER_ID_FK);
@@ -300,6 +319,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>dt_sc_last_updated_by_fk</code> key.
+     */
     public AppUser dtScLastUpdatedByFk() {
         if (_dtScLastUpdatedByFk == null)
             _dtScLastUpdatedByFk = new AppUser(this, Keys.DT_SC_LAST_UPDATED_BY_FK);
@@ -307,6 +330,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table, via the
+     * <code>dt_sc_prev_dt_sc_id_fk</code> key.
+     */
     public DtSc dtScPrevDtScIdFk() {
         if (_dtScPrevDtScIdFk == null)
             _dtScPrevDtScIdFk = new DtSc(this, Keys.DT_SC_PREV_DT_SC_ID_FK);
@@ -314,6 +341,10 @@ public class DtSc extends TableImpl<DtScRecord> {
         return _dtScPrevDtScIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table, via the
+     * <code>dt_sc_next_dt_sc_id_fk</code> key.
+     */
     public DtSc dtScNextDtScIdFk() {
         if (_dtScNextDtScIdFk == null)
             _dtScNextDtScIdFk = new DtSc(this, Keys.DT_SC_NEXT_DT_SC_ID_FK);

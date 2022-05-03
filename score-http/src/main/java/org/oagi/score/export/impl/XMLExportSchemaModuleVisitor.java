@@ -63,13 +63,18 @@ public class XMLExportSchemaModuleVisitor {
         this.baseDir = baseDirectory.getCanonicalFile();
     }
 
+    private Namespace getNamespace(SchemaModule schemaModule) {
+        return Namespace.getNamespace(schemaModule.getNamespacePrefix(), schemaModule.getNamespaceUri());
+    }
+
     public void startSchemaModule(SchemaModule schemaModule) throws Exception {
         this.schemaModule = schemaModule;
         this.document = createDocument();
 
         Element schemaElement = new Element("schema", XSD_NS);
-        schemaElement.addNamespaceDeclaration(OAGI_NS);
-        schemaElement.setAttribute("targetNamespace", ScoreConstants.OAGI_NS);
+        Namespace namespace = getNamespace(schemaModule);
+        schemaElement.addNamespaceDeclaration(namespace);
+        schemaElement.setAttribute("targetNamespace", namespace.getURI());
         schemaElement.setAttribute("elementFormDefault", "qualified");
         schemaElement.setAttribute("attributeFormDefault", "unqualified");
         String versionNum = schemaModule.getVersionNum();

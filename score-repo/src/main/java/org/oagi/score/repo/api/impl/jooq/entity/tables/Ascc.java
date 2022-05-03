@@ -274,6 +274,9 @@ public class Ascc extends TableImpl<AsccRecord> {
     private transient Ascc _asccPrevAsccIdFk;
     private transient Ascc _asccNextAsccIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table.
+     */
     public Acc acc() {
         if (_acc == null)
             _acc = new Acc(this, Keys.ASCC_FROM_ACC_ID_FK);
@@ -281,6 +284,9 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _acc;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp</code> table.
+     */
     public Asccp asccp() {
         if (_asccp == null)
             _asccp = new Asccp(this, Keys.ASCC_TO_ASCCP_ID_FK);
@@ -288,6 +294,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccp;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc</code> table, via the
+     * <code>ascc_replacement_ascc_id_fk</code> key.
+     */
     public Ascc asccReplacementAsccIdFk() {
         if (_asccReplacementAsccIdFk == null)
             _asccReplacementAsccIdFk = new Ascc(this, Keys.ASCC_REPLACEMENT_ASCC_ID_FK);
@@ -295,6 +305,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccReplacementAsccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ascc_created_by_fk</code> key.
+     */
     public AppUser asccCreatedByFk() {
         if (_asccCreatedByFk == null)
             _asccCreatedByFk = new AppUser(this, Keys.ASCC_CREATED_BY_FK);
@@ -302,6 +316,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ascc_owner_user_id_fk</code> key.
+     */
     public AppUser asccOwnerUserIdFk() {
         if (_asccOwnerUserIdFk == null)
             _asccOwnerUserIdFk = new AppUser(this, Keys.ASCC_OWNER_USER_ID_FK);
@@ -309,6 +327,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>ascc_last_updated_by_fk</code> key.
+     */
     public AppUser asccLastUpdatedByFk() {
         if (_asccLastUpdatedByFk == null)
             _asccLastUpdatedByFk = new AppUser(this, Keys.ASCC_LAST_UPDATED_BY_FK);
@@ -316,6 +338,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc</code> table, via the
+     * <code>ascc_prev_ascc_id_fk</code> key.
+     */
     public Ascc asccPrevAsccIdFk() {
         if (_asccPrevAsccIdFk == null)
             _asccPrevAsccIdFk = new Ascc(this, Keys.ASCC_PREV_ASCC_ID_FK);
@@ -323,6 +349,10 @@ public class Ascc extends TableImpl<AsccRecord> {
         return _asccPrevAsccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ascc</code> table, via the
+     * <code>ascc_next_ascc_id_fk</code> key.
+     */
     public Ascc asccNextAsccIdFk() {
         if (_asccNextAsccIdFk == null)
             _asccNextAsccIdFk = new Ascc(this, Keys.ASCC_NEXT_ASCC_ID_FK);

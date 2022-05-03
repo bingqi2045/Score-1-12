@@ -176,6 +176,10 @@ public class Namespace extends TableImpl<NamespaceRecord> {
     private transient AppUser _namespaceCreatedByFk;
     private transient AppUser _namespaceLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>namespace_owner_user_id_fk</code> key.
+     */
     public AppUser namespaceOwnerUserIdFk() {
         if (_namespaceOwnerUserIdFk == null)
             _namespaceOwnerUserIdFk = new AppUser(this, Keys.NAMESPACE_OWNER_USER_ID_FK);
@@ -183,6 +187,10 @@ public class Namespace extends TableImpl<NamespaceRecord> {
         return _namespaceOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>namespace_created_by_fk</code> key.
+     */
     public AppUser namespaceCreatedByFk() {
         if (_namespaceCreatedByFk == null)
             _namespaceCreatedByFk = new AppUser(this, Keys.NAMESPACE_CREATED_BY_FK);
@@ -190,6 +198,10 @@ public class Namespace extends TableImpl<NamespaceRecord> {
         return _namespaceCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>namespace_last_updated_by_fk</code> key.
+     */
     public AppUser namespaceLastUpdatedByFk() {
         if (_namespaceLastUpdatedByFk == null)
             _namespaceLastUpdatedByFk = new AppUser(this, Keys.NAMESPACE_LAST_UPDATED_BY_FK);

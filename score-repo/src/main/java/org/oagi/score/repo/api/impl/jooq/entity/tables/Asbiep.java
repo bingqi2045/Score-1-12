@@ -217,6 +217,9 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     private transient AppUser _asbiepLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.asccp_manifest</code> table.
+     */
     public AsccpManifest asccpManifest() {
         if (_asccpManifest == null)
             _asccpManifest = new AsccpManifest(this, Keys.ASBIEP_BASED_ASCCP_MANIFEST_ID_FK);
@@ -224,6 +227,9 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
         return _asccpManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.abie</code> table.
+     */
     public Abie abie() {
         if (_abie == null)
             _abie = new Abie(this, Keys.ASBIEP_ROLE_OF_ABIE_ID_FK);
@@ -231,6 +237,10 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
         return _abie;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asbiep_created_by_fk</code> key.
+     */
     public AppUser asbiepCreatedByFk() {
         if (_asbiepCreatedByFk == null)
             _asbiepCreatedByFk = new AppUser(this, Keys.ASBIEP_CREATED_BY_FK);
@@ -238,6 +248,10 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
         return _asbiepCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>asbiep_last_updated_by_fk</code> key.
+     */
     public AppUser asbiepLastUpdatedByFk() {
         if (_asbiepLastUpdatedByFk == null)
             _asbiepLastUpdatedByFk = new AppUser(this, Keys.ASBIEP_LAST_UPDATED_BY_FK);
@@ -245,6 +259,10 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
         return _asbiepLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK);

@@ -292,6 +292,10 @@ public class Acc extends TableImpl<AccRecord> {
     private transient Acc _accPrevAccIdFk;
     private transient Acc _accNextAccIdFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>acc_based_acc_id_fk</code> key.
+     */
     public Acc accBasedAccIdFk() {
         if (_accBasedAccIdFk == null)
             _accBasedAccIdFk = new Acc(this, Keys.ACC_BASED_ACC_ID_FK);
@@ -299,6 +303,9 @@ public class Acc extends TableImpl<AccRecord> {
         return _accBasedAccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.namespace</code> table.
+     */
     public Namespace namespace() {
         if (_namespace == null)
             _namespace = new Namespace(this, Keys.ACC_NAMESPACE_ID_FK);
@@ -306,6 +313,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _namespace;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>acc_created_by_fk</code> key.
+     */
     public AppUser accCreatedByFk() {
         if (_accCreatedByFk == null)
             _accCreatedByFk = new AppUser(this, Keys.ACC_CREATED_BY_FK);
@@ -313,6 +324,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _accCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>acc_owner_user_id_fk</code> key.
+     */
     public AppUser accOwnerUserIdFk() {
         if (_accOwnerUserIdFk == null)
             _accOwnerUserIdFk = new AppUser(this, Keys.ACC_OWNER_USER_ID_FK);
@@ -320,6 +335,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _accOwnerUserIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>acc_last_updated_by_fk</code> key.
+     */
     public AppUser accLastUpdatedByFk() {
         if (_accLastUpdatedByFk == null)
             _accLastUpdatedByFk = new AppUser(this, Keys.ACC_LAST_UPDATED_BY_FK);
@@ -327,6 +346,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _accLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>acc_replacement_acc_id_fk</code> key.
+     */
     public Acc accReplacementAccIdFk() {
         if (_accReplacementAccIdFk == null)
             _accReplacementAccIdFk = new Acc(this, Keys.ACC_REPLACEMENT_ACC_ID_FK);
@@ -334,6 +357,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _accReplacementAccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>acc_prev_acc_id_fk</code> key.
+     */
     public Acc accPrevAccIdFk() {
         if (_accPrevAccIdFk == null)
             _accPrevAccIdFk = new Acc(this, Keys.ACC_PREV_ACC_ID_FK);
@@ -341,6 +368,10 @@ public class Acc extends TableImpl<AccRecord> {
         return _accPrevAccIdFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table, via the
+     * <code>acc_next_acc_id_fk</code> key.
+     */
     public Acc accNextAccIdFk() {
         if (_accNextAccIdFk == null)
             _accNextAccIdFk = new Acc(this, Keys.ACC_NEXT_ACC_ID_FK);

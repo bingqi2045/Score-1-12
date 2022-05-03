@@ -135,6 +135,9 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     private transient Dt _dt;
     private transient DtSc _dtSc;
 
+    /**
+     * Get the implicit join path to the <code>oagi.usage_rule</code> table.
+     */
     public UsageRule usageRule() {
         if (_usageRule == null)
             _usageRule = new UsageRule(this, Keys.DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK);
@@ -142,6 +145,9 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
         return _usageRule;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.DT_USAGE_RULE_TARGET_DT_ID_FK);
@@ -149,6 +155,9 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table.
+     */
     public DtSc dtSc() {
         if (_dtSc == null)
             _dtSc = new DtSc(this, Keys.DT_USAGE_RULE_TARGET_DT_SC_ID_FK);

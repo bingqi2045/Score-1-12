@@ -206,6 +206,9 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     private transient AppUser _bbiepLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
 
+    /**
+     * Get the implicit join path to the <code>oagi.bccp_manifest</code> table.
+     */
     public BccpManifest bccpManifest() {
         if (_bccpManifest == null)
             _bccpManifest = new BccpManifest(this, Keys.BBIEP_BASED_BCCP_MANIFEST_ID_FK);
@@ -213,6 +216,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
         return _bccpManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbiep_created_by_fk</code> key.
+     */
     public AppUser bbiepCreatedByFk() {
         if (_bbiepCreatedByFk == null)
             _bbiepCreatedByFk = new AppUser(this, Keys.BBIEP_CREATED_BY_FK);
@@ -220,6 +227,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
         return _bbiepCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbiep_last_updated_by_fk</code> key.
+     */
     public AppUser bbiepLastUpdatedByFk() {
         if (_bbiepLastUpdatedByFk == null)
             _bbiepLastUpdatedByFk = new AppUser(this, Keys.BBIEP_LAST_UPDATED_BY_FK);
@@ -227,6 +238,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
         return _bbiepLastUpdatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
+     * table.
+     */
     public TopLevelAsbiep topLevelAsbiep() {
         if (_topLevelAsbiep == null)
             _topLevelAsbiep = new TopLevelAsbiep(this, Keys.BBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK);

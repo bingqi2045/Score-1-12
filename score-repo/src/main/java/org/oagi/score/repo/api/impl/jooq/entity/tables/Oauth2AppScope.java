@@ -118,6 +118,9 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
 
     private transient Oauth2App _oauth2App;
 
+    /**
+     * Get the implicit join path to the <code>oagi.oauth2_app</code> table.
+     */
     public Oauth2App oauth2App() {
         if (_oauth2App == null)
             _oauth2App = new Oauth2App(this, Keys.OAUTH2_APP_SCOPE_OAUTH2_APP_ID_FK);

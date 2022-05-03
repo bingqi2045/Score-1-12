@@ -135,6 +135,9 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     private transient UsageRule _usageRule;
 
+    /**
+     * Get the implicit join path to the <code>oagi.usage_rule</code> table.
+     */
     public UsageRule usageRule() {
         if (_usageRule == null)
             _usageRule = new UsageRule(this, Keys.USAGE_RULE_EXPRESSION_REPRESENTED_USAGE_RULE_ID_FK);

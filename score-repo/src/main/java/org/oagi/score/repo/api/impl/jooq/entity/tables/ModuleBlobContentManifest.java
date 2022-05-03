@@ -173,6 +173,10 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     private transient AppUser _moduleBlobContentManifestCreatedByFk;
     private transient AppUser _moduleBlobContentManifestLastUpdatedByFk;
 
+    /**
+     * Get the implicit join path to the <code>oagi.module_set_release</code>
+     * table.
+     */
     public ModuleSetRelease moduleSetRelease() {
         if (_moduleSetRelease == null)
             _moduleSetRelease = new ModuleSetRelease(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK);
@@ -180,6 +184,10 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         return _moduleSetRelease;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.blob_content_manifest</code>
+     * table.
+     */
     public BlobContentManifest blobContentManifest() {
         if (_blobContentManifest == null)
             _blobContentManifest = new BlobContentManifest(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK);
@@ -187,6 +195,9 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         return _blobContentManifest;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.module</code> table.
+     */
     public Module module() {
         if (_module == null)
             _module = new Module(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK);
@@ -194,6 +205,10 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         return _module;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_blob_content_manifest_created_by_fk</code> key.
+     */
     public AppUser moduleBlobContentManifestCreatedByFk() {
         if (_moduleBlobContentManifestCreatedByFk == null)
             _moduleBlobContentManifestCreatedByFk = new AppUser(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK);
@@ -201,6 +216,10 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         return _moduleBlobContentManifestCreatedByFk;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>module_blob_content_manifest_last_updated_by_fk</code> key.
+     */
     public AppUser moduleBlobContentManifestLastUpdatedByFk() {
         if (_moduleBlobContentManifestLastUpdatedByFk == null)
             _moduleBlobContentManifestLastUpdatedByFk = new AppUser(this, Keys.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK);

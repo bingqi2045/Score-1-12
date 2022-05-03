@@ -401,7 +401,7 @@ public class LogSerializer {
         properties.put("guid", codeListRecord.getGuid());
         properties.put("name", codeListRecord.getName());
         properties.put("listId", codeListRecord.getListId());
-        properties.put("agencyId", resolver.getAgencyIdListValue(codeListRecord.getAgencyId()));
+        properties.put("agencyId", resolver.getAgencyIdListValue(codeListRecord.getAgencyIdListValueId()));
         properties.put("versionId", codeListRecord.getVersionId());
         properties.put("remark", codeListRecord.getRemark());
         properties.put("definition", codeListRecord.getDefinition());
@@ -466,9 +466,6 @@ public class LogSerializer {
         properties.put("definition", codeListValueRecord.getDefinition());
         properties.put("definitionSource", codeListValueRecord.getDefinitionSource());
         properties.put("deprecated", (byte) 1 == codeListValueRecord.getIsDeprecated());
-        properties.put("used", (byte) 1 == codeListValueRecord.getUsedIndicator());
-        properties.put("locked", (byte) 1 == codeListValueRecord.getLockedIndicator());
-        properties.put("extension", (byte) 1 == codeListValueRecord.getExtensionIndicator());
 
         return properties;
     }

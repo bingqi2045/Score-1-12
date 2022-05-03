@@ -119,6 +119,9 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
     private transient Dt _dt;
     private transient RefSpec _refSpec;
 
+    /**
+     * Get the implicit join path to the <code>oagi.dt</code> table.
+     */
     public Dt dt() {
         if (_dt == null)
             _dt = new Dt(this, Keys.CDT_REF_SPEC_CDT_ID_FK);
@@ -126,6 +129,9 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
         return _dt;
     }
 
+    /**
+     * Get the implicit join path to the <code>oagi.ref_spec</code> table.
+     */
     public RefSpec refSpec() {
         if (_refSpec == null)
             _refSpec = new RefSpec(this, Keys.CDT_REF_SPEC_REF_SPEC_ID_FK);
