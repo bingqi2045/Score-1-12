@@ -2,6 +2,7 @@ package org.oagi.score.repo.api.impl.jooq.businessterm;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.BusinessTermWriteRepository;
@@ -14,9 +15,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BUSINESS_TERM;
@@ -83,12 +82,27 @@ public class JooqBusinessTermWriteRepository
             record.setCreationTimestamp(timestamp);
             record.setLastUpdateTimestamp(timestamp);
 
-            BigInteger recordId = dslContext().insertInto(BUSINESS_TERM)
-                    .set(record)
-                    .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
-                    .fetchOne().getBusinessTermId().toBigInteger();
-            return recordId;
-        }).collect(Collectors.toList());
+            BusinessTermRecord existentRecord = dslContext().selectFrom(BUSINESS_TERM)
+                    .where(BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri()))
+                    .fetchOne();
+            if(existentRecord != null) {
+                dslContext().update(BUSINESS_TERM)
+                        .set(BUSINESS_TERM.BUSINESS_TERM_, record.getBusinessTerm())
+                        .set(BUSINESS_TERM.EXTERNAL_REF_ID, record.getExternalRefId())
+                        .set(BUSINESS_TERM.DEFINITION, record.getDefinition())
+                        .set(BUSINESS_TERM.COMMENT, record.getComment())
+                        .set(BUSINESS_TERM.LAST_UPDATE_TIMESTAMP, record.getLastUpdateTimestamp())
+                        .set(BUSINESS_TERM.LAST_UPDATED_BY, record.getLastUpdatedBy())
+                        .where(BUSINESS_TERM.EXTERNAL_REF_URI.eq(record.getExternalRefUri()))
+                        .execute();
+                return null;
+            } else {
+                return dslContext().insertInto(BUSINESS_TERM)
+                        .set(record)
+                        .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
+                        .fetchOne().getBusinessTermId().toBigInteger();
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
 
         return new CreateBulkBusinessTermResponse(createdRecordIds);
     }

@@ -222,7 +222,7 @@ public class BusinessTermController {
                     response.getBusinessTermIds().stream().forEach(System.out::println);
                     return ResponseEntity.noContent().build();
                 } else {
-                    return ResponseEntity.badRequest().body("Business terms already exist.");
+                    return ResponseEntity.status(200).build();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

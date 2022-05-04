@@ -94,8 +94,8 @@ public class BusinessTermService {
                 term.setExternalReferenceId(recordStr[2]);
                 term.setDefinition(recordStr[3]);
                 term.setComment(recordStr[4]);
-
-                if(checkBusinessTermUniqueness(term)) {
+                if(term.getExternalReferenceUri() != null && !term.getExternalReferenceUri().equals("")
+                        && checkBusinessTermUniqueness(term)) {
                     businessTerms.add(term);
                 }
             }
