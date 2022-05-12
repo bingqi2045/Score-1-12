@@ -225,6 +225,10 @@ public class BusinessTermRepository {
                     sortField = Optional.of(BUSINESS_TERM.BUSINESS_TERM_);
                     break;
 
+                case "primaryIndicator":
+                    sortField = Optional.of(field("primaryIndicator"));
+                    break;
+
                 case "lastUpdateTimestamp":
                     sortField = Optional.of(field("lastUpdateTimestamp"));
                     break;
