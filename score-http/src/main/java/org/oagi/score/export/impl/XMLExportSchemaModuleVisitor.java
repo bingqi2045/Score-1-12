@@ -16,7 +16,6 @@ import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.util.StringUtils;
 import org.xml.sax.SAXException;
@@ -928,7 +927,7 @@ public class XMLExportSchemaModuleVisitor {
                     Element attributeElement = new Element("attribute", XSD_NS);
 
                     attributeElement.setAttribute("name", Utility.toLowerCamelCase(bccp.getPropertyTerm()));
-                    attributeElement.setAttribute("type", Utility.denToName(bdt.getDen()));
+                    attributeElement.setAttribute("type", ModelUtils.getTypeName(bdt));
 
                     int useInt = bcc.getCardinalityMin() * 2 + bcc.getCardinalityMax();
                     String useVal = getUseAttributeValue(useInt);
