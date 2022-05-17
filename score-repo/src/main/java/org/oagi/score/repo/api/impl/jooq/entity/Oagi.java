@@ -20,15 +20,19 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AsbieBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
@@ -41,6 +45,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
@@ -172,6 +177,12 @@ public class Oagi extends SchemaImpl {
     public final Asbie ASBIE = Asbie.ASBIE;
 
     /**
+     * The asbie_bizterm table stores information about the aggregation between
+     * the ascc_bizterm and ASBIE. TODO: Placeholder, definition is missing.
+     */
+    public final AsbieBizterm ASBIE_BIZTERM = AsbieBizterm.ASBIE_BIZTERM;
+
+    /**
      * ASBIEP represents a role in a usage of an ABIE. It is a contextualization
      * of an ASCCP.
      */
@@ -182,6 +193,12 @@ public class Oagi extends SchemaImpl {
      * ASCCP. 
      */
     public final Ascc ASCC = Ascc.ASCC;
+
+    /**
+     * The ascc_bizterm table stores information about the aggregation between
+     * the business term and ASCC. TODO: Placeholder, definition is missing.
+     */
+    public final AsccBizterm ASCC_BIZTERM = AsccBizterm.ASCC_BIZTERM;
 
     /**
      * The table <code>oagi.ascc_manifest</code>.
@@ -211,6 +228,12 @@ public class Oagi extends SchemaImpl {
     public final Bbie BBIE = Bbie.BBIE;
 
     /**
+     * The bbie_bizterm table stores information about the aggregation between
+     * the bbie_bizterm and BBIE. TODO: Placeholder, definition is missing.
+     */
+    public final BbieBizterm BBIE_BIZTERM = BbieBizterm.BBIE_BIZTERM;
+
+    /**
      * Because there is no single table that is a contextualized counterpart of
      * the DT table (which stores both CDT and BDT), The context specific
      * constraints associated with the DT are stored in the BBIE table, while
@@ -229,6 +252,12 @@ public class Oagi extends SchemaImpl {
      * creates a data element for an ACC. 
      */
     public final Bcc BCC = Bcc.BCC;
+
+    /**
+     * The bcc_bizterm table stores information about the aggregation between
+     * the business term and BCC. TODO: Placeholder, definition is missing.
+     */
+    public final BccBizterm BCC_BIZTERM = BccBizterm.BCC_BIZTERM;
 
     /**
      * The table <code>oagi.bcc_manifest</code>.
@@ -326,6 +355,13 @@ public class Oagi extends SchemaImpl {
      * The table <code>oagi.blob_content_manifest</code>.
      */
     public final BlobContentManifest BLOB_CONTENT_MANIFEST = BlobContentManifest.BLOB_CONTENT_MANIFEST;
+
+    /**
+     * The Business Term table stores information about the business term, which
+     * is usually associated to BIE or CC. TODO: Placeeholder, definition is
+     * missing.
+     */
+    public final BusinessTerm BUSINESS_TERM = BusinessTerm.BUSINESS_TERM;
 
     /**
      * This table capture allowed primitives of the CDT?s Content Component. 
@@ -632,15 +668,19 @@ public class Oagi extends SchemaImpl {
             AppOauth2User.APP_OAUTH2_USER,
             AppUser.APP_USER,
             Asbie.ASBIE,
+            AsbieBizterm.ASBIE_BIZTERM,
             Asbiep.ASBIEP,
             Ascc.ASCC,
+            AsccBizterm.ASCC_BIZTERM,
             AsccManifest.ASCC_MANIFEST,
             Asccp.ASCCP,
             AsccpManifest.ASCCP_MANIFEST,
             Bbie.BBIE,
+            BbieBizterm.BBIE_BIZTERM,
             BbieSc.BBIE_SC,
             Bbiep.BBIEP,
             Bcc.BCC,
+            BccBizterm.BCC_BIZTERM,
             BccManifest.BCC_MANIFEST,
             Bccp.BCCP,
             BccpManifest.BCCP_MANIFEST,
@@ -653,6 +693,7 @@ public class Oagi extends SchemaImpl {
             BizCtxValue.BIZ_CTX_VALUE,
             BlobContent.BLOB_CONTENT,
             BlobContentManifest.BLOB_CONTENT_MANIFEST,
+            BusinessTerm.BUSINESS_TERM,
             CdtAwdPri.CDT_AWD_PRI,
             CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP,
             CdtPri.CDT_PRI,

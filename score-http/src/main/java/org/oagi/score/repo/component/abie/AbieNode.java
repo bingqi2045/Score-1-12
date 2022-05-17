@@ -1,9 +1,12 @@
 package org.oagi.score.repo.component.abie;
 
 import lombok.Data;
+import org.oagi.score.repo.api.businessterm.model.BusinessTerm;
 import org.oagi.score.service.common.data.CcState;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class AbieNode {
@@ -38,4 +41,6 @@ public class AbieNode {
     }
 
     private Abie abie = new Abie();
+
+    private List<BusinessTerm> businessTerms = new ArrayList<BusinessTerm>();
 }

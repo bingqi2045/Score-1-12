@@ -21,6 +21,7 @@ public class BieListRequest {
     private List<String> excludePropertyTerms = Collections.emptyList();
     private List<BigInteger> excludeTopLevelAsbiepIds = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
+    private List<String> types = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
     private BigInteger releaseId;
@@ -29,4 +30,6 @@ public class BieListRequest {
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
     private Boolean ownedByDeveloper;
 
+    private String asccBccDen;
+    private BigInteger bieId;
 }
