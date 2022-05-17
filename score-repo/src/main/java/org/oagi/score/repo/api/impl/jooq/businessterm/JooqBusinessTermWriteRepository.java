@@ -75,6 +75,8 @@ public class JooqBusinessTermWriteRepository
             record.setGuid(randomGuid());
             record.setBusinessTerm(businessTerm.getBusinessTerm());
             record.setDefinition(businessTerm.getDefinition());
+            System.out.println(businessTerm.getComment());
+            record.setComment(businessTerm.getComment());
             record.setExternalRefId(businessTerm.getExternalReferenceId());
             record.setExternalRefUri(businessTerm.getExternalReferenceUri());
             record.setCreatedBy(requesterUserId);
@@ -129,7 +131,7 @@ public class JooqBusinessTermWriteRepository
             record.setBusinessTerm(request.getBusinessTerm());
             changedField.add(BUSINESS_TERM.BUSINESS_TERM_);
         }
-        if (!StringUtils.equals(request.getDefinition(), record.getDefinition())) {
+        if (request.getDefinition() != null && !StringUtils.equals(request.getDefinition(), record.getDefinition())) {
             record.setDefinition(request.getDefinition());
             changedField.add(BUSINESS_TERM.DEFINITION);
         }

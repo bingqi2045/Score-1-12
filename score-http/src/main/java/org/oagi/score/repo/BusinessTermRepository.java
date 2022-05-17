@@ -325,8 +325,15 @@ public class BusinessTermRepository {
 
         if(businessTerm.getBusinessTerm() != null && businessTerm.getExternalReferenceUri() != null){
             List<Condition> conditions = new ArrayList<>();
-            conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
-                    BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri())));
+            if(businessTerm.getDefinition() != null && businessTerm.getDefinition() != "") {
+                conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
+                        BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri()),
+                        BUSINESS_TERM.DEFINITION.eq(businessTerm.getDefinition())));
+            }
+            else {
+                conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
+                        BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri())));
+            }
             if(businessTerm.getBusinessTermId() != null) {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(ULong.valueOf(businessTerm.getBusinessTermId())));
             }

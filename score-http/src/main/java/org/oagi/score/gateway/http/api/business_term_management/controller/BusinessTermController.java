@@ -244,7 +244,6 @@ public class BusinessTermController {
                 new UpdateBusinessTermRequest(authenticationService.asScoreUser(requester))
                         .withBusinessTermId(businessTermId);
         request.setBusinessTerm(businessTerm.getBusinessTerm());
-        request.setDefinition(businessTerm.getDefinition());
         request.setExternalReferenceId(businessTerm.getExternalReferenceId());
         request.setExternalReferenceUri(businessTerm.getExternalReferenceUri());
 
