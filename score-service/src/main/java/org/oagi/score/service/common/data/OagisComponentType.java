@@ -14,7 +14,8 @@ public enum OagisComponentType {
     BOD(8),
     Verb(9),
     Noun(10),
-    Choice(11);
+    Choice(11),
+    AttributeGroup(12);
 
     private final int value;
 
@@ -36,6 +37,6 @@ public enum OagisComponentType {
     }
 
     public boolean isGroup() {
-        return this == SemanticGroup || this == UserExtensionGroup;
+        return this == SemanticGroup || this == UserExtensionGroup || this == AttributeGroup;
     }
 }

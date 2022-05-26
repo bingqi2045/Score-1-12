@@ -320,6 +320,7 @@ public class CcNodeController {
                     request.getReleaseId(),
                     request.getAccManifestId(),
                     request.getBccpManifestId(),
+                    request.isAttribute(),
                     request.getPos());
         }
 

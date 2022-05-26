@@ -13,6 +13,7 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     private final BigInteger releaseId;
     private final BigInteger accManifestId;
     private final BigInteger bccpManifestId;
+    private final boolean attribute;
     private int pos = -1;
     private String logHash;
     private LogAction logAction;
@@ -22,22 +23,26 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       BigInteger releaseId,
                                       BigInteger accManifestId,
-                                      BigInteger bccpManifestId) {
+                                      BigInteger bccpManifestId,
+                                      boolean attribute) {
         super(user);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
         this.bccpManifestId = bccpManifestId;
+        this.attribute = attribute;
     }
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
                                       BigInteger releaseId,
                                       BigInteger accManifestId,
-                                      BigInteger bccpManifestId) {
+                                      BigInteger bccpManifestId,
+                                      boolean attribute) {
         super(user, localDateTime);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
         this.bccpManifestId = bccpManifestId;
+        this.attribute = attribute;
     }
 
     public BigInteger getReleaseId() {
@@ -50,6 +55,10 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     public BigInteger getBccpManifestId() {
         return bccpManifestId;
+    }
+
+    public boolean isAttribute() {
+        return attribute;
     }
 
     public int getPos() {

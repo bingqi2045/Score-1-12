@@ -9,6 +9,7 @@ import java.math.BigInteger;
 public class CcActionRequest {
     private String action;
     private String type;
+    private boolean attribute;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger id = BigInteger.ZERO;
     private CcAsccpNodeDetail asccpNodeDetail;

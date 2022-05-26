@@ -13,6 +13,7 @@ import org.oagi.score.gateway.http.api.graph.service.GraphService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
+import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
@@ -607,7 +608,7 @@ public class CcNodeService extends EventHandler {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
         for (CcBccpNodeDetail detail : bccpNodeDetails) {
-            if(detail.getBcc() != null) {
+            if (detail.getBcc() != null) {
                 updateBccDetail(user, timestamp, detail.getBcc());
             } else {
                 updateBccpDetail(user, timestamp, detail.getBccp());
@@ -816,17 +817,17 @@ public class CcNodeService extends EventHandler {
     @Transactional
     public BigInteger appendBccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                  BigInteger accManifestId, BigInteger bccpManifestId,
-                                 int pos) {
-        return appendBccp(user, releaseId, accManifestId, bccpManifestId, pos, LogUtils.generateHash(), LogAction.Modified);
+                                 boolean attribute, int pos) {
+        return appendBccp(user, releaseId, accManifestId, bccpManifestId, attribute, pos, LogUtils.generateHash(), LogAction.Modified);
     }
 
     @Transactional
     public BigInteger appendBccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                  BigInteger accManifestId, BigInteger bccpManifestId,
-                                 int pos, String logHash, LogAction action) {
+                                 boolean attribute, int pos, String logHash, LogAction action) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateBccRepositoryRequest request =
-                new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId);
+                new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId, attribute);
         request.setPos(pos);
         request.setLogHash(logHash);
         request.setLogAction(action);
@@ -1537,10 +1538,14 @@ public class CcNodeService extends EventHandler {
                 } else if (child.getType() == Node.NodeType.BCC) {
                     BccManifestRecord bccChild =
                             bccReadRepository.getBccManifestById(child.getManifestId().toBigInteger());
+                    BccRecord bccRecord =
+                            bccReadRepository.getBccByManifestId(bccChild.getBccManifestId().toBigInteger());
 
                     appendBccp(user, accManifestRecord.getReleaseId().toBigInteger(),
                             accManifestRecord.getAccManifestId().toBigInteger(),
-                            bccChild.getToBccpManifestId().toBigInteger(), pos, logHash, LogAction.IGNORE);
+                            bccChild.getToBccpManifestId().toBigInteger(),
+                            EntityType.Attribute.getValue() == bccRecord.getEntityType(),
+                            pos, logHash, LogAction.IGNORE);
                 }
 
                 pos++;

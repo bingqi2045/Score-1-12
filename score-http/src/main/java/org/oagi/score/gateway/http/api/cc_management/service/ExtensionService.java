@@ -336,7 +336,8 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void appendBccp(AuthenticatedPrincipal user, BigInteger manifestId, BigInteger bccpManifestId) {
+    public void appendBccp(AuthenticatedPrincipal user, BigInteger manifestId, BigInteger bccpManifestId,
+                           boolean attribute) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         BccpManifestRecord bccpManifestRecord =
                 dslContext.selectFrom(BCCP_MANIFEST)
@@ -345,7 +346,7 @@ public class ExtensionService {
 
         ccNodeService.appendBccp(user, bccpManifestRecord.getReleaseId().toBigInteger(),
                 extensionAcc.getAccManifestId().toBigInteger(),
-                bccpManifestRecord.getBccpManifestId().toBigInteger(), -1);
+                bccpManifestRecord.getBccpManifestId().toBigInteger(), attribute, -1);
     }
 
     @Transactional

@@ -26,7 +26,7 @@ public class BieList {
     private String bizTerm;
     private String remark;
     private Date lastUpdateTimestamp;
-    private String updater;
+    private String lastUpdateUser;
     private BieState state;
 
 }

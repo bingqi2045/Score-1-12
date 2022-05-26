@@ -119,6 +119,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         ABIE abie = generationContext.queryTargetABIE(asbiep);
         Element rootSeqNode = generateABIE(abie, rootElementNode);
         generateBIEs(abie, rootSeqNode);
+        if (rootSeqNode.getChildren().isEmpty()) {
+            rootSeqNode.detach();
+        }
     }
 
     private String key(BIE bie) {
@@ -591,10 +594,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     ASBIEP asbiep = generationContext.queryAssocToASBIEP(asbie);
                     Element asbiepNode = generateASBIEP(asbiep, node);
                     ABIE childAbie = generationContext.queryTargetABIE2(asbiep);
-                    Element sequenceNode = generateABIE(childAbie, asbiepNode);
-                    generateBIEs(childAbie, sequenceNode);
-                    if (sequenceNode.getChildren().isEmpty()) {
-                        sequenceNode.detach();
+                    Element compositorNode = generateABIE(childAbie, asbiepNode);
+                    generateBIEs(childAbie, compositorNode);
+                    if (compositorNode.getChildren().isEmpty()) {
+                        compositorNode.detach();
                     }
                 }
             }

@@ -191,6 +191,10 @@ public class SeqKeyHandler {
     }
 
     public void moveAfter(SeqKey after) {
+        if (this.current.getPrevSeqKey() == after) {
+            return;
+        }
+
         scoreRepositoryFactory.createSeqKeyWriteRepository()
                 .moveAfter(new MoveAfterRequest(this.requester)
                         .withItem(this.current)

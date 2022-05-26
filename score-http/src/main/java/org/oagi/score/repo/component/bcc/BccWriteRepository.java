@@ -114,7 +114,7 @@ public class BccWriteRepository {
         bcc.setSeqKey(0); // @deprecated
         bcc.setFromAccId(accRecord.getAccId());
         bcc.setToBccpId(bccpRecord.getBccpId());
-        bcc.setEntityType(Element.getValue());
+        bcc.setEntityType(request.isAttribute() ? Attribute.getValue() : Element.getValue());
         bcc.setState(CcState.WIP.name());
         bcc.setIsDeprecated((byte) 0);
         bcc.setIsNillable((byte) 0);

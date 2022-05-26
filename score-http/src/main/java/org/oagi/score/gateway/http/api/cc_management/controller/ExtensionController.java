@@ -46,7 +46,7 @@ public class ExtensionController {
                         break;
 
                     case "bccp":
-                        service.appendBccp(user, manifestId, actionRequest.getManifestId());
+                        service.appendBccp(user, manifestId, actionRequest.getManifestId(), actionRequest.isAttribute());
                         break;
                 }
 

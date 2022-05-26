@@ -10,7 +10,8 @@ public enum OagisComponentType {
     Embedded(5),
     OAGIS10Nouns(6),
     OAGIS10BODs(7),
-    Choice(11);
+    Choice(11),
+    AttributeGroup(12);
 
     private final int value;
 
