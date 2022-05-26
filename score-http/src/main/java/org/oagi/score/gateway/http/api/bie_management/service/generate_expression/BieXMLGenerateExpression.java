@@ -7,6 +7,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.oagi.score.common.util.OagisComponentType;
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -560,10 +561,16 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         setDefinition(complexType, abie.getDefinition());
         setOptionalDocumentation(complexType, abie, acc);
 
-        Element sequenceElement = newElement("sequence");
-        complexType.addContent(sequenceElement);
+        Element element;
+        if (OagisComponentType.Choice.getValue() == acc.getOagisComponentType()) {
+            element = newElement("choice");
+            complexType.addContent(element);
+        } else {
+            element = newElement("sequence");
+            complexType.addContent(element);
+        }
 
-        return sequenceElement;
+        return element;
     }
 
     public void generateBIEs(ABIE abie, Element parent) {
@@ -722,7 +729,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         if (asbie.isNillable())
             element.setAttribute("nillable", String.valueOf(asbie.isNillable()));
 
-        while (!parent.getName().equals("sequence")) {
+        while (!parent.getName().equals("sequence") && !parent.getName().equals("choice")) {
             parent = parent.getParentElement();
         }
 
@@ -896,7 +903,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         eNode = handleElementBBIE(bbie, eNode);
 
         if (bcc.getEntityType() == BCCEntityType.Element.getValue()) {
-            while (!parent.getName().equals("sequence")) {
+            while (!parent.getName().equals("sequence") && !parent.getName().equals("choice")) {
                 parent = parent.getParentElement();
             }
             parent.addContent(eNode);

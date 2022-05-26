@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.bie_management.service.generate_expressi
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableMap;
+import org.oagi.score.common.util.OagisComponentType;
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
@@ -215,7 +216,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
 
         fillProperties(properties, definitions, typeAbie, generationContext);
 
-        if (((List) properties.get("required")).isEmpty()) {
+        if (properties.containsKey("required") && ((List) properties.get("required")).isEmpty()) {
             properties.remove("required");
         }
 
@@ -286,7 +287,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
 
         fillProperties(properties, definitions, abie, generationContext);
 
-        if (((List) properties.get("required")).isEmpty()) {
+        if (properties.containsKey("required") && ((List) properties.get("required")).isEmpty()) {
             properties.remove("required");
         }
 
@@ -428,17 +429,47 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                                 GenerationContext generationContext) {
 
         List<BIE> children = generationContext.queryChildBIEs(abie);
-        for (BIE bie : children) {
-            if (bie instanceof BBIE) {
-                BBIE bbie = (BBIE) bie;
-                fillProperties(parent, definitions, bbie, generationContext);
-            } else {
-                ASBIE asbie = (ASBIE) bie;
-                if (Helper.isAnyProperty(asbie, generationContext)) {
-                    parent.put("additionalProperties", true);
-                } else {
-                    fillProperties(parent, definitions, asbie, generationContext);
+        ACC acc = generationContext.findACC(abie.getBasedAccManifestId());
+        if (OagisComponentType.Choice.getValue() == acc.getOagisComponentType()) {
+            List<Object> oneOf = new ArrayList();
+
+            for (BIE bie : children) {
+                Map<String, Object> item = new LinkedHashMap();
+                item.put("type", "object");
+                item.put("required", new ArrayList());
+                item.put("additionalProperties", false);
+                item.put("properties", new LinkedHashMap<String, Object>());
+
+                fillProperties(item, definitions, bie, generationContext);
+
+                if (item.containsKey("required") && ((List) item.get("required")).isEmpty()) {
+                    item.remove("required");
                 }
+                oneOf.add(item);
+            }
+
+            parent.clear();
+            parent.put("oneOf", oneOf);
+        } else {
+            for (BIE bie : children) {
+                fillProperties(parent, definitions, bie, generationContext);
+            }
+        }
+    }
+
+    private void fillProperties(Map<String, Object> parent,
+                                Map<String, Object> definitions,
+                                BIE bie,
+                                GenerationContext generationContext) {
+        if (bie instanceof BBIE) {
+            BBIE bbie = (BBIE) bie;
+            fillProperties(parent, definitions, bbie, generationContext);
+        } else {
+            ASBIE asbie = (ASBIE) bie;
+            if (Helper.isAnyProperty(asbie, generationContext)) {
+                parent.put("additionalProperties", true);
+            } else {
+                fillProperties(parent, definitions, asbie, generationContext);
             }
         }
     }

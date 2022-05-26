@@ -13,7 +13,8 @@ public enum OagisComponentType {
     // TODO: Would these be on public?
     BOD(8),
     Verb(9),
-    Noun(10);
+    Noun(10),
+    Choice(11);
 
     private final int value;
 
