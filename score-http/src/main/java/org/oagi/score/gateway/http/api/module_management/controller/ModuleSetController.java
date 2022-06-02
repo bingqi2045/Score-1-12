@@ -80,6 +80,16 @@ public class ModuleSetController {
         return response.getModuleSet();
     }
 
+    @RequestMapping(value = "/module_set/{id}/metadata", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleSetMetadata getModuleSetMetadata(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                  @PathVariable("id") BigInteger moduleSetId) {
+        GetModuleSetMetadataRequest request = new GetModuleSetMetadataRequest(sessionService.asScoreUser(user));
+        request.setModuleSetId(moduleSetId);
+        GetModuleSetMetadataResponse response = service.getModuleSetMetadata(request);
+        return response.getModuleSetMetadata();
+    }
+
     @RequestMapping(value = "/module_set", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSet createModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,

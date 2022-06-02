@@ -7,8 +7,8 @@ import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetReadRepository;
-import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
+import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -25,7 +25,6 @@ import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 public class JooqModuleSetReadRepository
         extends JooqScoreRepository
@@ -111,6 +110,33 @@ public class JooqModuleSetReadRepository
         }
 
         return new GetModuleSetResponse(moduleSet);
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public GetModuleSetMetadataResponse getModuleSetMetadata(GetModuleSetMetadataRequest request) throws ScoreDataAccessException {
+        BigInteger moduleSetId = request.getModuleSetId();
+        ModuleSetMetadata moduleSetMetadata = new ModuleSetMetadata();
+
+        int numberOfDirectories = dslContext().selectCount()
+                .from(MODULE)
+                .where(and(
+                        MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)),
+                        MODULE.TYPE.eq("DIRECTORY")
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        moduleSetMetadata.setNumberOfDirectories(numberOfDirectories);
+
+        int numberOfFiles = dslContext().selectCount()
+                .from(MODULE)
+                .where(and(
+                        MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)),
+                        MODULE.TYPE.eq("FILE")
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        moduleSetMetadata.setNumberOfFiles(numberOfFiles);
+
+        return new GetModuleSetMetadataResponse(moduleSetMetadata);
     }
 
     @Override
