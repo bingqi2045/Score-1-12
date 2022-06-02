@@ -101,13 +101,14 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSetRelease updateModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                     @PathVariable("id") BigInteger moduleSetReleaseId,
-                                     @RequestBody ModuleSetRelease moduleSetRelease) {
+                                                   @PathVariable("id") BigInteger moduleSetReleaseId,
+                                                   @RequestBody ModuleSetRelease moduleSetRelease) {
         UpdateModuleSetReleaseRequest request = new UpdateModuleSetReleaseRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
         request.setModuleSetId(moduleSetRelease.getModuleSetId());
         request.setReleaseId(moduleSetRelease.getReleaseId());
         request.setModuleSetReleaseName(moduleSetRelease.getModuleSetReleaseName());
+        request.setModuleSetReleaseDescription(moduleSetRelease.getModuleSetReleaseDescription());
         request.setDefault(moduleSetRelease.isDefault());
         UpdateModuleSetReleaseResponse response = service.updateModuleSetRelease(request);
         return response.getModuleSetRelease();

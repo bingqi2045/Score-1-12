@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `business_term`
     `last_update_timestamp` datetime(6)                  NOT NULL COMMENT 'The timestamp when the business term was last updated.',
     `external_ref_uri`      text COMMENT 'TODO: Definition is missing.',
     `external_ref_id`       varchar(100) DEFAULT NULL COMMENT 'TODO: Definition is missing.',
-    `comment` text COMMENT 'Comment of the business term.',
+    `comment`               text COMMENT 'Comment of the business term.',
     PRIMARY KEY (`business_term_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='The Business Term table stores information about the business term, which is usually associated to BIE or CC.';
@@ -94,3 +94,6 @@ CREATE TABLE IF NOT EXISTS `bbie_bizterm`
     CONSTRAINT `bbie_bizterm_bbie_fk` FOREIGN KEY (`bbie_id`) REFERENCES `bbie` (`bbie_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='The bbie_bizterm table stores information about the aggregation between the bbie_bizterm and BBIE. TODO: Placeholder, definition is missing.';
+
+-- Add `description` field on `module_set_release` table.
+ALTER TABLE `module_set_release` ADD COLUMN `description` text COMMENT 'Description or explanation about the module set release.' AFTER `name`;

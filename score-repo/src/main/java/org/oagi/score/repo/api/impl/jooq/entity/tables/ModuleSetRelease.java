@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -72,6 +72,12 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
      * the module set release.
      */
     public final TableField<ModuleSetReleaseRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the module set release.");
+
+    /**
+     * The column <code>oagi.module_set_release.description</code>. Description
+     * or explanation about the module set release.
+     */
+    public final TableField<ModuleSetReleaseRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB, this, "Description or explanation about the module set release.");
 
     /**
      * The column <code>oagi.module_set_release.is_default</code>. It would be a
@@ -233,11 +239,11 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<ULong, ULong, ULong, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

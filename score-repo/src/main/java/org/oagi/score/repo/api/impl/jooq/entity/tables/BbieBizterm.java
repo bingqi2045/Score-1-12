@@ -72,9 +72,9 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
 
     /**
      * The column <code>oagi.bbie_bizterm.primary_indicator</code>. The
-     * indicator shows if the business term is primary for the assigned ASBIE.
+     * indicator shows if the business term is primary for the assigned BBIE.
      */
-    public final TableField<BbieBiztermRecord, String> PRIMARY_INDICATOR = createField(DSL.name("primary_indicator"), SQLDataType.CHAR(1), this, "The indicator shows if the business term is primary for the assigned ASBIE.");
+    public final TableField<BbieBiztermRecord, String> PRIMARY_INDICATOR = createField(DSL.name("primary_indicator"), SQLDataType.CHAR(1), this, "The indicator shows if the business term is primary for the assigned BBIE.");
 
     /**
      * The column <code>oagi.bbie_bizterm.type_code</code>. The type code of the

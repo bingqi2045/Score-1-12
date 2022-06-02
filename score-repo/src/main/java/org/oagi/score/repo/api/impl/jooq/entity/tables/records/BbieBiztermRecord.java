@@ -74,7 +74,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Setter for <code>oagi.bbie_bizterm.primary_indicator</code>. The
-     * indicator shows if the business term is primary for the assigned ASBIE.
+     * indicator shows if the business term is primary for the assigned BBIE.
      */
     public void setPrimaryIndicator(String value) {
         set(3, value);
@@ -82,7 +82,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Getter for <code>oagi.bbie_bizterm.primary_indicator</code>. The
-     * indicator shows if the business term is primary for the assigned ASBIE.
+     * indicator shows if the business term is primary for the assigned BBIE.
      */
     public String getPrimaryIndicator() {
         return (String) get(3);
