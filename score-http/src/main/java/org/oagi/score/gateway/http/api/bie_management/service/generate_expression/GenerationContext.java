@@ -153,7 +153,8 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, ASBIEP> findAsbiepByRoleOfAbieIdMap;
     private Map<BigInteger, BBIEP> findBBIEPMap;
     private Map<BigInteger, String> findUserNameMap;
-    private Map<BigInteger, String> findReleaseNumberMap;
+
+    private Map<BigInteger, Release> findReleaseMap;
     private Map<BigInteger, ContextScheme> findContextSchemeMap;
     private Map<BigInteger, ContextCategory> findContextCategoryMap;
 
@@ -324,8 +325,8 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toMap(e -> e.getBbiepId(), Function.identity()));
 
         findUserNameMap = userRepository.getUsernameMap();
-        findReleaseNumberMap = releaseRepository.findAll().stream()
-                .collect(Collectors.toMap(e -> e.getReleaseId(), e -> e.getReleaseNum()));
+        findReleaseMap = releaseRepository.findAll().stream()
+                .collect(Collectors.toMap(e -> e.getReleaseId(), Function.identity()));
 
         findContextSchemeMap = ctxSchemeRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getCtxSchemeId(), Function.identity()));
@@ -453,8 +454,13 @@ public class GenerationContext implements InitializingBean {
         return (userId != null && userId.longValue() > 0L) ? findUserNameMap.get(userId) : null;
     }
 
+    public Release findRelease(BigInteger releaseId) {
+        return (releaseId != null && releaseId.longValue() > 0L) ? findReleaseMap.get(releaseId) : null;
+    }
+
     public String findReleaseNumber(BigInteger releaseId) {
-        return (releaseId != null && releaseId.longValue() > 0L) ? findReleaseNumberMap.get(releaseId) : null;
+        Release release = findRelease(releaseId);
+        return (release != null) ? release.getReleaseNum() : null;
     }
 
     public ACC queryBasedACC(ABIE abie) {

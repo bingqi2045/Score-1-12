@@ -16,12 +16,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -135,6 +137,8 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 
+        Release release = generationContext.findRelease(topLevelAsbiep.getReleaseId());
+
         Map<String, Object> paths;
         Map<String, Object> schemas = new LinkedHashMap();
         if (root == null) {
@@ -149,6 +153,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                             .put("email", "example@example.org")
                             .build())
                     .put("version", "")
+                    .put("x-oagis-release", release.getReleaseNum())
+                    .put("x-oagis-release-date", new SimpleDateFormat("yyyy-MM-dd").format(release.getLastUpdateTimestamp()))
+                    .put("x-oagis-license", StringUtils.hasLength(release.getReleaseLicense()) ? release.getReleaseLicense() : null)
                     .build());
 
             paths = new LinkedHashMap();
@@ -170,6 +177,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         path.put("summary", "");
         path.put("description", "");
+        path.put("x-oagis-bie-guid", getGuidWithPrefix(typeAbie.getGuid()));
+        path.put("x-oagis-bie-date-time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(typeAbie.getLastUpdateTimestamp()));
+        path.put("x-oagis-bie-version", StringUtils.hasLength(topLevelAsbiep.getVersion()) ? topLevelAsbiep.getVersion() : null);
 
         if (option.isOpenAPI30GetTemplate()) {
             String schemaName;
