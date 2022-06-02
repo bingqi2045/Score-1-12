@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.cc_management.controller;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.oagi.score.service.common.data.OagisComponentType.*;
 
 
 @RestController
@@ -110,7 +113,26 @@ public class CcListController {
         request.setDen(den);
         request.setDefinition(definition);
         request.setModule(module);
-        request.setComponentTypes(componentTypes);
+
+        if (StringUtils.hasLength(componentTypes)) {
+            List<OagisComponentType> oagisComponentTypes = Arrays.asList(componentTypes.split(","))
+                    .stream()
+                    .map(e -> OagisComponentType.valueOf(Integer.parseInt(e)))
+                    .collect(Collectors.toList());
+
+            request.setComponentTypes(
+                    oagisComponentTypes.stream().filter(e -> !Arrays.asList(BOD, Noun, Verb).contains(e))
+                            .collect(Collectors.toList())
+            );
+            request.setOagisEntities(
+                    oagisComponentTypes.stream().filter(e -> Arrays.asList(BOD, Noun, Verb).contains(e))
+                            .collect(Collectors.toList())
+            );
+        } else {
+            request.setComponentTypes(Collections.emptyList());
+            request.setOagisEntities(Collections.emptyList());
+        }
+
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
                 Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         if ((request.getTypes().isCdt() || request.getTypes().isBdt()) && request.getDtTypes().isEmpty()) {

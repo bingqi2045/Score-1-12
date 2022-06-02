@@ -48,22 +48,22 @@ public class CcListRepository {
         }
 
         SelectOrderByStep select = null;
-        if (request.getTypes().isAcc()) {
+        if (request.getTypes().isAcc() && request.getAsccpTypes().isEmpty() && request.getDtTypes().isEmpty()) {
             select = (select != null) ? select.union(getAccList(request, release, defaultModuleSetReleaseId)) : getAccList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isAsccp()) {
+        if (request.getTypes().isAsccp() && request.getComponentTypes().isEmpty() && request.getDtTypes().isEmpty()) {
             select = (select != null) ? select.union(getAsccpList(request, release, defaultModuleSetReleaseId)) : getAsccpList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isBccp()) {
+        if (request.getTypes().isBccp() && request.getComponentTypes().isEmpty() && request.getOagisEntities().isEmpty() && request.getAsccpTypes().isEmpty() && request.getDtTypes().isEmpty()) {
             select = (select != null) ? select.union(getBccpList(request, release, defaultModuleSetReleaseId)) : getBccpList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isAscc()) {
+        if (request.getTypes().isAscc() && request.getComponentTypes().isEmpty() && request.getOagisEntities().isEmpty() && request.getAsccpTypes().isEmpty() && request.getDtTypes().isEmpty()) {
             select = (select != null) ? select.union(getAsccList(request, release, defaultModuleSetReleaseId)) : getAsccList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isBcc()) {
+        if (request.getTypes().isBcc() && request.getComponentTypes().isEmpty() && request.getOagisEntities().isEmpty() && request.getAsccpTypes().isEmpty() && request.getDtTypes().isEmpty()) {
             select = (select != null) ? select.union(getBccList(request, release, defaultModuleSetReleaseId)) : getBccList(request, release, defaultModuleSetReleaseId);
         }
-        if (request.getTypes().isDt()) {
+        if (request.getTypes().isDt() && request.getComponentTypes().isEmpty() && request.getOagisEntities().isEmpty() && request.getAsccpTypes().isEmpty()) {
             select = (select != null) ? select.union(getDtList(request, release, defaultModuleSetReleaseId)) : getDtList(request, release, defaultModuleSetReleaseId);
         }
 
@@ -235,61 +235,65 @@ public class CcListRepository {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
         if (request.getComponentTypes() != null && !request.getComponentTypes().isEmpty()) {
-            List<OagisComponentType> componentTypes = Arrays.asList(request.getComponentTypes().split(","))
-                    .stream()
-                    .map(e -> OagisComponentType.valueOf(Integer.parseInt(e)))
-                    .collect(Collectors.toList());
+            conditions.add(ACC.OAGIS_COMPONENT_TYPE.in(request.getComponentTypes().stream()
+                    .map(e -> e.getValue()).collect(Collectors.toList())));
+        }
+        if (request.getOagisEntities() != null && !request.getOagisEntities().isEmpty()) {
+            BigInteger bodBasedAccManifestId = null;
+            Set<ULong> accManifestIdList = new HashSet();
+            Collection<BigInteger> verbManifestIds = null;
 
-            List<OagisComponentType> usualComponentTypes = componentTypes.stream()
-                    .filter(e -> !Arrays.asList(BOD, Verb, Noun).contains(e))
-                    .collect(Collectors.toList());
+            for (OagisComponentType unusualComponentType : request.getOagisEntities()) {
+                switch (unusualComponentType) {
+                    case BOD:
+                        bodBasedAccManifestId = getManifestIdByObjectClassTermAndReleaseId(
+                                "Business Object Document", request.getReleaseId());
+                        break;
 
-            if (!usualComponentTypes.isEmpty()) {
-                conditions.add(ACC.OAGIS_COMPONENT_TYPE.in(usualComponentTypes.stream()
-                        .map(e -> e.getValue()).collect(Collectors.toList())));
-            }
+                    case Verb:
+                        if (verbManifestIds == null) {
+                            verbManifestIds = getVerbManifestIdList(request);
+                        }
 
-            List<OagisComponentType> unusualComponentTypes = componentTypes.stream()
-                    .filter(e -> Arrays.asList(BOD, Verb, Noun).contains(e))
-                    .collect(Collectors.toList());
+                        accManifestIdList.addAll(verbManifestIds.stream()
+                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList()));
 
-            if (!unusualComponentTypes.isEmpty()) {
-                for (OagisComponentType unusualComponentType : unusualComponentTypes) {
-                    switch (unusualComponentType) {
-                        case BOD:
-                            BigInteger bodBasedAccManifestId = getManifestIdByObjectClassTermAndReleaseId(
-                                    "Business Object Document", request.getReleaseId());
-                            conditions.add(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(bodBasedAccManifestId)));
-                            break;
+                        break;
 
-                        case Verb:
-                            BigInteger verbAccManifestId = getManifestIdByObjectClassTermAndReleaseId(
-                                    "Verb", request.getReleaseId());
+                    case Noun:
+                        if (verbManifestIds == null) {
+                            verbManifestIds = getVerbManifestIdList(request);
+                        }
 
-                            Set<BigInteger> verbManifestIds = new HashSet();
-                            verbManifestIds.add(verbAccManifestId);
+                        List<ULong> nounAccManifestIdList =
+                                dslContext.select(ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID)
+                                        .from(ACC_MANIFEST)
+                                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                                        .join(ASCC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
+                                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                                        .join(ACC_MANIFEST.as("role_of_acc_manifest")).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID))
+                                        .where(and(
+                                                ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId())),
+                                                ACC.OBJECT_CLASS_TERM.like("%Data Area"),
+                                                ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID.notIn(verbManifestIds)
+                                        ))
+                                        .fetchInto(ULong.class);
 
-                            List<BigInteger> basedAccManifestIds = new ArrayList();
-                            basedAccManifestIds.add(verbAccManifestId);
 
-                            while (!basedAccManifestIds.isEmpty()) {
-                                basedAccManifestIds = getManifestIdsByBasedAccManifestIdAndReleaseId(
-                                        basedAccManifestIds, request.getReleaseId());
-                                verbManifestIds.addAll(basedAccManifestIds);
-                            }
+                        accManifestIdList.addAll(nounAccManifestIdList);
 
-                            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(verbManifestIds.stream()
-                                    .map(e -> ULong.valueOf(e)).collect(Collectors.toList())));
-
-                            break;
-
-                        case Noun:
-                            // TODO:
-
-                            break;
-                    }
+                        break;
                 }
             }
+
+            List<Condition> oagisEntityConditions = new ArrayList();
+            if (bodBasedAccManifestId != null) {
+                oagisEntityConditions.add(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(bodBasedAccManifestId)));
+            }
+            if (!accManifestIdList.isEmpty()) {
+                oagisEntityConditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIdList));
+            }
+            conditions.add(or(oagisEntityConditions));
         }
 
         return dslContext.select(
@@ -331,6 +335,25 @@ public class CcListRepository {
                 .leftJoin(MODULE)
                 .on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions);
+    }
+
+    private Collection<BigInteger> getVerbManifestIdList(CcListRequest request) {
+        BigInteger verbAccManifestId = getManifestIdByObjectClassTermAndReleaseId(
+                "Verb", request.getReleaseId());
+
+        Set<BigInteger> verbManifestIds = new HashSet();
+        verbManifestIds.add(verbAccManifestId);
+
+        List<BigInteger> basedAccManifestIds = new ArrayList();
+        basedAccManifestIds.add(verbAccManifestId);
+
+        while (!basedAccManifestIds.isEmpty()) {
+            basedAccManifestIds = getManifestIdsByBasedAccManifestIdAndReleaseId(
+                    basedAccManifestIds, request.getReleaseId());
+            verbManifestIds.addAll(basedAccManifestIds);
+        }
+
+        return verbManifestIds;
     }
 
     private SelectOrderByStep getAsccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
@@ -551,6 +574,64 @@ public class CcListRepository {
         }
         if (request.getIsBIEUsable() != null && request.getIsBIEUsable()) {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notIn(Arrays.asList(SemanticGroup.getValue(), UserExtensionGroup.getValue())));
+        }
+
+        if (request.getOagisEntities() != null && !request.getOagisEntities().isEmpty()) {
+            BigInteger bodBasedAccManifestId = null;
+            Set<ULong> accManifestIdList = new HashSet();
+            Collection<BigInteger> verbManifestIds = null;
+
+            for (OagisComponentType unusualComponentType : request.getOagisEntities()) {
+                switch (unusualComponentType) {
+                    case BOD:
+                        bodBasedAccManifestId = getManifestIdByObjectClassTermAndReleaseId(
+                                "Business Object Document", request.getReleaseId());
+                        break;
+
+                    case Verb:
+                        if (verbManifestIds == null) {
+                            verbManifestIds = getVerbManifestIdList(request);
+                        }
+
+                        accManifestIdList.addAll(verbManifestIds.stream()
+                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList()));
+
+                        break;
+
+                    case Noun:
+                        if (verbManifestIds == null) {
+                            verbManifestIds = getVerbManifestIdList(request);
+                        }
+
+                        List<ULong> nounAccManifestIdList =
+                                dslContext.select(ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID)
+                                        .from(ACC_MANIFEST)
+                                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                                        .join(ASCC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
+                                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                                        .join(ACC_MANIFEST.as("role_of_acc_manifest")).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID))
+                                        .where(and(
+                                                ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId())),
+                                                ACC.OBJECT_CLASS_TERM.like("%Data Area"),
+                                                ACC_MANIFEST.as("role_of_acc_manifest").ACC_MANIFEST_ID.notIn(verbManifestIds)
+                                        ))
+                                        .fetchInto(ULong.class);
+
+
+                        accManifestIdList.addAll(nounAccManifestIdList);
+
+                        break;
+                }
+            }
+
+            List<Condition> oagisEntityConditions = new ArrayList();
+            if (bodBasedAccManifestId != null) {
+                oagisEntityConditions.add(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(bodBasedAccManifestId)));
+            }
+            if (!accManifestIdList.isEmpty()) {
+                oagisEntityConditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIdList));
+            }
+            conditions.add(or(oagisEntityConditions));
         }
 
         return dslContext.select(
