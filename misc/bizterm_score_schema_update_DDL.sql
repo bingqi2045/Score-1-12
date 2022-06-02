@@ -10,6 +10,7 @@ CREATE TABLE `business_term` (
   `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the business term was last updated.',
   `external_ref_uri` text COMMENT 'TODO: Definition is missing.',
   `external_ref_id` varchar(100) DEFAULT NULL COMMENT 'TODO: Definition is missing.',
+  `comment` text COMMENT 'Comment of the business term.',
   PRIMARY KEY (`business_term_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The Business Term table stores information about the business term, which is usually associated to BIE or CC. TODO: Placeeholder, definition is missing.';
 
