@@ -52,24 +52,70 @@ public class BccWriteRepository {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    private boolean accAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, String propertyTerm) {
-        while (fromAccManifestRecord != null) {
-            if (dslContext.selectCount()
+    private void ensureNoConflictInForward(AccManifestRecord fromAccManifestRecord, BccpRecord bccpRecord) {
+        // Check conflicts in forward
+        AccManifestRecord basedAccManifestRecord = fromAccManifestRecord;
+        while (basedAccManifestRecord != null) {
+            String accDen = dslContext.select(ACC.DEN)
                     .from(BCC_MANIFEST)
+                    .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                    .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                     .join(BCCP_MANIFEST).on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                     .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                     .where(and(
-                            BCC_MANIFEST.RELEASE_ID.eq(fromAccManifestRecord.getReleaseId()),
-                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()),
-                            BCCP.PROPERTY_TERM.eq(propertyTerm)
+                            BCC_MANIFEST.RELEASE_ID.eq(basedAccManifestRecord.getReleaseId()),
+                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
+                            BCCP.BCCP_ID.eq(bccpRecord.getBccpId())
                     ))
-                    .fetchOneInto(Integer.class) > 0) {
-                return true;
+                    .fetchOptionalInto(String.class).orElse(null);
+            if (accDen != null) {
+                throw new IllegalArgumentException("ACC [" + accDen + "] already has BCCP [" + bccpRecord.getDen() + "]");
             }
-            fromAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(fromAccManifestRecord.getBasedAccManifestId())).fetchOne();
+
+            if (basedAccManifestRecord.getBasedAccManifestId() != null) {
+                basedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(basedAccManifestRecord.getBasedAccManifestId())).fetchOne();
+            } else {
+                basedAccManifestRecord = null;
+            }
         }
-        return false;
+
+        // Check conflicts in backward
+        List<AccManifestRecord> childAccManifestRecords = new ArrayList();
+        childAccManifestRecords.addAll(
+                dslContext.selectFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()))
+                        .fetchInto(AccManifestRecord.class)
+        );
+    }
+
+    private void ensureNoConflictInBackward(AccManifestRecord fromAccManifestRecord, BccpRecord bccpRecord) {
+        List<AccManifestRecord> childAccManifestRecords = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()))
+                .fetchInto(AccManifestRecord.class);
+        if (childAccManifestRecords.isEmpty()) {
+            return;
+        }
+
+        for (AccManifestRecord childAccManifestRecord : childAccManifestRecords) {
+            String accDen = dslContext.select(ACC.DEN)
+                    .from(BCC_MANIFEST)
+                    .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                    .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                    .join(BCCP_MANIFEST).on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                    .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                    .where(and(
+                            BCC_MANIFEST.RELEASE_ID.eq(childAccManifestRecord.getReleaseId()),
+                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(childAccManifestRecord.getAccManifestId()),
+                            BCCP.BCCP_ID.eq(bccpRecord.getBccpId())
+                    ))
+                    .fetchOptionalInto(String.class).orElse(null);
+            if (accDen != null) {
+                throw new IllegalArgumentException("ACC [" + accDen + "] already has BCCP [" + bccpRecord.getDen() + "]");
+            }
+
+            ensureNoConflictInBackward(childAccManifestRecord, bccpRecord);
+        }
     }
 
     public CreateBccRepositoryResponse createBcc(CreateBccRepositoryRequest request) {
@@ -95,9 +141,8 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("Target BCCP does not exist.");
         }
 
-        if (accAlreadyContainAssociation(accManifestRecord, bccpRecord.getPropertyTerm())) {
-            throw new IllegalArgumentException("Target BCCP has already included.");
-        }
+        ensureNoConflictInForward(accManifestRecord, bccpRecord);
+        ensureNoConflictInBackward(accManifestRecord, bccpRecord);
 
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
