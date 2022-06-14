@@ -9,6 +9,9 @@ import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -18,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -232,6 +239,27 @@ public class BusinessTermController {
         } else {
             return ResponseEntity.badRequest().body("Please upload a csv file!");
         }
+    }
+
+    @RequestMapping(value = "/csv/business_terms/template", method = RequestMethod.GET)
+    public ResponseEntity getTemplateFile(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester) {
+
+        Path root = FileSystems.getDefault().getPath("").toAbsolutePath();
+        Path filePath = Paths.get(root.toString(),
+                "score-http", "src", "main", "resources", "businessTermTemplateWithExample.csv");
+
+        Resource resource = null;
+        try {
+            resource = new UrlResource(filePath.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Unexpected error happen during template processing!");
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.POST)

@@ -38,3 +38,8 @@ logging:
     org.springframework.messaging: DEBUG
     org.jooq: DEBUG
     org.oagi.score: DEBUG
+
+spring.servlet.multipart:
+  enabled: true
+  max-file-size: 2MB
+  max-request-size: 2MB
