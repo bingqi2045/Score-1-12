@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.helper.ScoreGuid.getGuidWithPrefix;
 import static org.oagi.score.gateway.http.helper.Utility.toZuluTimeString;
@@ -303,7 +304,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
     }
 
-    private AbstractBIEDocumentation getBIEDocumentation(BIE bie, CoreComponent cc) {
+    private AbstractBIEDocumentation getBIEDocumentation(BIE bie, CoreComponent cc, List<BusinessTerm> businessTerms) {
         if (bie instanceof ABIE && cc instanceof ACC) {
             return new ABIEDocumentation(
                     (ABIE) bie,
@@ -312,7 +313,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         if (bie instanceof ASBIE && cc instanceof ASCC) {
             return new ASBIEDocumentation(
-                    (ASBIE) bie, (ASCC) cc);
+                    (ASBIE) bie, (ASCC) cc, businessTerms);
         }
 
         if (bie instanceof ASBIEP && cc instanceof ASCCP) {
@@ -323,7 +324,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         if (bie instanceof BBIE && cc instanceof BCC) {
             return new BBIEDocumentation(
-                    (BBIE) bie, (BCC) cc);
+                    (BBIE) bie, (BCC) cc, businessTerms);
         }
 
         if (bie instanceof BBIEP && cc instanceof BCCP) {
@@ -335,8 +336,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         throw new IllegalArgumentException();
     }
 
-    private void setOptionalDocumentation(Element node, BIE bie, CoreComponent cc) {
-        AbstractBIEDocumentation bieDocumentation = getBIEDocumentation(bie, cc);
+    private void setOptionalDocumentation(Element node, BIE bie, CoreComponent cc, List<BusinessTerm> businessTerms)  {
+        AbstractBIEDocumentation bieDocumentation = getBIEDocumentation(bie, cc, businessTerms);
         setOptionalDocumentation(node, bieDocumentation);
     }
 
@@ -425,6 +426,21 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 Element ccts_BusinessTerm = new Element("ccts_BusinessTerm", OAGI_NS);
                 documentation.addContent(ccts_BusinessTerm);
                 ccts_BusinessTerm.setText(businessTerm);
+            }
+
+            List<BusinessTerm> businessTerms = bieDocumentation.getBusinessTerms();
+
+            if (businessTerms != null && !businessTerms.isEmpty()) {
+                Element sequenceElement = new Element("ccts_BusinessTerms", OAGI_NS);
+                documentation.addContent(sequenceElement);
+                businessTerms.stream().forEach(term -> {
+                    Element ccts_BusinessTerm = new Element("ccts_BusinessTerm", OAGI_NS);
+                    ccts_BusinessTerm.setAttribute("primary", term.getPrimaryIndicator());
+                    ccts_BusinessTerm.setAttribute("typeCode", term.getTypeCode());
+                    ccts_BusinessTerm.setAttribute("externalReferenceUri", term.getExternalReferenceUri());
+                    ccts_BusinessTerm.setText(term.getBusinessTerm());
+                    sequenceElement.addContent(ccts_BusinessTerm);
+                });
             }
         }
 
@@ -562,7 +578,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         ACC acc = generationContext.queryBasedACC(abie);
         setDefinition(complexType, abie.getDefinition());
-        setOptionalDocumentation(complexType, abie, acc);
+        setOptionalDocumentation(complexType, abie, acc, Collections.emptyList());
 
         Element element;
         if (OagisComponentType.Choice.getValue() == acc.getOagisComponentType()) {
@@ -590,7 +606,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 if (Helper.isAnyProperty(asbie, generationContext)) {
                     generateAnyABIE(asbie, parent);
                 } else {
-                    Element node = generateASBIE(asbie, parent);
+                    List<AsbieBizterm> asbieBizterms = generationContext.queryAsbieBizterm(asbie);
+                    Element node = generateASBIE(asbie, parent, asbieBizterms);
                     ASBIEP asbiep = generationContext.queryAssocToASBIEP(asbie);
                     Element asbiepNode = generateASBIEP(asbiep, node);
                     ABIE childAbie = generationContext.queryTargetABIE2(asbiep);
@@ -640,7 +657,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         setDefinition(complexType, bbie.getDefinition());
-        setOptionalDocumentation(complexType, bbie, bcc);
+        setOptionalDocumentation(complexType, bbie, bcc, Collections.emptyList());
 
         complexType.addContent(simpleContent);
         simpleContent.addContent(extNode);
@@ -719,7 +736,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         return eNode;
     }
 
-    public Element generateASBIE(ASBIE asbie, Element parent) {
+    public Element generateASBIE(ASBIE asbie, Element parent, List<AsbieBizterm> businessTerms) {
         Element element = newElement("element");
         if (option.isBieGuid()) {
             element.setAttribute("id", getGuidWithPrefix(asbie.getGuid()));
@@ -738,8 +755,24 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         ASCC ascc = generationContext.queryBasedASCC(asbie);
         setDefinition(element, asbie.getDefinition());
-        setOptionalDocumentation(element, asbie, ascc);
-
+        List<BusinessTerm> businessTermList;
+        if(businessTerms != null && !businessTerms.isEmpty()){
+            businessTermList = businessTerms.stream()
+                    .map(asbieBizterm -> {
+                        BusinessTerm bt = new BusinessTerm();
+                        bt.setBieId(asbieBizterm.getAsbieId());
+                        bt.setBieBiztermId(asbieBizterm.getAsbieBiztermId());
+                        bt.setBusinessTerm(asbieBizterm.getBusinessTerm());
+                        bt.setTypeCode(asbieBizterm.getTypeCode());
+                        bt.setPrimaryIndicator(asbieBizterm.getPrimaryIndicator());
+                        bt.setGuid(asbieBizterm.getGuid());
+                        bt.setExternalReferenceUri(asbieBizterm.getExternalRefUri());
+                        return bt;
+                    }).collect(Collectors.toList());
+        } else {
+            businessTermList = Collections.emptyList();
+        }
+        setOptionalDocumentation(element, asbie, ascc, businessTermList);
         parent.addContent(element);
         return element;
     }
@@ -749,12 +782,12 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         parent.setAttribute("name", Utility.first(asccp.getDen(), true));
 
         setDefinition(parent, asbiep.getDefinition());
-        setOptionalDocumentation(parent, asbiep, asccp);
+        setOptionalDocumentation(parent, asbiep, asccp, Collections.emptyList());
 
         return parent;
     }
 
-    public Element handleElementBBIE(BBIE bbie, Element eNode) {
+    public Element handleElementBBIE(BBIE bbie, Element eNode, List<BbieBizterm> bbieBizterms) {
         BCC bcc = generationContext.queryBasedBCC(bbie);
         eNode.setAttribute("name", Utility.second(bcc.getDen(), true));
         if (option.isBieGuid()) {
@@ -782,7 +815,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         if (bbie.isNillable())
             eNode.setAttribute("nillable", String.valueOf(bbie.isNillable()));
 
-        setDocumentation(eNode, bbie);
+        setDocumentation(eNode, bbie, bbieBizterms);
 
         return eNode;
     }
@@ -811,22 +844,40 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         else
             eNode.setAttribute("use", "optional");
 
-        setDocumentation(eNode, bbie);
+        List<BbieBizterm> bbieBizterms = generationContext.queryBbieBizterm(bbie);
+        setDocumentation(eNode, bbie, bbieBizterms);
 
         return eNode;
     }
 
-    private void setDocumentation(Element node, BBIE bbie) {
+    private void setDocumentation(Element node, BBIE bbie, List<BbieBizterm> bbieBizterms) {
         BCC bcc = generationContext.queryBasedBCC(bbie);
 
+        List<BusinessTerm> businessTermList;
+        if(bbieBizterms != null && !bbieBizterms.isEmpty()){
+            businessTermList = bbieBizterms.stream()
+                    .map(bbieBizterm -> {
+                        BusinessTerm bt = new BusinessTerm();
+                        bt.setBieId(bbieBizterm.getBbieId());
+                        bt.setBieBiztermId(bbieBizterm.getBbieBiztermId());
+                        bt.setBusinessTerm(bbieBizterm.getBusinessTerm());
+                        bt.setTypeCode(bbieBizterm.getTypeCode());
+                        bt.setPrimaryIndicator(bbieBizterm.getPrimaryIndicator());
+                        bt.setGuid(bbieBizterm.getGuid());
+                        bt.setExternalReferenceUri(bbieBizterm.getExternalRefUri());
+                        return bt;
+                    }).collect(Collectors.toList());
+        } else {
+            businessTermList = Collections.emptyList();
+        }
         setDefinition(node, bbie.getDefinition());
-        setOptionalDocumentation(node, bbie, bcc);
+        setOptionalDocumentation(node, bbie, bcc, businessTermList);
 
         BBIEP bbiep = generationContext.findBBIEP(bbie.getToBbiepId());
         BCCP bccp = generationContext.findBCCP(bbiep.getBasedBccpManifestId());
 
         setDefinition(node, bbiep.getDefinition());
-        setOptionalDocumentation(node, bbiep, bccp);
+        setOptionalDocumentation(node, bbiep, bccp, Collections.emptyList());
     }
 
     public Element setBBIEType(DT bdt, Element gNode) {
@@ -901,9 +952,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     public Element generateBBIE(BBIE bbie, DT bdt, Element parent) {
         BCC bcc = generationContext.queryBasedBCC(bbie);
+        List<BbieBizterm> bbieBizterms = generationContext.queryBbieBizterm(bbie);
 
         Element eNode = newElement("element");
-        eNode = handleElementBBIE(bbie, eNode);
+        eNode = handleElementBBIE(bbie, eNode, bbieBizterms);
 
         if (bcc.getEntityType() == BCCEntityType.Element.getValue()) {
             while (!parent.getName().equals("sequence") && !parent.getName().equals("choice")) {
@@ -1309,6 +1361,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         String getDataTypeTermName();
 
         String getBusinessTerm();
+
+        List<BusinessTerm> getBusinessTerms();
     }
 
     private interface SRTMetaData {
@@ -1462,6 +1516,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
+        public List<BusinessTerm> getBusinessTerms() { return null; }
+
+        @Override
         public Collection<Definition> getCoreComponentDefinitions() {
             return Collections.emptyList();
         }
@@ -1562,12 +1619,15 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     private class ASBIEDocumentation extends AbstractBIEDocumentation {
         private final ASBIE asbie;
         private final ASCC ascc;
+        private final List<BusinessTerm> businessTerms;
 
         public ASBIEDocumentation(
                 ASBIE asbie,
-                ASCC ascc) {
+                ASCC ascc,
+                List<BusinessTerm> businessTerms) {
             this.asbie = asbie;
             this.ascc = ascc;
+            this.businessTerms = businessTerms;
         }
 
         @Override
@@ -1623,6 +1683,11 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         @Override
         public int getRevisionNumber() {
             return ascc.getRevisionNum();
+        }
+
+        @Override
+        public List<BusinessTerm> getBusinessTerms() {
+            return this.businessTerms;
         }
 
         @Override
@@ -1744,12 +1809,16 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     private class BBIEDocumentation extends AbstractBIEDocumentation {
         private final BBIE bbie;
         private final BCC bcc;
+        private final List<BusinessTerm> businessTerms;
 
         public BBIEDocumentation(
                 BBIE bbie,
-                BCC bcc) {
+                BCC bcc,
+                List<BusinessTerm> businessTerms
+        ) {
             this.bbie = bbie;
             this.bcc = bcc;
+            this.businessTerms = businessTerms;
         }
 
         @Override
@@ -1805,6 +1874,11 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         @Override
         public int getRevisionNumber() {
             return bcc.getRevisionNum();
+        }
+
+        @Override
+        public List<BusinessTerm> getBusinessTerms() {
+            return this.businessTerms;
         }
 
         @Override
