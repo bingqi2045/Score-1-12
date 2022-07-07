@@ -5,14 +5,18 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function11;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row11;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -28,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BusinessTermRecor
 
 /**
  * The Business Term table stores information about the business term, which is
- * usually associated to BIE or CC. TODO: Placeeholder, definition is missing.
+ * usually associated to BIE or CC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BusinessTerm extends TableImpl<BusinessTermRecord> {
@@ -121,7 +125,7 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     private BusinessTerm(Name alias, Table<BusinessTermRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("The Business Term table stores information about the business term, which is usually associated to BIE or CC. TODO: Placeeholder, definition is missing."), TableOptions.table());
+        super(alias, null, aliased, parameters, DSL.comment("The Business Term table stores information about the business term, which is usually associated to BIE or CC."), TableOptions.table());
     }
 
     /**
@@ -174,6 +178,11 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
         return new BusinessTerm(alias, this);
     }
 
+    @Override
+    public BusinessTerm as(Table<?> alias) {
+        return new BusinessTerm(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -190,6 +199,14 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
         return new BusinessTerm(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public BusinessTerm rename(Table<?> name) {
+        return new BusinessTerm(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row11 type methods
     // -------------------------------------------------------------------------
@@ -197,5 +214,19 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     @Override
     public Row11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link #convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function11<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }

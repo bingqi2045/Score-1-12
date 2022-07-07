@@ -345,8 +345,7 @@ public class Tables {
 
     /**
      * The Business Term table stores information about the business term, which
-     * is usually associated to BIE or CC. TODO: Placeeholder, definition is
-     * missing.
+     * is usually associated to BIE or CC.
      */
     public static final BusinessTerm BUSINESS_TERM = BusinessTerm.BUSINESS_TERM;
 

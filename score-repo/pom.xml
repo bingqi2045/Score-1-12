@@ -14,11 +14,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <lombok.version>1.18.22</lombok.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
-        <jOOQ.version>3.16.5</jOOQ.version>
+        <jOOQ.version>3.17.1</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
 
         <junit.version>4.13.2</junit.version>

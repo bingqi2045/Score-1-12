@@ -372,6 +372,11 @@ public class CodeList extends TableImpl<CodeListRecord> {
         return new CodeList(alias, this);
     }
 
+    @Override
+    public CodeList as(Table<?> alias) {
+        return new CodeList(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -386,5 +391,13 @@ public class CodeList extends TableImpl<CodeListRecord> {
     @Override
     public CodeList rename(Name name) {
         return new CodeList(name, null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public CodeList rename(Table<?> name) {
+        return new CodeList(name.getQualifiedName(), null);
     }
 }

@@ -1,5 +1,6 @@
 package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
+import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
@@ -11,7 +12,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import javax.print.DocFlavor;
 import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 public class JooqCcReadRepository
         extends JooqScoreRepository

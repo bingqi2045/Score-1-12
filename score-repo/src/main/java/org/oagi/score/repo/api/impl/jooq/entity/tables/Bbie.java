@@ -418,6 +418,11 @@ public class Bbie extends TableImpl<BbieRecord> {
         return new Bbie(alias, this);
     }
 
+    @Override
+    public Bbie as(Table<?> alias) {
+        return new Bbie(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -432,5 +437,13 @@ public class Bbie extends TableImpl<BbieRecord> {
     @Override
     public Bbie rename(Name name) {
         return new Bbie(name, null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public Bbie rename(Table<?> name) {
+        return new Bbie(name.getQualifiedName(), null);
     }
 }

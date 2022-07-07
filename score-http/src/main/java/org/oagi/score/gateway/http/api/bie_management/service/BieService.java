@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.bie_management.service;
 
+import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BizCtx;

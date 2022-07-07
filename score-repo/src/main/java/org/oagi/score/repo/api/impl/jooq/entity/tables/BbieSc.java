@@ -389,6 +389,11 @@ public class BbieSc extends TableImpl<BbieScRecord> {
         return new BbieSc(alias, this);
     }
 
+    @Override
+    public BbieSc as(Table<?> alias) {
+        return new BbieSc(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -403,5 +408,13 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     @Override
     public BbieSc rename(Name name) {
         return new BbieSc(name, null);
+    }
+
+    /**
+     * Rename this table
+     */
+    @Override
+    public BbieSc rename(Table<?> name) {
+        return new BbieSc(name.getQualifiedName(), null);
     }
 }

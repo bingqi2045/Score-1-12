@@ -4,13 +4,18 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
+import java.util.function.Function;
+
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Function18;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Records;
 import org.jooq.Row18;
 import org.jooq.Schema;
+import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -193,6 +198,11 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
         return new Oauth2App(alias, this);
     }
 
+    @Override
+    public Oauth2App as(Table<?> alias) {
+        return new Oauth2App(alias.getQualifiedName(), this);
+    }
+
     /**
      * Rename this table
      */
@@ -209,6 +219,14 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
         return new Oauth2App(name, null);
     }
 
+    /**
+     * Rename this table
+     */
+    @Override
+    public Oauth2App rename(Table<?> name) {
+        return new Oauth2App(name.getQualifiedName(), null);
+    }
+
     // -------------------------------------------------------------------------
     // Row18 type methods
     // -------------------------------------------------------------------------
@@ -216,5 +234,19 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
     @Override
     public Row18<ULong, String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, Integer, Byte> fieldsRow() {
         return (Row18) super.fieldsRow();
+    }
+
+    /**
+     * Convenience mapping calling {@link #convertFrom(Function)}.
+     */
+    public <U> SelectField<U> mapping(Function18<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
+        return convertFrom(Records.mapping(from));
+    }
+
+    /**
+     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     */
+    public <U> SelectField<U> mapping(Class<U> toType, Function18<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
+        return convertFrom(toType, Records.mapping(from));
     }
 }
