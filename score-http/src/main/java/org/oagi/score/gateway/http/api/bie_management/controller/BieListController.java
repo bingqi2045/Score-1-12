@@ -34,6 +34,7 @@ public class BieListController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<BieList> getBieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @RequestParam(name = "den", required = false) String den,
                                             @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
                                             @RequestParam(name = "businessContext", required = false) String businessContext,
                                             @RequestParam(name = "asccpManifestId", required = false) BigInteger asccpManifestId,
@@ -54,6 +55,7 @@ public class BieListController {
 
         BieListRequest request = new BieListRequest();
 
+        request.setDen(den);
         request.setPropertyTerm(propertyTerm);
         request.setBusinessContext(businessContext);
         request.setAsccpManifestId(asccpManifestId);

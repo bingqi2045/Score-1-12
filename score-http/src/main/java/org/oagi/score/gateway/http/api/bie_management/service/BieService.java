@@ -156,6 +156,7 @@ public class BieService {
         AppUser requester = sessionService.getAppUser(user);
 
         PaginationResponse<BieList> result = bieRepository.selectBieLists()
+                .setDen(request.getDen())
                 .setPropertyTerm(request.getPropertyTerm())
                 .setBusinessContext(request.getBusinessContext())
                 .setAsccpManifestId(request.getAsccpManifestId())

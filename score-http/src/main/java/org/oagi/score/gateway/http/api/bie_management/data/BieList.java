@@ -13,7 +13,7 @@ import java.util.List;
 public class BieList {
 
     private BigInteger topLevelAsbiepId;
-    private String propertyTerm;
+    private String den;
     private String guid;
     private String releaseNum;
     private List<BusinessContext> businessContexts;

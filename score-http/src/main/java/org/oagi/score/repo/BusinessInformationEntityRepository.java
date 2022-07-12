@@ -439,6 +439,13 @@ public class BusinessInformationEntityRepository {
         private String den;
         private String type;
 
+        public SelectBieListArguments setDen(String den) {
+            if (StringUtils.hasLength(den)) {
+                conditions.addAll(contains(den, ASCCP.DEN));
+            }
+            return this;
+        }
+
         public SelectBieListArguments setPropertyTerm(String propertyTerm) {
             if (StringUtils.hasLength(propertyTerm)) {
                 conditions.addAll(contains(propertyTerm, ASCCP.PROPERTY_TERM));
@@ -495,9 +502,9 @@ public class BusinessInformationEntityRepository {
         public SelectBieListArguments setBieIdAndType(BigInteger bieId, List<String> types) {
             if (types.size() == 1) {
                 String type = types.get(0);
-                if (type.equals("ASBIE")){
+                if (type.equals("ASBIE")) {
                     conditions.add(ASBIE.ASBIE_ID.eq(ULong.valueOf(bieId)));
-                } else if (type.equals("BBIE")){
+                } else if (type.equals("BBIE")) {
                     conditions.add(BBIE.BBIE_ID.eq(ULong.valueOf(bieId)));
                 }
             }
@@ -673,24 +680,25 @@ public class BusinessInformationEntityRepository {
         return new SelectBieListArguments();
     }
 
-    private SelectOnConditionStep<Record13<
+    private SelectOnConditionStep<Record14<
             ULong, String, String, String, String,
-            String, ULong, String, String, String,
-            LocalDateTime, String, String>> getSelectOnConditionStep() {
+            String, String, ULong, String, String,
+            String, LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.selectDistinct(
-                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
-                TOP_LEVEL_ASBIEP.VERSION,
-                TOP_LEVEL_ASBIEP.STATUS,
-                ABIE.GUID,
-                ASCCP.PROPERTY_TERM,
-                RELEASE.RELEASE_NUM,
-                TOP_LEVEL_ASBIEP.OWNER_USER_ID,
-                APP_USER.LOGIN_ID.as("owner"),
-                ASBIEP.BIZ_TERM,
-                ASBIEP.REMARK,
-                TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP,
-                APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
-                TOP_LEVEL_ASBIEP.STATE)
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                        TOP_LEVEL_ASBIEP.VERSION,
+                        TOP_LEVEL_ASBIEP.STATUS,
+                        ABIE.GUID,
+                        ASCCP.DEN,
+                        ASCCP.PROPERTY_TERM,
+                        RELEASE.RELEASE_NUM,
+                        TOP_LEVEL_ASBIEP.OWNER_USER_ID,
+                        APP_USER.LOGIN_ID.as("owner"),
+                        ASBIEP.BIZ_TERM,
+                        ASBIEP.REMARK,
+                        TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP,
+                        APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
+                        TOP_LEVEL_ASBIEP.STATE)
                 .from(TOP_LEVEL_ASBIEP)
                 .join(ASBIEP).on(and(
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
@@ -707,23 +715,23 @@ public class BusinessInformationEntityRepository {
     }
 
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
-        SelectOnConditionStep<Record13<
+        SelectOnConditionStep<Record14<
                 ULong, String, String, String, String,
-                String, ULong, String, String, String,
-                LocalDateTime, String, String>> step = getSelectOnConditionStep();
+                String, String, ULong, String, String,
+                String, LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
-        SelectConnectByStep<Record13<
+        SelectConnectByStep<Record14<
                 ULong, String, String, String, String,
-                String, ULong, String, String, String,
-                LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
+                String, String, ULong, String, String,
+                String, LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
         SortField sortField = arguments.getSortField();
-        SelectWithTiesAfterOffsetStep<Record13<
+        SelectWithTiesAfterOffsetStep<Record14<
                 ULong, String, String, String, String,
-                String, ULong, String, String, String,
-                LocalDateTime, String, String>> offsetStep = null;
+                String, String, ULong, String, String,
+                String, LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)
@@ -787,28 +795,29 @@ public class BusinessInformationEntityRepository {
     }
 
     public SelectOrderByStep getAsbieList(SelectBieListArguments arguments) {
-        List<Condition> conditions = arguments.getConditions().stream().collect(Collectors.toList());;
-        if(arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())){
+        List<Condition> conditions = arguments.getConditions().stream().collect(Collectors.toList());
+        ;
+        if (arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())) {
             conditions.add(ASCC.DEN.contains(arguments.getDen()));
         }
         return dslContext.select(
-                inline("ASBIE").as("type"),
-                ASBIE.ASBIE_ID.as("bieId"),
-                ASBIE.GUID,
-                ASCC.DEN,
-                TOP_LEVEL_ASBIEP.STATE,
-                TOP_LEVEL_ASBIEP.VERSION,
-                TOP_LEVEL_ASBIEP.STATUS,
-                BIZ_CTX.NAME.as("bizCtxName"),
-                RELEASE.RELEASE_ID,
-                RELEASE.RELEASE_NUM,
-                ASBIE.REMARK,
-                APP_USER.as("appUserUpdater").LOGIN_ID.as("lastUpdateUser"),
-                APP_USER.LOGIN_ID.as("owner"),
-                ASBIE.LAST_UPDATE_TIMESTAMP,
-                ASBIE.IS_USED.as("used"),
-                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
-                ASCCP.PROPERTY_TERM.as("topLevelAsccpPropertyTerm"))
+                        inline("ASBIE").as("type"),
+                        ASBIE.ASBIE_ID.as("bieId"),
+                        ASBIE.GUID,
+                        ASCC.DEN,
+                        TOP_LEVEL_ASBIEP.STATE,
+                        TOP_LEVEL_ASBIEP.VERSION,
+                        TOP_LEVEL_ASBIEP.STATUS,
+                        BIZ_CTX.NAME.as("bizCtxName"),
+                        RELEASE.RELEASE_ID,
+                        RELEASE.RELEASE_NUM,
+                        ASBIE.REMARK,
+                        APP_USER.as("appUserUpdater").LOGIN_ID.as("lastUpdateUser"),
+                        APP_USER.LOGIN_ID.as("owner"),
+                        ASBIE.LAST_UPDATE_TIMESTAMP,
+                        ASBIE.IS_USED.as("used"),
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                        ASCCP.PROPERTY_TERM.as("topLevelAsccpPropertyTerm"))
                 .from(ASBIE)
 //                next two joins to get DEN
                 .join(ASCC_MANIFEST).on(ASBIE.BASED_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.ASCC_MANIFEST_ID))
@@ -836,45 +845,45 @@ public class BusinessInformationEntityRepository {
 
     public SelectOrderByStep getBbieList(SelectBieListArguments arguments) {
         List<Condition> conditions = arguments.getConditions().stream().collect(Collectors.toList());
-        if(arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())){
+        if (arguments.getDen() != null && StringUtils.hasLength(arguments.getDen())) {
             conditions.add(BCC.DEN.contains(arguments.getDen()));
         }
         return dslContext.select(
-                inline("BBIE").as("type"),
-                BBIE.BBIE_ID.as("bieId"),
-                BBIE.GUID,
-                BCC.DEN,
-                TOP_LEVEL_ASBIEP.STATE,
-                TOP_LEVEL_ASBIEP.VERSION,
-                TOP_LEVEL_ASBIEP.STATUS,
-                BIZ_CTX.NAME.as("bizCtxName"),
-                RELEASE.RELEASE_ID,
-                RELEASE.RELEASE_NUM,
-                BBIE.REMARK,
-                APP_USER.as("appUserUpdater").LOGIN_ID.as("lastUpdateUser"),
-                APP_USER.LOGIN_ID.as("owner"),
-                BBIE.LAST_UPDATE_TIMESTAMP,
-                BBIE.IS_USED.as("used"),
-                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
-                ASCCP.PROPERTY_TERM.as("topLevelAsccpPropertyTerm"))
+                        inline("BBIE").as("type"),
+                        BBIE.BBIE_ID.as("bieId"),
+                        BBIE.GUID,
+                        BCC.DEN,
+                        TOP_LEVEL_ASBIEP.STATE,
+                        TOP_LEVEL_ASBIEP.VERSION,
+                        TOP_LEVEL_ASBIEP.STATUS,
+                        BIZ_CTX.NAME.as("bizCtxName"),
+                        RELEASE.RELEASE_ID,
+                        RELEASE.RELEASE_NUM,
+                        BBIE.REMARK,
+                        APP_USER.as("appUserUpdater").LOGIN_ID.as("lastUpdateUser"),
+                        APP_USER.LOGIN_ID.as("owner"),
+                        BBIE.LAST_UPDATE_TIMESTAMP,
+                        BBIE.IS_USED.as("used"),
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                        ASCCP.PROPERTY_TERM.as("topLevelAsccpPropertyTerm"))
                 .from(BBIE)
-    //                next two joins to get DEN
+                //                next two joins to get DEN
                 .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-    //                join with TOP_LEVEL_ASBIEP to get state, version, status
+                //                join with TOP_LEVEL_ASBIEP to get state, version, status
                 .join(TOP_LEVEL_ASBIEP).on(and(
                         BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                 ))
-    //                next three joins to get top level property term
+                //                next three joins to get top level property term
                 .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-    //                join w RELEASE to get RELEASE_NUM
+                //                join w RELEASE to get RELEASE_NUM
                 .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ASBIEP.RELEASE_ID))
-    //                next two joins to get BIZ_CTX.NAME
+                //                next two joins to get BIZ_CTX.NAME
                 .join(BIZ_CTX_ASSIGNMENT).on(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID))
                 .join(BIZ_CTX).on(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(BIZ_CTX.BIZ_CTX_ID))
-    //                join with APP_USER to get updater
+                //                join with APP_USER to get updater
                 .join(APP_USER.as("appUserUpdater"))
                 .on(BBIE.LAST_UPDATED_BY.eq(APP_USER.as("appUserUpdater").APP_USER_ID))
                 .join(APP_USER)
