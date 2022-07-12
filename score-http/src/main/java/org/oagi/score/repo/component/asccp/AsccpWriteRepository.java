@@ -6,6 +6,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.common.data.CcState;
@@ -294,16 +295,28 @@ public class AsccpWriteRepository {
         }
 
         if (propertyTermChanged) {
-            for (ULong asccManifestId : dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                    .from(ASCC_MANIFEST)
+            for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
                     .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
-                    .fetchInto(ULong.class)) {
+                    .fetch()) {
 
-                UpdateAsccPropertiesRepositoryRequest updateAsccPropertiesRepositoryRequest =
-                        new UpdateAsccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                                asccManifestId.toBigInteger());
-                updateAsccPropertiesRepositoryRequest.setPropagation(true);
-                asccWriteRepository.updateAsccProperties(updateAsccPropertiesRepositoryRequest);
+                String objectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+                        .from(ACC)
+                        .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccManifestRecord.getFromAccManifestId()))
+                        .fetchOneInto(String.class);
+
+                AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                        .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                        .fetchOne();
+
+                String asccpDen = dslContext.select(Tables.ASCCP.DEN)
+                        .from(Tables.ASCCP)
+                        .join(Tables.ASCCP_MANIFEST).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
+                        .where(Tables.ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                        .fetchOneInto(String.class);
+
+                asccRecord.setDen(objectClassTerm + ". " + asccpDen);
+                asccRecord.update(ASCC.DEN);
             }
         }
 

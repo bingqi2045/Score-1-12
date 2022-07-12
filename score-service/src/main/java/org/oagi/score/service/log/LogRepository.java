@@ -9,12 +9,13 @@ import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.common.data.CcAction;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
-import org.oagi.score.repo.api.base.SortDirection;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.log.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -34,6 +35,7 @@ import static org.jooq.impl.DSL.jsonValue;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.base.SortDirection.DESC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.log.model.Log.CURRENT_LOG_HASH;
 
 @Repository
 public class LogRepository {
@@ -48,9 +50,104 @@ public class LogRepository {
         this.serializer = serializer;
     }
 
+    private Log getCurrentStatusAsLog(String type, BigInteger manifestId) {
+        Log log = null;
+        AppUserRecord owner = null;
+
+        switch (type) {
+            case "ACC":
+                AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOne();
+
+                AccRecord accRecord = dslContext.selectFrom(ACC)
+                        .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                        .fetchOne();
+
+                if (CcState.valueOf(accRecord.getState()) == CcState.WIP) {
+                    log = new Log();
+                    owner = dslContext.selectFrom(APP_USER)
+                            .where(APP_USER.APP_USER_ID.eq(accRecord.getOwnerUserId()))
+                            .fetchOne();
+                }
+                break;
+            case "ASCCP":
+                AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOne();
+
+                AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                        .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                        .fetchOne();
+
+                if (CcState.valueOf(asccpRecord.getState()) == CcState.WIP) {
+                    log = new Log();
+                    owner = dslContext.selectFrom(APP_USER)
+                            .where(APP_USER.APP_USER_ID.eq(asccpRecord.getOwnerUserId()))
+                            .fetchOne();
+                }
+                break;
+            case "BCCP":
+                BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOne();
+
+                BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                        .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                        .fetchOne();
+
+                if (CcState.valueOf(bccpRecord.getState()) == CcState.WIP) {
+                    log = new Log();
+                    owner = dslContext.selectFrom(APP_USER)
+                            .where(APP_USER.APP_USER_ID.eq(bccpRecord.getOwnerUserId()))
+                            .fetchOne();
+                }
+                break;
+            case "DT":
+                DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOne();
+
+                DtRecord dtRecord = dslContext.selectFrom(DT)
+                        .where(DT.DT_ID.eq(dtManifestRecord.getDtId()))
+                        .fetchOne();
+
+                if (CcState.valueOf(dtRecord.getState()) == CcState.WIP) {
+                    log = new Log();
+                    owner = dslContext.selectFrom(APP_USER)
+                            .where(APP_USER.APP_USER_ID.eq(dtRecord.getOwnerUserId()))
+                            .fetchOne();
+                }
+                break;
+        }
+
+        if (log != null) {
+            log.setLogId(BigInteger.ZERO);
+            log.setHash(CURRENT_LOG_HASH);
+            log.setLogAction(LogAction.Current);
+            log.setTimestamp(LocalDateTime.now());
+            log.setLoginId(owner.getLoginId());
+            log.setDeveloper(owner.getIsDeveloper() == (byte) 1);
+        }
+
+        return log;
+    }
+
     public PageResponse<Log> getLogByReference(LogListRequest request) {
         if (request.getReference().isEmpty()) {
             return null;
+        }
+
+        // Issue #1185
+        Log currentLog = getCurrentStatusAsLog(request.getType(), request.getManifestId());
+        int pageSize = request.getPageRequest().getPageSize();
+        int pageOffset = request.getPageRequest().getOffset();
+        if (currentLog != null) {
+            if (pageOffset == 0) {
+                pageSize -= 1;
+            } else {
+                pageOffset -= 1;
+            }
         }
 
         PageRequest pageRequest = request.getPageRequest();
@@ -64,43 +161,135 @@ public class LogRepository {
                 .fetchOptionalInto(Integer.class).orElse(0);
 
         List<Log> list = dslContext.select(
-                LOG.LOG_ID,
-                LOG.HASH,
-                LOG.REVISION_NUM,
-                LOG.REVISION_TRACKING_NUM,
-                LOG.LOG_ACTION,
-                LOG.PREV_LOG_ID,
-                LOG.CREATION_TIMESTAMP.as("timestamp"),
-                APP_USER.LOGIN_ID.as("loginId"),
-                APP_USER.IS_DEVELOPER
-        )
+                        LOG.LOG_ID,
+                        LOG.HASH,
+                        LOG.REVISION_NUM,
+                        LOG.REVISION_TRACKING_NUM,
+                        LOG.LOG_ACTION,
+                        LOG.PREV_LOG_ID,
+                        LOG.CREATION_TIMESTAMP.as("timestamp"),
+                        APP_USER.LOGIN_ID.as("loginId"),
+                        APP_USER.IS_DEVELOPER
+                )
                 .from(LOG)
                 .join(APP_USER)
                 .on(LOG.CREATED_BY.eq(APP_USER.APP_USER_ID))
                 .where(conditions)
                 .orderBy(LOG.LOG_ID.desc())
-                .limit(pageRequest.getOffset(), pageRequest.getPageSize())
+                .limit(pageOffset, pageSize)
                 .fetchInto(Log.class);
+
+        if (currentLog != null && pageOffset == 0) {
+            List<Log> logsWithCurrent = new ArrayList();
+            logsWithCurrent.add(currentLog);
+            logsWithCurrent.addAll(list);
+            list = logsWithCurrent;
+            if (list.size() == 1) {
+                list.get(0).setRevisionNum(1);
+                list.get(0).setRevisionTrackingNum(1);
+            } else {
+                list.get(0).setRevisionNum(list.get(1).getRevisionNum());
+                list.get(0).setRevisionTrackingNum(list.get(1).getRevisionTrackingNum() + 1);
+            }
+        }
 
         response.setList(list);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(length);
+        response.setLength((currentLog != null) ? (length + 1) : length);
 
         return response;
     }
 
-    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId) {
-        if (logId == null || logId.longValue() <= 0L) {
-            return "{}";
-        }
+    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId,
+                                  String reference, String type, BigInteger manifestId) {
+        if (CURRENT_LOG_HASH.equals(reference)) {
+            switch (type) {
+                case "ACC":
+                    AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .fetchOne();
 
-        return serializer.deserialize(
-                dslContext.select(LOG.SNAPSHOT)
-                        .from(LOG)
-                        .where(LOG.LOG_ID.eq(ULong.valueOf(logId)))
-                        .fetchOptionalInto(String.class).orElse(null)
-        ).toString();
+                    AccRecord accRecord = dslContext.selectFrom(ACC)
+                            .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                            .fetchOne();
+
+                    List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                            .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                            .fetch();
+
+                    List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                            .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                            .fetch();
+
+                    List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
+                            .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                            .fetch();
+
+                    List<BccRecord> bccRecords = dslContext.selectFrom(BCC)
+                            .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                            .fetch();
+
+                    List<SeqKeyRecord> seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
+                            .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                            .fetch();
+
+                    return serializer.serialize(accManifestRecord, accRecord,
+                            asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords);
+                case "ASCCP":
+                    AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .fetchOne();
+
+                    AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                            .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                            .fetchOne();
+
+                    return serializer.serialize(asccpManifestRecord, asccpRecord);
+                case "BCCP":
+                    BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .fetchOne();
+
+                    BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                            .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                            .fetchOne();
+
+                    return serializer.serialize(bccpManifestRecord, bccpRecord);
+                case "DT":
+                    DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
+                            .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .fetchOne();
+
+                    DtRecord dtRecord = dslContext.selectFrom(DT)
+                            .where(DT.DT_ID.eq(dtManifestRecord.getDtId()))
+                            .fetchOne();
+
+                    List<DtScManifestRecord> dtScManifestRecords = dslContext.selectFrom(DT_SC_MANIFEST)
+                            .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                            .fetch();
+
+                    List<DtScRecord> dtScRecords = dslContext.selectFrom(DT_SC)
+                            .where(DT_SC.DT_SC_ID.in(
+                                    dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())
+                            ))
+                            .fetch();
+
+                    return serializer.serialize(dtManifestRecord, dtRecord, dtScManifestRecords, dtScRecords);
+            }
+            return "{}";
+        } else {
+            if (logId == null || logId.longValue() <= 0L) {
+                return "{}";
+            }
+
+            return serializer.deserialize(
+                    dslContext.select(LOG.SNAPSHOT)
+                            .from(LOG)
+                            .where(LOG.LOG_ID.eq(ULong.valueOf(logId)))
+                            .fetchOptionalInto(String.class).orElse(null)
+            ).toString();
+        }
     }
 
     public List<LogRecord> getSortedLogListByReference(String reference, SortDirection sortDirection, CcType ccType) {
@@ -109,16 +298,16 @@ public class LogRepository {
         if (ccType.equals(CcType.CODE_LIST) || ccType.equals(CcType.AGENCY_ID_LIST)) {
             logRecordList =
                     dslContext.select(LOG.LOG_ID, LOG.HASH, LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM,
-                            LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
-                            LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
+                                    LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
+                                    LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
                             .from(LOG)
                             .where(LOG.REFERENCE.eq(reference))
                             .fetchInto(LogRecord.class);
         } else {
             logRecordList =
                     dslContext.select(LOG.LOG_ID, LOG.HASH, LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM,
-                            LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
-                            LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
+                                    LOG.LOG_ACTION, LOG.REFERENCE, LOG.PREV_LOG_ID, LOG.NEXT_LOG_ID,
+                                    LOG.CREATED_BY, LOG.CREATION_TIMESTAMP)
                             .from(LOG)
                             .where(and(LOG.REFERENCE.eq(reference),
                                     jsonValue(LOG.SNAPSHOT, "$.component").eq(JSON.valueOf(ccType.name().toLowerCase()))))
@@ -200,8 +389,8 @@ public class LogRepository {
         dslContext.deleteFrom(LOG)
                 .where(
                         deleteTargetLogIdList.size() == 1 ?
-                        LOG.LOG_ID.eq(deleteTargetLogIdList.get(0)) :
-                        LOG.LOG_ID.in(deleteTargetLogIdList)
+                                LOG.LOG_ID.eq(deleteTargetLogIdList.get(0)) :
+                                LOG.LOG_ID.in(deleteTargetLogIdList)
                 )
                 .execute();
 
@@ -734,19 +923,19 @@ public class LogRepository {
      * Begins DT
      */
     public LogRecord insertBdtLog(DtManifestRecord bdtManifestRecord,
-                                   DtRecord bdtRecord,
-                                   LogAction logAction,
-                                   ULong requesterId,
-                                   LocalDateTime timestamp) {
+                                  DtRecord bdtRecord,
+                                  LogAction logAction,
+                                  ULong requesterId,
+                                  LocalDateTime timestamp) {
         return insertBdtLog(bdtManifestRecord, bdtRecord, null, logAction, requesterId, timestamp);
     }
 
     public LogRecord insertBdtLog(DtManifestRecord bdtManifestRecord,
-                                   DtRecord bdtRecord,
-                                   ULong prevLogId,
-                                   LogAction logAction,
-                                   ULong requesterId,
-                                   LocalDateTime timestamp) {
+                                  DtRecord bdtRecord,
+                                  ULong prevLogId,
+                                  LogAction logAction,
+                                  ULong requesterId,
+                                  LocalDateTime timestamp) {
 
         LogRecord prevLogRecord = null;
         if (prevLogId != null) {
@@ -784,7 +973,7 @@ public class LogRepository {
                         dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())
                 ))
                 .fetch();
-        
+
         logRecord.setLogAction(logAction.name());
         logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bdtManifestRecord, bdtRecord, dtScManifestRecords, dtScRecords)));
         logRecord.setReference(bdtRecord.getGuid());

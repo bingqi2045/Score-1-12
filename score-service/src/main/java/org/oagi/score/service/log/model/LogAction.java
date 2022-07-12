@@ -10,5 +10,7 @@ public enum LogAction {
     Associated,
     Refactored,
     Ungrouped,
-    IGNORE
+    IGNORE,
+    // This tag indicates the current status of the component. DO NOT use for DB records.
+    Current
 }

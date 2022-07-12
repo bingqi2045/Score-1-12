@@ -22,7 +22,8 @@ public class LogService {
         return repository.getLogByReference(request);
     }
 
-    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId) {
-        return repository.getSnapshotById(user, logId);
+    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId,
+                                  String reference, String type, BigInteger manifestId) {
+        return repository.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }

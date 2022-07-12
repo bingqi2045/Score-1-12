@@ -7,6 +7,7 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.common.data.CcState;
@@ -29,6 +30,8 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BCCP;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BCCP_MANIFEST;
 
@@ -297,16 +300,28 @@ public class BccpWriteRepository {
         bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
 
         if (propertyTermChanged) {
-            for (ULong bccManifestId : dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
-                    .from(BCC_MANIFEST)
+            for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
                     .where(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
-                    .fetchInto(ULong.class)) {
+                    .fetch()) {
 
-                UpdateBccPropertiesRepositoryRequest updateBccPropertiesRepositoryRequest =
-                        new UpdateBccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                                bccManifestId.toBigInteger());
-                updateBccPropertiesRepositoryRequest.setPropagation(true);
-                bccWriteRepository.updateBccProperties(updateBccPropertiesRepositoryRequest);
+                String objectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+                        .from(ACC)
+                        .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId()))
+                        .fetchOneInto(String.class);
+
+                BccRecord bccRecord = dslContext.selectFrom(BCC)
+                        .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                        .fetchOne();
+
+                String bccpDen = dslContext.select(Tables.BCCP.DEN)
+                        .from(Tables.BCCP)
+                        .join(Tables.BCCP_MANIFEST).on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_MANIFEST.BCCP_ID))
+                        .where(Tables.BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                        .fetchOneInto(String.class);
+
+                bccRecord.setDen(objectClassTerm + ". " + bccpDen);
+                bccRecord.update(BCC.DEN);
             }
         }
 

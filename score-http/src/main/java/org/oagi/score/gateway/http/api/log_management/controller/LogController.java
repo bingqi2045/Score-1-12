@@ -1,11 +1,11 @@
 package org.oagi.score.gateway.http.api.log_management.controller;
 
+import org.oagi.score.gateway.http.api.log_management.service.LogService;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.service.log.model.Log;
 import org.oagi.score.service.log.model.LogListRequest;
-import org.oagi.score.gateway.http.api.log_management.service.LogService;
-import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -24,6 +24,8 @@ public class LogController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<Log> getLogs(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @PathVariable("reference") String reference,
+                                     @RequestParam(name = "type") String type,
+                                     @RequestParam(name = "manifestId") BigInteger manifestId,
                                      @RequestParam(name = "sortActive") String sortActive,
                                      @RequestParam(name = "sortDirection") String sortDirection,
                                      @RequestParam(name = "pageIndex") int pageIndex,
@@ -34,6 +36,8 @@ public class LogController {
 
         LogListRequest request = new LogListRequest();
         request.setReference(reference);
+        request.setType(type);
+        request.setManifestId(manifestId);
 
         PageRequest pageRequest = new PageRequest();
         pageRequest.setSortActive(sortActive);
@@ -48,7 +52,10 @@ public class LogController {
     @RequestMapping(value = "/logs/{logId}/snapshot", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String getSnapshot(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("logId") BigInteger logId) {
-        return service.getSnapshotById(user, logId);
+                              @PathVariable("logId") BigInteger logId,
+                              @RequestParam(name = "reference") String reference,
+                              @RequestParam(name = "type") String type,
+                              @RequestParam(name = "manifestId") BigInteger manifestId) {
+        return service.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }
