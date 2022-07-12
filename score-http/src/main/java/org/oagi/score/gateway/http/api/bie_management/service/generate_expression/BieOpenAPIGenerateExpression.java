@@ -155,7 +155,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                     .put("version", "")
                     .put("x-oagis-release", release.getReleaseNum())
                     .put("x-oagis-release-date", new SimpleDateFormat("yyyy-MM-dd").format(release.getLastUpdateTimestamp()))
-                    .put("x-oagis-license", StringUtils.hasLength(release.getReleaseLicense()) ? release.getReleaseLicense() : null)
+                    .put("x-oagis-license", StringUtils.hasLength(release.getReleaseLicense()) ? release.getReleaseLicense() : "")
                     .build());
 
             paths = new LinkedHashMap();
