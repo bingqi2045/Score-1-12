@@ -16,7 +16,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.oagi.score.gateway.http.api.bie_management.service.generate_expression.Helper.camelCase;
 import static org.oagi.score.gateway.http.helper.ScoreGuid.getGuidWithPrefix;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -70,7 +70,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         List<TopLevelAsbiep> mergedTopLevelAsbieps = new ArrayList(topLevelAsbieps);
 
         if (mergedTopLevelAsbieps.size() == 0) {
-            throw new IllegalArgumentException("Can not found BIEs.");
+            throw new IllegalArgumentException("Cannot found BIEs.");
         }
         BigInteger releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
         /*
@@ -311,32 +311,6 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         fillProperties(parent, schemas, asbiep, abie,
                 option.isArrayForJsonExpressionForOpenAPI30PostTemplate(), generationContext);
-    }
-
-    private String _camelCase(String term) {
-        return Arrays.stream(term.split(" ")).filter(e -> StringUtils.hasLength(e))
-                .map(e -> {
-                    if (e.length() > 1) {
-                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase();
-                    } else {
-                        return e.toUpperCase();
-                    }
-                }).collect(Collectors.joining());
-    }
-
-    private String camelCase(String... terms) {
-        String term = Arrays.stream(terms).collect(Collectors.joining());
-        if (terms.length == 1) {
-            term = _camelCase(terms[0]);
-        } else if (term.contains(" ")) {
-            term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
-        }
-
-        if (!StringUtils.hasLength(term)) {
-            throw new IllegalArgumentException();
-        }
-
-        return Character.toLowerCase(term.charAt(0)) + term.substring(1);
     }
 
     private void fillProperties(Map<String, Object> parent, Map<String, Object> schemas,

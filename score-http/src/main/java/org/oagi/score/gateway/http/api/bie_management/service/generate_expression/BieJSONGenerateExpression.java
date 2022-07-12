@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.oagi.score.gateway.http.api.bie_management.service.generate_expression.Helper.camelCase;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @Component
@@ -132,32 +133,6 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         }
 
         fillProperties(root, definitions, asbiep, typeAbie, generationContext);
-    }
-
-    private String _camelCase(String term) {
-        return Arrays.stream(term.split(" ")).filter(e -> StringUtils.hasLength(e))
-                .map(e -> {
-                    if (e.length() > 1) {
-                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase();
-                    } else {
-                        return e.toUpperCase();
-                    }
-                }).collect(Collectors.joining());
-    }
-
-    private String camelCase(String... terms) {
-        String term = Arrays.stream(terms).collect(Collectors.joining());
-        if (terms.length == 1) {
-            term = _camelCase(terms[0]);
-        } else if (term.contains(" ")) {
-            term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
-        }
-
-        if (!StringUtils.hasLength(term)) {
-            throw new IllegalArgumentException();
-        }
-
-        return Character.toLowerCase(term.charAt(0)) + term.substring(1);
     }
 
     private void fillProperties(Map<String, Object> parent, Map<String, Object> definitions,

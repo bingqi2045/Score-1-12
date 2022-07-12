@@ -6,6 +6,8 @@ import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 class Helper {
 
@@ -94,5 +96,31 @@ class Helper {
         sb.append(agencyIdList.getListId());
 
         return sb.toString();
+    }
+
+    public static String camelCase(String... terms) {
+        String term = Arrays.stream(terms).collect(Collectors.joining());
+        if (terms.length == 1) {
+            term = _camelCase(terms[0]);
+        } else if (term.contains(" ")) {
+            term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
+        }
+
+        if (!StringUtils.hasLength(term)) {
+            throw new IllegalArgumentException();
+        }
+
+        return Character.toLowerCase(term.charAt(0)) + term.substring(1);
+    }
+
+    private static String _camelCase(String term) {
+        return Arrays.stream(term.split(" ")).filter(e -> StringUtils.hasLength(e))
+                .map(e -> {
+                    if (e.length() > 1) {
+                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase();
+                    } else {
+                        return e.toUpperCase();
+                    }
+                }).collect(Collectors.joining());
     }
 }
