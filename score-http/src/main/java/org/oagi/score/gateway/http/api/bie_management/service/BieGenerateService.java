@@ -217,7 +217,7 @@ public class BieGenerateService {
                 sb.append('-').append(bizCtxRecord.getName().replaceAll(" ", "-"));
             }
         }
-        
+
         if (option.isIncludeVersionInFilename()) {
             String version = StringUtils.trim(topLevelAsbiep.getVersion());
             if (StringUtils.hasLength(version)) {
@@ -247,6 +247,9 @@ public class BieGenerateService {
                 break;
             case "CSV":
                 generateExpression = applicationContext.getBean(BieCSVGenerationExpression.class);
+                break;
+            case "FODS":
+                generateExpression = applicationContext.getBean(BieFlatXMLODFSpreadsheetGenerationExpression.class);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown expression option: " + expressionOption);
