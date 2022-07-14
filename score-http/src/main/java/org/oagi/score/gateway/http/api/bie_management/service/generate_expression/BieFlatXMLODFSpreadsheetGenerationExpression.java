@@ -405,15 +405,17 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
         }
 
         public void fillRowRecords(List<RowRecord> rowRecords) {
-            for (RowRecord rowRecord : rowRecords) {
-                Element templateTableRow = new Element("table-row", tableNs);
-                templateTableRow.setAttribute("style-name", "ro1", tableNs);
-                templateTable.addContent(templateTableRow);
+            // Template Table
+            Element templateTableRow = new Element("table-row", tableNs);
+            templateTableRow.setAttribute("style-name", "ro1", tableNs);
+            templateTable.addContent(templateTableRow);
 
+            for (RowRecord rowRecord : rowRecords) {
                 Element templateTableCell = tableCellAsString(rowRecord.columnName);
                 templateTableRow.addContent(templateTableCell);
             }
 
+            // Specification Table
             List<String> headers = Arrays.asList("Cell", "ColumnName", "FullPath",
                     "MaxCardinality", "ContextDefinition", "ExampleData");
             Element specificationHeaderTableRow = new Element("table-row", tableNs);
@@ -431,13 +433,23 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
                 specificationTableRow.setAttribute("style-name", "ro1", tableNs);
                 specificationTable.addContent(specificationTableRow);
 
-                specificationTableRow.addContent(tableCellAsString("A" + (index++)));
+                specificationTableRow.addContent(tableCellAsString(cellColumnNumberToString(index++) + "1"));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.columnName));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.fullPath));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.maxCardinality));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.contextDefinition));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.example));
             }
+        }
+
+        private String cellColumnNumberToString(int cellColumnNumber) {
+            String str = "";
+            while (cellColumnNumber > 0) {
+                int remainder = (cellColumnNumber - 1) % 26;
+                str = Character.toString('A' + remainder) + str;
+                cellColumnNumber = (cellColumnNumber - remainder) / 26;
+            }
+            return str;
         }
 
         private Element tableCellAsString(String text) {
