@@ -14,6 +14,7 @@ public class BieList {
 
     private BigInteger topLevelAsbiepId;
     private String den;
+    private String propertyTerm;
     private String guid;
     private String releaseNum;
     private List<BusinessContext> businessContexts;
