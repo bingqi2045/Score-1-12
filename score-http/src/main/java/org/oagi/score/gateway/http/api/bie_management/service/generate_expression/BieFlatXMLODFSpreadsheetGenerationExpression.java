@@ -448,6 +448,9 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
             Element textP = new Element("p", textNs);
             textP.setText(text);
             tableCell.addContent(textP);
+
+            this.cellCount++;
+
             return tableCell;
         }
 
