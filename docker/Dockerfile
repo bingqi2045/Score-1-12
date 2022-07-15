@@ -1,4 +1,4 @@
-FROM tomcat:9.0.62-jdk11-corretto
+FROM tomcat:9.0.64-jdk17-corretto
 
 LABEL maintainer="Hakju Oh <hakju.oh@nist.gov>"
 
