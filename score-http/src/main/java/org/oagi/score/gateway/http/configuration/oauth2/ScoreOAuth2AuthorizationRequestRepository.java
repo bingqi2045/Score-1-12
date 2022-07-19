@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.security.jackson2.CoreJackson2Module;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -29,6 +30,7 @@ public class ScoreOAuth2AuthorizationRequestRepository
         this.sessionRedisOperations = sessionRedisOperations;
 
         this.mapper = new ObjectMapper();
+        this.mapper.registerModule(new CoreJackson2Module());
         this.mapper.registerModule(new ScoreOAuth2ClientJackson2Module());
     }
 
