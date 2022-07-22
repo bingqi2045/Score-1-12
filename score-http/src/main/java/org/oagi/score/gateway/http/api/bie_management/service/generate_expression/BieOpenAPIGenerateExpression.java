@@ -133,6 +133,43 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         return this.option.isOpenAPICodeGenerationFriendly();
     }
 
+    private String getPathName(TopLevelAsbiep topLevelAsbiep) {
+        // Issue #1308
+        StringBuilder pathName = new StringBuilder();
+        pathName.append("/");
+
+        BigInteger bizCtxId = option.getBizCtxIds().get(topLevelAsbiep.getTopLevelAsbiepId());
+        BizCtx bizCtx = generationContext.findBusinessContexts(topLevelAsbiep).stream()
+                .filter(e -> e.getBizCtxId().equals(bizCtxId))
+                .findAny().orElse(null);
+
+        String bizCtxName = bizCtx.getName();
+        String bizCtxNameDelimiter = "-";
+        bizCtxName = bizCtxName.toLowerCase();
+        bizCtxName = Arrays.stream(bizCtxName.split(" ")).collect(Collectors.joining(bizCtxNameDelimiter));
+        pathName.append(bizCtxName).append("/");
+
+        String version = topLevelAsbiep.getVersion();
+        if (StringUtils.hasLength(version)) {
+            String versionDelimiter = "_";
+            version = version.toLowerCase();
+            version = Arrays.stream(version.split(" ")).collect(Collectors.joining(versionDelimiter));
+            version = Arrays.stream(version.split("\\.")).collect(Collectors.joining(versionDelimiter));
+            pathName.append(version).append("/");
+        }
+
+        String bieName = getBieName(topLevelAsbiep);
+        pathName.append(bieName);
+
+        return pathName.toString();
+    }
+
+    private String getBieName(TopLevelAsbiep topLevelAsbiep) {
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
+        ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpManifestId());
+        return camelCase(basedAsccp.getPropertyTerm());
+    }
+
     private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
         ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
@@ -171,22 +208,24 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
         Map<String, Object> path = new LinkedHashMap();
         ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpManifestId());
-        String bieName = camelCase(basedAsccp.getPropertyTerm());
-        String pathName = "/" + bieName;
+        String bieName = getBieName(topLevelAsbiep);
+        String pathName = getPathName(topLevelAsbiep);
         paths.put(pathName, path);
 
         path.put("summary", "");
         path.put("description", "");
-        path.put("x-oagis-bie-guid", getGuidWithPrefix(typeAbie.getGuid()));
-        path.put("x-oagis-bie-date-time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(typeAbie.getLastUpdateTimestamp()));
-        path.put("x-oagis-bie-version", StringUtils.hasLength(topLevelAsbiep.getVersion()) ? topLevelAsbiep.getVersion() : null);
 
         if (option.isOpenAPI30GetTemplate()) {
             String schemaName;
+            String prefix = "";
+            // Issue #1302
+            if (option.hasOpenAPI30GetTemplateOptions() || option.hasOpenAPI30PostTemplateOptions()) {
+                prefix = "get-";
+            }
             if (isFriendly()) {
-                schemaName = "get-" + bieName;
+                schemaName = prefix + bieName;
             } else {
-                schemaName = "get-" + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
+                schemaName = prefix + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
             }
             path.put("get", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
@@ -225,20 +264,31 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                         .build());
             }
 
-            Map<String, Object> properties = new LinkedHashMap();
-            properties.put("required", new ArrayList());
-            properties.put("additionalProperties", false);
+            if (!schemas.containsKey(schemaName)) {
+                Map<String, Object> properties = new LinkedHashMap();
+                // Issue #1148
+                properties.put("x-oagis-bie-guid", getGuidWithPrefix(typeAbie.getGuid()));
+                properties.put("x-oagis-bie-date-time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(typeAbie.getLastUpdateTimestamp()));
+                properties.put("x-oagis-bie-version", StringUtils.hasLength(topLevelAsbiep.getVersion()) ? topLevelAsbiep.getVersion() : "");
+                properties.put("required", new ArrayList());
+                properties.put("additionalProperties", false);
 
-            fillPropertiesForGetTemplate(properties, schemas, asbiep, typeAbie, generationContext);
-            schemas.put(schemaName, properties);
+                fillPropertiesForGetTemplate(properties, schemas, asbiep, typeAbie, generationContext);
+                schemas.put(schemaName, properties);
+            }
         }
 
         if (option.isOpenAPI30PostTemplate()) {
             String schemaName;
+            String prefix = "";
+            // Issue #1302
+            if (option.hasOpenAPI30GetTemplateOptions() || option.hasOpenAPI30PostTemplateOptions()) {
+                prefix = "post-";
+            }
             if (isFriendly()) {
-                schemaName = "post-" + bieName;
+                schemaName = prefix + bieName;
             } else {
-                schemaName = "post-" + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
+                schemaName = prefix + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
             }
             path.put("post", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
@@ -265,12 +315,18 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                             .build())
                     .build());
 
-            Map<String, Object> properties = new LinkedHashMap();
-            properties.put("required", new ArrayList());
-            properties.put("additionalProperties", false);
+            if (!schemas.containsKey(schemaName)) {
+                Map<String, Object> properties = new LinkedHashMap();
+                // Issue #1148
+                properties.put("x-oagis-bie-guid", getGuidWithPrefix(typeAbie.getGuid()));
+                properties.put("x-oagis-bie-date-time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(typeAbie.getLastUpdateTimestamp()));
+                properties.put("x-oagis-bie-version", StringUtils.hasLength(topLevelAsbiep.getVersion()) ? topLevelAsbiep.getVersion() : "");
+                properties.put("required", new ArrayList());
+                properties.put("additionalProperties", false);
 
-            fillPropertiesForPostTemplate(properties, schemas, asbiep, typeAbie, generationContext);
-            schemas.put(schemaName, properties);
+                fillPropertiesForPostTemplate(properties, schemas, asbiep, typeAbie, generationContext);
+                schemas.put(schemaName, properties);
+            }
         }
     }
 

@@ -221,7 +221,7 @@ public class BieGenerateService {
         if (option.isIncludeVersionInFilename()) {
             String version = StringUtils.trim(topLevelAsbiep.getVersion());
             if (StringUtils.hasLength(version)) {
-                sb.append('-').append(version.replaceAll(".", "_"));
+                sb.append('-').append(version.replaceAll("\\.", "_"));
             }
         }
 
