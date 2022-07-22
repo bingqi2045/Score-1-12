@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
+import org.apache.commons.io.FileUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
@@ -24,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -77,6 +80,12 @@ public class ModuleSetReleaseService {
         }
 
         String fileName = "Standalone";
+
+        File workingDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
+        FileUtils.forceMkdir(workingDir);
+        File baseDir = new File(workingDir, fileName);
+        FileUtils.forceMkdir(baseDir);
+
         List<File> files = new ArrayList<>();
         Map<BigInteger, ImportedDataProvider> dataProviderMap = new HashMap();
 
@@ -88,8 +97,7 @@ public class ModuleSetReleaseService {
             ImportedDataProvider dataProvider = dataProviderMap.get(moduleSetReleaseId);
 
             XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
-
-            visitor.setBaseDirectory(new File("./data/" + fileName));
+            visitor.setBaseDirectory(baseDir);
 
             StandaloneExportContextBuilder builder = new StandaloneExportContextBuilder(moduleRepository, dataProvider);
             ExportContext exportContext = builder.build(moduleSetReleaseId, asccpManifestId);
@@ -105,7 +113,7 @@ public class ModuleSetReleaseService {
         if (files.size() == 1) {
             return files.get(0);
         } else {
-            return Zip.compressionHierarchy(files, fileName);
+            return Zip.compressionHierarchy(files, fileName, workingDir);
         }
     }
 
@@ -120,11 +128,15 @@ public class ModuleSetReleaseService {
         ExportContext exportContext = builder.build(moduleSetReleaseId);
 
         List<File> files = new ArrayList<>();
-
         String fileName = moduleSetRelease.getModuleSetName().replace(" ", "");
 
+        File workingDir = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
+        FileUtils.forceMkdir(workingDir);
+        File baseDir = new File(workingDir, fileName);
+        FileUtils.forceMkdir(baseDir);
+
         for (SchemaModule schemaModule : exportContext.getSchemaModules()) {
-            visitor.setBaseDirectory(new File("./data/" + fileName));
+            visitor.setBaseDirectory(baseDir);
             schemaModule.visit(visitor);
             File file = visitor.endSchemaModule(schemaModule);
             if (file != null) {
@@ -132,7 +144,7 @@ public class ModuleSetReleaseService {
             }
         }
 
-        return Zip.compressionHierarchy(files, fileName);
+        return Zip.compressionHierarchy(files, fileName, workingDir);
     }
 
     public ModuleAssignComponents getAssignableCCs(GetAssignableCCListRequest request) {

@@ -1040,8 +1040,6 @@ public class XMLExportSchemaModuleVisitor {
 
 
     public File endSchemaModule(SchemaModule schemaModule) throws Exception {
-
-
         FileUtils.forceMkdir(this.moduleFile.getParentFile());
 
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat().setIndent("\t"));
