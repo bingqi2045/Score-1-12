@@ -1,6 +1,7 @@
 package org.oagi.score.gateway.http.api.module_management.controller;
 
 import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
+import org.oagi.score.gateway.http.api.module_management.data.ExportStandaloneSchemaRequest;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;

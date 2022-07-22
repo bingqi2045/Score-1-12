@@ -285,8 +285,8 @@ public class XMLExportSchemaModuleVisitor {
         if (bdtSimple.isDefaultBDT()) {
             Element ccts_UniqueID = new Element("ccts_UniqueID", OAGI_NS);
             documentationElement.addContent(ccts_UniqueID);
-            String uniqueId = den.substring(den.indexOf('_') + 1, den.indexOf(". Type"));
-            ccts_UniqueID.setText(uniqueId);
+            String sixDigitId = dataType.getSixDigitId();
+            ccts_UniqueID.setText(sixDigitId);
 
             Element ccts_VersionID = new Element("ccts_VersionID", OAGI_NS);
             documentationElement.addContent(ccts_VersionID);
@@ -294,7 +294,7 @@ public class XMLExportSchemaModuleVisitor {
 
             Element ccts_DictionaryEntryName = new Element("ccts_DictionaryEntryName", OAGI_NS);
             documentationElement.addContent(ccts_DictionaryEntryName);
-            String dictionaryEntryName = den.replaceAll("_" + uniqueId, "");
+            String dictionaryEntryName = den.replaceAll("_" + sixDigitId, "");
             ccts_DictionaryEntryName.setText(dictionaryEntryName);
         } else {
             Element ccts_UniqueID = new Element("ccts_UniqueID", OAGI_NS);

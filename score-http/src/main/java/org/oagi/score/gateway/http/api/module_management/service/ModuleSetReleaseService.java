@@ -1,7 +1,9 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
+import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
+import org.oagi.score.export.impl.StandaloneExportContextBuilder;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.export.model.SchemaModule;
 import org.oagi.score.export.service.CoreComponentService;
@@ -20,11 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.File;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -65,6 +69,44 @@ public class ModuleSetReleaseService {
     @Transactional
     public DeleteModuleSetReleaseResponse discardModuleSetRelease(DeleteModuleSetReleaseRequest request) {
         return scoreRepositoryFactory.createModuleSetReleaseWriteRepository().deleteModuleSetRelease(request);
+    }
+
+    public File exportStandaloneSchema(ScoreUser user, List<BigInteger> asccpManifestIdList) throws Exception {
+        if (asccpManifestIdList == null || asccpManifestIdList.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        String fileName = "Standalone";
+        List<File> files = new ArrayList<>();
+        Map<BigInteger, ImportedDataProvider> dataProviderMap = new HashMap();
+
+        for (BigInteger asccpManifestId : asccpManifestIdList) {
+            BigInteger moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId)).toBigInteger();
+            if (!dataProviderMap.containsKey(moduleSetReleaseId)) {
+                dataProviderMap.put(moduleSetReleaseId, new ImportedDataProvider(ccRepository, moduleSetReleaseId));
+            }
+            ImportedDataProvider dataProvider = dataProviderMap.get(moduleSetReleaseId);
+
+            XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
+
+            visitor.setBaseDirectory(new File("./data/" + fileName));
+
+            StandaloneExportContextBuilder builder = new StandaloneExportContextBuilder(moduleRepository, dataProvider);
+            ExportContext exportContext = builder.build(moduleSetReleaseId, asccpManifestId);
+
+            SchemaModule schemaModule = exportContext.getSchemaModules().iterator().next();
+            schemaModule.visit(visitor);
+            File file = visitor.endSchemaModule(schemaModule);
+            if (file != null) {
+                files.add(file);
+            }
+        }
+
+        if (files.size() == 1) {
+            return files.get(0);
+        } else {
+            return Zip.compressionHierarchy(files, fileName);
+        }
     }
 
     public File exportModuleSetRelease(ScoreUser user, BigInteger moduleSetReleaseId) throws Exception {

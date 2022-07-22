@@ -16,14 +16,14 @@ public class SchemaModule {
     private List<SchemaModule> includeModules = new ArrayList();
     private List<SchemaModule> importModules = new ArrayList();
 
-    private List<AgencyId> agencyIdList = new ArrayList();
-    private List<SchemaCodeList> schemaCodeLists = new ArrayList();
-    private List<XBTSimpleType> xbtSimples = new ArrayList();
-    private List<BDTSimple> bdtSimples = new ArrayList();
+    private Map<String, AgencyId> agencyIdList = new LinkedHashMap();
+    private Map<String, SchemaCodeList> schemaCodeLists = new LinkedHashMap();
+    private Map<String, XBTSimpleType> xbtSimples = new LinkedHashMap();
+    private Map<String, BDTSimple> bdtSimples = new LinkedHashMap();
 
-    private List<BCCP> bccpList = new ArrayList();
-    private List<ACC> accList = new ArrayList();
-    private List<ASCCP> asccpList = new ArrayList();
+    private Map<String, BCCP> bccpList = new LinkedHashMap();
+    private Map<String, ACC> accList = new LinkedHashMap();
+    private Map<String, ASCCP> asccpList = new LinkedHashMap();
 
     private byte[] content;
 
@@ -37,6 +37,10 @@ public class SchemaModule {
 
     public String getVersionNum() {
         return module.getVersionNum();
+    }
+
+    public ULong getModuleSetReleaseId() {
+        return module.getModuleSetReleaseId();
     }
 
     public ULong getNamespaceId() {
@@ -132,33 +136,60 @@ public class SchemaModule {
                 .collect(Collectors.toList());
     }
 
-    public void addAgencyId(AgencyId agencyId) {
-        this.agencyIdList.add(agencyId);
+    public boolean addAgencyId(AgencyId agencyId) {
+        if (this.agencyIdList.containsKey(agencyId.getGuid())) {
+            return false;
+        }
+        this.agencyIdList.put(agencyId.getGuid(), agencyId);
+        return true;
     }
 
-    public void addCodeList(SchemaCodeList schemaCodeList) {
-        this.schemaCodeLists.add(schemaCodeList);
+    public boolean addCodeList(SchemaCodeList schemaCodeList) {
+        if (this.schemaCodeLists.containsKey(schemaCodeList.getGuid())) {
+            return false;
+        }
+        this.schemaCodeLists.put(schemaCodeList.getGuid(), schemaCodeList);
+        return true;
     }
 
-    public void addXBTSimpleType(XBTSimpleType xbtSimple) {
-        this.xbtSimples.add(xbtSimple);
+    public boolean addXBTSimpleType(XBTSimpleType xbtSimple) {
+        if (this.xbtSimples.containsKey(xbtSimple.getGuid())) {
+            return false;
+        }
+        this.xbtSimples.put(xbtSimple.getGuid(), xbtSimple);
+        return true;
     }
 
-    public void addBDTSimple(BDTSimple bdtSimple) {
-
-        this.bdtSimples.add(bdtSimple);
+    public boolean addBDTSimple(BDTSimple bdtSimple) {
+        if (this.bdtSimples.containsKey(bdtSimple.getGuid())) {
+            return false;
+        }
+        this.bdtSimples.put(bdtSimple.getGuid(), bdtSimple);
+        return true;
     }
 
-    public void addBCCP(BCCP bccp) {
-        this.bccpList.add(bccp);
+    public boolean addBCCP(BCCP bccp) {
+        if (this.bccpList.containsKey(bccp.getGuid())) {
+            return false;
+        }
+        this.bccpList.put(bccp.getGuid(), bccp);
+        return true;
     }
 
-    public void addACC(ACC acc) {
-        this.accList.add(acc);
+    public boolean addACC(ACC acc) {
+        if (this.accList.containsKey(acc.getGuid())) {
+            return false;
+        }
+        this.accList.put(acc.getGuid(), acc);
+        return true;
     }
 
-    public void addASCCP(ASCCP asccp) {
-        this.asccpList.add(asccp);
+    public boolean addASCCP(ASCCP asccp) {
+        if (this.asccpList.containsKey(asccp.getGuid())) {
+            return false;
+        }
+        this.asccpList.put(asccp.getGuid(), asccp);
+        return true;
     }
 
     public void setContent(byte[] content) {
@@ -177,19 +208,19 @@ public class SchemaModule {
                 schemaModuleVisitor.visitIncludeModule(imported);
             }
 
-            for (AgencyId agencyId : agencyIdList) {
+            for (AgencyId agencyId : agencyIdList.values()) {
                 schemaModuleVisitor.visitAgencyId(agencyId);
             }
 
-            for (SchemaCodeList codeList : schemaCodeLists) {
+            for (SchemaCodeList codeList : schemaCodeLists.values()) {
                 schemaModuleVisitor.visitCodeList(codeList);
             }
 
-            for (XBTSimpleType xbtSimple : xbtSimples) {
+            for (XBTSimpleType xbtSimple : xbtSimples.values()) {
                 schemaModuleVisitor.visitXBTSimpleType(xbtSimple);
             }
 
-            for (BDTSimple bdtSimple : bdtSimples) {
+            for (BDTSimple bdtSimple : bdtSimples.values()) {
                 if (bdtSimple instanceof BDTSimpleType) {
                     schemaModuleVisitor.visitBDTSimpleType((BDTSimpleType) bdtSimple);
                 } else if (bdtSimple instanceof BDTSimpleContent) {
@@ -197,11 +228,11 @@ public class SchemaModule {
                 }
             }
 
-            for (BCCP bccp : bccpList) {
+            for (BCCP bccp : bccpList.values()) {
                 schemaModuleVisitor.visitBCCP(bccp);
             }
 
-            for (ACC acc : accList) {
+            for (ACC acc : accList.values()) {
                 if (acc instanceof ACCComplexType) {
                     schemaModuleVisitor.visitACCComplexType((ACCComplexType) acc);
                 } else if (acc instanceof ACCGroup) {
@@ -209,7 +240,7 @@ public class SchemaModule {
                 }
             }
 
-            for (ASCCP asccp : asccpList) {
+            for (ASCCP asccp : asccpList.values()) {
                 if (asccp instanceof ASCCPComplexType) {
                     schemaModuleVisitor.visitASCCPComplexType((ASCCPComplexType) asccp);
                 } else if (asccp instanceof ASCCPGroup) {

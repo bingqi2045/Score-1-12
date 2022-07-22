@@ -3,6 +3,7 @@ package org.oagi.score.provider;
 import org.jooq.types.ULong;
 import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repository.CcRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -51,6 +52,10 @@ public class ImportedDataProvider {
 
         findCodeListValueByCodeListIdMap = ccRepository.findAllCodeListValue(ULong.valueOf(moduleSetReleaseId)).stream()
                 .collect(Collectors.groupingBy(CodeListValueRecord::getCodeListId));
+
+        findDtManifestList = ccRepository.findAllDtManifest(ULong.valueOf(moduleSetReleaseId));
+        findDtManifestMap = findDtManifestList.stream()
+                .collect(Collectors.toMap(DtManifestRecord::getDtManifestId, Function.identity()));
 
         findDtList = ccRepository.findAllDt(ULong.valueOf(moduleSetReleaseId));
         findDtMap = findDtList.stream()
@@ -128,9 +133,13 @@ public class ImportedDataProvider {
 
         findBccManifestMap = ccRepository.findAllBccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
                 .collect(Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
+        findBccManifestByAccManifestIdMap = findBccManifestMap.values().stream()
+                .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
         findAsccManifestMap = ccRepository.findAllAsccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
                 .collect(Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
+        findAsccManifestByAccManifestIdMap = findAsccManifestMap.values().stream()
+                .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
         List<AsccRecord> asccList = ccRepository.findAllAscc(ULong.valueOf(moduleSetReleaseId));
         findAsccByFromAccIdMap = asccList.stream()
@@ -230,6 +239,17 @@ public class ImportedDataProvider {
     
     public List<CodeListValueRecord> findCodeListValueByCodeListId(ULong codeListId) {
         return (findCodeListValueByCodeListIdMap.containsKey(codeListId)) ? findCodeListValueByCodeListIdMap.get(codeListId) : Collections.emptyList();
+    }
+
+    private List<DtManifestRecord> findDtManifestList;
+    private Map<ULong, DtManifestRecord> findDtManifestMap;
+
+    public List<DtManifestRecord> findDtManifest() {
+        return Collections.unmodifiableList(this.findDtManifestList);
+    }
+
+    public DtManifestRecord findDtManifestByDtManifestId(ULong dtManifestId) {
+        return this.findDtManifestMap.get(dtManifestId);
     }
 
     private List<DtRecord> findDtList;
@@ -449,17 +469,33 @@ public class ImportedDataProvider {
     }
 
     private Map<ULong, AsccManifestRecord> findAsccManifestMap;
+    private Map<ULong, List<AsccManifestRecord>> findAsccManifestByAccManifestIdMap;
 
     
     public AsccManifestRecord findASCCManifest(ULong asccId) {
         return findAsccManifestMap.get(asccId);
     }
 
+    public List<AsccManifestRecord> findASCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+        if (!findAsccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
+            return Collections.emptyList();
+        }
+        return findAsccManifestByAccManifestIdMap.get(fromAccManifestId);
+    }
+
     private Map<ULong, BccManifestRecord> findBccManifestMap;
+    private Map<ULong, List<BccManifestRecord>> findBccManifestByAccManifestIdMap;
 
     
     public BccManifestRecord findBCCManifest(ULong bccId) {
         return findBccManifestMap.get(bccId);
+    }
+
+    public List<BccManifestRecord> findBCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+        if (!findBccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
+            return Collections.emptyList();
+        }
+        return findBccManifestByAccManifestIdMap.get(fromAccManifestId);
     }
 
     private Map<ULong, List<AsccRecord>> findAsccByFromAccIdMap;
