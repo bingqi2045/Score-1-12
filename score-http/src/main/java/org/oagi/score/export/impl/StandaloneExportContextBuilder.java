@@ -47,7 +47,7 @@ public class StandaloneExportContextBuilder {
             return;
         }
 
-        if (!"Extension".equals(asccp.getPropertyTerm())) {
+        if (asccp.getReusableIndicator() != (byte) 0) {
             if (!schemaModule.addASCCP(ASCCP.newInstance(asccp, asccpManifest, importedDataProvider))) {
                 return;
             }
