@@ -136,17 +136,17 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
 
             copiedPaths.push(name);
 
-            RowRecord rowRecord = new RowRecord();
-            rowRecord.type = "BBIE";
-            rowRecord.fullPath = String.join(".", copiedPaths);
-            rowRecord.maxCardinality = (bbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(bbie.getCardinalityMax());
+            RowRecord bbieRowRecord = new RowRecord();
+            bbieRowRecord.type = "BBIE";
+            bbieRowRecord.fullPath = String.join(".", copiedPaths);
+            bbieRowRecord.maxCardinality = (bbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(bbie.getCardinalityMax());
             if (StringUtils.hasLength(bbie.getDefinition())) {
-                rowRecord.contextDefinition = bbie.getDefinition();
+                bbieRowRecord.contextDefinition = bbie.getDefinition();
             }
             if (StringUtils.hasLength(bbie.getExample())) {
-                rowRecord.example = bbie.getExample();
+                bbieRowRecord.example = bbie.getExample();
             }
-            rowRecords.add(rowRecord);
+            rowRecords.add(bbieRowRecord);
 
             for (BBIESC bbieSc : bbieScList) {
                 DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
@@ -164,7 +164,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
                 dtScPaths.push(dtScName);
 
                 RowRecord dtScRowRecord = new RowRecord();
-                rowRecord.type = "BBIE_SC";
+                dtScRowRecord.type = "BBIE_SC";
                 dtScRowRecord.fullPath = String.join(".", dtScPaths);
                 dtScRowRecord.maxCardinality = (bbieSc.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(bbieSc.getCardinalityMax());
                 if (StringUtils.hasLength(bbieSc.getDefinition())) {
@@ -186,14 +186,14 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
 
             copiedPaths.push(name);
 
-            RowRecord rowRecord = new RowRecord();
-            rowRecord.type = "ASBIE";
-            rowRecord.fullPath = String.join(".", copiedPaths);
-            rowRecord.maxCardinality = (asbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(asbie.getCardinalityMax());
+            RowRecord asbieRowRecord = new RowRecord();
+            asbieRowRecord.type = "ASBIE";
+            asbieRowRecord.fullPath = String.join(".", copiedPaths);
+            asbieRowRecord.maxCardinality = (asbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(asbie.getCardinalityMax());
             if (StringUtils.hasLength(asbie.getDefinition())) {
-                rowRecord.contextDefinition = asbie.getDefinition();
+                asbieRowRecord.contextDefinition = asbie.getDefinition();
             }
-            rowRecords.add(rowRecord);
+            rowRecords.add(asbieRowRecord);
 
             if (asbie.getCardinalityMax() == -1 || asbie.getCardinalityMax() > 1) {
                 copiedPaths.push(copiedPaths.pop() + INDEXER_STR);
