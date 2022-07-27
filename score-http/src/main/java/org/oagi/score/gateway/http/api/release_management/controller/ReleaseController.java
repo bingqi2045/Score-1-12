@@ -1,16 +1,23 @@
 package org.oagi.score.gateway.http.api.release_management.controller;
 
+import org.oagi.score.gateway.http.api.release_management.data.*;
+import org.oagi.score.gateway.http.api.release_management.service.MigrationService;
+import org.oagi.score.gateway.http.api.release_management.service.ReleaseService;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.release_management.data.*;
-import org.oagi.score.gateway.http.api.release_management.service.ReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +27,9 @@ public class ReleaseController {
 
     @Autowired
     private ReleaseService service;
+
+    @Autowired
+    private MigrationService migrationService;
 
     @RequestMapping(value = "/simple_releases", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -173,5 +183,19 @@ public class ReleaseController {
                                                  @PathVariable("id") BigInteger releaseId,
                                                  @RequestBody ReleaseValidationRequest request) {
         return service.createDraft(user, releaseId, request);
+    }
+
+    @RequestMapping(value = "/release/{id}/migration", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<InputStreamResource> createMigrationData(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                                   @PathVariable("id") BigInteger releaseId) throws IOException {
+
+        File output = migrationService.makeMigrationDataFile(user, releaseId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.getName() + "\"")
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .contentLength(output.length())
+                .body(new InputStreamResource(new FileInputStream(output)));
     }
 }
