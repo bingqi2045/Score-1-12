@@ -8,7 +8,6 @@ import org.jdom2.output.XMLOutputter;
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
 import org.slf4j.Logger;
@@ -19,10 +18,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +35,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
     private static final String INDEXER_STR = "[0]";
 
     private class RowRecord {
+        String type;
         String columnName;
         String fullPath;
         String maxCardinality;
@@ -94,6 +94,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
         paths.push(name);
 
         RowRecord rowRecord = new RowRecord();
+        rowRecord.type = "ASBIEP";
         rowRecord.fullPath = String.join(".", paths);
         rowRecord.maxCardinality = "1";
         rowRecord.contextDefinition = asbiep.getDefinition();
@@ -136,6 +137,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
             copiedPaths.push(name);
 
             RowRecord rowRecord = new RowRecord();
+            rowRecord.type = "BBIE";
             rowRecord.fullPath = String.join(".", copiedPaths);
             rowRecord.maxCardinality = (bbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(bbie.getCardinalityMax());
             if (StringUtils.hasLength(bbie.getDefinition())) {
@@ -162,6 +164,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
                 dtScPaths.push(dtScName);
 
                 RowRecord dtScRowRecord = new RowRecord();
+                rowRecord.type = "BBIE_SC";
                 dtScRowRecord.fullPath = String.join(".", dtScPaths);
                 dtScRowRecord.maxCardinality = (bbieSc.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(bbieSc.getCardinalityMax());
                 if (StringUtils.hasLength(bbieSc.getDefinition())) {
@@ -184,6 +187,7 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
             copiedPaths.push(name);
 
             RowRecord rowRecord = new RowRecord();
+            rowRecord.type = "ASBIE";
             rowRecord.fullPath = String.join(".", copiedPaths);
             rowRecord.maxCardinality = (asbie.getCardinalityMax() == -1) ? "unbounded" : Integer.toString(asbie.getCardinalityMax());
             if (StringUtils.hasLength(asbie.getDefinition())) {
@@ -201,6 +205,10 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
 
     @Override
     public File asFile(String filename) throws IOException {
+        List<RowRecord> rowRecords = this.rowRecords;
+        if (this.option.isOnlyBCCPsForOpenDocumentFormat()) {
+            rowRecords = rowRecords.stream().filter(e -> !e.type.startsWith("ASBIE")).collect(Collectors.toList());
+        }
         generateColumnNames(rowRecords, 1);
 
         File tempFile = File.createTempFile(ScoreGuid.randomGuid(), null);

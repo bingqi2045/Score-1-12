@@ -41,6 +41,8 @@ public class GenerateExpressionOption {
     private boolean includePaginationResponseForJsonForOpenAPI30GetTemplate;
     private BigInteger paginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate;
 
+    private boolean isOnlyBCCPsForOpenDocumentFormat = true;
+
     public boolean hasOpenAPI30GetTemplateOptions() {
         if (arrayForJsonExpressionForOpenAPI30GetTemplate) {
             return true;
