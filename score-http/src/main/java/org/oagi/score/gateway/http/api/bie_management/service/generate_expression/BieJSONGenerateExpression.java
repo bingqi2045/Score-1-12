@@ -294,6 +294,27 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     private String fillDefinitions(Map<String, Object> definitions,
+                                   Xbt xbt, FacetRestrictionsAware facetRestri) {
+        String guid = (facetRestri instanceof BIE) ? ((BIE) facetRestri).getGuid() : ScoreGuid.randomGuid();
+        String name = "type_" + guid;
+
+        Map<String, Object> content = toProperties(xbt);
+        if (facetRestri.getMinLength() != null) {
+            content.put("minLength", facetRestri.getMinLength().longValue());
+        }
+        if (facetRestri.getMaxLength() != null) {
+            content.put("maxLength", facetRestri.getMaxLength().longValue());
+        }
+        if (StringUtils.hasLength(facetRestri.getPattern())) {
+            content.put("pattern", facetRestri.getPattern());
+        }
+
+        definitions.put(name, content);
+
+        return "#/definitions/" + name;
+    }
+
+    private String fillDefinitions(Map<String, Object> definitions,
                                    Xbt xbt) {
         String builtInType = xbt.getBuiltinType();
         if (builtInType.startsWith("xsd:")) {
@@ -610,7 +631,11 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                     xbt = Helper.getXbt(generationContext, bdtPriRestri);
                 }
 
-                ref = fillDefinitions(definitions, xbt);
+                if (bbie.getMinLength() != null || bbie.getMaxLength() != null || StringUtils.hasLength(bbie.getPattern())) {
+                    ref = fillDefinitions(definitions, xbt, bbie);
+                } else {
+                    ref = fillDefinitions(definitions, xbt);
+                }
             }
         }
 
@@ -684,7 +709,11 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                     xbt = generationContext.findXbt(cdtScAwdPriXpsTypeMap.getXbtId());
                 }
 
-                ref = fillDefinitions(definitions, xbt);
+                if (bbieSc.getMinLength() != null || bbieSc.getMaxLength() != null || StringUtils.hasLength(bbieSc.getPattern())) {
+                    ref = fillDefinitions(definitions, xbt, bbieSc);
+                } else {
+                    ref = fillDefinitions(definitions, xbt);
+                }
             }
         }
 

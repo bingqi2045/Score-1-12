@@ -149,6 +149,24 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     public final TableField<BbieScRecord, Integer> CARDINALITY_MAX = createField(DSL.name("cardinality_max"), SQLDataType.INTEGER.nullable(false), this, "Maximum occurence constraint of the BBIE SC. A valid value is 0 or 1.");
 
     /**
+     * The column <code>oagi.bbie_sc.facet_min_length</code>. Defines the
+     * minimum number of units of length.
+     */
+    public final TableField<BbieScRecord, ULong> FACET_MIN_LENGTH = createField(DSL.name("facet_min_length"), SQLDataType.BIGINTUNSIGNED, this, "Defines the minimum number of units of length.");
+
+    /**
+     * The column <code>oagi.bbie_sc.facet_max_length</code>. Defines the
+     * minimum number of units of length.
+     */
+    public final TableField<BbieScRecord, ULong> FACET_MAX_LENGTH = createField(DSL.name("facet_max_length"), SQLDataType.BIGINTUNSIGNED, this, "Defines the minimum number of units of length.");
+
+    /**
+     * The column <code>oagi.bbie_sc.facet_pattern</code>. Defines a constraint
+     * on the lexical space of a datatype to literals in a specific pattern.
+     */
+    public final TableField<BbieScRecord, String> FACET_PATTERN = createField(DSL.name("facet_pattern"), SQLDataType.CLOB, this, "Defines a constraint on the lexical space of a datatype to literals in a specific pattern.");
+
+    /**
      * The column <code>oagi.bbie_sc.default_value</code>. This column specifies
      * the default value constraint. Default and fixed value constraints cannot
      * be used at the same time.

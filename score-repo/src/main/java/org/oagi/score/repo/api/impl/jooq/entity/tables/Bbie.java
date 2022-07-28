@@ -144,6 +144,24 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, Integer> CARDINALITY_MAX = createField(DSL.name("cardinality_max"), SQLDataType.INTEGER, this, "Maximum occurence constraint of the TO_BBIEP_ID. A valid value is an integer from -1 and up. Specifically, -1 means unbounded. 0 means prohibited or not to use.");
 
     /**
+     * The column <code>oagi.bbie.facet_min_length</code>. Defines the minimum
+     * number of units of length.
+     */
+    public final TableField<BbieRecord, ULong> FACET_MIN_LENGTH = createField(DSL.name("facet_min_length"), SQLDataType.BIGINTUNSIGNED, this, "Defines the minimum number of units of length.");
+
+    /**
+     * The column <code>oagi.bbie.facet_max_length</code>. Defines the minimum
+     * number of units of length.
+     */
+    public final TableField<BbieRecord, ULong> FACET_MAX_LENGTH = createField(DSL.name("facet_max_length"), SQLDataType.BIGINTUNSIGNED, this, "Defines the minimum number of units of length.");
+
+    /**
+     * The column <code>oagi.bbie.facet_pattern</code>. Defines a constraint on
+     * the lexical space of a datatype to literals in a specific pattern.
+     */
+    public final TableField<BbieRecord, String> FACET_PATTERN = createField(DSL.name("facet_pattern"), SQLDataType.CLOB, this, "Defines a constraint on the lexical space of a datatype to literals in a specific pattern.");
+
+    /**
      * The column <code>oagi.bbie.default_value</code>. This column specifies
      * the default value constraint. Default and fixed value constraints cannot
      * be used at the same time.

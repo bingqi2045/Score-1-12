@@ -42,6 +42,8 @@ public class BbieScReadRepository {
             return null;
         }
 
+        List<String> cdtPrimitives = dtScReadRepository.getCdtPrimitivesByManifestId(dtScManifestId);
+
         BbieScNode bbieScNode = new BbieScNode();
 
         BbieScNode.BdtSc bdtSc = bbieScNode.getBdtSc();
@@ -54,6 +56,7 @@ public class BbieScReadRepository {
         bdtSc.setDefinition(dtScRecord.getDefinition());
         bdtSc.setDefaultValue(dtScRecord.getDefaultValue());
         bdtSc.setFixedValue(dtScRecord.getFixedValue());
+        bdtSc.setCdtPrimitives(cdtPrimitives);
         bdtSc.setState(CcState.valueOf(
                 dslContext.select(DT.STATE)
                         .from(DT)
@@ -128,6 +131,13 @@ public class BbieScReadRepository {
             bbieSc.setGuid(bbieScRecord.getGuid());
             bbieSc.setCardinalityMin(bbieScRecord.getCardinalityMin());
             bbieSc.setCardinalityMax(bbieScRecord.getCardinalityMax());
+            if (bbieScRecord.getFacetMinLength() != null) {
+                bbieSc.setMinLength(bbieScRecord.getFacetMinLength().intValue());
+            }
+            if (bbieScRecord.getFacetMaxLength() != null) {
+                bbieSc.setMaxLength(bbieScRecord.getFacetMaxLength().intValue());
+            }
+            bbieSc.setPattern(bbieScRecord.getFacetPattern());
             bbieSc.setRemark(bbieScRecord.getRemark());
             bbieSc.setBizTerm(bbieScRecord.getBizTerm());
             bbieSc.setDefinition(bbieScRecord.getDefinition());

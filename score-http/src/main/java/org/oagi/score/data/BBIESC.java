@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public class BBIESC implements BIE {
+public class BBIESC implements BIE, FacetRestrictionsAware {
 
     private BigInteger bbieScId = BigInteger.ZERO;
     private String guid;
@@ -16,6 +16,9 @@ public class BBIESC implements BIE {
     private BigInteger agencyIdListId = BigInteger.ZERO;
     private int cardinalityMin;
     private int cardinalityMax;
+    private BigInteger minLength;
+    private BigInteger maxLength;
+    private String pattern;
     private String defaultValue;
     private String fixedValue;
     private String definition;

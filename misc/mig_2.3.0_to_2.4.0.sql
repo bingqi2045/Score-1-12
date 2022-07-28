@@ -97,3 +97,14 @@ CREATE TABLE IF NOT EXISTS `bbie_bizterm`
 
 -- Add `description` field on `module_set_release` table.
 ALTER TABLE `module_set_release` ADD COLUMN `description` text COMMENT 'Description or explanation about the module set release.' AFTER `name`;
+
+-- Add `facet_min_length`, `facet_max_length`, and `facet_pattern` fields on `bbie` and `bbie_sc` tables.
+ALTER TABLE `bbie`
+    ADD COLUMN `facet_min_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `cardinality_max`,
+    ADD COLUMN `facet_max_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `facet_min_length`,
+    ADD COLUMN `facet_pattern` text COMMENT 'Defines a constraint on the lexical space of a datatype to literals in a specific pattern.' AFTER `facet_max_length`;
+
+ALTER TABLE `bbie_sc`
+    ADD COLUMN `facet_min_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `cardinality_max`,
+    ADD COLUMN `facet_max_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `facet_min_length`,
+    ADD COLUMN `facet_pattern` text COMMENT 'Defines a constraint on the lexical space of a datatype to literals in a specific pattern.' AFTER `facet_max_length`;

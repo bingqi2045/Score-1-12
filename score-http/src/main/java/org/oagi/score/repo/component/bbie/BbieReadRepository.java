@@ -49,6 +49,8 @@ public class BbieReadRepository {
                 bccManifestRecord.getToBccpManifestId().toBigInteger());
         BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(
                 bccpManifestRecord.getBccpManifestId().toBigInteger());
+        List<String> cdtPrimitives = bccpReadRepository.getCdtPrimitivesByManifestId(
+                bccpManifestRecord.getBccpManifestId().toBigInteger());
 
         BbieNode bbieNode = new BbieNode();
 
@@ -69,6 +71,7 @@ public class BbieReadRepository {
         }
         bcc.setDeprecated(bccRecord.getIsDeprecated() == 1);
         bcc.setNillable(bccRecord.getIsNillable() == 1);
+        bcc.setCdtPrimitives(cdtPrimitives);
 
         BbieNode.Bbie bbie = getBbie(topLevelAsbiepId, hashPath);
         bbieNode.setBbie(bbie);
@@ -153,6 +156,13 @@ public class BbieReadRepository {
             bbie.setGuid(bbieRecord.getGuid());
             bbie.setCardinalityMin(bbieRecord.getCardinalityMin());
             bbie.setCardinalityMax(bbieRecord.getCardinalityMax());
+            if (bbieRecord.getFacetMinLength() != null) {
+                bbie.setMinLength(bbieRecord.getFacetMinLength().intValue());
+            }
+            if (bbieRecord.getFacetMaxLength() != null) {
+                bbie.setMaxLength(bbieRecord.getFacetMaxLength().intValue());
+            }
+            bbie.setPattern(bbieRecord.getFacetPattern());
             bbie.setNillable(bbieRecord.getIsNillable() == 1);
             bbie.setRemark(bbieRecord.getRemark());
             bbie.setDefinition(bbieRecord.getDefinition());

@@ -520,6 +520,27 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> schemas,
+                               Xbt xbt, FacetRestrictionsAware facetRestri) {
+        String guid = (facetRestri instanceof BIE) ? ((BIE) facetRestri).getGuid() : ScoreGuid.randomGuid();
+        String name = "type_" + guid;
+
+        Map<String, Object> content = toProperties(xbt);
+        if (facetRestri.getMinLength() != null) {
+            content.put("minLength", facetRestri.getMinLength().longValue());
+        }
+        if (facetRestri.getMaxLength() != null) {
+            content.put("maxLength", facetRestri.getMaxLength().longValue());
+        }
+        if (StringUtils.hasLength(facetRestri.getPattern())) {
+            content.put("pattern", facetRestri.getPattern());
+        }
+
+        schemas.put(name, content);
+
+        return "#/components/schemas/" + name;
+    }
+
+    private String fillSchemas(Map<String, Object> schemas,
                                Xbt xbt) {
         String builtInType = xbt.getBuiltinType();
         if (builtInType.startsWith("xsd:")) {
@@ -849,7 +870,10 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             if (agencyIdList != null) {
                 ref = fillSchemas(schemas, agencyIdList);
             } else {
-                if (!isFriendly()) {
+                if (bbie.getMinLength() != null || bbie.getMaxLength() != null || StringUtils.hasLength(bbie.getPattern())) {
+                    Xbt xbt = getXbt(bbie, bdt);
+                    ref = fillSchemas(schemas, xbt, bbie);
+                } else if (!isFriendly()) {
                     Xbt xbt = getXbt(bbie, bdt);
                     ref = fillSchemas(schemas, xbt);
                 } else {
@@ -929,7 +953,10 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             if (agencyIdList != null) {
                 ref = fillSchemas(schemas, agencyIdList);
             } else {
-                if (!isFriendly()) {
+                if (bbieSc.getMinLength() != null || bbieSc.getMaxLength() != null || StringUtils.hasLength(bbieSc.getPattern())) {
+                    Xbt xbt = getXbt(bbieSc, dtSc);
+                    ref = fillSchemas(schemas, xbt, bbieSc);
+                } else if (!isFriendly()) {
                     Xbt xbt = getXbt(bbieSc, dtSc);
                     ref = fillSchemas(schemas, xbt);
                 } else {
