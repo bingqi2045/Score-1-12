@@ -327,5 +327,15 @@ public class CcListService {
             transferOwnership(user, "DT", e, request.getTargetLoginId());
         });
     }
+
+    public List<CcTag> getTags() {
+        return dslContext.selectFrom(CC_TAG)
+                .fetch(record -> {
+                    CcTag tag = new CcTag();
+                    tag.setCcTagId(record.getCcTagId().toBigInteger());
+                    tag.setTagName(record.getTagName());
+                    return tag;
+                });
+    }
 }
 

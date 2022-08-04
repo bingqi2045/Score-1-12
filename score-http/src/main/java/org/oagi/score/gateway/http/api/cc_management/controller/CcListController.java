@@ -73,6 +73,7 @@ public class CcListController {
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
+            @RequestParam(name = "ccTagIds", required = false) String ccTagIds,
             @RequestParam(name = "dtTypes", required = false) String dtTypes,
             @RequestParam(name = "asccpTypes", required = false) String asccpTypes,
             @RequestParam(name = "excludes", required = false) String excludes,
@@ -131,14 +132,12 @@ public class CcListController {
                     oagisComponentTypes.stream().filter(e -> !Arrays.asList(BOD, Noun, Verb).contains(e))
                             .collect(Collectors.toList())
             );
-            request.setOagisEntities(
-                    oagisComponentTypes.stream().filter(e -> Arrays.asList(BOD, Noun, Verb).contains(e))
-                            .collect(Collectors.toList())
-            );
-        } else {
-            request.setComponentTypes(Collections.emptyList());
-            request.setOagisEntities(Collections.emptyList());
         }
+
+        request.setCcTagIds(!StringUtils.hasLength(ccTagIds) ? Collections.emptyList() :
+                Arrays.asList(ccTagIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e))
+                        .map(e -> new BigInteger(e))
+                        .collect(Collectors.toList()));
 
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
                 Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
@@ -176,6 +175,12 @@ public class CcListController {
         request.setPageRequest(pageRequest);
 
         return service.getCcList(request);
+    }
+
+    @RequestMapping(value = "/core_component/tags", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CcTag> getTags() {
+        return service.getTags();
     }
 
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/transfer_ownership",

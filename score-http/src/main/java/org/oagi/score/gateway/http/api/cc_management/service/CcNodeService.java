@@ -1391,6 +1391,7 @@ public class CcNodeService extends EventHandler {
                 CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, releaseId);
                 bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
                 bodAsccpRequest.setNamespaceId(namespaceId);
+                bodAsccpRequest.setTags(Arrays.asList("BOD"));
                 BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
                 bodManifestIdList.add(bodAsccpManifestId);
             }

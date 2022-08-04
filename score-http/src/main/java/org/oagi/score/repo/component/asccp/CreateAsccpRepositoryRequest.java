@@ -2,12 +2,14 @@ package org.oagi.score.repo.component.asccp;
 
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.service.common.data.CcState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import static org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType.Verb;
 
@@ -23,6 +25,8 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private CcState initialState = CcState.WIP;
+
+    private List<String> tags = Collections.emptyList();
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
                                         BigInteger roleOfAccManifestId, BigInteger releaseId) {
@@ -108,5 +112,13 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
     public void setInitialType(CcASCCPType initialType) {
         this.initialType = initialType;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

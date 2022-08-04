@@ -13,6 +13,7 @@ import org.jooq.impl.SchemaImpl;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
@@ -27,6 +28,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
@@ -36,6 +38,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtScPriRestri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUsageRule;
@@ -46,6 +49,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CcTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
@@ -63,6 +67,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxSchemeValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
@@ -137,6 +142,11 @@ public class Oagi extends SchemaImpl {
      * The table <code>oagi.acc_manifest</code>.
      */
     public final AccManifest ACC_MANIFEST = AccManifest.ACC_MANIFEST;
+
+    /**
+     * The table <code>oagi.acc_manifest_tag</code>.
+     */
+    public final AccManifestTag ACC_MANIFEST_TAG = AccManifestTag.ACC_MANIFEST_TAG;
 
     /**
      * The AGENCY_ID_LIST table stores information about agency identification
@@ -217,6 +227,11 @@ public class Oagi extends SchemaImpl {
     public final AsccpManifest ASCCP_MANIFEST = AsccpManifest.ASCCP_MANIFEST;
 
     /**
+     * The table <code>oagi.asccp_manifest_tag</code>.
+     */
+    public final AsccpManifestTag ASCCP_MANIFEST_TAG = AsccpManifestTag.ASCCP_MANIFEST_TAG;
+
+    /**
      * A BBIE represents a relationship/association between an ABIE and a BBIEP.
      * It is a contextualization of a BCC. The BBIE table also stores some
      * information about the specific constraints related to the BDT associated
@@ -274,6 +289,11 @@ public class Oagi extends SchemaImpl {
      * The table <code>oagi.bccp_manifest</code>.
      */
     public final BccpManifest BCCP_MANIFEST = BccpManifest.BCCP_MANIFEST;
+
+    /**
+     * The table <code>oagi.bccp_manifest_tag</code>.
+     */
+    public final BccpManifestTag BCCP_MANIFEST_TAG = BccpManifestTag.BCCP_MANIFEST_TAG;
 
     /**
      * This table captures the allowed primitives for a BDT. The allowed
@@ -361,6 +381,11 @@ public class Oagi extends SchemaImpl {
      * is usually associated to BIE or CC.
      */
     public final BusinessTerm BUSINESS_TERM = BusinessTerm.BUSINESS_TERM;
+
+    /**
+     * The table <code>oagi.cc_tag</code>.
+     */
+    public final CcTag CC_TAG = CcTag.CC_TAG;
 
     /**
      * This table capture allowed primitives of the CDT?s Content Component. 
@@ -480,6 +505,11 @@ public class Oagi extends SchemaImpl {
      * The table <code>oagi.dt_manifest</code>.
      */
     public final DtManifest DT_MANIFEST = DtManifest.DT_MANIFEST;
+
+    /**
+     * The table <code>oagi.dt_manifest_tag</code>.
+     */
+    public final DtManifestTag DT_MANIFEST_TAG = DtManifestTag.DT_MANIFEST_TAG;
 
     /**
      * This table represents the supplementary component (SC) of a DT. Revision
@@ -660,6 +690,7 @@ public class Oagi extends SchemaImpl {
             Abie.ABIE,
             Acc.ACC,
             AccManifest.ACC_MANIFEST,
+            AccManifestTag.ACC_MANIFEST_TAG,
             AgencyIdList.AGENCY_ID_LIST,
             AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST,
             AgencyIdListValue.AGENCY_ID_LIST_VALUE,
@@ -674,6 +705,7 @@ public class Oagi extends SchemaImpl {
             AsccManifest.ASCC_MANIFEST,
             Asccp.ASCCP,
             AsccpManifest.ASCCP_MANIFEST,
+            AsccpManifestTag.ASCCP_MANIFEST_TAG,
             Bbie.BBIE,
             BbieBizterm.BBIE_BIZTERM,
             BbieSc.BBIE_SC,
@@ -683,6 +715,7 @@ public class Oagi extends SchemaImpl {
             BccManifest.BCC_MANIFEST,
             Bccp.BCCP,
             BccpManifest.BCCP_MANIFEST,
+            BccpManifestTag.BCCP_MANIFEST_TAG,
             BdtPriRestri.BDT_PRI_RESTRI,
             BdtScPriRestri.BDT_SC_PRI_RESTRI,
             BieUsageRule.BIE_USAGE_RULE,
@@ -693,6 +726,7 @@ public class Oagi extends SchemaImpl {
             BlobContent.BLOB_CONTENT,
             BlobContentManifest.BLOB_CONTENT_MANIFEST,
             BusinessTerm.BUSINESS_TERM,
+            CcTag.CC_TAG,
             CdtAwdPri.CDT_AWD_PRI,
             CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP,
             CdtPri.CDT_PRI,
@@ -710,6 +744,7 @@ public class Oagi extends SchemaImpl {
             CtxSchemeValue.CTX_SCHEME_VALUE,
             Dt.DT,
             DtManifest.DT_MANIFEST,
+            DtManifestTag.DT_MANIFEST_TAG,
             DtSc.DT_SC,
             DtScManifest.DT_SC_MANIFEST,
             DtUsageRule.DT_USAGE_RULE,

@@ -108,3 +108,130 @@ ALTER TABLE `bbie_sc`
     ADD COLUMN `facet_min_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `cardinality_max`,
     ADD COLUMN `facet_max_length` bigint(20) unsigned DEFAULT NULL COMMENT 'Defines the minimum number of units of length.' AFTER `facet_min_length`,
     ADD COLUMN `facet_pattern` text COMMENT 'Defines a constraint on the lexical space of a datatype to literals in a specific pattern.' AFTER `facet_max_length`;
+
+-- Add `cc_tag` table
+CREATE TABLE `cc_tag`
+(
+    `cc_tag_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `tag_name`  varchar(100) NOT NULL,
+    PRIMARY KEY (`cc_tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `cc_tag` (`cc_tag_id`, `tag_name`)
+VALUES
+    (1, 'BOD'),
+    (2, 'Noun'),
+    (3, 'Verb');
+
+-- Add `manifest_tag` tables
+CREATE TABLE `acc_manifest_tag`
+(
+    `acc_manifest_id` bigint(20) unsigned NOT NULL,
+    `cc_tag_id`         bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`acc_manifest_id`, `cc_tag_id`),
+    KEY                 `acc_manifest_tag_cc_tag_id_fk` (`cc_tag_id`),
+    CONSTRAINT `acc_manifest_tag_acc_manifest_id_fk` FOREIGN KEY (`acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
+    CONSTRAINT `acc_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `asccp_manifest_tag`
+(
+    `asccp_manifest_id` bigint(20) unsigned NOT NULL,
+    `cc_tag_id`         bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`asccp_manifest_id`, `cc_tag_id`),
+    KEY                 `asccp_manifest_tag_cc_tag_id_fk` (`cc_tag_id`),
+    CONSTRAINT `asccp_manifest_tag_asccp_manifest_id_fk` FOREIGN KEY (`asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
+    CONSTRAINT `asccp_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `bccp_manifest_tag`
+(
+    `bccp_manifest_id` bigint(20) unsigned NOT NULL,
+    `cc_tag_id`         bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`bccp_manifest_id`, `cc_tag_id`),
+    KEY                 `bccp_manifest_tag_cc_tag_id_fk` (`cc_tag_id`),
+    CONSTRAINT `bccp_manifest_tag_bccp_manifest_id_fk` FOREIGN KEY (`bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
+    CONSTRAINT `bccp_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `dt_manifest_tag`
+(
+    `dt_manifest_id` bigint(20) unsigned NOT NULL,
+    `cc_tag_id`         bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`dt_manifest_id`, `cc_tag_id`),
+    KEY                 `dt_manifest_tag_cc_tag_id_fk` (`cc_tag_id`),
+    CONSTRAINT `dt_manifest_tag_dt_manifest_id_fk` FOREIGN KEY (`dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
+    CONSTRAINT `dt_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Add 'BOD'
+INSERT INTO `asccp_manifest_tag` (`asccp_manifest_id`, `cc_tag_id`)
+SELECT asccp_manifest.asccp_manifest_id, (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'BOD')
+FROM asccp_manifest
+         JOIN acc_manifest on asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+         JOIN asccp ON asccp_manifest.asccp_id = asccp.asccp_id
+WHERE acc_manifest.based_acc_manifest_id IN (SELECT acc_manifest_id
+                                             FROM acc_manifest
+                                                      JOIN acc on acc_manifest.acc_id = acc.acc_id
+                                             WHERE acc.object_class_term = 'Business Object Document');
+
+-- Add 'Verb'
+INSERT INTO `asccp_manifest_tag` (`asccp_manifest_id`, `cc_tag_id`)
+SELECT asccp_manifest.asccp_manifest_id,
+       (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'Verb')
+FROM asccp_manifest
+         JOIN acc_manifest on asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+         JOIN asccp ON asccp_manifest.asccp_id = asccp.asccp_id
+WHERE acc_manifest.based_acc_manifest_id IN (SELECT acc_manifest_id
+                                             FROM acc_manifest
+                                                      JOIN acc on acc_manifest.acc_id = acc.acc_id
+                                             WHERE acc.object_class_term LIKE '%Verb');
+
+INSERT INTO `acc_manifest_tag` (`acc_manifest_id`, `cc_tag_id`)
+SELECT distinct acc_manifest.acc_manifest_id,
+       (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'Verb')
+FROM asccp_manifest
+         JOIN asccp_manifest_tag on asccp_manifest.asccp_manifest_id = asccp_manifest_tag.asccp_manifest_id
+         JOIN cc_tag ON asccp_manifest_tag.cc_tag_id = cc_tag.cc_tag_id
+         JOIN acc_manifest on asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+WHERE cc_tag.tag_name = 'Verb';
+
+INSERT INTO `acc_manifest_tag` (`acc_manifest_id`, `cc_tag_id`)
+SELECT distinct acc_manifest.based_acc_manifest_id,
+                (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'Verb')
+FROM asccp_manifest
+         JOIN asccp_manifest_tag on asccp_manifest.asccp_manifest_id = asccp_manifest_tag.asccp_manifest_id
+         JOIN cc_tag ON asccp_manifest_tag.cc_tag_id = cc_tag.cc_tag_id
+         JOIN acc_manifest on asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+WHERE cc_tag.tag_name = 'Verb';
+
+INSERT INTO `acc_manifest_tag` (`acc_manifest_id`, `cc_tag_id`)
+SELECT distinct base.based_acc_manifest_id,
+                (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'Verb')
+FROM asccp_manifest
+         JOIN asccp_manifest_tag on asccp_manifest.asccp_manifest_id = asccp_manifest_tag.asccp_manifest_id
+         JOIN cc_tag ON asccp_manifest_tag.cc_tag_id = cc_tag.cc_tag_id
+         JOIN acc_manifest on asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+         JOIN acc_manifest AS base on acc_manifest.based_acc_manifest_id = base.acc_manifest_id
+WHERE cc_tag.tag_name = 'Verb';
+
+-- Add 'Noun'
+INSERT INTO `asccp_manifest_tag` (`asccp_manifest_id`, `cc_tag_id`)
+SELECT distinct desc_asccp_manifest.asccp_manifest_id,
+                (SELECT `cc_tag`.`cc_tag_id` FROM `cc_tag` WHERE `cc_tag`.`tag_name` = 'Noun')
+FROM asccp_manifest
+         JOIN asccp_manifest_tag ON asccp_manifest.asccp_manifest_id = asccp_manifest_tag.asccp_manifest_id
+         JOIN cc_tag ON asccp_manifest_tag.cc_tag_id = cc_tag.cc_tag_id
+         JOIN acc_manifest ON asccp_manifest.role_of_acc_manifest_id = acc_manifest.acc_manifest_id
+         JOIN ascc_manifest ON acc_manifest.acc_manifest_id = ascc_manifest.from_acc_manifest_id
+         JOIN asccp_manifest AS data_area_asccp_manifest
+              ON ascc_manifest.to_asccp_manifest_id = data_area_asccp_manifest.asccp_manifest_id
+         JOIN acc_manifest AS data_area_acc_manifest
+              ON data_area_asccp_manifest.role_of_acc_manifest_id = data_area_acc_manifest.acc_manifest_id
+         JOIN ascc_manifest AS data_area_ascc_manifest
+              ON data_area_acc_manifest.acc_manifest_id = data_area_ascc_manifest.from_acc_manifest_id
+         JOIN asccp_manifest AS desc_asccp_manifest
+              ON data_area_ascc_manifest.to_asccp_manifest_id = desc_asccp_manifest.asccp_manifest_id
+         JOIN asccp ON desc_asccp_manifest.asccp_id = asccp.asccp_id
+WHERE cc_tag.tag_name = 'BOD'
+  AND asccp.type != 'Verb';

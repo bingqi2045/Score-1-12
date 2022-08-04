@@ -6,16 +6,15 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
-import org.oagi.score.repo.component.ascc.UpdateAsccPropertiesRepositoryRequest;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -109,7 +108,32 @@ public class AsccpWriteRepository {
         asccpManifest.setLogId(logRecord.getLogId());
         asccpManifest.update(ASCCP_MANIFEST.LOG_ID);
 
+        if (!request.getTags().isEmpty()) {
+            for (String tag : request.getTags()) {
+                upsertTag(asccpManifest.getAsccpManifestId(), tag);
+            }
+        }
+
         return new CreateAsccpRepositoryResponse(asccpManifest.getAsccpManifestId().toBigInteger());
+    }
+
+    private void upsertTag(ULong asccpManifestId, String tag) {
+        CcTagRecord ccTag = dslContext.selectFrom(CC_TAG)
+                .where(CC_TAG.TAG_NAME.eq(tag))
+                .fetchOptional().orElse(null);
+        ULong ccTagId;
+        if (ccTag == null) {
+            ccTagId = dslContext.insertInto(CC_TAG)
+                    .set(CC_TAG.TAG_NAME, tag)
+                    .returning(CC_TAG.CC_TAG_ID)
+                    .fetchOne().getCcTagId();
+        } else {
+            ccTagId = ccTag.getCcTagId();
+        }
+        dslContext.insertInto(ASCCP_MANIFEST_TAG)
+                .set(ASCCP_MANIFEST_TAG.ASCCP_MANIFEST_ID, asccpManifestId)
+                .set(ASCCP_MANIFEST_TAG.CC_TAG_ID, ccTagId)
+                .execute();
     }
 
     public ReviseAsccpRepositoryResponse reviseAsccp(ReviseAsccpRepositoryRequest request) {
