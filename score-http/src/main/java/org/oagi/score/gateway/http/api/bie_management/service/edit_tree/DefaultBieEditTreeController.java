@@ -88,21 +88,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BigInteger userId = sessionService.userId(user);
         accessPrivilege = AccessPrivilege.Prohibited;
         switch (this.state) {
-        case Initiating:
-            accessPrivilege = AccessPrivilege.Unprepared;
-            break;
+            case Initiating:
+                accessPrivilege = AccessPrivilege.Unprepared;
+                break;
 
             case WIP:
                 if (topLevelAsbiep.getOwnerUserId().equals(userId)) {
                     accessPrivilege = AccessPrivilege.CanEdit;
                 } else {
-                    // Issue #1010
-                    if (hasReuseBie(user, topLevelAsbiep.getTopLevelAsbiepId())) {
-                        accessPrivilege = AccessPrivilege.CanView;
-                    } else {
-                        throw new DataAccessForbiddenException("'" + sessionService.getAppUser(user).getLoginId() +
-                                "' doesn't have an access privilege.");
-                    }
+                    accessPrivilege = AccessPrivilege.CanView;
                 }
                 break;
 

@@ -6,10 +6,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
-import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
-import org.oagi.score.gateway.http.api.bie_management.data.BieList;
-import org.oagi.score.gateway.http.api.bie_management.data.BieListRequest;
+import org.oagi.score.gateway.http.api.bie_management.data.*;
 import org.oagi.score.gateway.http.api.business_term_management.data.AsbieListRecord;
 import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -34,7 +31,10 @@ import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.businesscontext.BusinessContextService;
 import org.oagi.score.service.common.data.*;
 import org.oagi.score.service.message.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +49,8 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Service
 @Transactional(readOnly = true)
 public class BieService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SessionService sessionService;
@@ -79,6 +81,9 @@ public class BieService {
 
     @Autowired
     private DSLContext dslContext;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Transactional
     public BieCreateResponse createBie(AuthenticatedPrincipal user, BieCreateRequest request) {
@@ -484,6 +489,14 @@ public class BieService {
             //if a couple (biz ctx id , toplevelasbiepId) already exist dont insert it - just update it.
         }
 
+    }
+
+    public void fireBieEvent(BieEvent event) {
+        try {
+            simpMessagingTemplate.convertAndSend("/topic/bie/" + event.getTopLevelAsbiepId(), event);
+        } catch (Exception ignore) {
+            logger.error("Couldn't send BIE event: " + event, ignore);
+        }
     }
 
 

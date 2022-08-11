@@ -7,6 +7,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
+import org.oagi.score.gateway.http.api.bie_management.data.BieEvent;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -314,6 +315,7 @@ public class BieEditService implements InitializingBean {
         BieEditUpdateDetailResponse response = new BieEditUpdateDetailResponse();
         LocalDateTime timestamp = LocalDateTime.now();
 
+        response.setTimestamp(timestamp);
         response.setAbieDetailMap(
                 request.getAbieDetails().stream()
                         .map(abie ->

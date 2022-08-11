@@ -8,12 +8,14 @@ import org.oagi.score.repo.component.bbie.BbieNode;
 import org.oagi.score.repo.component.bbie_sc.BbieScNode;
 import org.oagi.score.repo.component.bbiep.BbiepNode;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
 @Data
 public class BieEditUpdateDetailResponse {
 
+    private LocalDateTime timestamp;
     private Map<String, AbieNode.Abie> abieDetailMap = Collections.emptyMap();
     private Map<String, AsbieNode.Asbie> asbieDetailMap = Collections.emptyMap();
     private Map<String, BbieNode.Bbie> bbieDetailMap = Collections.emptyMap();
