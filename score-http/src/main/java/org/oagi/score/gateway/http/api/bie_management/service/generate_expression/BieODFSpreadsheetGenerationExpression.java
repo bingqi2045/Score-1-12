@@ -1,5 +1,7 @@
 package org.oagi.score.gateway.http.api.bie_management.service.generate_expression;
 
+import com.github.jferard.fastods.*;
+import com.github.jferard.fastods.odselement.MetaElement;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -30,7 +32,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerateExpression, InitializingBean {
+public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpression, InitializingBean {
 
     private static final String INDEXER_STR = "[0]";
 
@@ -212,10 +214,25 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
         generateColumnNames(rowRecords, 1);
 
         File tempFile = File.createTempFile(ScoreGuid.randomGuid(), null);
-        String extension = "fods";
 
-        tempFile = new File(tempFile.getParentFile(), filename + "." + extension);
+        switch (this.option.getOdfExpressionFormat()) {
+            case "FODS":
+                tempFile = new File(tempFile.getParentFile(), filename + ".fods");
+                writeAsFods(tempFile, rowRecords);
+                break;
+            case "ODS":
+                tempFile = new File(tempFile.getParentFile(), filename + ".ods");
+                writeAsOds(tempFile, rowRecords);
+                break;
+            default:
+        }
 
+        logger.info("ODF Spreadsheet is generated: " + tempFile);
+
+        return tempFile;
+    }
+
+    private void writeAsFods(File file, List<RowRecord> rowRecords) throws IOException {
         FlatXMLODFSpreadsheetWriter writer = new FlatXMLODFSpreadsheetWriter();
         String creator = this.generationContext.findUserName(
                 this.topLevelAsbiep.getOwnerUserId());
@@ -223,11 +240,72 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
         writer.startBody();
         writer.fillRowRecords(rowRecords);
         writer.endBody();
-        writer.write(tempFile);
+        writer.write(file);
+    }
 
-        logger.info("Flat XML ODF Spreadsheet is generated: " + tempFile);
+    private void writeAsOds(File file, List<RowRecord> rowRecords) throws IOException {
+        String creator = this.generationContext.findUserName(
+                this.topLevelAsbiep.getOwnerUserId());
+        MetaElement metaElement = MetaElement.builder()
+                .creator(creator)
+                .date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        .format(this.topLevelAsbiep.getLastUpdateTimestamp()))
+                .build();
+        OdsFactory odsFactory = new OdsFactoryBuilder(
+                java.util.logging.Logger.getLogger(this.getClass().getName()), Locale.US)
+                .metaElement(metaElement)
+                .build();
+        NamedOdsFileWriter odsFileWriter = odsFactory.createWriter(file);
+        NamedOdsDocument odsDocument = odsFileWriter.document();
 
-        return tempFile;
+        Table templateTable = odsDocument.addTable("Template");
+        int templateTableCellIndex = 0;
+        for (RowRecord rowRecord : rowRecords) {
+            TableRowImpl templateTableRow0 = templateTable.getRow(0);
+            TableCell templateTableRow0Cell = templateTableRow0.getOrCreateCell(templateTableCellIndex++);
+            templateTableRow0Cell.setStringValue(rowRecord.columnName);
+        }
+
+        Table specificationTable = odsDocument.addTable("Specification");
+        int specificationTableRowIndex = 0;
+        TableRowImpl specificationTableRow0 = specificationTable.getRow(specificationTableRowIndex++);
+        List<String> headers = Arrays.asList("Cell", "ColumnName", "FullPath",
+                "MaxCardinality", "ContextDefinition", "ExampleData");
+        for (int i = 0, len = headers.size(); i < len; ++i) {
+            TableCell specificationTableRow0Cell = specificationTableRow0.getOrCreateCell(i);
+            specificationTableRow0Cell.setStringValue(headers.get(i));
+        }
+
+        templateTableCellIndex = 0;
+        for (RowRecord rowRecord : rowRecords) {
+            TableRowImpl specificationTableRow = specificationTable.getRow(specificationTableRowIndex++);
+            int specificationTableRowCellIndex = 0;
+            TableCell specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(cellColumnNumberToString(++templateTableCellIndex) + "1");
+
+            specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(rowRecord.columnName);
+
+            specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(rowRecord.fullPath);
+
+            specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(rowRecord.maxCardinality);
+
+            specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(rowRecord.contextDefinition);
+
+            specificationTableRowCell =
+                    specificationTableRow.getOrCreateCell(specificationTableRowCellIndex++);
+            specificationTableRowCell.setStringValue(rowRecord.example);
+        }
+
+        odsFileWriter.save();
     }
 
     private void generateColumnNames(List<RowRecord> rowRecords, int depth) {
@@ -252,6 +330,16 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
                 entry.getValue().get(0).columnName = entry.getKey();
             }
         }
+    }
+
+    private static String cellColumnNumberToString(int cellColumnNumber) {
+        String str = "";
+        while (cellColumnNumber > 0) {
+            int remainder = (cellColumnNumber - 1) % 26;
+            str = Character.toString('A' + remainder) + str;
+            cellColumnNumber = (cellColumnNumber - remainder) / 26;
+        }
+        return str;
     }
 
     private static class FlatXMLODFSpreadsheetWriter {
@@ -448,16 +536,6 @@ public class BieFlatXMLODFSpreadsheetGenerationExpression implements BieGenerate
                 specificationTableRow.addContent(tableCellAsString(rowRecord.contextDefinition));
                 specificationTableRow.addContent(tableCellAsString(rowRecord.example));
             }
-        }
-
-        private String cellColumnNumberToString(int cellColumnNumber) {
-            String str = "";
-            while (cellColumnNumber > 0) {
-                int remainder = (cellColumnNumber - 1) % 26;
-                str = Character.toString('A' + remainder) + str;
-                cellColumnNumber = (cellColumnNumber - remainder) / 26;
-            }
-            return str;
         }
 
         private Element tableCellAsString(String text) {

@@ -42,6 +42,7 @@ public class GenerateExpressionOption {
     private BigInteger paginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate;
 
     private boolean isOnlyBCCPsForOpenDocumentFormat = true;
+    private String odfExpressionFormat = "ODS";
 
     public boolean hasOpenAPI30GetTemplateOptions() {
         if (arrayForJsonExpressionForOpenAPI30GetTemplate) {
