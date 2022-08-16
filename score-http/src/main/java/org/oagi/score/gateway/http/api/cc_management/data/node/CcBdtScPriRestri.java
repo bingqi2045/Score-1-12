@@ -10,11 +10,11 @@ public class CcBdtScPriRestri {
 
     private BigInteger bdtScPriRestriId;
     private PrimitiveRestriType type;
-    private BigInteger cdtScAwdPriId;
+    private String cdtScAwdPriId;
     private String primitiveName;
 
-    private BigInteger cdtScAwdPriXpsTypeMapId;
-    private BigInteger xbtId;
+    private String cdtScAwdPriXpsTypeMapId;
+    private String xbtId;
     private String xbtName;
 
     private BigInteger codeListId;

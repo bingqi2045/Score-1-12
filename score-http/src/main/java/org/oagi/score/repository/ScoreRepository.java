@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
-public interface ScoreRepository<T> {
+public interface ScoreRepository<T, PK> {
 
     List<T> findAll();
 
@@ -12,6 +12,6 @@ public interface ScoreRepository<T> {
         return Collections.emptyList();
     }
 
-    T findById(BigInteger id);
+    T findById(PK id);
 
 }

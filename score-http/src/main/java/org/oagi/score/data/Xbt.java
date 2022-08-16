@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class Xbt {
 
-    private BigInteger xbtId = BigInteger.ZERO;
+    private String xbtId;
     private BigInteger manifestId = BigInteger.ZERO;
     private String name;
     private String builtinType;

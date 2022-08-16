@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class CtxSchemeValueRepository implements ScoreRepository<ContextSchemeValue> {
+public class CtxSchemeValueRepository implements ScoreRepository<ContextSchemeValue, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

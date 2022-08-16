@@ -33,7 +33,7 @@ import static org.oagi.score.service.common.data.CcState.Candidate;
 import static org.oagi.score.service.common.data.CcState.ReleaseDraft;
 
 @Repository
-public class ReleaseRepository implements ScoreRepository<Release> {
+public class ReleaseRepository implements ScoreRepository<Release, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

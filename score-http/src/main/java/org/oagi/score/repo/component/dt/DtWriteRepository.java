@@ -22,10 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -228,7 +225,7 @@ public class DtWriteRepository {
                     BDT_PRI_RESTRI.IS_DEFAULT)
                     .select(dslContext.select(inline(dtId),
                             CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
-                            CDT_AWD_PRI.IS_DEFAULT)
+                            CDT_AWD_PRI_XPS_TYPE_MAP.IS_DEFAULT)
                             .from(CDT_AWD_PRI)
                             .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
                             .where(CDT_AWD_PRI.CDT_ID.eq(basedDtId))).execute();
@@ -258,7 +255,7 @@ public class DtWriteRepository {
                     BDT_SC_PRI_RESTRI.IS_DEFAULT)
                     .select(dslContext.select(inline(dtScId),
                             CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
-                            CDT_SC_AWD_PRI.IS_DEFAULT)
+                            CDT_SC_AWD_PRI_XPS_TYPE_MAP.IS_DEFAULT)
                             .from(CDT_SC_AWD_PRI)
                             .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID))
                             .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(basedDtScId))).execute();
@@ -568,7 +565,7 @@ public class DtWriteRepository {
     private void deleteDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> deleteList) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
 
-        List<ULong> cdtAwdPriXpsTypeMapIdList = deleteList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
+        List<String> cdtAwdPriXpsTypeMapIdList = deleteList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
                 .map(BdtPriRestriRecord::getCdtAwdPriXpsTypeMapId).collect(Collectors.toList());
 
         List<ULong> codeListId = deleteList.stream().filter(e -> e.getCodeListId() != null)
@@ -628,7 +625,7 @@ public class DtWriteRepository {
                     .fetch()) {
                 if (defaultValueDomain.getCdtAwdPriXpsTypeMapId() != null) {
                     if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null &&
-                        bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId().toBigInteger().equals(defaultValueDomain.getCdtAwdPriXpsTypeMapId())) {
+                        bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId().equals(defaultValueDomain.getCdtAwdPriXpsTypeMapId())) {
                         bdtPriRestriRecord.setIsDefault((byte) 1);
                     } else {
                         bdtPriRestriRecord.setIsDefault((byte) 0);
@@ -658,7 +655,7 @@ public class DtWriteRepository {
     private void insertDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> insertList) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
 
-        List<ULong> cdtAwdPriXpsTypeMapIdList = insertList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
+        List<String> cdtAwdPriXpsTypeMapIdList = insertList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
                 .map(BdtPriRestriRecord::getCdtAwdPriXpsTypeMapId).collect(Collectors.toList());
 
         List<ULong> codeListIdList = insertList.stream().filter(e -> e.getCodeListId() != null)
@@ -668,7 +665,7 @@ public class DtWriteRepository {
                 .map(BdtPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
         for (DtRecord dt : derivedDtList) {
-            for (ULong cdtAwdPriXpsTypeMapId: cdtAwdPriXpsTypeMapIdList) {
+            for (String cdtAwdPriXpsTypeMapId: cdtAwdPriXpsTypeMapIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
                         BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(cdtAwdPriXpsTypeMapId)).fetchOne();
@@ -755,7 +752,7 @@ public class DtWriteRepository {
                         .fetchOne();
 
                 if (restri.getCdtAwdPriXpsTypeMapId() != null) {
-                    bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(ULong.valueOf(restri.getCdtAwdPriXpsTypeMapId()));
+                    bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(restri.getCdtAwdPriXpsTypeMapId());
                     bdtPriRestriRecord.setCodeListId(null);
                     bdtPriRestriRecord.setAgencyIdListId(null);
                 } else if (restri.getCodeListId() != null) {
@@ -772,7 +769,7 @@ public class DtWriteRepository {
                 bdtPriRestriRecord.update();
 
                 if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null) {
-                    restri.setCdtAwdPriXpsTypeMapId(bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId().toBigInteger());
+                    restri.setCdtAwdPriXpsTypeMapId(bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId());
                     restri.setCodeListId(null);
                     restri.setAgencyIdListId(null);
                 } else if (bdtPriRestriRecord.getCodeListId() != null) {
@@ -1185,18 +1182,15 @@ public class DtWriteRepository {
                 .where(CDT_AWD_PRI.CDT_ID.eq(cdtRecord.getDtId()))
                 .fetch();
 
-        Map<ULong, List<CdtScAwdPriRecord>> cdtScAwdPriRecordMapByCdtAwdPriId = new HashMap();
+        Map<String, List<CdtScAwdPriRecord>> cdtScAwdPriRecordMapByCdtAwdPriId = new HashMap();
         for (CdtAwdPriRecord cdtAwdPriRecord : cdtAwdPriRecords) {
             CdtScAwdPriRecord cdtScAwdPriRecord = new CdtScAwdPriRecord();
+            cdtScAwdPriRecord.setCdtScAwdPriId(UUID.randomUUID().toString());
             cdtScAwdPriRecord.setCdtPriId(cdtAwdPriRecord.getCdtPriId());
             cdtScAwdPriRecord.setCdtScId(bdtScId);
             cdtScAwdPriRecord.setIsDefault(cdtAwdPriRecord.getIsDefault());
-            cdtScAwdPriRecord.setCdtScAwdPriId(
-                    dslContext.insertInto(CDT_SC_AWD_PRI)
-                            .set(cdtScAwdPriRecord)
-                            .returning(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID)
-                            .fetchOne().getCdtScAwdPriId()
-            );
+            dslContext.insertInto(CDT_SC_AWD_PRI)
+                    .set(cdtScAwdPriRecord).execute();
 
             if (!cdtScAwdPriRecordMapByCdtAwdPriId.containsKey(cdtAwdPriRecord.getCdtAwdPriId())) {
                 cdtScAwdPriRecordMapByCdtAwdPriId.put(cdtAwdPriRecord.getCdtAwdPriId(), new ArrayList());
@@ -1215,14 +1209,11 @@ public class DtWriteRepository {
         for (CdtAwdPriXpsTypeMapRecord cdtAwdPriXpsTypeMapRecord : cdtAwdPriXpsTypeMapRecords) {
             for (CdtScAwdPriRecord cdtScAwdPriRecord : cdtScAwdPriRecordMapByCdtAwdPriId.get(cdtAwdPriXpsTypeMapRecord.getCdtAwdPriId())) {
                 CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMapRecord = new CdtScAwdPriXpsTypeMapRecord();
+                cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriXpsTypeMapId(UUID.randomUUID().toString());
                 cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriId(cdtScAwdPriRecord.getCdtScAwdPriId());
                 cdtScAwdPriXpsTypeMapRecord.setXbtId(cdtAwdPriXpsTypeMapRecord.getXbtId());
-                cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriXpsTypeMapId(
-                        dslContext.insertInto(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
-                                .set(cdtScAwdPriXpsTypeMapRecord)
-                                .returning(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID)
-                                .fetchOne().getCdtScAwdPriXpsTypeMapId()
-                );
+                dslContext.insertInto(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                        .set(cdtScAwdPriXpsTypeMapRecord).execute();
                 cdtScAwdPriXpsTypeMapRecords.add(cdtScAwdPriXpsTypeMapRecord);
 
                 BdtScPriRestriRecord bdtScPriRestriRecord = new BdtScPriRestriRecord();
@@ -1342,13 +1333,12 @@ public class DtWriteRepository {
                 .fetchOne();
 
         CdtAwdPriRecord cdtAwdPriRecord = new CdtAwdPriRecord();
+        cdtAwdPriRecord.setCdtAwdPriId(UUID.randomUUID().toString());
         cdtAwdPriRecord.setCdtId(dtManifestRecord.getDtId());
         cdtAwdPriRecord.setCdtPriId(cdtPriRecord.getCdtPriId());
         cdtAwdPriRecord.setIsDefault((byte) 0);
-
-        cdtAwdPriRecord.setCdtAwdPriId(dslContext.insertInto(CDT_AWD_PRI)
-                .set(cdtAwdPriRecord).returning(CDT_AWD_PRI.CDT_AWD_PRI_ID)
-                .fetchOne().getCdtAwdPriId());
+        dslContext.insertInto(CDT_AWD_PRI)
+                .set(cdtAwdPriRecord).execute();
 
         boolean isDefault = bdtPriRestriRecords.size() == 0;
 
@@ -1372,18 +1362,17 @@ public class DtWriteRepository {
             }
 
             CdtAwdPriXpsTypeMapRecord cdtAwdPriXpsTypeMapRecord = new CdtAwdPriXpsTypeMapRecord();
+            cdtAwdPriXpsTypeMapRecord.setCdtAwdPriXpsTypeMapId(UUID.randomUUID().toString());
             cdtAwdPriXpsTypeMapRecord.setCdtAwdPriId(cdtAwdPriRecord.getCdtAwdPriId());
             cdtAwdPriXpsTypeMapRecord.setXbtId(xbtManifestRecord.getXbtId());
-
-            cdtAwdPriXpsTypeMapRecord.setCdtAwdPriXpsTypeMapId(dslContext.insertInto(CDT_AWD_PRI_XPS_TYPE_MAP)
-                    .set(cdtAwdPriXpsTypeMapRecord).returning(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID)
-                    .fetchOne().getCdtAwdPriXpsTypeMapId());
+            dslContext.insertInto(CDT_AWD_PRI_XPS_TYPE_MAP)
+                    .set(cdtAwdPriXpsTypeMapRecord).execute();
 
             BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
             bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(cdtAwdPriXpsTypeMapRecord.getCdtAwdPriXpsTypeMapId());
             bdtPriRestriRecord.setBdtId(dtManifestRecord.getDtId());
 
-            if(isDefault) {
+            if (isDefault) {
                 bdtPriRestriRecord.setIsDefault((byte) 1);
                 isDefault = false;
             } else {

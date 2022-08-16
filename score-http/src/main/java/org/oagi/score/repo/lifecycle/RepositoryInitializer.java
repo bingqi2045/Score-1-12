@@ -859,6 +859,8 @@ public class RepositoryInitializer implements InitializingBean {
                             XBT_MANIFEST.XBT_ID.equal(nextXbtManifestRecord.getXbtId()),
                             XBT_MANIFEST.RELEASE_ID.notEqual(nextXbtManifestRecord.getReleaseId())
                     ))
+                    .orderBy(XBT_MANIFEST.XBT_MANIFEST_ID.desc())
+                    .limit(1)
                     .fetchOne();
 
             prevXbtManifestRecord.setNextXbtManifestId(nextXbtManifestRecord.getXbtManifestId());

@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,8 @@ public class SchemaModule {
     private Map<String, ASCCP> asccpList = new LinkedHashMap();
 
     private byte[] content;
+
+    private File moduleFile;
 
     public SchemaModule(ScoreModule module) {
         this.module = module;
@@ -200,11 +203,11 @@ public class SchemaModule {
         schemaModuleVisitor.startSchemaModule(this);
 
         if (content == null) {
-            for (SchemaModule include: includeModules) {
+            for (SchemaModule include : includeModules) {
                 schemaModuleVisitor.visitIncludeModule(include);
             }
 
-            for (SchemaModule imported: importModules) {
+            for (SchemaModule imported : importModules) {
                 schemaModuleVisitor.visitIncludeModule(imported);
             }
 
@@ -250,6 +253,8 @@ public class SchemaModule {
         } else {
             schemaModuleVisitor.visitBlobContent(content);
         }
+
+        this.moduleFile = schemaModuleVisitor.endSchemaModule(this);
     }
 
     public void minimizeDependency() {
@@ -277,5 +282,9 @@ public class SchemaModule {
                 }
             }
         }
+    }
+
+    public File getModuleFile() {
+        return this.moduleFile;
     }
 }

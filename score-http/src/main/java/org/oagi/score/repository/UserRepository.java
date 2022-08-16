@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserRepository implements ScoreRepository<AppUser> {
+public class UserRepository implements ScoreRepository<AppUser, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

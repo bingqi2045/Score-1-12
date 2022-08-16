@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ASBIEPRepository implements ScoreRepository<ASBIEP> {
+public class ASBIEPRepository implements ScoreRepository<ASBIEP, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BCCRepository implements ScoreRepository<BCC> {
+public class BCCRepository implements ScoreRepository<BCC, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

@@ -58,7 +58,7 @@ public class CcTag extends TableImpl<CcTagRecord> {
     /**
      * The column <code>oagi.cc_tag.tag_name</code>.
      */
-    public final TableField<CcTagRecord, String> TAG_NAME = createField(DSL.name("tag_name"), SQLDataType.VARCHAR(100).nullable(false).defaultValue(DSL.inline("", SQLDataType.VARCHAR)), this, "");
+    public final TableField<CcTagRecord, String> TAG_NAME = createField(DSL.name("tag_name"), SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     private CcTag(Name alias, Table<CcTagRecord> aliased) {
         this(alias, aliased, null);

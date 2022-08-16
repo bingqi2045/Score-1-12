@@ -104,7 +104,7 @@ public class ModuleSetReleaseService {
 
             SchemaModule schemaModule = exportContext.getSchemaModules().iterator().next();
             schemaModule.visit(visitor);
-            File file = visitor.endSchemaModule(schemaModule);
+            File file = schemaModule.getModuleFile();
             if (file != null) {
                 files.add(file);
             }
@@ -138,7 +138,7 @@ public class ModuleSetReleaseService {
         for (SchemaModule schemaModule : exportContext.getSchemaModules()) {
             visitor.setBaseDirectory(baseDir);
             schemaModule.visit(visitor);
-            File file = visitor.endSchemaModule(schemaModule);
+            File file = schemaModule.getModuleFile();
             if (file != null) {
                 files.add(file);
             }

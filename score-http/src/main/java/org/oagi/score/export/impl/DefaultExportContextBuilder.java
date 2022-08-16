@@ -136,11 +136,11 @@ public class DefaultExportContextBuilder {
     private void createXBTs(Map<ULong, SchemaModule> moduleMap) {
         List<XbtRecord> xbtList = importedDataProvider.findXbt();
         xbtList.forEach(xbt-> {
-            ModuleCCID moduleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
-            if (moduleCCID == null) {
+            ModuleXbtID moduleXbt = importedDataProvider.findModuleXbt(xbt.getXbtId());
+            if (moduleXbt == null) {
                 return;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
+            SchemaModule schemaModule = moduleMap.get(moduleXbt.getModuleId());
             schemaModule.addXBTSimpleType(new XBTSimpleType(xbt, importedDataProvider.findXbt(xbt.getSubtypeOfXbtId())));
         });
     }
@@ -187,7 +187,7 @@ public class DefaultExportContextBuilder {
                             bdt, baseDataType, isDefaultBDT,
                             bdtPriRestriList, xbtList, importedDataProvider);
                     xbtList.forEach(xbtRecord -> {
-                        ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbtRecord.getXbtId());
+                        ModuleXbtID xbtModuleCCID = importedDataProvider.findModuleXbt(xbtRecord.getXbtId());
 
                         if (xbtModuleCCID != null) {
                             addDependency(schemaModule,
@@ -233,7 +233,7 @@ public class DefaultExportContextBuilder {
                             CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMap =
                                     importedDataProvider.findCdtScAwdPriXpsTypeMap(defaultBdtScPriRestri.get(0).getCdtScAwdPriXpsTypeMapId());
                             XbtRecord xbt = importedDataProvider.findXbt(cdtScAwdPriXpsTypeMap.getXbtId());
-                            ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
+                            ModuleXbtID xbtModuleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
                             if (xbtModuleCCID != null) {
                                 addDependency(schemaModule, moduleMap.get(xbtModuleCCID.getModuleId()));
                             }

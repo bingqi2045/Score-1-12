@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class BBIEPRepository implements ScoreRepository<BBIEP> {
+public class BBIEPRepository implements ScoreRepository<BBIEP, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

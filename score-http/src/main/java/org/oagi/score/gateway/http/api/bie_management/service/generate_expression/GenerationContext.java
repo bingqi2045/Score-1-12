@@ -133,11 +133,11 @@ public class GenerationContext implements InitializingBean {
     // Prepared Datas
     private Map<BigInteger, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
     private Map<BigInteger, BdtPriRestri> findBdtPriRestriMap;
-    private Map<BigInteger, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
+    private Map<String, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
     private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
     private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriMap;
-    private Map<BigInteger, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
-    private Map<BigInteger, Xbt> findXbtMap;
+    private Map<String, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
+    private Map<String, Xbt> findXbtMap;
     private Map<BigInteger, CodeList> findCodeListMap;
     private Map<BigInteger, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
     private Map<BigInteger, ACC> findACCMap;
@@ -360,8 +360,8 @@ public class GenerationContext implements InitializingBean {
         return (bdtPriRestriId != null && bdtPriRestriId.longValue() > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
     }
 
-    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(BigInteger cdtAwdPriXpsTypeMapId) {
-        return (cdtAwdPriXpsTypeMapId != null && cdtAwdPriXpsTypeMapId.longValue() > 0L) ?
+    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(String cdtAwdPriXpsTypeMapId) {
+        return (StringUtils.hasLength(cdtAwdPriXpsTypeMapId)) ?
                 findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId) : null;
     }
 
@@ -373,13 +373,13 @@ public class GenerationContext implements InitializingBean {
         return (bdtScPriRestriId != null && bdtScPriRestriId.longValue() > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
     }
 
-    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(BigInteger cdtScAwdPriXpsTypeMapId) {
-        return (cdtScAwdPriXpsTypeMapId != null && cdtScAwdPriXpsTypeMapId.longValue() > 0L) ?
+    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(String cdtScAwdPriXpsTypeMapId) {
+        return (StringUtils.hasLength(cdtScAwdPriXpsTypeMapId)) ?
                 findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId) : null;
     }
 
-    public Xbt findXbt(BigInteger xbtId) {
-        return (xbtId.longValue() > 0L) ? findXbtMap.get(xbtId) : null;
+    public Xbt findXbt(String xbtId) {
+        return (StringUtils.hasLength(xbtId)) ? findXbtMap.get(xbtId) : null;
     }
 
     public CodeList findCodeList(BigInteger codeListId) {

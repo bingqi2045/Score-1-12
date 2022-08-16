@@ -1,10 +1,7 @@
 package org.oagi.score.gateway.http.api.release_management.service;
 
 import com.google.gson.stream.JsonWriter;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.JSON;
+import org.jooq.*;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.release_management.data.MigrationMetadata;
@@ -29,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -226,9 +224,15 @@ public class MigrationService {
         writer.println("");
 
         writer.println("LOCK TABLES `" + table.getName() + "` WRITE;");
-        for (org.jooq.Record record : dslContext.selectFrom(table)
-                .where(condition)
-                .fetch()) {
+        SelectWhereStep whereStep = dslContext.selectFrom(table);
+        List<org.jooq.Record> records;
+        if (condition != null) {
+            records = whereStep.where(condition).fetch();
+        } else {
+            records = whereStep.fetch();
+        }
+
+        for (org.jooq.Record record : records) {
             String insertStatement = "INSERT INTO `" + table.getName() + "` (" +
                     Arrays.stream(table.fields()).map(e -> "`" + e.getName() + "`")
                             .collect(Collectors.joining(", ")) + ") VALUES (" +
@@ -301,7 +305,7 @@ public class MigrationService {
         writeInsertStatements(writer, CODE_LIST_VALUE, CODE_LIST_VALUE.CODE_LIST_VALUE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueId())));
         writeInsertStatements(writer, CODE_LIST_VALUE_MANIFEST, CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueManifestId())));
 
-        writeInsertStatements(writer, XBT, XBT.XBT_ID.lessOrEqual(ULong.valueOf(metadata.getMaxXbtId())));
+        writeInsertStatements(writer, XBT, null);
         writeInsertStatements(writer, XBT_MANIFEST, XBT_MANIFEST.XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxXbtManifestId())));
 
         writeInsertStatements(writer, MODULE, MODULE.MODULE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleId())));
@@ -514,11 +518,6 @@ public class MigrationService {
             jsonWriter.endObject(); // end of "agency_id_list_value_manifest" table.
 
             jsonWriter.beginObject();
-            jsonWriter.name("table_name").value("xbt");
-            jsonWriter.name("max_id").value(metadata.getMaxXbtId().longValue());
-            jsonWriter.endObject(); // end of "xbt" table.
-
-            jsonWriter.beginObject();
             jsonWriter.name("table_name").value("xbt_manifest");
             jsonWriter.name("max_id").value(metadata.getMaxXbtManifestId().longValue());
             jsonWriter.endObject(); // end of "xbt_manifest" table.
@@ -697,10 +696,6 @@ public class MigrationService {
         metadata.setMaxXbtManifestId(dslContext.select(max(XBT_MANIFEST.XBT_MANIFEST_ID))
                 .from(XBT_MANIFEST)
                 .where(XBT_MANIFEST.RELEASE_ID.eq(releaseId))
-                .fetchOneInto(BigInteger.class));
-        metadata.setMaxXbtId(dslContext.select(max(XBT_MANIFEST.XBT_ID))
-                .from(XBT_MANIFEST)
-                .where(XBT_MANIFEST.XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxXbtManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxNamespaceId(dslContext.select(max(NAMESPACE.NAMESPACE_ID))

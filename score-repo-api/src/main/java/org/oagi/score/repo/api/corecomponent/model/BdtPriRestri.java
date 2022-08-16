@@ -7,9 +7,9 @@ public class BdtPriRestri implements Serializable {
 
     private BigInteger bdtPriRestriId;
     private BigInteger bdtId;
-    private BigInteger xbtId;
+    private String xbtId;
     private String xbtName;
-    private BigInteger cdtAwdPriXpsTypeMapId;
+    private String cdtAwdPriXpsTypeMapId;
     private BigInteger codeListId;
     private BigInteger agencyIdListId;
     private boolean isDefault;
@@ -30,11 +30,11 @@ public class BdtPriRestri implements Serializable {
         this.bdtId = bdtId;
     }
 
-    public BigInteger getXbtId() {
+    public String getXbtId() {
         return xbtId;
     }
 
-    public void setXbtId(BigInteger xbtId) {
+    public void setXbtId(String xbtId) {
         this.xbtId = xbtId;
     }
 
@@ -46,11 +46,11 @@ public class BdtPriRestri implements Serializable {
         this.xbtName = xbtName;
     }
 
-    public BigInteger getCdtAwdPriXpsTypeMapId() {
+    public String getCdtAwdPriXpsTypeMapId() {
         return cdtAwdPriXpsTypeMapId;
     }
 
-    public void setCdtAwdPriXpsTypeMapId(BigInteger cdtAwdPriXpsTypeMapId) {
+    public void setCdtAwdPriXpsTypeMapId(String cdtAwdPriXpsTypeMapId) {
         this.cdtAwdPriXpsTypeMapId = cdtAwdPriXpsTypeMapId;
     }
 

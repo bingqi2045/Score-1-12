@@ -13,7 +13,7 @@ import java.util.List;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.TOP_LEVEL_ASBIEP;
 
 @Repository
-public class TopLevelAsbiepRepository implements ScoreRepository<TopLevelAsbiep> {
+public class TopLevelAsbiepRepository implements ScoreRepository<TopLevelAsbiep, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

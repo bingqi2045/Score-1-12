@@ -19,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
  * base (such SC is not defined in the CCTS data type catalog specification).
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<ULong, ULong, ULong, Byte> {
+public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<String, ULong, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Internal,
-     * primary database key.
+     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Primary,
+     * internal database key.
      */
-    public void setCdtScAwdPriId(ULong value) {
+    public void setCdtScAwdPriId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Internal,
-     * primary database key.
+     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getCdtScAwdPriId() {
-        return (ULong) get(0);
+    public String getCdtScAwdPriId() {
+        return (String) get(0);
     }
 
     /**
@@ -56,21 +56,19 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     /**
-     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
-     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
-     * the suppliement component identified in the CDT_SC_ID column.
+     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
+     * the CDT_PRI table.
      */
-    public void setCdtPriId(ULong value) {
+    public void setCdtPriId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
-     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
-     * the suppliement component identified in the CDT_SC_ID column.
+     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
+     * the CDT_PRI table.
      */
-    public ULong getCdtPriId() {
-        return (ULong) get(2);
+    public String getCdtPriId() {
+        return (String) get(2);
     }
 
     /**
@@ -96,7 +94,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -105,17 +103,17 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row4<String, ULong, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<ULong, ULong, ULong, Byte> valuesRow() {
+    public Row4<String, ULong, String, Byte> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CdtScAwdPri.CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID;
     }
 
@@ -125,7 +123,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return CdtScAwdPri.CDT_SC_AWD_PRI.CDT_PRI_ID;
     }
 
@@ -135,7 +133,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCdtScAwdPriId();
     }
 
@@ -145,7 +143,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getCdtPriId();
     }
 
@@ -155,7 +153,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCdtScAwdPriId();
     }
 
@@ -165,7 +163,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getCdtPriId();
     }
 
@@ -175,7 +173,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public CdtScAwdPriRecord value1(ULong value) {
+    public CdtScAwdPriRecord value1(String value) {
         setCdtScAwdPriId(value);
         return this;
     }
@@ -187,7 +185,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public CdtScAwdPriRecord value3(ULong value) {
+    public CdtScAwdPriRecord value3(String value) {
         setCdtPriId(value);
         return this;
     }
@@ -199,7 +197,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public CdtScAwdPriRecord values(ULong value1, ULong value2, ULong value3, Byte value4) {
+    public CdtScAwdPriRecord values(String value1, ULong value2, String value3, Byte value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -221,7 +219,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     /**
      * Create a detached, initialised CdtScAwdPriRecord
      */
-    public CdtScAwdPriRecord(ULong cdtScAwdPriId, ULong cdtScId, ULong cdtPriId, Byte isDefault) {
+    public CdtScAwdPriRecord(String cdtScAwdPriId, ULong cdtScId, String cdtPriId, Byte isDefault) {
         super(CdtScAwdPri.CDT_SC_AWD_PRI);
 
         setCdtScAwdPriId(cdtScAwdPriId);

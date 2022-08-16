@@ -3,6 +3,7 @@ package org.oagi.score.provider;
 import org.jooq.types.ULong;
 import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
+import org.oagi.score.export.model.ModuleXbtID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repository.CcRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
@@ -164,7 +165,7 @@ public class ImportedDataProvider {
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
         findModuleXbtManifestMap = ccRepository.findAllModuleXbtManifest(ULong.valueOf(moduleSetReleaseId))
-                .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
+                .stream().collect(Collectors.toMap(ModuleXbtID::getXbtId, Function.identity()));
 
         findBlobContentList = ccRepository.findAllBlobContent(ULong.valueOf(moduleSetReleaseId));
 
@@ -194,7 +195,7 @@ public class ImportedDataProvider {
     private Map<ULong, ModuleCCID> findModuleDtManifestMap;
     private Map<ULong, ModuleCCID> findModuleAsccpManifestMap;
     private Map<ULong, ModuleCCID> findModuleBccpManifestMap;
-    private Map<ULong, ModuleCCID> findModuleXbtManifestMap;
+    private Map<String, ModuleXbtID> findModuleXbtManifestMap;
     private Map<ULong, ModuleCCID> findModuleBlobContentManifestMap;
 
     
@@ -280,10 +281,10 @@ public class ImportedDataProvider {
         return (findBdtPriRestriListByDtIdMap.containsKey(dtId)) ? findBdtPriRestriListByDtIdMap.get(dtId) : Collections.emptyList();
     }
 
-    private Map<ULong, CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapMap;
+    private Map<String, CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapMap;
 
     
-    public CdtAwdPriXpsTypeMapRecord findCdtAwdPriXpsTypeMapById(ULong cdtAwdPriXpsTypeMapId) {
+    public CdtAwdPriXpsTypeMapRecord findCdtAwdPriXpsTypeMapById(String cdtAwdPriXpsTypeMapId) {
         return cdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId);
     }
 
@@ -304,17 +305,17 @@ public class ImportedDataProvider {
         return (findBdtScPriRestriListByDtScIdMap.containsKey(dtScId)) ? findBdtScPriRestriListByDtScIdMap.get(dtScId) : Collections.emptyList();
     }
 
-    private Map<ULong, CdtScAwdPriXpsTypeMapRecord> findCdtScAwdPriXpsTypeMapMap;
+    private Map<String, CdtScAwdPriXpsTypeMapRecord> findCdtScAwdPriXpsTypeMapMap;
 
     
-    public CdtScAwdPriXpsTypeMapRecord findCdtScAwdPriXpsTypeMap(ULong cdtScAwdPriXpsTypeMapId) {
+    public CdtScAwdPriXpsTypeMapRecord findCdtScAwdPriXpsTypeMap(String cdtScAwdPriXpsTypeMapId) {
         return findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId);
     }
 
-    private Map<ULong, CdtScAwdPriRecord> findCdtScAwdPriMap;
+    private Map<String, CdtScAwdPriRecord> findCdtScAwdPriMap;
 
     
-    public CdtScAwdPriRecord findCdtScAwdPri(ULong cdtScAwdPriId) {
+    public CdtScAwdPriRecord findCdtScAwdPri(String cdtScAwdPriId) {
         return findCdtScAwdPriMap.get(cdtScAwdPriId);
     }
 
@@ -325,23 +326,23 @@ public class ImportedDataProvider {
         return findXbtList;
     }
 
-    private Map<ULong, CdtAwdPriRecord> findCdtAwdPriMap;
+    private Map<String, CdtAwdPriRecord> findCdtAwdPriMap;
 
     
-    public CdtAwdPriRecord findCdtAwdPri(ULong cdtAwdPriId) {
+    public CdtAwdPriRecord findCdtAwdPri(String cdtAwdPriId) {
         return findCdtAwdPriMap.get(cdtAwdPriId);
     }
 
-    private Map<ULong, CdtPriRecord> findCdtPriMap;
+    private Map<String, CdtPriRecord> findCdtPriMap;
 
-    public CdtPriRecord findCdtPri(ULong cdtPriId) {
+    public CdtPriRecord findCdtPri(String cdtPriId) {
         return findCdtPriMap.get(cdtPriId);
     }
 
-    private Map<ULong, XbtRecord> findXbtMap;
+    private Map<String, XbtRecord> findXbtMap;
 
     
-    public XbtRecord findXbt(ULong xbtId) {
+    public XbtRecord findXbt(String xbtId) {
         XbtRecord xbt = findXbtMap.get(xbtId);
         return xbt;
     }
@@ -536,7 +537,7 @@ public class ImportedDataProvider {
     }
 
     
-    public ModuleCCID findModuleXbt(ULong xbtId) {
+    public ModuleXbtID findModuleXbt(String xbtId) {
         return findModuleXbtManifestMap.get(xbtId);
     }
 

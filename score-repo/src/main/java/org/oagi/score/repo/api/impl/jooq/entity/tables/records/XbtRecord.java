@@ -21,22 +21,22 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
  * XMLSchemaBuiltinType Patterns schemas.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
+public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
      */
-    public void setXbtId(ULong value) {
+    public void setXbtId(String value) {
         set(0, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
      */
-    public ULong getXbtId() {
-        return (ULong) get(0);
+    public String getXbtId() {
+        return (String) get(0);
     }
 
     /**
@@ -123,7 +123,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
      * Setter for <code>oagi.xbt.subtype_of_xbt_id</code>. Foreign key to the
      * XBT table itself. It indicates a super type of this XSD built-in type.
      */
-    public void setSubtypeOfXbtId(ULong value) {
+    public void setSubtypeOfXbtId(String value) {
         set(6, value);
     }
 
@@ -131,8 +131,8 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
      * Getter for <code>oagi.xbt.subtype_of_xbt_id</code>. Foreign key to the
      * XBT table itself. It indicates a super type of this XSD built-in type.
      */
-    public ULong getSubtypeOfXbtId() {
-        return (ULong) get(6);
+    public String getSubtypeOfXbtId() {
+        return (String) get(6);
     }
 
     /**
@@ -266,7 +266,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -275,17 +275,17 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+    public Row16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
         return (Row16) super.fieldsRow();
     }
 
     @Override
-    public Row16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> valuesRow() {
+    public Row16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> valuesRow() {
         return (Row16) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Xbt.XBT.XBT_ID;
     }
 
@@ -315,7 +315,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Xbt.XBT.SUBTYPE_OF_XBT_ID;
     }
 
@@ -365,7 +365,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getXbtId();
     }
 
@@ -395,7 +395,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getSubtypeOfXbtId();
     }
 
@@ -445,7 +445,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getXbtId();
     }
 
@@ -475,7 +475,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getSubtypeOfXbtId();
     }
 
@@ -525,7 +525,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public XbtRecord value1(ULong value) {
+    public XbtRecord value1(String value) {
         setXbtId(value);
         return this;
     }
@@ -561,7 +561,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public XbtRecord value7(ULong value) {
+    public XbtRecord value7(String value) {
         setSubtypeOfXbtId(value);
         return this;
     }
@@ -621,7 +621,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public XbtRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, Byte value16) {
+    public XbtRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, Byte value16) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -655,7 +655,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     /**
      * Create a detached, initialised XbtRecord
      */
-    public XbtRecord(ULong xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, ULong subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
+    public XbtRecord(String xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, String subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
         super(Xbt.XBT);
 
         setXbtId(xbtId);

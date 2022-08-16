@@ -51,7 +51,6 @@ public class MigrationMetadata {
     private BigInteger maxAgencyIdListValueId = BigInteger.ZERO;
     private BigInteger maxAgencyIdListValueManifestId = BigInteger.ZERO;
 
-    private BigInteger maxXbtId = BigInteger.ZERO;
     private BigInteger maxXbtManifestId = BigInteger.ZERO;
 
     private BigInteger maxLogId = BigInteger.ZERO;

@@ -9,7 +9,7 @@ public class AvailableBdtScPriRestri {
 
     private BigInteger bdtScPriRestriId;
     private boolean isDefault;
-    private BigInteger xbtId;
+    private String xbtId;
     private String xbtName;
 
 }

@@ -3,6 +3,7 @@ package org.oagi.score.service.log.model;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -213,8 +214,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getXbt(ULong xbtId) {
-        if (xbtId == null || xbtId.longValue() <= 0L) {
+    public Map<String, Object> getXbt(String xbtId) {
+        if (!StringUtils.hasLength(xbtId)) {
             return new HashMap();
         }
 

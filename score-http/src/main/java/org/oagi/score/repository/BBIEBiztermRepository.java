@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BBIEBiztermRepository implements ScoreRepository<BbieBizterm> {
+public class BBIEBiztermRepository implements ScoreRepository<BbieBizterm, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

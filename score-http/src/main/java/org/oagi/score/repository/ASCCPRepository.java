@@ -13,7 +13,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class ASCCPRepository implements ScoreRepository<ASCCP> {
+public class ASCCPRepository implements ScoreRepository<ASCCP, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

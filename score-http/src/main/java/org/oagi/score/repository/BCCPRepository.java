@@ -13,7 +13,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BCCPRepository implements ScoreRepository<BCCP> {
+public class BCCPRepository implements ScoreRepository<BCCP, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

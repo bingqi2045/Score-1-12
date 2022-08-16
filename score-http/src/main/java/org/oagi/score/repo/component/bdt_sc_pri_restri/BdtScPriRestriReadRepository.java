@@ -38,7 +38,7 @@ public class BdtScPriRestriReadRepository {
                 isDefault = "time".equalsIgnoreCase(xbtName);
             }
             availableBdtScPriRestri.setDefault(isDefault);
-            availableBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID).toBigInteger());
+            availableBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID));
             availableBdtScPriRestri.setXbtName(xbtName);
             return availableBdtScPriRestri;
         };

@@ -13,7 +13,7 @@ import java.util.List;
 import static org.jooq.impl.DSL.inline;
 
 @Repository
-public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizterm> {
+public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizterm, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

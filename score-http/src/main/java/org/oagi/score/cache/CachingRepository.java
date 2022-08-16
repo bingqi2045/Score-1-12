@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CachingRepository<T> extends DatabaseCacheHandler {
+public class CachingRepository<T, PK> extends DatabaseCacheHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -35,9 +35,9 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
     @Autowired
     private RedissonClient redissonClient;
 
-    private final ScoreRepository<T> delegate;
+    private final ScoreRepository<T, PK> delegate;
 
-    public CachingRepository(String tableName, Class<T> mappedClass, ScoreRepository<T> delegate) {
+    public CachingRepository(String tableName, Class<T> mappedClass, ScoreRepository<T, PK> delegate) {
         super(tableName, mappedClass);
         this.delegate = delegate;
     }
@@ -56,7 +56,7 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
         });
     }
 
-    public T findById(BigInteger id) {
+    public T findById(PK id) {
         return execute(connection -> {
             String checksumFromDatabase = getChecksumFromDatabase(id);
             String checksumFromRedis = checksumFromRedis(connection, id);
@@ -73,13 +73,13 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
         });
     }
 
-    private String getChecksumFromDatabase(BigInteger id) {
+    private String getChecksumFromDatabase(PK id) {
         StringBuilder query = new StringBuilder(getChecksumByIdQuery());
         Record record = dslContext.fetchOne(query.toString(), id);
         return record.getValue("checksum").toString();
     }
 
-    private String checksumFromRedis(RedisConnection connection, BigInteger id) {
+    private String checksumFromRedis(RedisConnection connection, PK id) {
         return (String) getValue(connection, getTableName() + ":checksum", "" + id);
     }
 

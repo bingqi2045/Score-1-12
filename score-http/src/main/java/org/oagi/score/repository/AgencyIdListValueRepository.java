@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class AgencyIdListValueRepository implements ScoreRepository<AgencyIdListValue> {
+public class AgencyIdListValueRepository implements ScoreRepository<AgencyIdListValue, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

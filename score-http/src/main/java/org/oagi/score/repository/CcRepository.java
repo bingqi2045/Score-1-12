@@ -3,6 +3,7 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.export.model.ModuleCCID;
+import org.oagi.score.export.model.ModuleXbtID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -374,16 +375,16 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleXbtManifest(ULong moduleSetReleaseId) {
+    public List<ModuleXbtID> findAllModuleXbtManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_XBT_MANIFEST.MODULE_ID,
-                XBT.XBT_ID.as("ccId"),
+                XBT.XBT_ID,
                 MODULE.PATH)
                 .from(XBT)
                 .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
                 .join(MODULE_XBT_MANIFEST).on(XBT_MANIFEST.XBT_MANIFEST_ID.eq(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID))
                 .join(MODULE).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
-                .fetchInto(ModuleCCID.class);
+                .fetchInto(ModuleXbtID.class);
     }
 
     public List<ModuleCCID> findAllModuleBlobContentManifest(ULong moduleSetReleaseId) {

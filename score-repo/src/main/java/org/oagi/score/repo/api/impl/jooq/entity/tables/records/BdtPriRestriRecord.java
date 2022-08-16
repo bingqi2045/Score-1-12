@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
  * column among the three can have a value in a particular record.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, Byte> {
+public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, ULong, String, ULong, ULong, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -61,22 +61,18 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
 
     /**
      * Setter for <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
-     * for a primitive restriction based on a built-in type of schema
-     * expressions.
+     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
      */
-    public void setCdtAwdPriXpsTypeMapId(ULong value) {
+    public void setCdtAwdPriXpsTypeMapId(String value) {
         set(2, value);
     }
 
     /**
      * Getter for <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
-     * for a primitive restriction based on a built-in type of schema
-     * expressions.
+     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
      */
-    public ULong getCdtAwdPriXpsTypeMapId() {
-        return (ULong) get(2);
+    public String getCdtAwdPriXpsTypeMapId() {
+        return (String) get(2);
     }
 
     /**
@@ -147,12 +143,12 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row6<ULong, ULong, String, ULong, ULong, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, Byte> valuesRow() {
+    public Row6<ULong, ULong, String, ULong, ULong, Byte> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
@@ -167,7 +163,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return BdtPriRestri.BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID;
     }
 
@@ -197,7 +193,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getCdtAwdPriXpsTypeMapId();
     }
 
@@ -227,7 +223,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getCdtAwdPriXpsTypeMapId();
     }
 
@@ -259,7 +255,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord value3(ULong value) {
+    public BdtPriRestriRecord value3(String value) {
         setCdtAwdPriXpsTypeMapId(value);
         return this;
     }
@@ -283,7 +279,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord values(ULong value1, ULong value2, ULong value3, ULong value4, ULong value5, Byte value6) {
+    public BdtPriRestriRecord values(ULong value1, ULong value2, String value3, ULong value4, ULong value5, Byte value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -307,7 +303,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     /**
      * Create a detached, initialised BdtPriRestriRecord
      */
-    public BdtPriRestriRecord(ULong bdtPriRestriId, ULong bdtId, ULong cdtAwdPriXpsTypeMapId, ULong codeListId, ULong agencyIdListId, Byte isDefault) {
+    public BdtPriRestriRecord(ULong bdtPriRestriId, ULong bdtId, String cdtAwdPriXpsTypeMapId, ULong codeListId, ULong agencyIdListId, Byte isDefault) {
         super(BdtPriRestri.BDT_PRI_RESTRI);
 
         setBdtPriRestriId(bdtPriRestriId);

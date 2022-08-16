@@ -727,7 +727,7 @@ public class CcNodeRepository {
             if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null) {
                 ccBdtPriRestri.setType(PrimitiveRestriType.Primitive);
 
-                Record3<String, ULong, String> result = dslContext.select(CDT_PRI.NAME.as("CDT_PRI_NAME"), XBT.XBT_ID, XBT.NAME).from(XBT)
+                Record3<String, String, String> result = dslContext.select(CDT_PRI.NAME.as("CDT_PRI_NAME"), XBT.XBT_ID, XBT.NAME).from(XBT)
                         .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(XBT.XBT_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID))
                         .join(CDT_AWD_PRI).on(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI.CDT_AWD_PRI_ID))
                         .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
@@ -735,7 +735,7 @@ public class CcNodeRepository {
                         .fetchOne();
 
                 ccBdtPriRestri.setPrimitiveName(result.get(CDT_PRI.NAME.as("CDT_PRI_NAME")));
-                ccBdtPriRestri.setXbtId(result.get(XBT.XBT_ID).toBigInteger());
+                ccBdtPriRestri.setXbtId(result.get(XBT.XBT_ID));
                 ccBdtPriRestri.setXbtName(result.get(XBT.NAME));
 
                 bdtPriRestriMap.put(PrimitiveRestriType.Primitive.toString() + bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId(), ccBdtPriRestri);
@@ -841,7 +841,7 @@ public class CcNodeRepository {
                         CcBdtPriRestri ccBdtPriRestri = new CcBdtPriRestri();
                         ccBdtPriRestri.setType(PrimitiveRestriType.Primitive);
                         ccBdtPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME));
-                        ccBdtPriRestri.setCdtAwdPriId(e.get(CDT_AWD_PRI.CDT_AWD_PRI_ID).toBigInteger());
+                        ccBdtPriRestri.setCdtAwdPriId(e.get(CDT_AWD_PRI.CDT_AWD_PRI_ID));
                         ccBdtPriRestri.setDefault(e.get(CDT_AWD_PRI.IS_DEFAULT) == (byte) 1);
                         return ccBdtPriRestri;
                     }).collect(Collectors.toList()));
@@ -862,7 +862,7 @@ public class CcNodeRepository {
             if (bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId() != null) {
                 ccBdtScPriRestri.setType(PrimitiveRestriType.Primitive);
 
-                Record3<String, ULong, String> result = dslContext.select(CDT_PRI.NAME.as("CDT_PRI_NAME"), XBT.XBT_ID, XBT.NAME).from(XBT)
+                Record3<String, String, String> result = dslContext.select(CDT_PRI.NAME.as("CDT_PRI_NAME"), XBT.XBT_ID, XBT.NAME).from(XBT)
                         .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(XBT.XBT_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID))
                         .join(CDT_SC_AWD_PRI).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID))
                         .join(CDT_PRI).on(CDT_SC_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
@@ -870,7 +870,7 @@ public class CcNodeRepository {
                         .fetchOne();
 
                 ccBdtScPriRestri.setPrimitiveName(result.get(CDT_PRI.NAME.as("CDT_PRI_NAME")));
-                ccBdtScPriRestri.setXbtId(result.get(XBT.XBT_ID).toBigInteger());
+                ccBdtScPriRestri.setXbtId(result.get(XBT.XBT_ID));
                 ccBdtScPriRestri.setXbtName(result.get(XBT.NAME));
 
                 bdtScPriRestriMap.put(PrimitiveRestriType.Primitive.toString() + bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId(), ccBdtScPriRestri);
@@ -979,7 +979,7 @@ public class CcNodeRepository {
                         CcBdtScPriRestri ccBdtScPriRestri = new CcBdtScPriRestri();
                         ccBdtScPriRestri.setType(PrimitiveRestriType.Primitive);
                         ccBdtScPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME));
-                        ccBdtScPriRestri.setCdtScAwdPriId(e.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID).toBigInteger());
+                        ccBdtScPriRestri.setCdtScAwdPriId(e.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID));
                         ccBdtScPriRestri.setDefault(e.get(CDT_SC_AWD_PRI.IS_DEFAULT) == (byte) 1);
                         return ccBdtScPriRestri;
                     }).collect(Collectors.toList()));
@@ -1006,11 +1006,11 @@ public class CcNodeRepository {
                         DT.DATA_TYPE_TERM.eq(representationTerm)))
                 .fetchOne();
 
-        Map<ULong, CdtAwdPriRecord> cdtAwdPriRecordMapById = dslContext.selectFrom(CDT_AWD_PRI)
+        Map<String, CdtAwdPriRecord> cdtAwdPriRecordMapById = dslContext.selectFrom(CDT_AWD_PRI)
                 .where(CDT_AWD_PRI.CDT_ID.eq(cdtRecord.getDtId()))
                 .fetchStream().collect(Collectors.toMap(CdtAwdPriRecord::getCdtAwdPriId, Function.identity()));
 
-        Map<ULong, CdtPriRecord> cdtPriRecordMapById = dslContext.selectFrom(CDT_PRI)
+        Map<String, CdtPriRecord> cdtPriRecordMapById = dslContext.selectFrom(CDT_PRI)
                 .where(CDT_PRI.CDT_PRI_ID.in(cdtAwdPriRecordMapById.values().stream()
                         .map(e -> e.getCdtPriId()).collect(Collectors.toList())))
                 .fetchStream().collect(Collectors.toMap(CdtPriRecord::getCdtPriId, Function.identity()));
@@ -1022,10 +1022,10 @@ public class CcNodeRepository {
                 ))
                 .fetch();
 
-        Map<ULong, List<CdtAwdPriXpsTypeMapRecord>> cdtAwdPriXpsTypeMapRecordMapByCdtAwdPriId =
+        Map<String, List<CdtAwdPriXpsTypeMapRecord>> cdtAwdPriXpsTypeMapRecordMapByCdtAwdPriId =
                 cdtAwdPriXpsTypeMapRecords.stream().collect(Collectors.groupingBy(CdtAwdPriXpsTypeMapRecord::getCdtAwdPriId));
 
-        Map<ULong, XbtRecord> xbtRecordMapById = dslContext.selectFrom(XBT)
+        Map<String, XbtRecord> xbtRecordMapById = dslContext.selectFrom(XBT)
                 .where(XBT.XBT_ID.in(cdtAwdPriXpsTypeMapRecords.stream().map(e -> e.getXbtId()).collect(Collectors.toList())))
                 .fetchStream().collect(Collectors.toMap(XbtRecord::getXbtId, Function.identity()));
 
@@ -1040,7 +1040,7 @@ public class CcNodeRepository {
             bdtScPriResri.setPrimitiveName(cdtPriRecord.getName());
 
             XbtRecord xbtRecord = xbtRecordMapById.get(cdtAwdPriXpsTypeMapRecord.getXbtId());
-            bdtScPriResri.setXbtId(xbtRecord.getXbtId().toBigInteger());
+            bdtScPriResri.setXbtId(xbtRecord.getXbtId());
             bdtScPriResri.setXbtName(xbtRecord.getName());
 
             bdtScPriRestriList.add(bdtScPriResri);

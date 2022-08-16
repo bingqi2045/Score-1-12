@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class DTSCRepository implements ScoreRepository<DTSC> {
+public class DTSCRepository implements ScoreRepository<DTSC, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

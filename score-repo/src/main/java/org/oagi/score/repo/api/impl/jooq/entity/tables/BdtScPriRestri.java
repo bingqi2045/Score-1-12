@@ -81,12 +81,10 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
 
     /**
      * The column
-     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>. This
-     * column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It
-     * allows for a primitive restriction based on a built-in type of schema
-     * expressions.
+     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>.
+     * Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.
      */
-    public final TableField<BdtScPriRestriRecord, ULong> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.BIGINTUNSIGNED, this, "This column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It allows for a primitive restriction based on a built-in type of schema expressions.");
+    public final TableField<BdtScPriRestriRecord, String> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.");
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.code_list_id</code>. Foreign key
@@ -252,21 +250,21 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row6<ULong, ULong, String, ULong, ULong, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

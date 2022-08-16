@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ABIERepository implements ScoreRepository<ABIE> {
+public class ABIERepository implements ScoreRepository<ABIE, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 
 @Repository
-public class BBIERepository implements ScoreRepository<BBIE> {
+public class BBIERepository implements ScoreRepository<BBIE, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;

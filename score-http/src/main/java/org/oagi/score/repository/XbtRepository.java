@@ -5,6 +5,7 @@ import org.jooq.Record16;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.Xbt;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +17,16 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT_MANIFEST;
 
 @Repository
-public class XbtRepository implements ScoreRepository<Xbt> {
+public class XbtRepository implements ScoreRepository<Xbt, String> {
 
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record16<ULong, ULong, ULong, String, ULong, ULong, ULong, String, LocalDateTime,
-            Byte, String, String, LocalDateTime, String, String, Integer>> getSelectJoinStep() {
-        return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
-                XBT.LAST_UPDATED_BY, XBT.NAME, XBT.OWNER_USER_ID,
+    private SelectOnConditionStep<Record16<String, ULong, ULong, String, ULong,
+            ULong, String, String, LocalDateTime, Byte,
+            String, String, LocalDateTime, String, String,
+            Integer>> getSelectJoinStep() {
+        return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY, XBT.LAST_UPDATED_BY, XBT.NAME, XBT.OWNER_USER_ID,
                 XBT_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
                 XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_DOC, XBT.SCHEMA_DEFINITION, XBT.STATE)
@@ -39,12 +41,12 @@ public class XbtRepository implements ScoreRepository<Xbt> {
     }
 
     @Override
-    public Xbt findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public Xbt findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(XBT.XBT_ID.eq(ULong.valueOf(id)))
+                .where(XBT.XBT_ID.eq(id))
                 .fetchOneInto(Xbt.class);
     }
 

@@ -12,7 +12,7 @@ public class BdtScPriRestri implements Serializable {
 
     private BigInteger bdtScPriRestriId = BigInteger.ZERO;
     private BigInteger bdtScId = BigInteger.ZERO;
-    private BigInteger cdtScAwdPriXpsTypeMapId = BigInteger.ZERO;
+    private String cdtScAwdPriXpsTypeMapId;
     private BigInteger codeListId = BigInteger.ZERO;
     private BigInteger agencyIdListId = BigInteger.ZERO;
     private boolean defaulted;

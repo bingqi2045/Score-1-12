@@ -13,12 +13,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BdtPriRestriRepository implements ScoreRepository<BdtPriRestri> {
+public class BdtPriRestriRepository implements ScoreRepository<BdtPriRestri, BigInteger> {
 
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record6<ULong, ULong, ULong, ULong, ULong, Byte>> getSelectJoinStep() {
+    private SelectJoinStep<Record6<ULong, ULong, String, ULong, ULong, Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 Tables.BDT_PRI_RESTRI.BDT_ID,
