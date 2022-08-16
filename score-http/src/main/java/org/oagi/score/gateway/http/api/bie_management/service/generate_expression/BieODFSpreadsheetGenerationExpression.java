@@ -1,7 +1,12 @@
 package org.oagi.score.gateway.http.api.bie_management.service.generate_expression;
 
 import com.github.jferard.fastods.*;
+import com.github.jferard.fastods.Table;
 import com.github.jferard.fastods.odselement.MetaElement;
+import org.apache.poi.ooxml.POIXMLProperties;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -20,9 +25,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -216,6 +219,10 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
         File tempFile = File.createTempFile(ScoreGuid.randomGuid(), null);
 
         switch (this.option.getOdfExpressionFormat()) {
+            case "XLSX":
+                tempFile = new File(tempFile.getParentFile(), filename + ".xlsx");
+                writeAsXlsx(tempFile, rowRecords);
+                break;
             case "FODS":
                 tempFile = new File(tempFile.getParentFile(), filename + ".fods");
                 writeAsFods(tempFile, rowRecords);
@@ -248,7 +255,7 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
                 this.topLevelAsbiep.getOwnerUserId());
         MetaElement metaElement = MetaElement.builder()
                 .creator(creator)
-                .date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .date(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                         .format(this.topLevelAsbiep.getLastUpdateTimestamp()))
                 .build();
         OdsFactory odsFactory = new OdsFactoryBuilder(
@@ -306,6 +313,81 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
         }
 
         odsFileWriter.save();
+    }
+
+    private void writeAsXlsx(File file, List<RowRecord> rowRecords) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        POIXMLProperties poixmlProperties = workbook.getProperties();
+        POIXMLProperties.CoreProperties coreProperties = poixmlProperties.getCoreProperties();
+        String creator = this.generationContext.findUserName(
+                this.topLevelAsbiep.getOwnerUserId());
+        coreProperties.setCreator(creator);
+        try {
+            coreProperties.setCreated(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                    .format(this.topLevelAsbiep.getLastUpdateTimestamp()));
+        } catch (InvalidFormatException e) {
+            throw new IllegalStateException(e);
+        }
+
+        Sheet templateSheet = workbook.createSheet("Template");
+        int templateSheetCellIndex = 0;
+        Row templateSheetRow0 = templateSheet.createRow(0);
+        for (RowRecord rowRecord : rowRecords) {
+            Cell templateSheetRow0Cell = templateSheetRow0.createCell(templateSheetCellIndex++);
+            templateSheetRow0Cell.setCellValue(rowRecord.columnName);
+        }
+        // autoSizeColumn
+        templateSheet.getRow(0).cellIterator().forEachRemaining(cell -> {
+            templateSheet.autoSizeColumn(cell.getColumnIndex());
+        });
+
+        Sheet specificationSheet = workbook.createSheet("Specification");
+        int specificationSheetRowIndex = 0;
+        Row specificationSheetRow0 = specificationSheet.createRow(specificationSheetRowIndex++);
+        List<String> headers = Arrays.asList("Cell", "ColumnName", "FullPath",
+                "MaxCardinality", "ContextDefinition", "ExampleData");
+        for (int i = 0, len = headers.size(); i < len; ++i) {
+            Cell specificationSheetRow0Cell = specificationSheetRow0.createCell(i, CellType.STRING);
+            specificationSheetRow0Cell.setCellValue(headers.get(i));
+        }
+
+        templateSheetCellIndex = 0;
+        for (RowRecord rowRecord : rowRecords) {
+            Row specificationSheetRow = specificationSheet.createRow(specificationSheetRowIndex++);
+            int specificationSheetRowCellIndex = 0;
+            Cell specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(cellColumnNumberToString(++templateSheetCellIndex) + "1");
+
+            specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(rowRecord.columnName);
+
+            specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(rowRecord.fullPath);
+
+            specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(rowRecord.maxCardinality);
+
+            specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(rowRecord.contextDefinition);
+
+            specificationSheetRowCell =
+                    specificationSheetRow.createCell(specificationSheetRowCellIndex++, CellType.STRING);
+            specificationSheetRowCell.setCellValue(rowRecord.example);
+        }
+        // autoSizeColumn
+        specificationSheet.getRow(0).cellIterator().forEachRemaining(cell -> {
+            specificationSheet.autoSizeColumn(cell.getColumnIndex());
+        });
+
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            workbook.write(outputStream);
+            outputStream.flush();
+        }
     }
 
     private void generateColumnNames(List<RowRecord> rowRecords, int depth) {

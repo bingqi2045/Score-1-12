@@ -38,6 +38,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-lang.version>3.12.0</commons-lang.version>
         <fastods.version>0.8.1</fastods.version>
+        <poi.version>5.2.2</poi.version>
         <saxon.version>10.6</saxon.version>
     </properties>
 
@@ -178,6 +179,16 @@
             <groupId>com.github.jferard</groupId>
             <artifactId>fastods</artifactId>
             <version>${fastods.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
 
         <dependency>
