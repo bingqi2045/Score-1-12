@@ -248,8 +248,8 @@ public class BieGenerateService {
             case "CSV":
                 generateExpression = applicationContext.getBean(BieCSVGenerationExpression.class);
                 break;
-            case "FODS":
-                generateExpression = applicationContext.getBean(BieFlatXMLODFSpreadsheetGenerationExpression.class);
+            case "ODF":
+                generateExpression = applicationContext.getBean(BieODFSpreadsheetGenerationExpression.class);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown expression option: " + expressionOption);
