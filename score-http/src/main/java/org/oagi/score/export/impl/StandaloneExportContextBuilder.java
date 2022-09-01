@@ -26,11 +26,11 @@ public class StandaloneExportContextBuilder {
         this.importedDataProvider = importedDataProvider;
     }
 
-    public ExportContext build(BigInteger moduleSetReleaseId,
+    public ExportContext build(String moduleSetReleaseId,
                                BigInteger asccpManifestId) {
         DefaultExportContext context = new DefaultExportContext();
         ScoreModule scoreModule = moduleRepository.findByModuleSetReleaseIdAndAsccpManifestId(
-                ULong.valueOf(moduleSetReleaseId), ULong.valueOf(asccpManifestId));
+                moduleSetReleaseId, ULong.valueOf(asccpManifestId));
         SchemaModule schemaModule = new SchemaModule(scoreModule);
         context.addSchemaModule(schemaModule);
 

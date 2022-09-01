@@ -7,15 +7,15 @@ import java.math.BigInteger;
 
 public class DeleteModuleSetReleaseRequest extends Request {
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
     public DeleteModuleSetReleaseRequest(ScoreUser requester) {
         super(requester);

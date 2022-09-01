@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function5;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
@@ -57,7 +55,7 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
      * The column <code>oagi.ctx_scheme_value.ctx_scheme_value_id</code>.
      * Primary, internal database key.
      */
-    public final TableField<CtxSchemeValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<CtxSchemeValueRecord, String> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.ctx_scheme_value.guid</code>. A globally unique
@@ -82,7 +80,7 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
      * Foreign key to the CTX_SCHEME table. It identifies the context scheme, to
      * which this scheme value belongs.
      */
-    public final TableField<CtxSchemeValueRecord, ULong> OWNER_CTX_SCHEME_ID = createField(DSL.name("owner_ctx_scheme_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.");
+    public final TableField<CtxSchemeValueRecord, String> OWNER_CTX_SCHEME_ID = createField(DSL.name("owner_ctx_scheme_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.");
 
     private CtxSchemeValue(Name alias, Table<CtxSchemeValueRecord> aliased) {
         this(alias, aliased, null);
@@ -120,11 +118,6 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CtxSchemeValueRecord, ULong> getIdentity() {
-        return (Identity<CtxSchemeValueRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -198,21 +191,21 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<ULong, String, String, String, ULong> fieldsRow() {
+    public Row5<String, String, String, String, String> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function5<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function5<? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function5<? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

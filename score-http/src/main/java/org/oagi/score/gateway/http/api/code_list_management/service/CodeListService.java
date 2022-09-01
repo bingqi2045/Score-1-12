@@ -52,7 +52,7 @@ public class CodeListService extends EventHandler {
             String, String, ULong, String, String,
             String, LocalDateTime, String, String, String,
             Byte, String, Byte, String, String,
-            String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
+            String, UInteger>> getSelectOnConditionStep(String defaultModuleSetReleaseId) {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.CODE_LIST_ID,
@@ -92,7 +92,7 @@ public class CodeListService extends EventHandler {
 
     public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
                 .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId())))
                 .fetchOne();

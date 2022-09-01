@@ -37,7 +37,7 @@ public class JooqAgencyIdListReadRepository
         super(dslContext);
     }
 
-    private SelectOnConditionStep select(ULong defaultModuleSetReleaseId) {
+    private SelectOnConditionStep select(String defaultModuleSetReleaseId) {
         return dslContext().select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
@@ -154,7 +154,7 @@ public class JooqAgencyIdListReadRepository
 
         SelectConditionStep conditionStep;
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext().selectFrom(MODULE_SET_RELEASE)
                 .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId())))
                 .fetchOne();

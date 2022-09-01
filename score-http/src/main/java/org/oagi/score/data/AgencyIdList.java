@@ -14,6 +14,6 @@ public class AgencyIdList {
     private String listId;
     private BigInteger agencyIdListValueId = BigInteger.ZERO;
     private String versionId;
-    private BigInteger moduleId = BigInteger.ZERO;
+    private String moduleId;
     private String definition;
 }

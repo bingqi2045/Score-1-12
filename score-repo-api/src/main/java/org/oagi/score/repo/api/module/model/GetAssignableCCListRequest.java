@@ -14,14 +14,14 @@ public class GetAssignableCCListRequest extends Request {
         super(requester);
     }
 
-    BigInteger moduleSetReleaseId;
+    String moduleSetReleaseId;
     String releaseId;
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 

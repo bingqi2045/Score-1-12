@@ -23,7 +23,7 @@ public class ABIERepository implements ScoreRepository<ABIE, BigInteger> {
     private DSLContext dslContext;
 
     private SelectJoinStep<Record13<
-                ULong, ULong, ULong, ULong, LocalDateTime,
+                ULong, ULong, String, ULong, LocalDateTime,
                 Integer, String, String, String, String, String, String,
                 LocalDateTime>> getSelectJoinStep() {
         return dslContext.select(Tables.ABIE.ABIE_ID,

@@ -7,9 +7,9 @@ import java.math.BigInteger;
 
 public class UpdateModuleSetReleaseRequest extends Request {
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private String releaseId;
 
@@ -19,19 +19,19 @@ public class UpdateModuleSetReleaseRequest extends Request {
 
     private boolean isDefault;
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

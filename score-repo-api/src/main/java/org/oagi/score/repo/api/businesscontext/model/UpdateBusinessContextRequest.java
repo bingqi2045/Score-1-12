@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class UpdateBusinessContextRequest extends Request {
 
-    private BigInteger businessContextId;
+    private String businessContextId;
 
     private String name;
 
@@ -19,15 +19,15 @@ public class UpdateBusinessContextRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getBusinessContextId() {
+    public String getBusinessContextId() {
         return businessContextId;
     }
 
-    public void setBusinessContextId(BigInteger businessContextId) {
+    public void setBusinessContextId(String businessContextId) {
         this.businessContextId = businessContextId;
     }
 
-    public UpdateBusinessContextRequest withBusinessContextId(BigInteger businessContextId) {
+    public UpdateBusinessContextRequest withBusinessContextId(String businessContextId) {
         this.setBusinessContextId(businessContextId);
         return this;
     }

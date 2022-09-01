@@ -6,15 +6,15 @@ import org.jooq.types.ULong;
 @Data
 public class ScoreModule {
 
-    private ULong moduleSetReleaseId;
+    private String moduleSetReleaseId;
     private ULong moduleSetId;
     private String releaseId;
-    private ULong moduleId;
+    private String moduleId;
     private String name;
-    private ULong moduleNamespaceId;
+    private String moduleNamespaceId;
     private String moduleNamespaceUri;
     private String moduleNamespacePrefix;
-    private ULong releaseNamespaceId;
+    private String releaseNamespaceId;
     private String releaseNamespaceUri;
     private String releaseNamespacePrefix;
     private String versionNum;

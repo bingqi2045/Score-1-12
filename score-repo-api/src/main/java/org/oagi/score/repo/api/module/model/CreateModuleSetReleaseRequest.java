@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class CreateModuleSetReleaseRequest extends Request {
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private String releaseId;
 
@@ -17,13 +17,13 @@ public class CreateModuleSetReleaseRequest extends Request {
 
     private boolean isDefault;
 
-    private BigInteger baseModuleSetReleaseId;
+    private String baseModuleSetReleaseId;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
@@ -63,11 +63,11 @@ public class CreateModuleSetReleaseRequest extends Request {
         super();
     }
 
-    public BigInteger getBaseModuleSetReleaseId() {
+    public String getBaseModuleSetReleaseId() {
         return baseModuleSetReleaseId;
     }
 
-    public void setBaseModuleSetReleaseId(BigInteger baseModuleSetReleaseId) {
+    public void setBaseModuleSetReleaseId(String baseModuleSetReleaseId) {
         this.baseModuleSetReleaseId = baseModuleSetReleaseId;
     }
 }

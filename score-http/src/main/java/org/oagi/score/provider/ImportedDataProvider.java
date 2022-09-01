@@ -27,9 +27,9 @@ public class ImportedDataProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private CcRepository ccRepository;
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    public ImportedDataProvider(CcRepository ccRepository, BigInteger moduleSetReleaseId) {
+    public ImportedDataProvider(CcRepository ccRepository, String moduleSetReleaseId) {
         this.ccRepository = ccRepository;
         this.moduleSetReleaseId = moduleSetReleaseId;
         this.init();
@@ -38,50 +38,50 @@ public class ImportedDataProvider {
     public void init() {
         long s = System.currentTimeMillis();
 
-        findAgencyIdListList = ccRepository.findAllAgencyIdList(ULong.valueOf(moduleSetReleaseId));
-        findModuleAgencyIdListManifestMap = ccRepository.findAllModuleAgencyIdListManifest(ULong.valueOf(moduleSetReleaseId))
+        findAgencyIdListList = ccRepository.findAllAgencyIdList(moduleSetReleaseId);
+        findModuleAgencyIdListManifestMap = ccRepository.findAllModuleAgencyIdListManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
         findAgencyIdListMap = findAgencyIdListList.stream()
                 .collect(Collectors.toMap(AgencyIdListRecord::getAgencyIdListId, Function.identity()));
 
-        findAgencyIdListValueByOwnerListIdMap = ccRepository.findAllAgencyIdListValue(ULong.valueOf(moduleSetReleaseId)).stream()
+        findAgencyIdListValueByOwnerListIdMap = ccRepository.findAllAgencyIdListValue(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(AgencyIdListValueRecord::getOwnerListId));
 
-        findCodeListList = ccRepository.findAllCodeList(ULong.valueOf(moduleSetReleaseId));
+        findCodeListList = ccRepository.findAllCodeList(moduleSetReleaseId);
         findCodeListMap = findCodeListList.stream()
                 .collect(Collectors.toMap(CodeListRecord::getCodeListId, Function.identity()));
 
-        findCodeListValueByCodeListIdMap = ccRepository.findAllCodeListValue(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCodeListValueByCodeListIdMap = ccRepository.findAllCodeListValue(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(CodeListValueRecord::getCodeListId));
 
-        findDtManifestList = ccRepository.findAllDtManifest(ULong.valueOf(moduleSetReleaseId));
+        findDtManifestList = ccRepository.findAllDtManifest(moduleSetReleaseId);
         findDtManifestMap = findDtManifestList.stream()
                 .collect(Collectors.toMap(DtManifestRecord::getDtManifestId, Function.identity()));
 
-        findDtList = ccRepository.findAllDt(ULong.valueOf(moduleSetReleaseId));
+        findDtList = ccRepository.findAllDt(moduleSetReleaseId);
         findDtMap = findDtList.stream()
                 .collect(Collectors.toMap(DtRecord::getDtId, Function.identity()));
 
-        findDtScByOwnerDtIdMap = ccRepository.findAllDtSc(ULong.valueOf(moduleSetReleaseId)).stream()
+        findDtScByOwnerDtIdMap = ccRepository.findAllDtSc(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(DtScRecord::getOwnerDtId));
 
-        List<BdtPriRestriRecord> bdtPriRestriList = ccRepository.findAllBdtPriRestri(ULong.valueOf(moduleSetReleaseId));
+        List<BdtPriRestriRecord> bdtPriRestriList = ccRepository.findAllBdtPriRestri(moduleSetReleaseId);
         findBdtPriRestriListByDtIdMap = bdtPriRestriList.stream()
                 .collect(Collectors.groupingBy(BdtPriRestriRecord::getBdtId));
 
-        cdtAwdPriXpsTypeMapMap = ccRepository.findAllCdtAwdPriXpsTypeMap(ULong.valueOf(moduleSetReleaseId)).stream()
+        cdtAwdPriXpsTypeMapMap = ccRepository.findAllCdtAwdPriXpsTypeMap(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtAwdPriXpsTypeMapRecord::getCdtAwdPriXpsTypeMapId, Function.identity()));
 
-        findBdtScPriRestriListByDtScIdMap = ccRepository.findAllBdtScPriRestri(ULong.valueOf(moduleSetReleaseId)).stream()
+        findBdtScPriRestriListByDtScIdMap = ccRepository.findAllBdtScPriRestri(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(BdtScPriRestriRecord::getBdtScId));
 
-        findCdtScAwdPriXpsTypeMapMap = ccRepository.findAllCdtScAwdPriXpsTypeMap(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCdtScAwdPriXpsTypeMapMap = ccRepository.findAllCdtScAwdPriXpsTypeMap(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtScAwdPriXpsTypeMapRecord::getCdtScAwdPriXpsTypeMapId, Function.identity()));
 
-        findCdtScAwdPriMap = ccRepository.findAllCdtScAwdPri(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCdtScAwdPriMap = ccRepository.findAllCdtScAwdPri(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtScAwdPriRecord::getCdtScAwdPriId, Function.identity()));
 
-        List<CdtAwdPriRecord> cdtAwdPriList = ccRepository.findAllCdtAwdPri(ULong.valueOf(moduleSetReleaseId));
+        List<CdtAwdPriRecord> cdtAwdPriList = ccRepository.findAllCdtAwdPri(moduleSetReleaseId);
         findCdtAwdPriMap = cdtAwdPriList.stream()
                 .collect(Collectors.toMap(CdtAwdPriRecord::getCdtAwdPriId, Function.identity()));
 
@@ -89,41 +89,41 @@ public class ImportedDataProvider {
         findCdtPriMap = cdtPriList.stream()
                 .collect(Collectors.toMap(CdtPriRecord::getCdtPriId, Function.identity()));
 
-        findXbtList = ccRepository.findAllXbt(ULong.valueOf(moduleSetReleaseId));
+        findXbtList = ccRepository.findAllXbt(moduleSetReleaseId);
         findXbtMap = findXbtList.stream()
                 .collect(Collectors.toMap(XbtRecord::getXbtId, Function.identity()));
 
-        findACCList = ccRepository.findAllAcc(ULong.valueOf(moduleSetReleaseId));
+        findACCList = ccRepository.findAllAcc(moduleSetReleaseId);
         findAccMap = findACCList.stream()
                 .collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
-        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(moduleSetReleaseId));
+        findACCManifestList = ccRepository.findAllAccManifest(moduleSetReleaseId);
         findAccManifestMap = findACCManifestList.stream()
                 .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
 
-        findASCCPList = ccRepository.findAllAsccp(ULong.valueOf(moduleSetReleaseId));
+        findASCCPList = ccRepository.findAllAsccp(moduleSetReleaseId);
         findAsccpMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getAsccpId, Function.identity()));
         findAsccpByGuidMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getGuid, Function.identity()));
 
-        findASCCPManifestList = ccRepository.findAllAsccpManifest(ULong.valueOf(moduleSetReleaseId));
+        findASCCPManifestList = ccRepository.findAllAsccpManifest(moduleSetReleaseId);
         findAsccpManifestMap = findASCCPManifestList.stream()
                 .collect(Collectors.toMap(AsccpManifestRecord::getAsccpManifestId, Function.identity()));
 
-        findBCCPManifestList = ccRepository.findAllBccpManifest(ULong.valueOf(moduleSetReleaseId));
+        findBCCPManifestList = ccRepository.findAllBccpManifest(moduleSetReleaseId);
         findBccpManifestMap = findBCCPManifestList.stream()
                 .collect(Collectors.toMap(BccpManifestRecord::getBccpManifestId, Function.identity()));
         
-        findBCCPList = ccRepository.findAllBccp(ULong.valueOf(moduleSetReleaseId));
+        findBCCPList = ccRepository.findAllBccp(moduleSetReleaseId);
         findBccpMap = findBCCPList.stream()
                 .collect(Collectors.toMap(BccpRecord::getBccpId, Function.identity()));
 
-        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(moduleSetReleaseId));
+        findACCManifestList = ccRepository.findAllAccManifest(moduleSetReleaseId);
         findAccManifestMap = findACCManifestList.stream()
                 .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
 
-        List<BccRecord> bccList = ccRepository.findAllBcc(ULong.valueOf(moduleSetReleaseId));
+        List<BccRecord> bccList = ccRepository.findAllBcc(moduleSetReleaseId);
 
         findBCCByToBccpIdMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccRecord::getToBccpId));
@@ -132,44 +132,44 @@ public class ImportedDataProvider {
         findBccMap = bccList.stream()
                 .collect(Collectors.toMap(BccRecord::getBccId, Function.identity()));
 
-        findBccManifestMap = ccRepository.findAllBccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
+        findBccManifestMap = ccRepository.findAllBccManifest(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
         findBccManifestByAccManifestIdMap = findBccManifestMap.values().stream()
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
-        findAsccManifestMap = ccRepository.findAllAsccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
+        findAsccManifestMap = ccRepository.findAllAsccManifest(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
         findAsccManifestByAccManifestIdMap = findAsccManifestMap.values().stream()
                 .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
-        List<AsccRecord> asccList = ccRepository.findAllAscc(ULong.valueOf(moduleSetReleaseId));
+        List<AsccRecord> asccList = ccRepository.findAllAscc(moduleSetReleaseId);
         findAsccByFromAccIdMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccRecord::getFromAccId));
 
         findAsccMap = asccList.stream()
                 .collect(Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
 
-        findModuleCodeListManifestMap = ccRepository.findAllModuleCodeListManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleCodeListManifestMap = ccRepository.findAllModuleCodeListManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleAccManifestMap = ccRepository.findAllModuleAccManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleAccManifestMap = ccRepository.findAllModuleAccManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleAsccpManifestMap = ccRepository.findAllModuleAsccpManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleAsccpManifestMap = ccRepository.findAllModuleAsccpManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleBccpManifestMap = ccRepository.findAllModuleBccpManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleBccpManifestMap = ccRepository.findAllModuleBccpManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleDtManifestMap = ccRepository.findAllModuleDtManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleDtManifestMap = ccRepository.findAllModuleDtManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleXbtManifestMap = ccRepository.findAllModuleXbtManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleXbtManifestMap = ccRepository.findAllModuleXbtManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleXbtID::getXbtId, Function.identity()));
 
-        findBlobContentList = ccRepository.findAllBlobContent(ULong.valueOf(moduleSetReleaseId));
+        findBlobContentList = ccRepository.findAllBlobContent(moduleSetReleaseId);
 
-        findModuleBlobContentManifestMap = ccRepository.findAllModuleBlobContentManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleBlobContentManifestMap = ccRepository.findAllModuleBlobContentManifest(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
         findSeqKeyList = ccRepository.findAllSeqKeyRecord();

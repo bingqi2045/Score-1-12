@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
@@ -42,6 +43,7 @@ public class JooqContextCategoryWriteRepository
 
         CtxCategoryRecord record = new CtxCategoryRecord();
 
+        record.setCtxCategoryId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setName(request.getName());
         record.setDescription(request.getDescription());
@@ -50,12 +52,11 @@ public class JooqContextCategoryWriteRepository
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        BigInteger contextCategoryId = dslContext().insertInto(CTX_CATEGORY)
+        dslContext().insertInto(CTX_CATEGORY)
                 .set(record)
-                .returning(CTX_CATEGORY.CTX_CATEGORY_ID)
-                .fetchOne().getCtxCategoryId().toBigInteger();
+                .execute();
 
-        return new CreateContextCategoryResponse(contextCategoryId);
+        return new CreateContextCategoryResponse(record.getCtxCategoryId());
     }
 
     @Override
@@ -68,7 +69,7 @@ public class JooqContextCategoryWriteRepository
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxCategoryRecord record = dslContext().selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(request.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(request.getContextCategoryId()))
                 .fetchOptional().orElse(null);
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
@@ -97,7 +98,7 @@ public class JooqContextCategoryWriteRepository
         }
 
         return new UpdateContextCategoryResponse(
-                record.getCtxCategoryId().toBigInteger(),
+                record.getCtxCategoryId(),
                 !changedField.isEmpty());
     }
 
@@ -110,9 +111,7 @@ public class JooqContextCategoryWriteRepository
             throw new IllegalArgumentException("Not allow with empty parameters.");
         }
 
-        List<ULong> contextCategoryIdList =
-                request.getContextCategoryIdList().stream()
-                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList());
+        List<String> contextCategoryIdList = request.getContextCategoryIdList();
 
         int affectedRows = dslContext().deleteFrom(CTX_CATEGORY)
                 .where(

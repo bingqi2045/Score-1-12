@@ -9,6 +9,6 @@ import java.util.List;
 public class BieCopyRequest {
 
     private BigInteger topLevelAsbiepId;
-    private List<BigInteger> bizCtxIds;
+    private List<String> bizCtxIds;
 
 }

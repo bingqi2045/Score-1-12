@@ -42,11 +42,11 @@ public class SchemaModule {
         return module.getVersionNum();
     }
 
-    public ULong getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return module.getModuleSetReleaseId();
     }
 
-    public ULong getNamespaceId() {
+    public String getNamespaceId() {
         if (module.getModuleNamespaceId() != null) {
             return module.getModuleNamespaceId();
         }

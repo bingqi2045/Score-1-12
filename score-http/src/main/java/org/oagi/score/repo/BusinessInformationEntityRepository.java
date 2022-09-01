@@ -219,7 +219,7 @@ public class BusinessInformationEntityRepository {
 
     public class InsertBizCtxAssignmentArguments {
         private ULong topLevelAsbiepId;
-        private List<ULong> bizCtxIds = Collections.emptyList();
+        private List<String> bizCtxIds = Collections.emptyList();
 
         public InsertBizCtxAssignmentArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
             return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
@@ -230,9 +230,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertBizCtxAssignmentArguments setBizCtxIds(List<BigInteger> bizCtxIds) {
+        public InsertBizCtxAssignmentArguments setBizCtxIds(List<String> bizCtxIds) {
             if (bizCtxIds != null && !bizCtxIds.isEmpty()) {
-                this.bizCtxIds = bizCtxIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList());
+                this.bizCtxIds = bizCtxIds;
             }
             return this;
         }
@@ -241,7 +241,7 @@ public class BusinessInformationEntityRepository {
             return topLevelAsbiepId;
         }
 
-        public List<ULong> getBizCtxIds() {
+        public List<String> getBizCtxIds() {
             return bizCtxIds;
         }
 
@@ -258,6 +258,7 @@ public class BusinessInformationEntityRepository {
         dslContext.batch(
                 arguments.getBizCtxIds().stream().map(bizCtxId -> {
                     return dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                            .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID, UUID.randomUUID().toString())
                             .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, arguments.topLevelAsbiepId)
                             .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId);
                 }).collect(Collectors.toList())

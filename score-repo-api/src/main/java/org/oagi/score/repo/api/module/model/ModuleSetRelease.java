@@ -7,9 +7,9 @@ import java.math.BigInteger;
 
 public class ModuleSetRelease extends Auditable implements Comparable<ModuleSetRelease>, Serializable {
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private String moduleSetReleaseName;
 
@@ -55,19 +55,19 @@ public class ModuleSetRelease extends Auditable implements Comparable<ModuleSetR
         this.releaseNum = releaseNum;
     }
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

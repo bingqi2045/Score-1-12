@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ContextSchemeValue;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class CtxSchemeValueRepository implements ScoreRepository<ContextSchemeValue, BigInteger> {
+public class CtxSchemeValueRepository implements ScoreRepository<ContextSchemeValue, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -23,12 +24,12 @@ public class CtxSchemeValueRepository implements ScoreRepository<ContextSchemeVa
     }
 
     @Override
-    public ContextSchemeValue findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public ContextSchemeValue findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return dslContext.select(Tables.CTX_SCHEME_VALUE.fields()).from(Tables.CTX_SCHEME_VALUE)
-                .where(Tables.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(id)))
+                .where(Tables.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(id))
                 .fetchOneInto(ContextSchemeValue.class);
     }
 }

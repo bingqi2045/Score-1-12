@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class ContextCategory extends Auditable implements Serializable {
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private String guid;
 
@@ -17,11 +17,11 @@ public class ContextCategory extends Auditable implements Serializable {
 
     private boolean used;
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 

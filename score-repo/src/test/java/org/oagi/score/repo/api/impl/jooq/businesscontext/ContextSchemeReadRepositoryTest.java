@@ -28,7 +28,7 @@ public class ContextSchemeReadRepositoryTest
 
     private ContextSchemeReadRepository repository;
     private ScoreUser requester;
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
     private List<BigInteger> contextSchemeIds = new ArrayList();
 
     @BeforeAll

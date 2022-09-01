@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BIZ_CTX_ASSIGNMENT;
@@ -67,19 +68,20 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void assign(BigInteger bizCtxId, BigInteger topLevelAsbiepId) {
+    public void assign(String bizCtxId, BigInteger topLevelAsbiepId) {
         dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID, UUID.randomUUID().toString())
                 .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
-                .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId)
                 .execute();
     }
 
     @Transactional
-    public void dismiss(BigInteger bizCtxId, BigInteger topLevelAsbiepId) {
+    public void dismiss(String bizCtxId, BigInteger topLevelAsbiepId) {
         dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT)
                 .where(and(
                         BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
-                        BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))
+                        BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(bizCtxId)
                 ))
                 .execute();
     }

@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class ModuleSetModule {
 
-    private BigInteger moduleId = BigInteger.ZERO;
+    private String moduleId;
     private String path;
     private String namespaceId;
     private String namespaceUri;

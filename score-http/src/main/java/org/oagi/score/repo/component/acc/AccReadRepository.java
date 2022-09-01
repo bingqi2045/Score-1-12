@@ -57,7 +57,7 @@ public class AccReadRepository {
 
     public List<CcList> getBaseAccList(BigInteger accManifestId, String releaseId) {
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
                 .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(releaseId)))
                 .fetchOne();

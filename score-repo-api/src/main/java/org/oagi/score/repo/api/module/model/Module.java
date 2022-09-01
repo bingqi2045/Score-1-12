@@ -7,9 +7,9 @@ import java.math.BigInteger;
 
 public class Module extends Auditable implements Comparable<Module>, Serializable {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private String path;
 
@@ -33,19 +33,19 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
         this.type = type;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 

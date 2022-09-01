@@ -6,15 +6,15 @@ import java.math.BigInteger;
 
 public class UpdateContextCategoryResponse extends Response {
 
-    private final BigInteger contextCategoryId;
+    private final String contextCategoryId;
     private final boolean changed;
 
-    public UpdateContextCategoryResponse(BigInteger contextCategoryId, boolean changed) {
+    public UpdateContextCategoryResponse(String contextCategoryId, boolean changed) {
         this.contextCategoryId = contextCategoryId;
         this.changed = changed;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 

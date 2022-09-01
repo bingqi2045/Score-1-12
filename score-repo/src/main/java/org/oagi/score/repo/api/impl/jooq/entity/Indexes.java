@@ -20,7 +20,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Comment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
@@ -64,7 +63,6 @@ public class Indexes {
     public static final Index BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("bcc_last_update_timestamp_desc_idx"), Bcc.BCC, new OrderField[] { Bcc.BCC.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index BCCP_BCCP_GUID_IDX = Internal.createIndex(DSL.name("bccp_guid_idx"), Bccp.BCCP, new OrderField[] { Bccp.BCCP.GUID }, false);
     public static final Index BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("bccp_last_update_timestamp_desc_idx"), Bccp.BCCP, new OrderField[] { Bccp.BCCP.LAST_UPDATE_TIMESTAMP }, false);
-    public static final Index BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID = Internal.createIndex(DSL.name("biz_ctx_id"), BizCtxAssignment.BIZ_CTX_ASSIGNMENT, new OrderField[] { BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID }, false);
     public static final Index DT_DT_GUID_IDX = Internal.createIndex(DSL.name("dt_guid_idx"), Dt.DT, new OrderField[] { Dt.DT.GUID }, false);
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("dt_last_update_timestamp_desc_idx"), Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex(DSL.name("dt_sc_guid_idx"), DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);

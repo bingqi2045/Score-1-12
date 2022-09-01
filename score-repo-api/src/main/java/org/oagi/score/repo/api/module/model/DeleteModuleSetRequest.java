@@ -11,13 +11,13 @@ public class DeleteModuleSetRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 }

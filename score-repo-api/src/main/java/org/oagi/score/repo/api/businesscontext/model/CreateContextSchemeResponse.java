@@ -9,15 +9,15 @@ import java.util.Collections;
 
 public class CreateContextSchemeResponse extends Response {
 
-    private final BigInteger contextSchemeId;
+    private final String contextSchemeId;
 
     private Collection<ContextSchemeValue> contextSchemeValues;
 
-    public CreateContextSchemeResponse(BigInteger contextSchemeId) {
+    public CreateContextSchemeResponse(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 

@@ -14,15 +14,15 @@ public class GetModuleElementRequest extends Request {
         super(requester);
     }
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private BigInteger moduleDirId;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

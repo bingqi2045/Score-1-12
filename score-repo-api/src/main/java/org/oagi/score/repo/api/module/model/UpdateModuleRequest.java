@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class UpdateModuleRequest extends Request {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
     private BigInteger moduleDirId;
 
@@ -17,11 +17,11 @@ public class UpdateModuleRequest extends Request {
 
     private String versionNum;
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 

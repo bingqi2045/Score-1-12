@@ -17,7 +17,7 @@ public class CreateModuleSetRequest extends Request {
 
     private String targetReleaseId;
 
-    private BigInteger targetModuleSetReleaseId;
+    private String targetModuleSetReleaseId;
 
     public CreateModuleSetRequest(ScoreUser requester) {
         super(requester);
@@ -63,11 +63,11 @@ public class CreateModuleSetRequest extends Request {
         this.targetReleaseId = targetReleaseId;
     }
 
-    public BigInteger getTargetModuleSetReleaseId() {
+    public String getTargetModuleSetReleaseId() {
         return targetModuleSetReleaseId;
     }
 
-    public void setTargetModuleSetReleaseId(BigInteger targetModuleSetReleaseId) {
+    public void setTargetModuleSetReleaseId(String targetModuleSetReleaseId) {
         this.targetModuleSetReleaseId = targetModuleSetReleaseId;
     }
 }

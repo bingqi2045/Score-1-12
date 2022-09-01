@@ -127,7 +127,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetContextCategory() {
-        BigInteger contextCategoryId;
+        String contextCategoryId;
         {
             CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
                     .withName(RandomStringUtils.randomAlphanumeric(45))
@@ -171,7 +171,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
             CreateContextCategoryResponse response =
                     contextCategoryService.createContextCategory(request);
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             contextCategory =
                     contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)
@@ -212,7 +212,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
             CreateContextCategoryResponse response =
                     contextCategoryService.createContextCategory(request);
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             contextCategory =
                     contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)

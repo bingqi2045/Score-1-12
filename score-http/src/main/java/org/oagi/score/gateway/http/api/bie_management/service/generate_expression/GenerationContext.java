@@ -748,7 +748,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public BizCtx findBusinessContext(TopLevelAsbiep topLevelAsbiep) {
-        BigInteger bizCtxId = (topLevelAsbiep != null) ? bizCtxRepository.findByTopLevelAsbiep(topLevelAsbiep).get(0).getBizCtxId() : BigInteger.ZERO;
+        String bizCtxId = (topLevelAsbiep != null) ? bizCtxRepository.findByTopLevelAsbiep(topLevelAsbiep).get(0).getBizCtxId() : null;
         //return the first one of the list
         return bizCtxRepository.findById(bizCtxId);
     }

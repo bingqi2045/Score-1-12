@@ -43,7 +43,7 @@ public class CcListRepository {
     public PageResponse<CcList> getCcList(CcListRequest request) {
         Release release = releaseRepository.findById(request.getReleaseId());
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
                 .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(release.getReleaseId())))
                 .fetchOne();
@@ -198,7 +198,7 @@ public class CcListRepository {
                 .fetchInto(BigInteger.class);
     }
 
-    private SelectOrderByStep getAccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -295,7 +295,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAsccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -382,7 +382,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getBccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -469,7 +469,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAsccpList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -571,7 +571,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getBccpList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -662,7 +662,7 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    public SelectOrderByStep getDtList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    public SelectOrderByStep getDtList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 

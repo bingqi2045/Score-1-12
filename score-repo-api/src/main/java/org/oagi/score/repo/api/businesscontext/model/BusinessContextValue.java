@@ -5,40 +5,40 @@ import java.math.BigInteger;
 
 public class BusinessContextValue implements Serializable {
 
-    private BigInteger businessContextValueId;
-    private BigInteger businessContextId;
+    private String businessContextValueId;
+    private String businessContextId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
     private String contextCategoryName;
 
-    private BigInteger contextSchemeId;
+    private String contextSchemeId;
     private String contextSchemeName;
 
-    private BigInteger contextSchemeValueId;
+    private String contextSchemeValueId;
     private String contextSchemeValue;
     private String contextSchemeValueMeaning;
 
-    public BigInteger getBusinessContextValueId() {
+    public String getBusinessContextValueId() {
         return businessContextValueId;
     }
 
-    public void setBusinessContextValueId(BigInteger businessContextValueId) {
+    public void setBusinessContextValueId(String businessContextValueId) {
         this.businessContextValueId = businessContextValueId;
     }
 
-    public BigInteger getBusinessContextId() {
+    public String getBusinessContextId() {
         return businessContextId;
     }
 
-    public void setBusinessContextId(BigInteger businessContextId) {
+    public void setBusinessContextId(String businessContextId) {
         this.businessContextId = businessContextId;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
@@ -50,11 +50,11 @@ public class BusinessContextValue implements Serializable {
         this.contextCategoryName = contextCategoryName;
     }
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 
-    public void setContextSchemeId(BigInteger contextSchemeId) {
+    public void setContextSchemeId(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
@@ -66,11 +66,11 @@ public class BusinessContextValue implements Serializable {
         this.contextSchemeName = contextSchemeName;
     }
 
-    public BigInteger getContextSchemeValueId() {
+    public String getContextSchemeValueId() {
         return contextSchemeValueId;
     }
 
-    public void setContextSchemeValueId(BigInteger contextSchemeValueId) {
+    public void setContextSchemeValueId(String contextSchemeValueId) {
         this.contextSchemeValueId = contextSchemeValueId;
     }
 

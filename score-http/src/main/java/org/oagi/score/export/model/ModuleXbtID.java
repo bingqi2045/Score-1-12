@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 
 @Data
 public class ModuleXbtID {
-    public ULong moduleId;
+    public String moduleId;
     public String xbtId;
     public String path;
 }

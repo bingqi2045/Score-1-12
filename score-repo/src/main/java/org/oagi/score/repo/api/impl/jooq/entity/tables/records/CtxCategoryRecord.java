@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
  * described in the CCTS are business process, industry, etc.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> {
+public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Internal,
-     * primary, database key.
+     * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Primary,
+     * internal database key.
      */
-    public void setCtxCategoryId(ULong value) {
+    public void setCtxCategoryId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_category.ctx_category_id</code>. Internal,
-     * primary, database key.
+     * Getter for <code>oagi.ctx_category.ctx_category_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getCtxCategoryId() {
-        return (ULong) get(0);
+    public String getCtxCategoryId() {
+        return (String) get(0);
     }
 
     /**
@@ -159,7 +158,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -168,17 +167,17 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     @Override
-    public Row8<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row8) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID;
     }
 
@@ -218,7 +217,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCtxCategoryId();
     }
 
@@ -258,7 +257,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCtxCategoryId();
     }
 
@@ -298,7 +297,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public CtxCategoryRecord value1(ULong value) {
+    public CtxCategoryRecord value1(String value) {
         setCtxCategoryId(value);
         return this;
     }
@@ -346,7 +345,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public CtxCategoryRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8) {
+    public CtxCategoryRecord values(String value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -372,7 +371,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     /**
      * Create a detached, initialised CtxCategoryRecord
      */
-    public CtxCategoryRecord(ULong ctxCategoryId, String guid, String name, String description, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public CtxCategoryRecord(String ctxCategoryId, String guid, String name, String description, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxCategory.CTX_CATEGORY);
 
         setCtxCategoryId(ctxCategoryId);

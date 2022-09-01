@@ -240,7 +240,7 @@ public class BieListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity assignBizCtx(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("id") BigInteger topLevelAsbiepId,
-                                       @RequestBody Map<String, List<Long>> request) {
+                                       @RequestBody Map<String, List<String>> request) {
         bieService.assignBizCtx(user, topLevelAsbiepId, request.getOrDefault("bizCtxList", Collections.emptyList()));
         return ResponseEntity.noContent().build();
     }

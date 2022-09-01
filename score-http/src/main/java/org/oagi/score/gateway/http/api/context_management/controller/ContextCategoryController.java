@@ -95,7 +95,7 @@ public class ContextCategoryController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ContextCategory getContextCategory(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextCategoryId) {
+            @PathVariable("id") String contextCategoryId) {
 
         GetContextCategoryRequest request =
                 new GetContextCategoryRequest(authenticationService.asScoreUser(requester))
@@ -109,7 +109,7 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_schemes_from_ctg/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") BigInteger id) {
+    public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") String id) {
         return contextCategoryService.getContextSchemeByCategoryId(id);
     }
 
@@ -136,7 +136,7 @@ public class ContextCategoryController {
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextCategoryId,
+            @PathVariable("id") String contextCategoryId,
             @RequestBody ContextCategory contextCategory) {
 
         UpdateContextCategoryRequest request =
@@ -158,7 +158,7 @@ public class ContextCategoryController {
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextCategoryId) {
+            @PathVariable("id") String contextCategoryId) {
 
         DeleteContextCategoryRequest request =
                 new DeleteContextCategoryRequest(authenticationService.asScoreUser(requester))
@@ -175,13 +175,13 @@ public class ContextCategoryController {
     }
 
     public static class DeleteContextCategoryRequestData {
-        private List<BigInteger> contextCategoryIdList = Collections.emptyList();
+        private List<String> contextCategoryIdList = Collections.emptyList();
 
-        public List<BigInteger> getContextCategoryIdList() {
+        public List<String> getContextCategoryIdList() {
             return contextCategoryIdList;
         }
 
-        public void setContextCategoryIdList(List<BigInteger> contextCategoryIdList) {
+        public void setContextCategoryIdList(List<String> contextCategoryIdList) {
             this.contextCategoryIdList = contextCategoryIdList;
         }
     }

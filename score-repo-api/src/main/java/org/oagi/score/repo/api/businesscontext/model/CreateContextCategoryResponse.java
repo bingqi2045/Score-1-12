@@ -6,13 +6,13 @@ import java.math.BigInteger;
 
 public class CreateContextCategoryResponse extends Response {
 
-    private final BigInteger contextCategoryId;
+    private final String contextCategoryId;
 
-    public CreateContextCategoryResponse(BigInteger contextCategoryId) {
+    public CreateContextCategoryResponse(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 

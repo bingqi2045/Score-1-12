@@ -59,7 +59,7 @@ public class JooqModuleSetReadRepository
     private RecordMapper<Record, ModuleSet> mapper() {
         return record -> {
             ModuleSet moduleSet = new ModuleSet();
-            moduleSet.setModuleSetId(record.get(MODULE_SET.MODULE_SET_ID).toBigInteger());
+            moduleSet.setModuleSetId(record.get(MODULE_SET.MODULE_SET_ID));
             moduleSet.setGuid(record.get(MODULE_SET.GUID));
             moduleSet.setName(record.get(MODULE_SET.NAME));
             moduleSet.setDescription(record.get(MODULE_SET.DESCRIPTION));
@@ -103,10 +103,10 @@ public class JooqModuleSetReadRepository
     public GetModuleSetResponse getModuleSet(GetModuleSetRequest request) throws ScoreDataAccessException {
         ModuleSet moduleSet = null;
 
-        BigInteger moduleSetId = request.getModuleSetId();
-        if (!isNull(moduleSetId)) {
+        String moduleSetId = request.getModuleSetId();
+        if (StringUtils.hasLength(moduleSetId)) {
             moduleSet = (ModuleSet) select()
-                    .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))
+                    .where(MODULE_SET.MODULE_SET_ID.eq(moduleSetId))
                     .fetchOne(mapper());
         }
 
@@ -116,13 +116,13 @@ public class JooqModuleSetReadRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetModuleSetMetadataResponse getModuleSetMetadata(GetModuleSetMetadataRequest request) throws ScoreDataAccessException {
-        BigInteger moduleSetId = request.getModuleSetId();
+        String moduleSetId = request.getModuleSetId();
         ModuleSetMetadata moduleSetMetadata = new ModuleSetMetadata();
 
         int numberOfDirectories = dslContext().selectCount()
                 .from(MODULE)
                 .where(and(
-                        MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)),
+                        MODULE.MODULE_SET_ID.eq(moduleSetId),
                         MODULE.TYPE.eq("DIRECTORY")
                 ))
                 .fetchOptionalInto(Integer.class).orElse(0);
@@ -131,7 +131,7 @@ public class JooqModuleSetReadRepository
         int numberOfFiles = dslContext().selectCount()
                 .from(MODULE)
                 .where(and(
-                        MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)),
+                        MODULE.MODULE_SET_ID.eq(moduleSetId),
                         MODULE.TYPE.eq("FILE")
                 ))
                 .fetchOptionalInto(Integer.class).orElse(0);
@@ -222,9 +222,9 @@ public class JooqModuleSetReadRepository
     }
 
     @Override
-    public List<Module> getToplevelModules(BigInteger moduleSetId) throws ScoreDataAccessException {
+    public List<Module> getToplevelModules(String moduleSetId) throws ScoreDataAccessException {
         ModuleRecord rootModule = dslContext().selectFrom(MODULE)
-                .where(and(MODULE.PARENT_MODULE_ID.isNull(), MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))).fetchOne();
+                .where(and(MODULE.PARENT_MODULE_ID.isNull(), MODULE.MODULE_SET_ID.eq(moduleSetId))).fetchOne();
         return dslContext().select(
                 MODULE.MODULE_ID,
                 MODULE.PARENT_MODULE_ID,
@@ -238,12 +238,12 @@ public class JooqModuleSetReadRepository
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
                 .leftJoin(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
-                .where(and(MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)), MODULE.PARENT_MODULE_ID.eq(rootModule.getModuleId())))
+                .where(and(MODULE.MODULE_SET_ID.eq(moduleSetId), MODULE.PARENT_MODULE_ID.eq(rootModule.getModuleId())))
                 .fetchStream().map(record -> {
                     Module module = new Module();
-                    module.setModuleId(record.get(MODULE.MODULE_ID).toBigInteger());
+                    module.setModuleId(record.get(MODULE.MODULE_ID));
                     if (record.get(MODULE.PARENT_MODULE_ID) != null) {
-                        module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID).toBigInteger());
+                        module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID));
                     }
                     module.setPath(record.get(MODULE.PATH));
                     if (record.get(MODULE.NAMESPACE_ID) != null) {
@@ -263,7 +263,7 @@ public class JooqModuleSetReadRepository
     }
 
     @Override
-    public List<Module> getAllModules(BigInteger moduleSetId) throws ScoreDataAccessException {
+    public List<Module> getAllModules(String moduleSetId) throws ScoreDataAccessException {
         return dslContext().select(
                 MODULE.MODULE_ID,
                 MODULE.PARENT_MODULE_ID,
@@ -277,12 +277,12 @@ public class JooqModuleSetReadRepository
                 MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(MODULE)
                 .leftJoin(NAMESPACE).on(NAMESPACE.NAMESPACE_ID.eq(MODULE.NAMESPACE_ID))
-                .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))
+                .where(MODULE.MODULE_SET_ID.eq(moduleSetId))
                 .fetchStream().map(record -> {
                     Module module = new Module();
-                    module.setModuleId(record.get(MODULE.MODULE_ID).toBigInteger());
+                    module.setModuleId(record.get(MODULE.MODULE_ID));
                     if (record.get(MODULE.PARENT_MODULE_ID) != null) {
-                        module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID).toBigInteger());
+                        module.setParentModuleId(record.get(MODULE.PARENT_MODULE_ID));
                     }
                     module.setPath(record.get(MODULE.PATH));
                     if (record.get(MODULE.NAMESPACE_ID) != null) {

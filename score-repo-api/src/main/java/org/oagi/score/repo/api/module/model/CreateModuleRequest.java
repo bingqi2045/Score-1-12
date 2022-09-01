@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class CreateModuleRequest extends Request {
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private String name;
 
@@ -15,15 +15,15 @@ public class CreateModuleRequest extends Request {
 
     private String versionNum;
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private ModuleType moduleType;
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 
@@ -55,11 +55,11 @@ public class CreateModuleRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function8;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -55,16 +54,16 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
 
     /**
      * The column
-     * <code>oagi.module_bccp_manifest.module_bccp_manifest_id</code>. Primary
-     * key.
+     * <code>oagi.module_bccp_manifest.module_bccp_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_BCCP_MANIFEST_ID = createField(DSL.name("module_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_BCCP_MANIFEST_ID = createField(DSL.name("module_bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.module_set_release_id</code>.
      * A foreign key of the module set release record.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.bccp_manifest_id</code>. A
@@ -76,7 +75,7 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
      * The column <code>oagi.module_bccp_manifest.module_id</code>. This
      * indicates a module.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.CHAR(36).nullable(false), this, "This indicates a module.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.created_by</code>. Foreign key
@@ -139,11 +138,6 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<ModuleBccpManifestRecord, ULong> getIdentity() {
-        return (Identity<ModuleBccpManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -259,21 +253,21 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

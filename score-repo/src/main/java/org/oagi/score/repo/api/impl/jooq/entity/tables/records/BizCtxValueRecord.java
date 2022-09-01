@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record3;
 import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 
 
@@ -19,7 +18,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
  * value.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<ULong, ULong, ULong> {
+public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +26,7 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
      * Setter for <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary,
      * internal database key.
      */
-    public void setBizCtxValueId(ULong value) {
+    public void setBizCtxValueId(String value) {
         set(0, value);
     }
 
@@ -35,15 +34,15 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
      * Getter for <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary,
      * internal database key.
      */
-    public ULong getBizCtxValueId() {
-        return (ULong) get(0);
+    public String getBizCtxValueId() {
+        return (String) get(0);
     }
 
     /**
      * Setter for <code>oagi.biz_ctx_value.biz_ctx_id</code>. Foreign key to the
      * biz_ctx table.
      */
-    public void setBizCtxId(ULong value) {
+    public void setBizCtxId(String value) {
         set(1, value);
     }
 
@@ -51,15 +50,15 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
      * Getter for <code>oagi.biz_ctx_value.biz_ctx_id</code>. Foreign key to the
      * biz_ctx table.
      */
-    public ULong getBizCtxId() {
-        return (ULong) get(1);
+    public String getBizCtxId() {
+        return (String) get(1);
     }
 
     /**
      * Setter for <code>oagi.biz_ctx_value.ctx_scheme_value_id</code>. Foreign
      * key to the CTX_SCHEME_VALUE table.
      */
-    public void setCtxSchemeValueId(ULong value) {
+    public void setCtxSchemeValueId(String value) {
         set(2, value);
     }
 
@@ -67,8 +66,8 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
      * Getter for <code>oagi.biz_ctx_value.ctx_scheme_value_id</code>. Foreign
      * key to the CTX_SCHEME_VALUE table.
      */
-    public ULong getCtxSchemeValueId() {
-        return (ULong) get(2);
+    public String getCtxSchemeValueId() {
+        return (String) get(2);
     }
 
     // -------------------------------------------------------------------------
@@ -76,7 +75,7 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -85,80 +84,80 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Row3<ULong, ULong, ULong> valuesRow() {
+    public Row3<String, String, String> valuesRow() {
         return (Row3) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_ID;
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return BizCtxValue.BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBizCtxValueId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getBizCtxId();
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getCtxSchemeValueId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBizCtxValueId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getBizCtxId();
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getCtxSchemeValueId();
     }
 
     @Override
-    public BizCtxValueRecord value1(ULong value) {
+    public BizCtxValueRecord value1(String value) {
         setBizCtxValueId(value);
         return this;
     }
 
     @Override
-    public BizCtxValueRecord value2(ULong value) {
+    public BizCtxValueRecord value2(String value) {
         setBizCtxId(value);
         return this;
     }
 
     @Override
-    public BizCtxValueRecord value3(ULong value) {
+    public BizCtxValueRecord value3(String value) {
         setCtxSchemeValueId(value);
         return this;
     }
 
     @Override
-    public BizCtxValueRecord values(ULong value1, ULong value2, ULong value3) {
+    public BizCtxValueRecord values(String value1, String value2, String value3) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -179,7 +178,7 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
     /**
      * Create a detached, initialised BizCtxValueRecord
      */
-    public BizCtxValueRecord(ULong bizCtxValueId, ULong bizCtxId, ULong ctxSchemeValueId) {
+    public BizCtxValueRecord(String bizCtxValueId, String bizCtxId, String ctxSchemeValueId) {
         super(BizCtxValue.BIZ_CTX_VALUE);
 
         setBizCtxValueId(bizCtxValueId);

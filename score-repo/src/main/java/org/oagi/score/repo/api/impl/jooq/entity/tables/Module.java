@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function13;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
@@ -58,19 +56,19 @@ public class Module extends TableImpl<ModuleRecord> {
      * The column <code>oagi.module.module_id</code>. Primary, internal database
      * key.
      */
-    public final TableField<ModuleRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<ModuleRecord, String> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module.module_set_id</code>. This indicates a
      * module set.
      */
-    public final TableField<ModuleRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module set.");
+    public final TableField<ModuleRecord, String> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.CHAR(36).nullable(false), this, "This indicates a module set.");
 
     /**
      * The column <code>oagi.module.parent_module_id</code>. This indicates a
      * parent module id. root module will be NULL.
      */
-    public final TableField<ModuleRecord, ULong> PARENT_MODULE_ID = createField(DSL.name("parent_module_id"), SQLDataType.BIGINTUNSIGNED, this, "This indicates a parent module id. root module will be NULL.");
+    public final TableField<ModuleRecord, String> PARENT_MODULE_ID = createField(DSL.name("parent_module_id"), SQLDataType.CHAR(36), this, "This indicates a parent module id. root module will be NULL.");
 
     /**
      * The column <code>oagi.module.type</code>. This is a type column for
@@ -172,11 +170,6 @@ public class Module extends TableImpl<ModuleRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<ModuleRecord, ULong> getIdentity() {
-        return (Identity<ModuleRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -303,21 +296,21 @@ public class Module extends TableImpl<ModuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

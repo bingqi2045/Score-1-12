@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BusinessContext extends Auditable implements Serializable {
 
-    private BigInteger businessContextId;
+    private String businessContextId;
 
     private String guid;
 
@@ -19,11 +19,11 @@ public class BusinessContext extends Auditable implements Serializable {
 
     private boolean used;
 
-    public BigInteger getBusinessContextId() {
+    public String getBusinessContextId() {
         return businessContextId;
     }
 
-    public void setBusinessContextId(BigInteger businessContextId) {
+    public void setBusinessContextId(String businessContextId) {
         this.businessContextId = businessContextId;
     }
 

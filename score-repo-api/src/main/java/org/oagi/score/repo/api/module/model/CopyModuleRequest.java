@@ -7,9 +7,9 @@ import java.math.BigInteger;
 
 public class CopyModuleRequest extends Request {
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
-    private BigInteger targetModuleId;
+    private String targetModuleId;
 
     public boolean isCopySubModules() {
         return copySubModules;
@@ -21,31 +21,31 @@ public class CopyModuleRequest extends Request {
 
     private boolean copySubModules;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getTargetModuleId() {
+    public String getTargetModuleId() {
         return targetModuleId;
     }
 
-    public void setTargetModuleId(BigInteger targetModuleId) {
+    public void setTargetModuleId(String targetModuleId) {
         this.targetModuleId = targetModuleId;
     }
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     public CopyModuleRequest() {
         super();

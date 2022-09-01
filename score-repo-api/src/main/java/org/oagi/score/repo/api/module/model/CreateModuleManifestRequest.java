@@ -17,9 +17,9 @@ public class CreateModuleManifestRequest extends Request {
 
     private CcType type;
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    private BigInteger moduleId;
+    private String moduleId;
 
     private LocalDateTime timestamp;
 
@@ -39,19 +39,19 @@ public class CreateModuleManifestRequest extends Request {
         this.type = type;
     }
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 

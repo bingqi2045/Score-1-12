@@ -9,9 +9,9 @@ import java.util.Collections;
 
 public class UpdateContextSchemeRequest extends Request {
 
-    private BigInteger contextSchemeId;
+    private String contextSchemeId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private BigInteger codeListId;
 
@@ -31,28 +31,28 @@ public class UpdateContextSchemeRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 
-    public void setContextSchemeId(BigInteger contextSchemeId) {
+    public void setContextSchemeId(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
-    public UpdateContextSchemeRequest withContextSchemeId(BigInteger contextSchemeId) {
+    public UpdateContextSchemeRequest withContextSchemeId(String contextSchemeId) {
         this.setContextSchemeId(contextSchemeId);
         return this;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public UpdateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+    public UpdateContextSchemeRequest withContextCategoryId(String contextCategoryId) {
         this.setContextCategoryId(contextCategoryId);
         return this;
     }

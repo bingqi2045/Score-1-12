@@ -11,8 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -27,7 +25,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentRecord;
@@ -56,13 +53,15 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     /**
      * The column <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
+     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>. Foreign key
+     * to the biz_ctx table.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the biz_ctx table.");
 
     /**
      * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This
@@ -109,23 +108,8 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID);
-    }
-
-    @Override
-    public Identity<BizCtxAssignmentRecord, ULong> getIdentity() {
-        return (Identity<BizCtxAssignmentRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BizCtxAssignmentRecord> getPrimaryKey() {
         return Keys.KEY_BIZ_CTX_ASSIGNMENT_PRIMARY;
-    }
-
-    @Override
-    public List<UniqueKey<BizCtxAssignmentRecord>> getUniqueKeys() {
-        return Arrays.asList(Keys.KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK);
     }
 
     @Override
@@ -201,21 +185,21 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<String, String, ULong> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -52,7 +52,7 @@ public class BusinessContextController {
 
         request.setName(name);
         request.setBusinessContextIdList(!StringUtils.hasLength(businessContextIdList) ? Collections.emptyList() :
-                Arrays.asList(businessContextIdList.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+                Arrays.asList(businessContextIdList.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         if (topLevelAsbiepId != null) {
             request.setTopLevelAsbiepIdList(Arrays.asList(topLevelAsbiepId));
         }
@@ -87,7 +87,7 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BusinessContext getBusinessContext(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessContextId) {
+            @PathVariable("id") String businessContextId) {
 
         GetBusinessContextRequest request =
                 new GetBusinessContextRequest(authenticationService.asScoreUser(requester))
@@ -120,7 +120,7 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessContextId) {
+            @PathVariable("id") String businessContextId) {
 
         GetBusinessContextRequest request =
                 new GetBusinessContextRequest(authenticationService.asScoreUser(requester))
@@ -154,7 +154,7 @@ public class BusinessContextController {
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("id") BigInteger businessContextId,
+            @PathVariable("id") String businessContextId,
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessContext businessContext) {
 
@@ -177,7 +177,7 @@ public class BusinessContextController {
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.PUT)
     public ResponseEntity assign(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessContextId,
+            @PathVariable("id") String businessContextId,
             @RequestParam(name = "topLevelAsbiepId", required = true) BigInteger topLevelAsbiepId) {
 
         businessContextService.assign(businessContextId, topLevelAsbiepId);
@@ -187,7 +187,7 @@ public class BusinessContextController {
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessContextId,
+            @PathVariable("id") String businessContextId,
             @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId) {
 
         if (topLevelAsbiepId != null) {
@@ -211,13 +211,13 @@ public class BusinessContextController {
     }
 
     public static class DeleteBusinessContextRequestData {
-        private List<BigInteger> businessContextIdList = Collections.emptyList();
+        private List<String> businessContextIdList = Collections.emptyList();
 
-        public List<BigInteger> getBusinessContextIdList() {
+        public List<String> getBusinessContextIdList() {
             return businessContextIdList;
         }
 
-        public void setBusinessContextIdList(List<BigInteger> businessContextIdList) {
+        public void setBusinessContextIdList(List<String> businessContextIdList) {
             this.businessContextIdList = businessContextIdList;
         }
     }

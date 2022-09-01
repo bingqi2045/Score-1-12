@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record5;
 import org.jooq.Row5;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxSchemeValue;
 
 
@@ -18,7 +17,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxSchemeValue;
  * in the CTX_SCHEME table.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueRecord> implements Record5<ULong, String, String, String, ULong> {
+public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueRecord> implements Record5<String, String, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +25,7 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
      * Setter for <code>oagi.ctx_scheme_value.ctx_scheme_value_id</code>.
      * Primary, internal database key.
      */
-    public void setCtxSchemeValueId(ULong value) {
+    public void setCtxSchemeValueId(String value) {
         set(0, value);
     }
 
@@ -34,8 +33,8 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
      * Getter for <code>oagi.ctx_scheme_value.ctx_scheme_value_id</code>.
      * Primary, internal database key.
      */
-    public ULong getCtxSchemeValueId() {
-        return (ULong) get(0);
+    public String getCtxSchemeValueId() {
+        return (String) get(0);
     }
 
     /**
@@ -91,7 +90,7 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
      * Foreign key to the CTX_SCHEME table. It identifies the context scheme, to
      * which this scheme value belongs.
      */
-    public void setOwnerCtxSchemeId(ULong value) {
+    public void setOwnerCtxSchemeId(String value) {
         set(4, value);
     }
 
@@ -100,8 +99,8 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
      * Foreign key to the CTX_SCHEME table. It identifies the context scheme, to
      * which this scheme value belongs.
      */
-    public ULong getOwnerCtxSchemeId() {
-        return (ULong) get(4);
+    public String getOwnerCtxSchemeId() {
+        return (String) get(4);
     }
 
     // -------------------------------------------------------------------------
@@ -109,7 +108,7 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -118,17 +117,17 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<ULong, String, String, String, ULong> fieldsRow() {
+    public Row5<String, String, String, String, String> fieldsRow() {
         return (Row5) super.fieldsRow();
     }
 
     @Override
-    public Row5<ULong, String, String, String, ULong> valuesRow() {
+    public Row5<String, String, String, String, String> valuesRow() {
         return (Row5) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CtxSchemeValue.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID;
     }
 
@@ -148,12 +147,12 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCtxSchemeValueId();
     }
 
@@ -173,12 +172,12 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getOwnerCtxSchemeId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCtxSchemeValueId();
     }
 
@@ -198,12 +197,12 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getOwnerCtxSchemeId();
     }
 
     @Override
-    public CtxSchemeValueRecord value1(ULong value) {
+    public CtxSchemeValueRecord value1(String value) {
         setCtxSchemeValueId(value);
         return this;
     }
@@ -227,13 +226,13 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     }
 
     @Override
-    public CtxSchemeValueRecord value5(ULong value) {
+    public CtxSchemeValueRecord value5(String value) {
         setOwnerCtxSchemeId(value);
         return this;
     }
 
     @Override
-    public CtxSchemeValueRecord values(ULong value1, String value2, String value3, String value4, ULong value5) {
+    public CtxSchemeValueRecord values(String value1, String value2, String value3, String value4, String value5) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -256,7 +255,7 @@ public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueReco
     /**
      * Create a detached, initialised CtxSchemeValueRecord
      */
-    public CtxSchemeValueRecord(ULong ctxSchemeValueId, String guid, String value, String meaning, ULong ownerCtxSchemeId) {
+    public CtxSchemeValueRecord(String ctxSchemeValueId, String guid, String value, String meaning, String ownerCtxSchemeId) {
         super(CtxSchemeValue.CTX_SCHEME_VALUE);
 
         setCtxSchemeValueId(ctxSchemeValueId);

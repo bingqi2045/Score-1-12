@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public class GetBusinessContextListRequest extends PaginationRequest<BusinessContext> {
 
-    private Collection<BigInteger> businessContextIdList;
+    private Collection<String> businessContextIdList;
     private Collection<BigInteger> topLevelAsbiepIdList;
     private String name;
     private Collection<String> updaterUsernameList;
@@ -21,15 +21,15 @@ public class GetBusinessContextListRequest extends PaginationRequest<BusinessCon
         super(requester, BusinessContext.class);
     }
 
-    public Collection<BigInteger> getBusinessContextIdList() {
+    public Collection<String> getBusinessContextIdList() {
         return (businessContextIdList == null) ? Collections.emptyList() : businessContextIdList;
     }
 
-    public void setBusinessContextIdList(Collection<BigInteger> businessContextIdList) {
+    public void setBusinessContextIdList(Collection<String> businessContextIdList) {
         this.businessContextIdList = businessContextIdList;
     }
 
-    public GetBusinessContextListRequest withBusinessContextIdList(Collection<BigInteger> businessContextIdList) {
+    public GetBusinessContextListRequest withBusinessContextIdList(Collection<String> businessContextIdList) {
         this.setBusinessContextIdList(businessContextIdList);
         return this;
     }

@@ -43,7 +43,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
     @Test
     public void testCreateContextScheme() {
-        BigInteger contextCategoryId;
+        String contextCategoryId;
         {
             CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
                     .withName(RandomStringUtils.randomAlphanumeric(45))
@@ -82,7 +82,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
     @Test
     public void testCreateContextSchemeWithValues() {
-        BigInteger contextCategoryId;
+        String contextCategoryId;
         {
             CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
                     .withName(RandomStringUtils.randomAlphanumeric(45))
@@ -153,7 +153,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .withName(RandomStringUtils.randomAlphanumeric(45))
                             .withDescription(RandomStringUtils.randomAlphanumeric(200)));
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             BigInteger contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
@@ -250,7 +250,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .withName(RandomStringUtils.randomAlphanumeric(45))
                             .withDescription(RandomStringUtils.randomAlphanumeric(200)));
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             BigInteger contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
@@ -311,7 +311,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .withName(RandomStringUtils.randomAlphanumeric(45))
                             .withDescription(RandomStringUtils.randomAlphanumeric(200)));
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             BigInteger contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
@@ -379,7 +379,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .withName(RandomStringUtils.randomAlphanumeric(45))
                             .withDescription(RandomStringUtils.randomAlphanumeric(200)));
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             BigInteger contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
@@ -433,7 +433,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .withName(RandomStringUtils.randomAlphanumeric(45))
                             .withDescription(RandomStringUtils.randomAlphanumeric(200)));
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             BigInteger contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)

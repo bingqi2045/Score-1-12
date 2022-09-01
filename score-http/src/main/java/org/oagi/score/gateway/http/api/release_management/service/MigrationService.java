@@ -308,17 +308,17 @@ public class MigrationService {
         writeInsertStatements(writer, XBT, null);
         writeInsertStatements(writer, XBT_MANIFEST, XBT_MANIFEST.XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxXbtManifestId())));
 
-        writeInsertStatements(writer, MODULE, MODULE.MODULE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleId())));
-        writeInsertStatements(writer, MODULE_SET, MODULE_SET.MODULE_SET_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetId())));
-        writeInsertStatements(writer, MODULE_SET_RELEASE, MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())));
-        writeInsertStatements(writer, MODULE_ACC_MANIFEST, MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleAccManifestId())));
-        writeInsertStatements(writer, MODULE_ASCCP_MANIFEST, MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleAsccpManifestId())));
-        writeInsertStatements(writer, MODULE_BCCP_MANIFEST, MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleBccpManifestId())));
-        writeInsertStatements(writer, MODULE_DT_MANIFEST, MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleDtManifestId())));
-        writeInsertStatements(writer, MODULE_AGENCY_ID_LIST_MANIFEST, MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleAgencyIdListManifestId())));
-        writeInsertStatements(writer, MODULE_CODE_LIST_MANIFEST, MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleCodeListManifestId())));
-        writeInsertStatements(writer, MODULE_XBT_MANIFEST, MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleXbtManifestId())));
-        writeInsertStatements(writer, MODULE_BLOB_CONTENT_MANIFEST, MODULE_BLOB_CONTENT_MANIFEST.MODULE_BLOB_CONTENT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleBlobContentManifestId())));
+        writeInsertStatements(writer, MODULE, null);
+        writeInsertStatements(writer, MODULE_SET, null);
+        writeInsertStatements(writer, MODULE_SET_RELEASE, null);
+        writeInsertStatements(writer, MODULE_ACC_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_ASCCP_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_BCCP_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_DT_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_AGENCY_ID_LIST_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_CODE_LIST_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_XBT_MANIFEST, null);
+        writeInsertStatements(writer, MODULE_BLOB_CONTENT_MANIFEST, null);
 
         writeInsertStatements(writer, LOG, null);
         writeInsertStatements(writer, SEQ_KEY, SEQ_KEY.SEQ_KEY_ID.lessOrEqual(ULong.valueOf(metadata.getMaxSeqKeyId())));
@@ -709,40 +709,31 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleId(dslContext.select(max(MODULE.MODULE_ID))
                 .from(MODULE)
-                .where(MODULE.MODULE_SET_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxModuleAccManifestId(dslContext.select(max(MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID))
                 .from(MODULE_ACC_MANIFEST)
-                .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleAsccpManifestId(dslContext.select(max(MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID))
                 .from(MODULE_ASCCP_MANIFEST)
-                .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleBccpManifestId(dslContext.select(max(MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID))
                 .from(MODULE_BCCP_MANIFEST)
-                .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleDtManifestId(dslContext.select(max(MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID))
                 .from(MODULE_DT_MANIFEST)
-                .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleAgencyIdListManifestId(dslContext.select(max(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID))
                 .from(MODULE_AGENCY_ID_LIST_MANIFEST)
-                .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleCodeListManifestId(dslContext.select(max(MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID))
                 .from(MODULE_CODE_LIST_MANIFEST)
-                .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleXbtManifestId(dslContext.select(max(MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID))
                 .from(MODULE_XBT_MANIFEST)
-                .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleBlobContentManifestId(dslContext.select(max(MODULE_BLOB_CONTENT_MANIFEST.MODULE_BLOB_CONTENT_MANIFEST_ID))
                 .from(MODULE_BLOB_CONTENT_MANIFEST)
-                .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleSetReleaseId())))
                 .fetchOneInto(BigInteger.class));
 
         return metadata;

@@ -87,10 +87,10 @@ public class ModuleSetReleaseService {
         FileUtils.forceMkdir(baseDir);
 
         List<File> files = new ArrayList<>();
-        Map<BigInteger, ImportedDataProvider> dataProviderMap = new HashMap();
+        Map<String, ImportedDataProvider> dataProviderMap = new HashMap();
 
         for (BigInteger asccpManifestId : asccpManifestIdList) {
-            BigInteger moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId)).toBigInteger();
+            String moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId));
             if (!dataProviderMap.containsKey(moduleSetReleaseId)) {
                 dataProviderMap.put(moduleSetReleaseId, new ImportedDataProvider(ccRepository, moduleSetReleaseId));
             }
@@ -117,7 +117,7 @@ public class ModuleSetReleaseService {
         }
     }
 
-    public File exportModuleSetRelease(ScoreUser user, BigInteger moduleSetReleaseId) throws Exception {
+    public File exportModuleSetRelease(ScoreUser user, String moduleSetReleaseId) throws Exception {
         GetModuleSetReleaseRequest request = new GetModuleSetReleaseRequest(user);
         request.setModuleSetReleaseId(moduleSetReleaseId);
         ModuleSetRelease moduleSetRelease = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(request).getModuleSetRelease();
@@ -174,7 +174,7 @@ public class ModuleSetReleaseService {
         return assignComponents;
     }
 
-    public ModuleAssignComponents getAssignedCCs(ScoreUser user, BigInteger moduleSetReleaseId, BigInteger moduleId) {
+    public ModuleAssignComponents getAssignedCCs(ScoreUser user, String moduleSetReleaseId, String moduleId) {
         ModuleAssignComponents assignComponents = new ModuleAssignComponents();
         GetAssignedCCListRequest request = new GetAssignedCCListRequest(user);
         request.setModuleSetReleaseId(moduleSetReleaseId);

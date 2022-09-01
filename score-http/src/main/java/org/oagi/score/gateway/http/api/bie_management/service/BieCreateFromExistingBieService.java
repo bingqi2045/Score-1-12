@@ -123,10 +123,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             }
             BieCreateRequest bieRequest = new BieCreateRequest();
             bieRequest.setAsccpManifestId(request.getAsccpManifestId());
-            List<BigInteger> bizCtxIds = dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
-            .from(BIZ_CTX_ASSIGNMENT)
-            .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepRecord.getTopLevelAsbiepId()))
-            .fetchStreamInto(BigInteger.class).collect(Collectors.toList());
+            List<String> bizCtxIds = dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                    .from(BIZ_CTX_ASSIGNMENT)
+                    .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepRecord.getTopLevelAsbiepId()))
+                    .fetchInto(String.class);
             bieRequest.setBizCtxIds(bizCtxIds);
             bieService.createBie(user, bieRequest);
         }
@@ -369,7 +369,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private final TopLevelAsbiep sourceTopLevelAsbiep;
         private final TopLevelAsbiep targetTopLevelAsbiep;
-        private List<BigInteger> bizCtxIds;
+        private List<String> bizCtxIds;
         private final String userId;
         private final String sourceAsccpKey;
 
@@ -410,7 +410,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 bizCtxIds = dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                         .from(BIZ_CTX_ASSIGNMENT)
                         .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(sourceTopLevelAsbiepId)))
-                        .fetchInto(BigInteger.class);
+                        .fetchInto(String.class);
             }
             userId = event.getUserId();
 

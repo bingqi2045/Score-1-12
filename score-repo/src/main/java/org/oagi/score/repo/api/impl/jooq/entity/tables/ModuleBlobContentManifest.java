@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function8;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -58,16 +57,16 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     /**
      * The column
      * <code>oagi.module_blob_content_manifest.module_blob_content_manifest_id</code>.
-     * Primary key.
+     * Primary, internal database key.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("module_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleBlobContentManifestRecord, String> MODULE_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("module_blob_content_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column
      * <code>oagi.module_blob_content_manifest.module_set_release_id</code>. A
      * foreign key of the module set release record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleBlobContentManifestRecord, String> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column
@@ -80,7 +79,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
      * The column <code>oagi.module_blob_content_manifest.module_id</code>. This
      * indicates a module.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module.");
+    public final TableField<ModuleBlobContentManifestRecord, String> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.CHAR(36).nullable(false), this, "This indicates a module.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.created_by</code>.
@@ -154,11 +153,6 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK);
-    }
-
-    @Override
-    public Identity<ModuleBlobContentManifestRecord, ULong> getIdentity() {
-        return (Identity<ModuleBlobContentManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -275,21 +269,21 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

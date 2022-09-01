@@ -8,13 +8,13 @@ public class CreateModuleSetResponse extends Response {
 
     private final ModuleSet moduleSet;
 
-    private BigInteger rootModuleId;
+    private String rootModuleId;
 
-    public BigInteger getRootModuleId() {
+    public String getRootModuleId() {
         return rootModuleId;
     }
 
-    public void setRootModuleId(BigInteger rootModuleId) {
+    public void setRootModuleId(String rootModuleId) {
         this.rootModuleId = rootModuleId;
     }
 

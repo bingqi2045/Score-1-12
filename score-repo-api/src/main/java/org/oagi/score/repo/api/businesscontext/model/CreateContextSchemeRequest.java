@@ -20,7 +20,7 @@ public class CreateContextSchemeRequest extends Request {
 
     private String schemeVersionId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private Collection<ContextSchemeValue> contextSchemeValueList;
 
@@ -93,15 +93,15 @@ public class CreateContextSchemeRequest extends Request {
         return this;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public CreateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+    public CreateContextSchemeRequest withContextCategoryId(String contextCategoryId) {
         this.setContextCategoryId(contextCategoryId);
         return this;
     }

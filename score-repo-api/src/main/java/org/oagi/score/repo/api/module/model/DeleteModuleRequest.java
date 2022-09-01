@@ -7,23 +7,23 @@ import java.math.BigInteger;
 
 public class DeleteModuleRequest extends Request {
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    private BigInteger moduleId;
+    private String moduleId;
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

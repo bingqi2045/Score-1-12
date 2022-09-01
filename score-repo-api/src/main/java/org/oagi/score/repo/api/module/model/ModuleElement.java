@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ModuleElement extends Auditable implements Comparable<ModuleElement>, Serializable {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
     private String name;
 
@@ -24,7 +24,7 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
 
     private boolean isDirectory;
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private List<ModuleElement> child;
 
@@ -36,11 +36,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         this.child = child;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
@@ -100,11 +100,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         isDirectory = directory;
     }
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 

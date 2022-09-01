@@ -56,7 +56,7 @@ public class JooqContextCategoryReadRepository
     private RecordMapper<Record, ContextCategory> mapper() {
         return record -> {
             ContextCategory contextCategory = new ContextCategory();
-            contextCategory.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID).toBigInteger());
+            contextCategory.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID));
             contextCategory.setGuid(record.get(CTX_CATEGORY.GUID));
             contextCategory.setName(record.get(CTX_CATEGORY.NAME));
             contextCategory.setDescription(record.get(CTX_CATEGORY.DESCRIPTION));
@@ -104,10 +104,10 @@ public class JooqContextCategoryReadRepository
             GetContextCategoryRequest request) throws ScoreDataAccessException {
         ContextCategory contextCategory = null;
 
-        BigInteger contextCategoryId = request.getContextCategoryId();
-        if (!isNull(contextCategoryId)) {
+        String contextCategoryId = request.getContextCategoryId();
+        if (StringUtils.hasLength(contextCategoryId)) {
             contextCategory = (ContextCategory) select()
-                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategoryId)))
+                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategoryId))
                     .fetchOne(mapper());
         }
 
@@ -120,7 +120,7 @@ public class JooqContextCategoryReadRepository
         if (!request.getContextCategoryIds().isEmpty()) {
             if (request.getContextCategoryIds().size() == 1) {
                 conditions.add(CTX_CATEGORY.CTX_CATEGORY_ID.eq(
-                        ULong.valueOf(request.getContextCategoryIds().iterator().next())
+                        request.getContextCategoryIds().iterator().next()
                 ));
             } else {
                 conditions.add(CTX_CATEGORY.CTX_CATEGORY_ID.in(

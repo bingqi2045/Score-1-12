@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class BizCtx {
 
-    private BigInteger bizCtxId = BigInteger.ZERO;
+    private String bizCtxId;
     private String guid;
     private String name;
     private String createdBy;

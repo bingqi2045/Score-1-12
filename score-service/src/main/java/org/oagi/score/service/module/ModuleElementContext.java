@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 
 public class ModuleElementContext {
-    private Map<BigInteger, List<Module>> filesByParentMap;
-    private Map<BigInteger, List<Module>> directoriesByParentMap;
+    private Map<String, List<Module>> filesByParentMap;
+    private Map<String, List<Module>> directoriesByParentMap;
 
     private ModuleElement rootElement;
 
 
-    public ModuleElementContext(ModuleSetReadRepository repository, BigInteger moduleSetId) {
+    public ModuleElementContext(ModuleSetReadRepository repository, String moduleSetId) {
         List<Module> modules = repository.getAllModules(moduleSetId);
         List<Module> files = modules.stream().filter(e -> e.getType().equals(ModuleType.FILE.name())).collect(Collectors.toList());
         List<Module> dirs = modules.stream().filter(e -> e.getType().equals(ModuleType.DIRECTORY.name())).collect(Collectors.toList());

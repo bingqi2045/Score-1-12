@@ -10,5 +10,5 @@ public class ModuleSetRequest {
     public String description;
     public boolean createModuleSetRelease;
     public String targetReleaseId;
-    public BigInteger targetModuleSetReleaseId;
+    public String targetModuleSetReleaseId;
 }

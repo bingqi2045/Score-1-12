@@ -10,7 +10,7 @@ import java.util.List;
 public class BieCreateRequest {
 
     private BigInteger asccpManifestId;
-    private List<BigInteger> bizCtxIds;
+    private List<String> bizCtxIds;
 
     public ULong asccpManifestId() {
         return ULong.valueOf(asccpManifestId);

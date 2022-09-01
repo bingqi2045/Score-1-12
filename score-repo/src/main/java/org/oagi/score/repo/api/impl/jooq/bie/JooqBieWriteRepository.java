@@ -105,11 +105,11 @@ public class JooqBieWriteRepository
     }
 
     private void insertBizCtxAssignment(TopLevelAsbiepRecord topLevelAsbiepRecord,
-                                        BigInteger bizCtxId) {
+                                        String bizCtxId) {
 
         BizCtxAssignmentRecord bizCtxAssignmentRecord = new BizCtxAssignmentRecord();
         bizCtxAssignmentRecord.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId());
-        bizCtxAssignmentRecord.setBizCtxId(ULong.valueOf(bizCtxId));
+        bizCtxAssignmentRecord.setBizCtxId(bizCtxId);
 
         dslContext().insertInto(BIZ_CTX_ASSIGNMENT)
                 .set(bizCtxAssignmentRecord)

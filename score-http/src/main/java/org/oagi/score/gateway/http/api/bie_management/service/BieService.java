@@ -95,7 +95,7 @@ public class BieService {
             throw new IllegalArgumentException("`ASCCP` parameter must not be null.");
         }
 
-        List<BigInteger> bizCtxIds = request.getBizCtxIds();
+        List<String> bizCtxIds = request.getBizCtxIds();
         if (bizCtxIds == null || bizCtxIds.isEmpty()) {
             throw new IllegalArgumentException("`bizCtxIds` parameter must not be null.");
         }
@@ -473,8 +473,8 @@ public class BieService {
     }
 
     @Transactional
-    public void assignBizCtx(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, Collection<Long> biz_ctx_list) {
-        ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
+    public void assignBizCtx(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, Collection<String> bizCtxList) {
+        ArrayList<String> newList = new ArrayList<>(bizCtxList);
         //remove all records of previous assignment if not in the current assignment
         dslContext.delete(BIZ_CTX_ASSIGNMENT)
                 .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
@@ -483,7 +483,7 @@ public class BieService {
         for (int i = 0; i < newList.size(); i++) {
             dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
                     .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
-                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
+                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, newList.get(i))
                     .onDuplicateKeyIgnore()
                     .execute();
             //if a couple (biz ctx id , toplevelasbiepId) already exist dont insert it - just update it.

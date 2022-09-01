@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function10;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
@@ -55,15 +53,15 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
     /**
      * The column <code>oagi.module_set_release.module_set_release_id</code>.
-     * Primary key.
+     * Primary, internal database key.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleSetReleaseRecord, String> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module_set_release.module_set_id</code>. A foreign
      * key of the module set.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
+    public final TableField<ModuleSetReleaseRecord, String> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set.");
 
     /**
      * The column <code>oagi.module_set_release.release_id</code>. Foreign key
@@ -152,11 +150,6 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<ModuleSetReleaseRecord, ULong> getIdentity() {
-        return (Identity<ModuleSetReleaseRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -260,21 +253,21 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, String, String, String, Byte, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<String, String, String, String, String, Byte, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

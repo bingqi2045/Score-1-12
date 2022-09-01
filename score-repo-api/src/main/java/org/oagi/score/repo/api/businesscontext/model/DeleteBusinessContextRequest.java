@@ -10,34 +10,34 @@ import java.util.List;
 
 public class DeleteBusinessContextRequest extends Request {
 
-    private List<BigInteger> businessContextIdList = Collections.emptyList();
+    private List<String> businessContextIdList = Collections.emptyList();
 
     public DeleteBusinessContextRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public List<BigInteger> getBusinessContextIdList() {
+    public List<String> getBusinessContextIdList() {
         return businessContextIdList;
     }
 
-    public void setBusinessContextId(BigInteger businessContextId) {
+    public void setBusinessContextId(String businessContextId) {
         if (businessContextId != null) {
             this.businessContextIdList = Arrays.asList(businessContextId);
         }
     }
 
-    public DeleteBusinessContextRequest withBusinessContextId(BigInteger businessContextId) {
+    public DeleteBusinessContextRequest withBusinessContextId(String businessContextId) {
         this.setBusinessContextId(businessContextId);
         return this;
     }
 
-    public void setBusinessContextIdList(List<BigInteger> businessContextIdList) {
+    public void setBusinessContextIdList(List<String> businessContextIdList) {
         if (businessContextIdList != null) {
             this.businessContextIdList = businessContextIdList;
         }
     }
 
-    public DeleteBusinessContextRequest withBusinessContextIdList(List<BigInteger> businessContextIdList) {
+    public DeleteBusinessContextRequest withBusinessContextIdList(List<String> businessContextIdList) {
         this.setBusinessContextIdList(businessContextIdList);
         return this;
     }

@@ -70,7 +70,7 @@ public class ContextCategoryService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<ContextScheme> getContextSchemeByCategoryId(BigInteger ctxCategoryId) {
+    public List<ContextScheme> getContextSchemeByCategoryId(String ctxCategoryId) {
         return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
@@ -84,13 +84,13 @@ public class ContextCategoryService {
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP)
                 .from(CTX_SCHEME)
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
+                .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ctxCategoryId))
                 .fetchStream().map(r -> {
                     ContextScheme contextScheme = new ContextScheme();
-                    contextScheme.setContextSchemeId(r.get(CTX_SCHEME.CTX_SCHEME_ID).toBigInteger());
+                    contextScheme.setContextSchemeId(r.get(CTX_SCHEME.CTX_SCHEME_ID));
                     contextScheme.setGuid(r.get(CTX_SCHEME.GUID));
                     contextScheme.setSchemeName(r.get(CTX_SCHEME.SCHEME_NAME));
-                    contextScheme.setContextCategoryId(r.get(CTX_SCHEME.CTX_CATEGORY_ID).toBigInteger());
+                    contextScheme.setContextCategoryId(r.get(CTX_SCHEME.CTX_CATEGORY_ID));
                     contextScheme.setContextCategoryName(r.get(CTX_CATEGORY.NAME.as("ctx_category_name")));
                     contextScheme.setSchemeId(r.get(CTX_SCHEME.SCHEME_ID));
                     contextScheme.setSchemeAgencyId(r.get(CTX_SCHEME.SCHEME_AGENCY_ID));

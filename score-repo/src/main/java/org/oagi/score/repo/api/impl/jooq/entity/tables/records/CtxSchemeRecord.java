@@ -20,24 +20,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
  * context category.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> {
+public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary,
+     * Setter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Primary, internal
      * database key.
      */
-    public void setCtxSchemeId(ULong value) {
+    public void setCtxSchemeId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary,
+     * Getter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Primary, internal
      * database key.
      */
-    public ULong getCtxSchemeId() {
-        return (ULong) get(0);
+    public String getCtxSchemeId() {
+        return (String) get(0);
     }
 
     /**
@@ -143,7 +143,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * key to the CTX_CATEGORY table. It identifies the context category
      * associated with this context scheme.
      */
-    public void setCtxCategoryId(ULong value) {
+    public void setCtxCategoryId(String value) {
         set(7, value);
     }
 
@@ -152,8 +152,8 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * key to the CTX_CATEGORY table. It identifies the context category
      * associated with this context scheme.
      */
-    public ULong getCtxCategoryId() {
-        return (ULong) get(7);
+    public String getCtxCategoryId() {
+        return (String) get(7);
     }
 
     /**
@@ -245,7 +245,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -254,17 +254,17 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CtxScheme.CTX_SCHEME.CTX_SCHEME_ID;
     }
 
@@ -299,7 +299,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public Field<ULong> field8() {
+    public Field<String> field8() {
         return CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID;
     }
 
@@ -329,7 +329,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCtxSchemeId();
     }
 
@@ -364,7 +364,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong component8() {
+    public String component8() {
         return getCtxCategoryId();
     }
 
@@ -394,7 +394,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCtxSchemeId();
     }
 
@@ -429,7 +429,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong value8() {
+    public String value8() {
         return getCtxCategoryId();
     }
 
@@ -459,7 +459,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord value1(ULong value) {
+    public CtxSchemeRecord value1(String value) {
         setCtxSchemeId(value);
         return this;
     }
@@ -501,7 +501,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord value8(ULong value) {
+    public CtxSchemeRecord value8(String value) {
         setCtxCategoryId(value);
         return this;
     }
@@ -537,7 +537,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, ULong value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
+    public CtxSchemeRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, ULong value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -568,7 +568,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     /**
      * Create a detached, initialised CtxSchemeRecord
      */
-    public CtxSchemeRecord(ULong ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, ULong ctxCategoryId, ULong codeListId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public CtxSchemeRecord(String ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, String ctxCategoryId, ULong codeListId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxScheme.CTX_SCHEME);
 
         setCtxSchemeId(ctxSchemeId);

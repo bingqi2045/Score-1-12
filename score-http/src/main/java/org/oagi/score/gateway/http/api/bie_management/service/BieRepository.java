@@ -496,11 +496,11 @@ public class BieRepository {
                 .fetchInto(Long.class);
     }
 
-    public void createBizCtxAssignments(BigInteger topLevelAsbiepId, List<BigInteger> bizCtxIds) {
+    public void createBizCtxAssignments(BigInteger topLevelAsbiepId, List<String> bizCtxIds) {
         bizCtxIds.stream().forEach(bizCtxId -> {
             dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
                     .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
-                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId)
                     .execute();
         });
     }

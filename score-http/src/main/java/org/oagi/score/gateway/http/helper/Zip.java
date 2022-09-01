@@ -61,7 +61,7 @@ public class Zip {
             for (File targetFile : targetFiles) {
                 logger.info("Adding: " + targetFile);
                 URI relativePath = currentPath.relativize(targetFile.toURI());
-                zipFile(targetFile, relativePath.toString(), out);
+                zipFile(targetFile, relativePath.getPath(), out);
             }
         }
 

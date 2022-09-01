@@ -270,21 +270,10 @@ END//
 DROP PROCEDURE IF EXISTS `update_uuid`//
 CREATE PROCEDURE `update_uuid`(IN table_name VARCHAR(100))
 BEGIN
-    DECLARE currentRow INT;
-
-    SET @sql = CONCAT('SELECT COUNT(*) INTO @rowCount FROM `', table_name, '`');
+    SET @sql = CONCAT('UPDATE `', table_name, '` SET `', table_name, '_uuid` = uuid_v4s() WHERE `', table_name, '_uuid` IS NULL');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
-    SET currentRow = 0;
-
-    updateLoop: WHILE (currentRow < @rowCount) DO
-            SET @sql = CONCAT('UPDATE `', table_name, '` SET `', table_name, '_uuid` = uuid_v4s() WHERE `', table_name, '_uuid` IS NULL LIMIT 1');
-            PREPARE stmt FROM @sql;
-            EXECUTE stmt;
-            DEALLOCATE PREPARE stmt;
-            SET currentRow = currentRow + 1;
-        END WHILE updateLoop;
 END//
 DELIMITER ;
 
@@ -1692,6 +1681,347 @@ ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_log_id_fk` FOREIGN KEY
 ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
 ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
 ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+
+-- ---------------------------------------------------------------------------
+-- Change `ctx_category_id`, `ctx_scheme_id`, `ctx_scheme_value_id`,        --
+--        `biz_ctx_id`, `biz_ctx_value_id`, `biz_ctx_assignment_id` TO UUID --
+-- ---------------------------------------------------------------------------
+ALTER TABLE `ctx_category` ADD COLUMN `ctx_category_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ctx_category_id`;
+CALL update_uuid('ctx_category');
+
+ALTER TABLE `ctx_scheme` ADD COLUMN `ctx_scheme_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ctx_scheme_id`;
+CALL update_uuid('ctx_scheme');
+
+ALTER TABLE `ctx_scheme_value` ADD COLUMN `ctx_scheme_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ctx_scheme_value_id`;
+CALL update_uuid('ctx_scheme_value');
+
+ALTER TABLE `biz_ctx` ADD COLUMN `biz_ctx_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `biz_ctx_id`;
+CALL update_uuid('biz_ctx');
+
+ALTER TABLE `biz_ctx_value` ADD COLUMN `biz_ctx_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `biz_ctx_value_id`;
+CALL update_uuid('biz_ctx_value');
+
+ALTER TABLE `biz_ctx_assignment` ADD COLUMN `biz_ctx_assignment_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `biz_ctx_assignment_id`;
+CALL update_uuid('biz_ctx_assignment');
+
+ALTER TABLE `ctx_scheme` ADD COLUMN `ctx_category_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.' AFTER `ctx_category_id`;
+UPDATE `ctx_category`, `ctx_scheme` SET `ctx_scheme`.`ctx_category_uuid` = `ctx_category`.`ctx_category_uuid`
+WHERE `ctx_category`.`ctx_category_id` = `ctx_scheme`.`ctx_category_id`;
+
+ALTER TABLE `ctx_scheme_value` ADD COLUMN `owner_ctx_scheme_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.' AFTER `owner_ctx_scheme_id`;
+UPDATE `ctx_scheme`, `ctx_scheme_value` SET `ctx_scheme_value`.`owner_ctx_scheme_uuid` = `ctx_scheme`.`ctx_scheme_uuid`
+WHERE `ctx_scheme`.`ctx_scheme_id` = `ctx_scheme_value`.`owner_ctx_scheme_id`;
+
+ALTER TABLE `biz_ctx_value` ADD COLUMN `ctx_scheme_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CTX_SCHEME_VALUE table.' AFTER `ctx_scheme_value_id`;
+UPDATE `ctx_scheme_value`, `biz_ctx_value` SET `biz_ctx_value`.`ctx_scheme_value_uuid` = `ctx_scheme_value`.`ctx_scheme_value_uuid`
+WHERE `ctx_scheme_value`.`ctx_scheme_value_id` = `biz_ctx_value`.`ctx_scheme_value_id`;
+
+ALTER TABLE `biz_ctx_value` ADD COLUMN `biz_ctx_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the biz_ctx table.' AFTER `biz_ctx_id`;
+UPDATE `biz_ctx`, `biz_ctx_value` SET `biz_ctx_value`.`biz_ctx_uuid` = `biz_ctx`.`biz_ctx_uuid`
+WHERE `biz_ctx`.`biz_ctx_id` = `biz_ctx_value`.`biz_ctx_id`;
+
+ALTER TABLE `biz_ctx_assignment` ADD COLUMN `biz_ctx_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the biz_ctx table.' AFTER `biz_ctx_id`;
+UPDATE `biz_ctx`, `biz_ctx_assignment` SET `biz_ctx_assignment`.`biz_ctx_uuid` = `biz_ctx`.`biz_ctx_uuid`
+WHERE `biz_ctx`.`biz_ctx_id` = `biz_ctx_assignment`.`biz_ctx_id`;
+
+ALTER TABLE `abie` ADD COLUMN `biz_ctx_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT '(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.' AFTER `biz_ctx_id`;
+UPDATE `biz_ctx`, `abie` SET `abie`.`biz_ctx_uuid` = `biz_ctx`.`biz_ctx_uuid`
+WHERE `biz_ctx`.`biz_ctx_id` = `abie`.`biz_ctx_id`;
+
+-- Drop old `ctx_category_id`, `ctx_scheme_id`, `ctx_scheme_value_id`,
+-- `biz_ctx_id`, `biz_ctx_value_id`, and `biz_ctx_assignment_id`  columns
+ALTER TABLE `biz_ctx_assignment` DROP FOREIGN KEY `biz_ctx_assignment_biz_ctx_id_fk`;
+ALTER TABLE `biz_ctx_assignment` DROP KEY `biz_ctx_assignment_uk`;
+ALTER TABLE `biz_ctx_assignment` DROP COLUMN `biz_ctx_id`;
+
+ALTER TABLE `biz_ctx_value` DROP FOREIGN KEY `biz_ctx_value_biz_ctx_id_fk`;
+ALTER TABLE `biz_ctx_value` DROP COLUMN `biz_ctx_id`;
+
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_biz_ctx_id_fk`;
+ALTER TABLE `abie` DROP COLUMN `biz_ctx_id`;
+
+ALTER TABLE `biz_ctx_value` DROP FOREIGN KEY `biz_ctx_value_ctx_scheme_value_id_fk`;
+ALTER TABLE `biz_ctx_value` DROP COLUMN `ctx_scheme_value_id`;
+
+ALTER TABLE `ctx_scheme_value` DROP FOREIGN KEY `ctx_scheme_value_owner_ctx_scheme_id_fk`;
+ALTER TABLE `ctx_scheme_value` DROP COLUMN `owner_ctx_scheme_id`;
+
+ALTER TABLE `ctx_scheme` DROP FOREIGN KEY `ctx_scheme_ctx_category_id_fk`;
+ALTER TABLE `ctx_scheme` DROP COLUMN `ctx_category_id`;
+
+ALTER TABLE `ctx_category` DROP COLUMN `ctx_category_id`;
+ALTER TABLE `ctx_scheme` DROP COLUMN `ctx_scheme_id`;
+ALTER TABLE `ctx_scheme_value` DROP COLUMN `ctx_scheme_value_id`;
+ALTER TABLE `biz_ctx` DROP COLUMN `biz_ctx_id`;
+ALTER TABLE `biz_ctx_value` DROP COLUMN `biz_ctx_value_id`;
+ALTER TABLE `biz_ctx_assignment` DROP COLUMN `biz_ctx_assignment_id`;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `ctx_category` CHANGE `ctx_category_uuid` `ctx_category_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ctx_scheme` CHANGE `ctx_scheme_uuid` `ctx_scheme_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ctx_scheme_value` CHANGE `ctx_scheme_value_uuid` `ctx_scheme_value_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `biz_ctx` CHANGE `biz_ctx_uuid` `biz_ctx_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `biz_ctx_value` CHANGE `biz_ctx_value_uuid` `biz_ctx_value_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `biz_ctx_assignment` CHANGE `biz_ctx_assignment_uuid` `biz_ctx_assignment_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `ctx_scheme` CHANGE `ctx_category_uuid` `ctx_category_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.';
+ALTER TABLE `ctx_scheme_value` CHANGE `owner_ctx_scheme_uuid` `owner_ctx_scheme_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.';
+ALTER TABLE `biz_ctx_value` CHANGE `ctx_scheme_value_uuid` `ctx_scheme_value_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the CTX_SCHEME_VALUE table.';
+ALTER TABLE `biz_ctx_value` CHANGE `biz_ctx_uuid` `biz_ctx_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the biz_ctx table.';
+ALTER TABLE `biz_ctx_assignment` CHANGE `biz_ctx_uuid` `biz_ctx_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the biz_ctx table.';
+ALTER TABLE `abie` CHANGE `biz_ctx_uuid` `biz_ctx_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT '(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.';
+
+-- Add foreign key constraints
+ALTER TABLE `ctx_category` ADD PRIMARY KEY (`ctx_category_id`);
+ALTER TABLE `ctx_scheme` ADD PRIMARY KEY (`ctx_scheme_id`);
+ALTER TABLE `ctx_scheme_value` ADD PRIMARY KEY (`ctx_scheme_value_id`);
+ALTER TABLE `biz_ctx` ADD PRIMARY KEY (`biz_ctx_id`);
+ALTER TABLE `biz_ctx_value` ADD PRIMARY KEY (`biz_ctx_value_id`);
+ALTER TABLE `biz_ctx_assignment` ADD PRIMARY KEY (`biz_ctx_assignment_id`);
+
+ALTER TABLE `ctx_scheme` ADD CONSTRAINT `ctx_scheme_ctx_category_id_fk` FOREIGN KEY (`ctx_category_id`) REFERENCES `ctx_category` (`ctx_category_id`);
+ALTER TABLE `ctx_scheme_value` ADD CONSTRAINT `ctx_scheme_value_owner_ctx_scheme_id_fk` FOREIGN KEY (`owner_ctx_scheme_id`) REFERENCES `ctx_scheme` (`ctx_scheme_id`);
+ALTER TABLE `biz_ctx_value` ADD CONSTRAINT `biz_ctx_value_ctx_scheme_value_id_fk` FOREIGN KEY (`ctx_scheme_value_id`) REFERENCES `ctx_scheme_value` (`ctx_scheme_value_id`);
+ALTER TABLE `biz_ctx_value` ADD CONSTRAINT `biz_ctx_value_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
+ALTER TABLE `biz_ctx_assignment` ADD CONSTRAINT `biz_ctx_assignment_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
+ALTER TABLE `abie` ADD CONSTRAINT `abie_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
+
+-- --------------------------------------------------------------------------------------------------
+-- Change `module_id`, `module_acc_manifest_id`, `module_agency_id_list_manifest_id`,              --
+--        `module_asccp_manifest_id`, `module_bccp_manifest_id`, `module_blob_content_manifest_id` --
+--        `module_code_list_manifest_id`, `module_dt_manifest_id`, `module_set_id`                 --
+--        `module_set_release_id`, `module_xbt_manifest_id` TO UUID                                --
+-- --------------------------------------------------------------------------------------------------
+ALTER TABLE `module` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_id`;
+CALL update_uuid('module');
+
+ALTER TABLE `module_acc_manifest` ADD COLUMN `module_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_acc_manifest_id`;
+CALL update_uuid('module_acc_manifest');
+
+ALTER TABLE `module_agency_id_list_manifest` ADD COLUMN `module_agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_agency_id_list_manifest_id`;
+CALL update_uuid('module_agency_id_list_manifest');
+
+ALTER TABLE `module_asccp_manifest` ADD COLUMN `module_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_asccp_manifest_id`;
+CALL update_uuid('module_asccp_manifest');
+
+ALTER TABLE `module_bccp_manifest` ADD COLUMN `module_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_bccp_manifest_id`;
+CALL update_uuid('module_bccp_manifest');
+
+ALTER TABLE `module_blob_content_manifest` ADD COLUMN `module_blob_content_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_blob_content_manifest_id`;
+CALL update_uuid('module_blob_content_manifest');
+
+ALTER TABLE `module_code_list_manifest` ADD COLUMN `module_code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_code_list_manifest_id`;
+CALL update_uuid('module_code_list_manifest');
+
+ALTER TABLE `module_dt_manifest` ADD COLUMN `module_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_dt_manifest_id`;
+CALL update_uuid('module_dt_manifest');
+
+ALTER TABLE `module_set` ADD COLUMN `module_set_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_set_id`;
+CALL update_uuid('module_set');
+
+ALTER TABLE `module_set_release` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_set_release_id`;
+CALL update_uuid('module_set_release');
+
+ALTER TABLE `module_xbt_manifest` ADD COLUMN `module_xbt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `module_xbt_manifest_id`;
+CALL update_uuid('module_xbt_manifest');
+
+ALTER TABLE `module` ADD COLUMN `module_set_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module set.' AFTER `module_set_id`;
+UPDATE `module`, `module_set` SET `module`.`module_set_uuid` = `module_set`.`module_set_uuid`
+WHERE `module`.`module_set_id` = `module_set`.`module_set_id`;
+
+ALTER TABLE `module` ADD COLUMN `parent_module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a parent module id. root module will be NULL.' AFTER `parent_module_id`;
+UPDATE `module`, `module` AS parent_module SET parent_module.`parent_module_uuid` = `module`.`module_uuid`
+WHERE `module`.`module_id` = parent_module.`parent_module_id`;
+
+ALTER TABLE `module_acc_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_acc_manifest`, `module_set_release` SET `module_acc_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_acc_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_acc_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_acc_manifest`, `module` SET `module_acc_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_acc_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_agency_id_list_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_agency_id_list_manifest`, `module_set_release` SET `module_agency_id_list_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_agency_id_list_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_agency_id_list_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_agency_id_list_manifest`, `module` SET `module_agency_id_list_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_agency_id_list_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_asccp_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_asccp_manifest`, `module_set_release` SET `module_asccp_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_asccp_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_asccp_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_asccp_manifest`, `module` SET `module_asccp_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_asccp_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_bccp_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_bccp_manifest`, `module_set_release` SET `module_bccp_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_bccp_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_bccp_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_bccp_manifest`, `module` SET `module_bccp_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_bccp_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_blob_content_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_blob_content_manifest`, `module_set_release` SET `module_blob_content_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_blob_content_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_blob_content_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_blob_content_manifest`, `module` SET `module_blob_content_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_blob_content_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_code_list_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_code_list_manifest`, `module_set_release` SET `module_code_list_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_code_list_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_code_list_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_code_list_manifest`, `module` SET `module_code_list_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_code_list_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_dt_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_dt_manifest`, `module_set_release` SET `module_dt_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_dt_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_dt_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_dt_manifest`, `module` SET `module_dt_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_dt_manifest`.`module_id` = `module`.`module_id`;
+
+ALTER TABLE `module_set_release` ADD COLUMN `module_set_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set.' AFTER `module_set_id`;
+UPDATE `module_set_release`, `module_set` SET `module_set_release`.`module_set_uuid` = `module_set`.`module_set_uuid`
+WHERE `module_set_release`.`module_set_id` = `module_set`.`module_set_id`;
+
+ALTER TABLE `module_xbt_manifest` ADD COLUMN `module_set_release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the module set release record.' AFTER `module_set_release_id`;
+UPDATE `module_xbt_manifest`, `module_set_release` SET `module_xbt_manifest`.`module_set_release_uuid` = `module_set_release`.`module_set_release_uuid`
+WHERE `module_xbt_manifest`.`module_set_release_id` = `module_set_release`.`module_set_release_id`;
+ALTER TABLE `module_xbt_manifest` ADD COLUMN `module_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a module.' AFTER `module_id`;
+UPDATE `module_xbt_manifest`, `module` SET `module_xbt_manifest`.`module_uuid` = `module`.`module_uuid`
+WHERE `module_xbt_manifest`.`module_id` = `module`.`module_id`;
+
+-- Drop old `module_id`, `module_acc_manifest_id`, `module_agency_id_list_manifest_id`,
+-- `module_asccp_manifest_id`, `module_bccp_manifest_id`, `module_blob_content_manifest_id`
+-- `module_code_list_manifest_id`, `module_dt_manifest_id`, `module_set_id`
+-- `module_set_release_id`, `module_xbt_manifest_id` columns
+ALTER TABLE `module` DROP FOREIGN KEY `module_module_set_id_fk`;
+ALTER TABLE `module` DROP COLUMN `module_set_id`;
+ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_module_set_id_fk`;
+ALTER TABLE `module_set_release` DROP COLUMN `module_set_id`;
+ALTER TABLE `module` DROP FOREIGN KEY `module_parent_module_id_fk`;
+ALTER TABLE `module` DROP COLUMN `parent_module_id`;
+
+ALTER TABLE `module_acc_manifest` DROP FOREIGN KEY `module_acc_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_agency_id_list_manifest` DROP FOREIGN KEY `module_agency_id_list_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_asccp_manifest` DROP FOREIGN KEY `module_asccp_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_bccp_manifest` DROP FOREIGN KEY `module_bccp_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_blob_content_manifest` DROP FOREIGN KEY `module_blob_content_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_code_list_manifest` DROP FOREIGN KEY `module_code_list_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_dt_manifest` DROP FOREIGN KEY `module_dt_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_module_set_release_id_fk`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_acc_manifest` DROP FOREIGN KEY `module_acc_manifest_module_id_fk`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_agency_id_list_manifest` DROP FOREIGN KEY `module_agency_id_list_manifest_module_id_fk`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_asccp_manifest` DROP FOREIGN KEY `module_asccp_manifest_module_id_fk`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_bccp_manifest` DROP FOREIGN KEY `module_bccp_manifest_module_id_fk`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_blob_content_manifest` DROP FOREIGN KEY `module_blob_content_manifest_module_id_fk`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_code_list_manifest` DROP FOREIGN KEY `module_code_list_manifest_module_id_fk`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_dt_manifest` DROP FOREIGN KEY `module_dt_manifest_module_id_fk`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `module_id`;
+ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_module_id_fk`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `module_id`;
+
+ALTER TABLE `module` DROP COLUMN `module_id`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `module_acc_manifest_id`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `module_agency_id_list_manifest_id`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `module_asccp_manifest_id`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `module_bccp_manifest_id`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `module_blob_content_manifest_id`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `module_code_list_manifest_id`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `module_dt_manifest_id`;
+ALTER TABLE `module_set` DROP COLUMN `module_set_id`;
+ALTER TABLE `module_set_release` DROP COLUMN `module_set_release_id`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `module_xbt_manifest_id`;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `module` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_acc_manifest` CHANGE `module_acc_manifest_uuid` `module_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_agency_id_list_manifest` CHANGE `module_agency_id_list_manifest_uuid` `module_agency_id_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_asccp_manifest` CHANGE `module_asccp_manifest_uuid` `module_asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_bccp_manifest` CHANGE `module_bccp_manifest_uuid` `module_bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_blob_content_manifest` CHANGE `module_blob_content_manifest_uuid` `module_blob_content_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_code_list_manifest` CHANGE `module_code_list_manifest_uuid` `module_code_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_dt_manifest` CHANGE `module_dt_manifest_uuid` `module_dt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_set` CHANGE `module_set_uuid` `module_set_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_set_release` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `module_xbt_manifest` CHANGE `module_xbt_manifest_uuid` `module_xbt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `module` CHANGE `module_set_uuid` `module_set_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module set.';
+ALTER TABLE `module` CHANGE `parent_module_uuid` `parent_module_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This indicates a parent module id. root module will be NULL.';
+ALTER TABLE `module_acc_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_acc_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_agency_id_list_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_agency_id_list_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_asccp_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_asccp_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_bccp_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_bccp_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_blob_content_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_blob_content_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_code_list_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_code_list_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_dt_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_dt_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+ALTER TABLE `module_set_release` CHANGE `module_set_uuid` `module_set_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set.';
+ALTER TABLE `module_xbt_manifest` CHANGE `module_set_release_uuid` `module_set_release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the module set release record.';
+ALTER TABLE `module_xbt_manifest` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This indicates a module.';
+
+-- Add foreign key constraints
+ALTER TABLE `module` ADD PRIMARY KEY (`module_id`);
+ALTER TABLE `module_acc_manifest` ADD PRIMARY KEY (`module_acc_manifest_id`);
+ALTER TABLE `module_agency_id_list_manifest` ADD PRIMARY KEY (`module_agency_id_list_manifest_id`);
+ALTER TABLE `module_asccp_manifest` ADD PRIMARY KEY (`module_asccp_manifest_id`);
+ALTER TABLE `module_bccp_manifest` ADD PRIMARY KEY (`module_bccp_manifest_id`);
+ALTER TABLE `module_blob_content_manifest` ADD PRIMARY KEY (`module_blob_content_manifest_id`);
+ALTER TABLE `module_code_list_manifest` ADD PRIMARY KEY (`module_code_list_manifest_id`);
+ALTER TABLE `module_dt_manifest` ADD PRIMARY KEY (`module_dt_manifest_id`);
+ALTER TABLE `module_set` ADD PRIMARY KEY (`module_set_id`);
+ALTER TABLE `module_set_release` ADD PRIMARY KEY (`module_set_release_id`);
+ALTER TABLE `module_xbt_manifest` ADD PRIMARY KEY (`module_xbt_manifest_id`);
+
+ALTER TABLE `module` ADD CONSTRAINT `module_module_set_id_fk` FOREIGN KEY (`module_set_id`) REFERENCES `module_set` (`module_set_id`);
+ALTER TABLE `module` ADD CONSTRAINT `module_parent_module_id_fk` FOREIGN KEY (`parent_module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_set_release` ADD CONSTRAINT `module_set_release_module_set_id_fk` FOREIGN KEY (`module_set_id`) REFERENCES `module_set` (`module_set_id`);
+ALTER TABLE `module_acc_manifest`
+    ADD CONSTRAINT `module_acc_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_acc_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_agency_id_list_manifest`
+    ADD CONSTRAINT `module_agency_id_list_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_agency_id_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_asccp_manifest`
+    ADD CONSTRAINT `module_asccp_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_asccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_bccp_manifest`
+    ADD CONSTRAINT `module_bccp_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_bccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_blob_content_manifest`
+    ADD CONSTRAINT `module_blob_content_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_blob_content_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_code_list_manifest`
+    ADD CONSTRAINT `module_code_list_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_code_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_dt_manifest`
+    ADD CONSTRAINT `module_dt_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_dt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
+ALTER TABLE `module_xbt_manifest`
+    ADD CONSTRAINT `module_xbt_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
+    ADD CONSTRAINT `module_xbt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
 
 -- --------------------------
 -- Change `xbt_id` TO UUID --

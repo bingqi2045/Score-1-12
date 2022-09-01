@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class ModuleSet extends Auditable implements Comparable<ModuleSet>, Serializable {
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private String guid;
 
@@ -15,11 +15,11 @@ public class ModuleSet extends Auditable implements Comparable<ModuleSet>, Seria
 
     private String description;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

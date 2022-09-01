@@ -73,7 +73,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSet getModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("id") BigInteger moduleSetId) {
+                                             @PathVariable("id") String moduleSetId) {
         GetModuleSetRequest request = new GetModuleSetRequest(sessionService.asScoreUser(user));
         request.setModuleSetId(moduleSetId);
         GetModuleSetResponse response = service.getModuleSet(request);
@@ -83,7 +83,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/metadata", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSetMetadata getModuleSetMetadata(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                  @PathVariable("id") BigInteger moduleSetId) {
+                                                  @PathVariable("id") String moduleSetId) {
         GetModuleSetMetadataRequest request = new GetModuleSetMetadataRequest(sessionService.asScoreUser(user));
         request.setModuleSetId(moduleSetId);
         GetModuleSetMetadataResponse response = service.getModuleSetMetadata(request);
@@ -93,7 +93,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSet createModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @RequestBody ModuleSetRequest moduleSet) {
+                                     @RequestBody ModuleSetRequest moduleSet) {
         CreateModuleSetRequest request = new CreateModuleSetRequest(sessionService.asScoreUser(user));
         request.setName(moduleSet.getName());
         request.setDescription(moduleSet.getDescription());
@@ -108,8 +108,8 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSet updateModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                @PathVariable("id") BigInteger moduleSetId,
-                                @RequestBody ModuleSet moduleSet) {
+                                     @PathVariable("id") String moduleSetId,
+                                     @RequestBody ModuleSet moduleSet) {
         UpdateModuleSetRequest request = new UpdateModuleSetRequest(sessionService.asScoreUser(user));
         request.setName(moduleSet.getName());
         request.setDescription(moduleSet.getDescription());
@@ -121,7 +121,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void discardModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                 @PathVariable("id") BigInteger moduleSetId) {
+                                 @PathVariable("id") String moduleSetId) {
         DeleteModuleSetRequest request = new DeleteModuleSetRequest(sessionService.asScoreUser(user));
         request.setModuleSetId(moduleSetId);
         service.discardModuleSet(request);
@@ -130,7 +130,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/modules", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleElement getModuleSetModules(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("id") BigInteger moduleSetId) {
+                                             @PathVariable("id") String moduleSetId) {
         GetModuleElementRequest request = new GetModuleElementRequest(sessionService.asScoreUser(user));
         request.setModuleSetId(moduleSetId);
         return service.getModuleSetModules(request);
@@ -139,7 +139,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/module/create", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateModuleResponse addModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("id") BigInteger moduleSetId,
+                                            @PathVariable("id") String moduleSetId,
                                             @RequestBody ModuleElement moduleElement) {
         CreateModuleRequest request = new CreateModuleRequest(sessionService.asScoreUser(user));
         request.setModuleSetId(moduleSetId);
@@ -154,8 +154,8 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/module/{moduleId}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UpdateModuleResponse updateModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @PathVariable("id") BigInteger moduleSetId,
-                                                   @PathVariable("moduleId") BigInteger moduleId,
+                                                   @PathVariable("id") String moduleSetId,
+                                                   @PathVariable("moduleId") String moduleId,
                                                    @RequestBody ModuleElement moduleElement) {
         UpdateModuleRequest request = new UpdateModuleRequest(sessionService.asScoreUser(user));
         request.setModuleId(moduleElement.getModuleId());
@@ -168,8 +168,8 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/module/{moduleId}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteModuleSetModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                      @PathVariable("id") BigInteger moduleSetId,
-                                      @PathVariable("moduleId") BigInteger moduleId) {
+                                      @PathVariable("id") String moduleSetId,
+                                      @PathVariable("moduleId") String moduleId) {
         DeleteModuleRequest request = new DeleteModuleRequest(sessionService.asScoreUser(user));
         request.setModuleId(moduleId);
         service.deleteModule(request);
@@ -178,7 +178,7 @@ public class ModuleSetController {
     @RequestMapping(value = "/module_set/{id}/module/{parentModuleId}/copy", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void copyModule(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                           @PathVariable("id") BigInteger moduleSetId,
+                           @PathVariable("id") String moduleSetId,
                            @PathVariable("parentModuleId") BigInteger parentModuleId,
                            @RequestBody CopyModuleRequest request) {
         request.setRequester(sessionService.asScoreUser(user));

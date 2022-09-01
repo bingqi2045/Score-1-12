@@ -20,7 +20,7 @@ public class CodeList {
     private String definitionSource;
     private BigInteger basedCodeListId = BigInteger.ZERO;
     private boolean extensibleIndicator;
-    private BigInteger moduleId = BigInteger.ZERO;
+    private String moduleId;
     private String createdBy;
     private String lastUpdatedBy;
     private Date creationTimestamp;

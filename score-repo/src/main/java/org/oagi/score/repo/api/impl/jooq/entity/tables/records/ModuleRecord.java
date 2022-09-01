@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record13;
 import org.jooq.Row13;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 
 
@@ -20,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
  * components will be generated during the expression generation.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
+public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +27,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database
      * key.
      */
-    public void setModuleId(ULong value) {
+    public void setModuleId(String value) {
         set(0, value);
     }
 
@@ -36,15 +35,15 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Getter for <code>oagi.module.module_id</code>. Primary, internal database
      * key.
      */
-    public ULong getModuleId() {
-        return (ULong) get(0);
+    public String getModuleId() {
+        return (String) get(0);
     }
 
     /**
      * Setter for <code>oagi.module.module_set_id</code>. This indicates a
      * module set.
      */
-    public void setModuleSetId(ULong value) {
+    public void setModuleSetId(String value) {
         set(1, value);
     }
 
@@ -52,15 +51,15 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Getter for <code>oagi.module.module_set_id</code>. This indicates a
      * module set.
      */
-    public ULong getModuleSetId() {
-        return (ULong) get(1);
+    public String getModuleSetId() {
+        return (String) get(1);
     }
 
     /**
      * Setter for <code>oagi.module.parent_module_id</code>. This indicates a
      * parent module id. root module will be NULL.
      */
-    public void setParentModuleId(ULong value) {
+    public void setParentModuleId(String value) {
         set(2, value);
     }
 
@@ -68,8 +67,8 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Getter for <code>oagi.module.parent_module_id</code>. This indicates a
      * parent module id. root module will be NULL.
      */
-    public ULong getParentModuleId() {
-        return (ULong) get(2);
+    public String getParentModuleId() {
+        return (String) get(2);
     }
 
     /**
@@ -245,7 +244,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -254,27 +253,27 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Module.MODULE.MODULE_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return Module.MODULE.MODULE_SET_ID;
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return Module.MODULE.PARENT_MODULE_ID;
     }
 
@@ -329,17 +328,17 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getModuleId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getModuleSetId();
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getParentModuleId();
     }
 
@@ -394,17 +393,17 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getModuleId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getModuleSetId();
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getParentModuleId();
     }
 
@@ -459,19 +458,19 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ModuleRecord value1(ULong value) {
+    public ModuleRecord value1(String value) {
         setModuleId(value);
         return this;
     }
 
     @Override
-    public ModuleRecord value2(ULong value) {
+    public ModuleRecord value2(String value) {
         setModuleSetId(value);
         return this;
     }
 
     @Override
-    public ModuleRecord value3(ULong value) {
+    public ModuleRecord value3(String value) {
         setParentModuleId(value);
         return this;
     }
@@ -537,7 +536,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ModuleRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
+    public ModuleRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -568,7 +567,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     /**
      * Create a detached, initialised ModuleRecord
      */
-    public ModuleRecord(ULong moduleId, ULong moduleSetId, ULong parentModuleId, String type, String path, String name, String namespaceId, String versionNum, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleRecord(String moduleId, String moduleSetId, String parentModuleId, String type, String path, String name, String namespaceId, String versionNum, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Module.MODULE);
 
         setModuleId(moduleId);

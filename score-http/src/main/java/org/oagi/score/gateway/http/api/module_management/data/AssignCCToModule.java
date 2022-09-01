@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 public class AssignCCToModule {
     List<AssignableNode> nodes;
-    BigInteger moduleId;
-    BigInteger moduleSetId;
-    BigInteger moduleSetReleaseId;
+    String moduleId;
+    String moduleSetId;
+    String moduleSetReleaseId;
     String releaseId;
 }

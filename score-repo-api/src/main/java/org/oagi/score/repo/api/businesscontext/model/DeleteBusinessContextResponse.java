@@ -7,22 +7,22 @@ import java.util.List;
 
 public class DeleteBusinessContextResponse extends Response {
 
-    private final List<BigInteger> contextSchemeIdList;
+    private final List<String> contextSchemeIdList;
 
-    public DeleteBusinessContextResponse(List<BigInteger> contextSchemeIdList) {
+    public DeleteBusinessContextResponse(List<String> contextSchemeIdList) {
         this.contextSchemeIdList = contextSchemeIdList;
     }
 
-    public List<BigInteger> getContextSchemeIdList() {
+    public List<String> getContextSchemeIdList() {
         return contextSchemeIdList;
     }
 
-    public boolean contains(BigInteger contextSchemeId) {
+    public boolean contains(String contextSchemeId) {
         return this.contextSchemeIdList.contains(contextSchemeId);
     }
 
-    public boolean containsAll(List<BigInteger> contextSchemeIdList) {
-        for (BigInteger contextSchemeId : contextSchemeIdList) {
+    public boolean containsAll(List<String> contextSchemeIdList) {
+        for (String contextSchemeId : contextSchemeIdList) {
             if (!this.contextSchemeIdList.contains(contextSchemeId)) {
                 return false;
             }

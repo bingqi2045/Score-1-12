@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
 
 
@@ -20,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
  * of one or more business context values.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> {
+public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +27,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
      * Setter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal
      * database key.
      */
-    public void setBizCtxId(ULong value) {
+    public void setBizCtxId(String value) {
         set(0, value);
     }
 
@@ -36,8 +35,8 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
      * Getter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal
      * database key.
      */
-    public ULong getBizCtxId() {
-        return (ULong) get(0);
+    public String getBizCtxId() {
+        return (String) get(0);
     }
 
     /**
@@ -143,7 +142,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -152,17 +151,17 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row7<String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BizCtx.BIZ_CTX.BIZ_CTX_ID;
     }
 
@@ -197,7 +196,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBizCtxId();
     }
 
@@ -232,7 +231,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBizCtxId();
     }
 
@@ -267,7 +266,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public BizCtxRecord value1(ULong value) {
+    public BizCtxRecord value1(String value) {
         setBizCtxId(value);
         return this;
     }
@@ -309,7 +308,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public BizCtxRecord values(ULong value1, String value2, String value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
+    public BizCtxRecord values(String value1, String value2, String value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -334,7 +333,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     /**
      * Create a detached, initialised BizCtxRecord
      */
-    public BizCtxRecord(ULong bizCtxId, String guid, String name, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public BizCtxRecord(String bizCtxId, String guid, String name, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BizCtx.BIZ_CTX);
 
         setBizCtxId(bizCtxId);

@@ -17,7 +17,7 @@ public class BieCreateFromExistingBieRequestEvent implements Event {
     private BigInteger sourceTopLevelAsbiepId;
     private BigInteger targetTopLevelAsbiepId;
     private BigInteger asbiepId;
-    private List<BigInteger> bizCtxIds = Collections.emptyList();
+    private List<String> bizCtxIds = Collections.emptyList();
     private String userId;
 
 }

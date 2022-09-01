@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 
 @Data
 public class ModuleCCID {
-    public ULong moduleId;
+    public String moduleId;
     public ULong ccId;
     public String path;
 }

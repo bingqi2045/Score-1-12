@@ -7,17 +7,17 @@ import java.math.BigInteger;
 
 public class GetModuleSetReleaseRequest extends Request {
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
     public GetModuleSetReleaseRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 }

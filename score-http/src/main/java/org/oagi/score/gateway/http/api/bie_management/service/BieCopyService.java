@@ -86,7 +86,7 @@ public class BieCopyService implements InitializingBean {
             throw new IllegalArgumentException("`topLevelAsbiepId` parameter must not be null.");
         }
 
-        List<BigInteger> bizCtxIds = request.getBizCtxIds();
+        List<String> bizCtxIds = request.getBizCtxIds();
         if (bizCtxIds == null || bizCtxIds.isEmpty()) {
             throw new IllegalArgumentException("`bizCtxIds` parameter must not be null.");
         }
@@ -377,7 +377,7 @@ public class BieCopyService implements InitializingBean {
 
         private final TopLevelAsbiep sourceTopLevelAsbiep;
         private final TopLevelAsbiep copiedTopLevelAsbiep;
-        private final List<BigInteger> bizCtxIds;
+        private final List<String> bizCtxIds;
         private final String userId;
         private final boolean isDeveloper;
         private Timestamp timestamp;

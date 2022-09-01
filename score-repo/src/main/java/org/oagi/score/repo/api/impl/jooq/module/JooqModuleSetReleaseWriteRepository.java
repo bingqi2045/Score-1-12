@@ -34,10 +34,10 @@ public class JooqModuleSetReleaseWriteRepository
         super(dslContext);
     }
 
-    private String getDefaultModuleSetReleaseName(BigInteger moduleSetId) {
+    private String getDefaultModuleSetReleaseName(String moduleSetId) {
         String moduleSetReleaseName = dslContext().select(MODULE_SET.NAME)
                 .from(MODULE_SET)
-                .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(moduleSetId)))
+                .where(MODULE_SET.MODULE_SET_ID.eq(moduleSetId))
                 .fetchOneInto(String.class);
         // Issue #1276
         return concatWithDuplicateElimination(moduleSetReleaseName, "Module Set Release");
@@ -77,7 +77,7 @@ public class JooqModuleSetReleaseWriteRepository
         InsertSetMoreStep<ModuleSetReleaseRecord> insertSetMoreStep =
                 dslContext().insertInto(MODULE_SET_RELEASE)
                         .set(MODULE_SET_RELEASE.RELEASE_ID, request.getReleaseId())
-                        .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+                        .set(MODULE_SET_RELEASE.MODULE_SET_ID, request.getModuleSetId())
                         .set(MODULE_SET_RELEASE.NAME, moduleSetReleaseName);
 
         String moduleSetReleaseDescription = request.getModuleSetReleaseDescription();
@@ -95,9 +95,9 @@ public class JooqModuleSetReleaseWriteRepository
                 .fetchOne();
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
-        moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
+        moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId());
         moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId());
-        moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId().toBigInteger());
+        moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId());
         moduleSetRelease.setModuleSetReleaseName(moduleSetReleaseRecord.getName());
         moduleSetRelease.setDefault(request.isDefault());
         moduleSetRelease.setCreatedBy(requester);
@@ -108,7 +108,7 @@ public class JooqModuleSetReleaseWriteRepository
                 Date.from(moduleSetReleaseRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
         if (request.getBaseModuleSetReleaseId() != null) {
-            copyModuleCcManifest(requesterUserId, timestamp, moduleSetReleaseRecord, ULong.valueOf(request.getBaseModuleSetReleaseId()));
+            copyModuleCcManifest(requesterUserId, timestamp, moduleSetReleaseRecord, request.getBaseModuleSetReleaseId());
         }
 
         return new CreateModuleSetReleaseResponse(moduleSetRelease);
@@ -136,7 +136,7 @@ public class JooqModuleSetReleaseWriteRepository
 
         UpdateSetStep updateSetStep = dslContext().update(MODULE_SET_RELEASE)
                 .set(MODULE_SET_RELEASE.RELEASE_ID, request.getReleaseId())
-                .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
+                .set(MODULE_SET_RELEASE.MODULE_SET_ID, request.getModuleSetId())
                 .set(MODULE_SET_RELEASE.NAME, moduleSetReleaseName);
 
         if (StringUtils.hasLength(moduleSetReleaseDescription)) {
@@ -148,17 +148,17 @@ public class JooqModuleSetReleaseWriteRepository
         updateSetStep.set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
                 .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
 
         ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().selectFrom(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .fetchOne();
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
-        moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
+        moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId());
         moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId());
-        moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId().toBigInteger());
+        moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId());
         moduleSetRelease.setModuleSetReleaseName(moduleSetReleaseRecord.getName());
         moduleSetRelease.setModuleSetReleaseDescription(moduleSetReleaseRecord.getDescription());
         moduleSetRelease.setDefault(request.isDefault());
@@ -176,38 +176,38 @@ public class JooqModuleSetReleaseWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetReleaseResponse deleteModuleSetRelease(DeleteModuleSetReleaseRequest request) throws ScoreDataAccessException {
         dslContext().deleteFrom(MODULE_ACC_MANIFEST)
-                .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_ASCCP_MANIFEST)
-                .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_BCCP_MANIFEST)
-                .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_DT_MANIFEST)
-                .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_CODE_LIST_MANIFEST)
-                .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
-                .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_XBT_MANIFEST)
-                .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_BLOB_CONTENT_MANIFEST)
-                .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
         dslContext().deleteFrom(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()))
                 .execute();
 
         return new DeleteModuleSetReleaseResponse();
     }
 
     private void copyModuleCcManifest(String requesterUserId, LocalDateTime timestamp,
-                                     ModuleSetReleaseRecord moduleSetReleaseRecord, ULong baseModuleSetReleaseId) {
+                                     ModuleSetReleaseRecord moduleSetReleaseRecord, String baseModuleSetReleaseId) {
 
         String releaseId = moduleSetReleaseRecord.getReleaseId();
 
@@ -442,9 +442,9 @@ public class JooqModuleSetReleaseWriteRepository
     public void createModuleManifest(CreateModuleManifestRequest request) throws ScoreDataAccessException {
         if (request.getType().equals(CcType.ACC)) {
             dslContext().insertInto(MODULE_ACC_MANIFEST)
-                    .set(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_ACC_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_ACC_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_ACC_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ACC_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_ACC_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -452,9 +452,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.ASCCP)) {
             dslContext().insertInto(MODULE_ASCCP_MANIFEST)
-                    .set(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_ASCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_ASCCP_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_ASCCP_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ASCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -462,9 +462,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.BCCP)) {
             dslContext().insertInto(MODULE_BCCP_MANIFEST)
-                    .set(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_BCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_BCCP_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_BCCP_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_BCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_BCCP_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -472,9 +472,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.DT)) {
             dslContext().insertInto(MODULE_DT_MANIFEST)
-                    .set(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_DT_MANIFEST.DT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_DT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_DT_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_DT_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_DT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_DT_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -482,9 +482,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.CODE_LIST)) {
             dslContext().insertInto(MODULE_CODE_LIST_MANIFEST)
-                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_CODE_LIST_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_CODE_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -492,9 +492,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
             dslContext().insertInto(MODULE_AGENCY_ID_LIST_MANIFEST)
-                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -502,9 +502,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .execute();
         } else if (request.getType().equals(CcType.XBT)) {
             dslContext().insertInto(MODULE_XBT_MANIFEST)
-                    .set(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
+                    .set(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID, request.getModuleSetReleaseId())
                     .set(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
-                    .set(MODULE_XBT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
+                    .set(MODULE_XBT_MANIFEST.MODULE_ID, request.getModuleId())
                     .set(MODULE_XBT_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_XBT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
                     .set(MODULE_XBT_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
@@ -518,44 +518,44 @@ public class JooqModuleSetReleaseWriteRepository
         if (request.getType().equals(CcType.ACC)) {
             dslContext().deleteFrom(MODULE_ACC_MANIFEST)
                     .where(and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_ACC_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_ACC_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.ASCCP)) {
             dslContext().deleteFrom(MODULE_ASCCP_MANIFEST)
                     .where(and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_ASCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_ASCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.BCCP)) {
             dslContext().deleteFrom(MODULE_BCCP_MANIFEST)
                     .where(and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_BCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_BCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.DT)) {
             dslContext().deleteFrom(MODULE_DT_MANIFEST)
                     .where(and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_DT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_DT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.CODE_LIST)) {
             dslContext().deleteFrom(MODULE_CODE_LIST_MANIFEST)
                     .where(and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
             dslContext().deleteFrom(MODULE_AGENCY_ID_LIST_MANIFEST)
                     .where(and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         } else if (request.getType().equals(CcType.XBT)) {
             dslContext().deleteFrom(MODULE_XBT_MANIFEST)
                     .where(and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())),
-                            MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                            MODULE_XBT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                            MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                            MODULE_XBT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                     .execute();
         }
     }

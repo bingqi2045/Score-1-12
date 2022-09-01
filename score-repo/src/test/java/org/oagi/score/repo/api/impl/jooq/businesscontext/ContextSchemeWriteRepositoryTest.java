@@ -26,7 +26,7 @@ public class ContextSchemeWriteRepositoryTest
 
     private ContextSchemeWriteRepository repository;
     private ScoreUser requester;
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     @BeforeAll
     void setUp() {

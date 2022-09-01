@@ -434,7 +434,7 @@ public class BieUpliftingService {
     private class BieUpliftingHandler implements BieVisitor {
 
         private ScoreUser requester;
-        private List<BigInteger> bizCtxIds;
+        private List<String> bizCtxIds;
         private BieUpliftingCustomMappingTable customMappingTable;
 
         private BieDocument sourceBieDocument;
@@ -475,7 +475,7 @@ public class BieUpliftingService {
 
         private BigInteger targetTopLevelAsbiepId;
 
-        BieUpliftingHandler(ScoreUser requester, List<BigInteger> bizCtxIds,
+        BieUpliftingHandler(ScoreUser requester, List<String> bizCtxIds,
                             BieUpliftingCustomMappingTable customMappingTable,
                             BieDocument sourceBieDocument, CcDocument targetCcDocument,
                             BigInteger targetAsccpManifestId,
@@ -1334,7 +1334,7 @@ public class BieUpliftingService {
                         .withAsccpManifestId(targetAsccpManifestId))
                 .getCcPackage());
 
-        List<BigInteger> bizCtxIds = scoreRepositoryFactory.createBieReadRepository()
+        List<String> bizCtxIds = scoreRepositoryFactory.createBieReadRepository()
                 .getAssignedBusinessContext(new GetAssignedBusinessContextRequest(request.getRequester())
                         .withTopLevelAsbiepId(request.getTopLevelAsbiepId()))
                 .getBusinessContextIdList();
