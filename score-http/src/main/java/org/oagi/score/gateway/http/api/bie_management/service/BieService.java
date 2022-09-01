@@ -87,7 +87,7 @@ public class BieService {
 
     @Transactional
     public BieCreateResponse createBie(AuthenticatedPrincipal user, BieCreateRequest request) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         if (userId == null) {
             throw new IllegalArgumentException("`userId` parameter must not be null.");
         }
@@ -158,7 +158,7 @@ public class BieService {
 
     public PageResponse<BieList> getBieList(AuthenticatedPrincipal user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         PaginationResponse<BieList> result = bieRepository.selectBieLists()
                 .setDen(request.getDen())
@@ -172,7 +172,7 @@ public class BieService {
                 .setOwnerLoginIds(request.getOwnerLoginIds())
                 .setUpdaterLoginIds(request.getUpdaterLoginIds())
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
-                .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
+                .setAccess(requester.getAppUserId(), request.getAccess())
                 .setOwnedByDeveloper(request.getOwnedByDeveloper())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
@@ -208,7 +208,7 @@ public class BieService {
 
     public PageResponse<BieList> getUsageOfBieList(AuthenticatedPrincipal user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         PageResponse<BieList> response = new PageResponse();
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
@@ -254,7 +254,7 @@ public class BieService {
 
     public PageResponse<AsbieListRecord> getAsbieAndBbieList(AuthenticatedPrincipal user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         PaginationResponse<AsbieListRecord> result = bieRepository.selectBieLists()
                 .setPropertyTerm(request.getPropertyTerm())
@@ -266,7 +266,7 @@ public class BieService {
                 .setUpdaterLoginIds(request.getUpdaterLoginIds())
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
                 .setAsccBccDen(request.getAsccBccDen())
-                .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
+                .setAccess(requester.getAppUserId(), request.getAccess())
                 .setOwnedByDeveloper(request.getOwnedByDeveloper())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
@@ -337,7 +337,7 @@ public class BieService {
     }
 
     private void ensureProperDeleteBieRequest(AuthenticatedPrincipal prinpical, List<BigInteger> topLevelAsbiepIds) {
-        Result<Record2<String, ULong>> result =
+        Result<Record2<String, String>> result =
                 dslContext.select(TOP_LEVEL_ASBIEP.STATE, TOP_LEVEL_ASBIEP.OWNER_USER_ID)
                         .from(TOP_LEVEL_ASBIEP)
                         .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(
@@ -346,14 +346,14 @@ public class BieService {
                         .fetch();
 
         ScoreUser requester = sessionService.asScoreUser(prinpical);
-        BigInteger requesterUserId = requester.getUserId();
-        for (Record2<String, ULong> record : result) {
+        String requesterUserId = requester.getUserId();
+        for (Record2<String, String> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
             if (bieState == BieState.Production) {
                 throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
             }
 
-            if (!requesterUserId.equals(record.value2().toBigInteger())) {
+            if (!requesterUserId.equals(record.value2())) {
                 throw new DataAccessForbiddenException("Only allowed to delete the BIE by the owner.");
             }
         }
@@ -434,28 +434,28 @@ public class BieService {
 
     @Transactional
     public void transferOwnership(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, String targetLoginId) {
-        long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+        String ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(
-                        sessionService.getAppUser(user).getLoginId()
+                        sessionService.getAppUserByUsername(user).getLoginId()
                 ))
-                .fetchOptionalInto(Long.class).orElse(0L);
-        if (ownerAppUserId == 0L) {
+                .fetchOptionalInto(String.class).orElse(null);
+        if (ownerAppUserId == null) {
             throw new IllegalArgumentException("Not found an owner user.");
         }
 
-        Long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+        String targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
-                .fetchOptionalInto(Long.class).orElse(null);
+                .fetchOptionalInto(String.class).orElse(null);
         if (targetAppUserId == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
         dslContext.update(TOP_LEVEL_ASBIEP)
-                .set(TOP_LEVEL_ASBIEP.OWNER_USER_ID, ULong.valueOf(targetAppUserId))
+                .set(TOP_LEVEL_ASBIEP.OWNER_USER_ID, targetAppUserId)
                 .where(and(
-                        TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(ULong.valueOf(ownerAppUserId)),
+                        TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(ownerAppUserId),
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 ))
                 .execute();

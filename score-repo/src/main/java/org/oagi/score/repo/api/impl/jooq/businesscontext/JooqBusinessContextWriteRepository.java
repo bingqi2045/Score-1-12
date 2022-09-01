@@ -41,7 +41,7 @@ public class JooqBusinessContextWriteRepository
             CreateBusinessContextRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BizCtxRecord record = new BizCtxRecord();
@@ -90,7 +90,7 @@ public class JooqBusinessContextWriteRepository
             UpdateBusinessContextRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BizCtxRecord record = dslContext().selectFrom(BIZ_CTX)

@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
  * It is a contextualization of a BCCP.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
+public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record13<ULong, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -178,7 +178,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
      * owner by default. BBIEPs created as children of another ABIE have the
      * same CREATED_BY',
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(8, value);
     }
 
@@ -188,24 +188,24 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
      * owner by default. BBIEPs created as children of another ABIE have the
      * same CREATED_BY',
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(8);
+    public String getCreatedBy() {
+        return (String) get(8);
     }
 
     /**
      * Setter for <code>oagi.bbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIEP record. 
+     * referring to the last user who has updated the BBIEP record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(9, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIEP record. 
+     * referring to the last user who has updated the BBIEP record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(9);
+    public String getLastUpdatedBy() {
+        return (String) get(9);
     }
 
     /**
@@ -272,12 +272,12 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+    public Row13<ULong, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> valuesRow() {
+    public Row13<ULong, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
@@ -322,12 +322,12 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<String> field9() {
         return Bbiep.BBIEP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<String> field10() {
         return Bbiep.BBIEP.LAST_UPDATED_BY;
     }
 
@@ -387,12 +387,12 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     @Override
-    public ULong component9() {
+    public String component9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component10() {
+    public String component10() {
         return getLastUpdatedBy();
     }
 
@@ -452,12 +452,12 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     @Override
-    public ULong value9() {
+    public String value9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value10() {
+    public String value10() {
         return getLastUpdatedBy();
     }
 
@@ -525,13 +525,13 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     @Override
-    public BbiepRecord value9(ULong value) {
+    public BbiepRecord value9(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value10(ULong value) {
+    public BbiepRecord value10(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -555,7 +555,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     @Override
-    public BbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, ULong value9, ULong value10, LocalDateTime value11, LocalDateTime value12, ULong value13) {
+    public BbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, LocalDateTime value11, LocalDateTime value12, ULong value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -586,7 +586,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     /**
      * Create a detached, initialised BbiepRecord
      */
-    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String path, String hashPath, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
+    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String path, String hashPath, String definition, String remark, String bizTerm, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(Bbiep.BBIEP);
 
         setBbiepId(bbiepId);

@@ -16,7 +16,7 @@ public class UpdateAsccpPropertiesRepositoryRequest extends RepositoryRequest {
     private boolean reusable;
     private boolean deprecated;
     private boolean nillable;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     public UpdateAsccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                   BigInteger asccpManifestId) {
@@ -83,11 +83,11 @@ public class UpdateAsccpPropertiesRepositoryRequest extends RepositoryRequest {
         this.nillable = nillable;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 }

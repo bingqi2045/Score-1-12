@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -94,7 +95,7 @@ public class AccountListService {
         }
         Boolean excludeRequester = request.getExcludeRequester();
         if (excludeRequester != null && excludeRequester == true) {
-            conditions.add(APP_USER.LOGIN_ID.notEqualIgnoreCase(sessionService.getAppUser(user).getLoginId().trim()));
+            conditions.add(APP_USER.LOGIN_ID.notEqualIgnoreCase(sessionService.getAppUserByUsername(user).getLoginId().trim()));
         }
 
         SelectConditionStep<Record6<ULong, String, String, Byte, String, ULong>> conditionStep = step.where(conditions);
@@ -164,8 +165,8 @@ public class AccountListService {
         return response;
     }
 
-    public AppUser getAccountById(long appUserId) {
-        return getAccount(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)));
+    public AppUser getAccountById(String appUserId) {
+        return getAccount(APP_USER.APP_USER_ID.eq(appUserId));
     }
 
     public AppUser getAccountByUsername(String username) {
@@ -204,12 +205,13 @@ public class AccountListService {
 
     @Transactional
     public void insert(AuthenticatedPrincipal user, AppUser account) {
-        org.oagi.score.service.common.data.AppUser appUser = sessionService.getAppUser(user);
+        org.oagi.score.service.common.data.AppUser appUser = sessionService.getAppUserByUsername(user);
         if (!appUser.isAdmin()) {
             throw new DataAccessForbiddenException("Only admin user can create a new account.");
         }
 
         AppUserRecord record = new AppUserRecord();
+        record.setAppUserId(UUID.randomUUID().toString());
         record.setLoginId(account.getLoginId());
         if (account.getAppOauth2UserId() == 0) {
             record.setPassword(passwordEncoder.encode(account.getPassword()));
@@ -220,9 +222,11 @@ public class AccountListService {
         record.setIsAdmin((byte) (account.isAdmin() ? 1 : 0));
         record.setIsEnabled((byte) 1);
 
-        ULong appUserId = dslContext.insertInto(APP_USER)
+        dslContext.insertInto(APP_USER)
                 .set(record)
-                .returning(APP_USER.APP_USER_ID).fetchOne().getAppUserId();
+                .execute();
+
+        String appUserId = record.getAppUserId();
 
         if (account.getAppOauth2UserId() > 0 && account.getSub().length() > 0) {
             AppOauth2UserRecord oauth2User = dslContext.selectFrom(APP_OAUTH2_USER).where(

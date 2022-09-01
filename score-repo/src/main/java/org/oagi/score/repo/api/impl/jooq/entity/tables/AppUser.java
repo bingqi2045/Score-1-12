@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function8;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
@@ -54,9 +52,10 @@ public class AppUser extends TableImpl<AppUserRecord> {
     }
 
     /**
-     * The column <code>oagi.app_user.app_user_id</code>. Primary key column.
+     * The column <code>oagi.app_user.app_user_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<AppUserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key column.");
+    public final TableField<AppUserRecord, String> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.app_user.login_id</code>. User Id of the user.
@@ -135,11 +134,6 @@ public class AppUser extends TableImpl<AppUserRecord> {
     }
 
     @Override
-    public Identity<AppUserRecord, ULong> getIdentity() {
-        return (Identity<AppUserRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<AppUserRecord> getPrimaryKey() {
         return Keys.KEY_APP_USER_PRIMARY;
     }
@@ -193,21 +187,21 @@ public class AppUser extends TableImpl<AppUserRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
+    public Row8<String, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
  * An ASCCP specifies a role (or property) an ACC may play under another ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> {
+public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -161,7 +161,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(8, value);
     }
 
@@ -173,8 +173,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(8);
+    public String getCreatedBy() {
+        return (String) get(8);
     }
 
     /**
@@ -183,9 +183,9 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(9, value);
     }
 
@@ -195,10 +195,10 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(9);
+    public String getOwnerUserId() {
+        return (String) get(9);
     }
 
     /**
@@ -208,7 +208,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(10, value);
     }
 
@@ -219,8 +219,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(10);
+    public String getLastUpdatedBy() {
+        return (String) get(10);
     }
 
     /**
@@ -293,24 +293,18 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asccp.namespace_id</code>. Foreign key to the
-     * Namespace table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(14, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.namespace_id</code>. Foreign key to the
-     * Namespace table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(14);
+    public String getNamespaceId() {
+        return (String) get(14);
     }
 
     /**
@@ -431,12 +425,12 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
         return (Row21) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> valuesRow() {
+    public Row21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> valuesRow() {
         return (Row21) super.valuesRow();
     }
 
@@ -481,17 +475,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<String> field9() {
         return Asccp.ASCCP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<String> field10() {
         return Asccp.ASCCP.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return Asccp.ASCCP.LAST_UPDATED_BY;
     }
 
@@ -511,7 +505,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field15() {
+    public Field<String> field15() {
         return Asccp.ASCCP.NAMESPACE_ID;
     }
 
@@ -586,17 +580,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong component9() {
+    public String component9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component10() {
+    public String component10() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getLastUpdatedBy();
     }
 
@@ -616,7 +610,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong component15() {
+    public String component15() {
         return getNamespaceId();
     }
 
@@ -691,17 +685,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong value9() {
+    public String value9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value10() {
+    public String value10() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getLastUpdatedBy();
     }
 
@@ -721,7 +715,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong value15() {
+    public String value15() {
         return getNamespaceId();
     }
 
@@ -804,19 +798,19 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord value9(ULong value) {
+    public AsccpRecord value9(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value10(ULong value) {
+    public AsccpRecord value10(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value11(ULong value) {
+    public AsccpRecord value11(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -840,7 +834,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord value15(ULong value) {
+    public AsccpRecord value15(String value) {
         setNamespaceId(value);
         return this;
     }
@@ -882,7 +876,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, String value14, ULong value15, Byte value16, Byte value17, ULong value18, Byte value19, ULong value20, ULong value21) {
+    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, String value14, String value15, Byte value16, Byte value17, ULong value18, Byte value19, ULong value20, ULong value21) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -921,7 +915,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, String namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
         super(Asccp.ASCCP);
 
         setAsccpId(asccpId);

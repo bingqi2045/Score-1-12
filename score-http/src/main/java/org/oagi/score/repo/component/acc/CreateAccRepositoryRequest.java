@@ -10,28 +10,28 @@ import java.time.LocalDateTime;
 
 public class CreateAccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
+    private final String releaseId;
 
     private String initialObjectClassTerm = "Object Class Term";
     private OagisComponentType initialComponentType = OagisComponentType.Semantics;
     private CcACCType initialType = CcACCType.Default;
     private String initialDefinition;
     private BigInteger basedAccManifestId;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
-    public CreateAccRepositoryRequest(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public CreateAccRepositoryRequest(AuthenticatedPrincipal user, String releaseId) {
         super(user);
         this.releaseId = releaseId;
     }
 
     public CreateAccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger releaseId) {
+                                      String releaseId) {
         super(user, localDateTime);
         this.releaseId = releaseId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -67,11 +67,11 @@ public class CreateAccRepositoryRequest extends RepositoryRequest {
         this.basedAccManifestId = basedAccManifestId;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

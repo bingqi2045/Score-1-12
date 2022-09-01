@@ -74,17 +74,17 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
 
     /**
      * The column <code>oagi.bcc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bcc_bizterm record. The creator of
-     * the bcc_bizterm is also its owner by default.
+     * referring to the user who creates the BCC_BIZTERM record. The creator of
+     * the BCC_BIZTERM is also its owner by default.
      */
-    public final TableField<BccBiztermRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the bcc_bizterm record. The creator of the bcc_bizterm is also its owner by default.");
+    public final TableField<BccBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BCC_BIZTERM record. The creator of the BCC_BIZTERM is also its owner by default.");
 
     /**
      * The column <code>oagi.bcc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bcc_bizterm record. This
+     * referring to the last user who has updated the BCC_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<BccBiztermRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the bcc_bizterm record. This may be the user who is in the same group as the creator.");
+    public final TableField<BccBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BCC_BIZTERM record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.bcc_bizterm.creation_timestamp</code>. Timestamp
@@ -148,11 +148,13 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
 
     @Override
     public List<ForeignKey<BccBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BCC_BIZTERM_BUSINESS_TERM_FK, Keys.BCC_BIZTERM_BCC_FK);
+        return Arrays.asList(Keys.BCC_BIZTERM_BUSINESS_TERM_FK, Keys.BCC_BIZTERM_BCC_FK, Keys.BCC_BIZTERM_CREATED_BY_FK, Keys.BCC_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient BusinessTerm _businessTerm;
     private transient Bcc _bcc;
+    private transient AppUser _bccBiztermCreatedByFk;
+    private transient AppUser _bccBiztermLastUpdatedByFk;
 
     /**
      * Get the implicit join path to the <code>oagi.business_term</code> table.
@@ -172,6 +174,28 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
             _bcc = new Bcc(this, Keys.BCC_BIZTERM_BCC_FK);
 
         return _bcc;
+    }
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bcc_bizterm_created_by_fk</code> key.
+     */
+    public AppUser bccBiztermCreatedByFk() {
+        if (_bccBiztermCreatedByFk == null)
+            _bccBiztermCreatedByFk = new AppUser(this, Keys.BCC_BIZTERM_CREATED_BY_FK);
+
+        return _bccBiztermCreatedByFk;
+    }
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bcc_bizterm_last_updated_by_fk</code> key.
+     */
+    public AppUser bccBiztermLastUpdatedByFk() {
+        if (_bccBiztermLastUpdatedByFk == null)
+            _bccBiztermLastUpdatedByFk = new AppUser(this, Keys.BCC_BIZTERM_LAST_UPDATED_BY_FK);
+
+        return _bccBiztermLastUpdatedByFk;
     }
 
     @Override
@@ -218,21 +242,21 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -32,7 +32,7 @@ public class SettingsService {
 
     @Transactional
     public void updatePassword(AuthenticatedPrincipal user, UpdatePasswordRequest request) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
 
         String oldPassword = validate(request.getOldPassword());
         if (!matches(userId, oldPassword)) {
@@ -60,17 +60,17 @@ public class SettingsService {
         return password;
     }
 
-    private boolean matches(BigInteger userId, String oldPassword) {
+    private boolean matches(String userId, String oldPassword) {
         return passwordEncoder.matches(oldPassword,
                 dslContext.select(APP_USER.PASSWORD).from(APP_USER)
-                        .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
+                        .where(APP_USER.APP_USER_ID.eq(userId))
                         .fetchOneInto(String.class));
     }
 
-    private void update(BigInteger userId, String newPassword) {
+    private void update(String userId, String newPassword) {
         dslContext.update(APP_USER)
                 .set(row(APP_USER.PASSWORD), row(passwordEncoder.encode(newPassword)))
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
+                .where(APP_USER.APP_USER_ID.eq(userId))
                 .execute();
     }
 

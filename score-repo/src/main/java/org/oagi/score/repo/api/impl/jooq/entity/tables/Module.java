@@ -92,12 +92,10 @@ public class Module extends TableImpl<ModuleRecord> {
     public final TableField<ModuleRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.");
 
     /**
-     * The column <code>oagi.module.namespace_id</code>. Note that a release
-     * record has a namespace associated. The NAMESPACE_ID, if specified here,
-     * overrides the release's namespace. However, the NAMESPACE_ID associated
-     * with the component takes the highest precedence.
+     * The column <code>oagi.module.namespace_id</code>. Foreign key to the
+     * NAMESPACE table.
      */
-    public final TableField<ModuleRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Note that a release record has a namespace associated. The NAMESPACE_ID, if specified here, overrides the release's namespace. However, the NAMESPACE_ID associated with the component takes the highest precedence.");
+    public final TableField<ModuleRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
 
     /**
      * The column <code>oagi.module.version_num</code>. This is the version
@@ -109,7 +107,7 @@ public class Module extends TableImpl<ModuleRecord> {
      * The column <code>oagi.module.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this MODULE.
      */
-    public final TableField<ModuleRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE.");
+    public final TableField<ModuleRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE.");
 
     /**
      * The column <code>oagi.module.last_updated_by</code>. Foreign key to the
@@ -118,13 +116,13 @@ public class Module extends TableImpl<ModuleRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public final TableField<ModuleRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
+    public final TableField<ModuleRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
      * The column <code>oagi.module.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public final TableField<ModuleRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
+    public final TableField<ModuleRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
 
     /**
      * The column <code>oagi.module.creation_timestamp</code>. The timestamp
@@ -305,21 +303,21 @@ public class Module extends TableImpl<ModuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

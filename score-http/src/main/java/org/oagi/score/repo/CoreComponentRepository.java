@@ -2,6 +2,7 @@ package org.oagi.score.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBccpNode;
@@ -146,8 +147,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public DtManifestRecord getBdtManifestByBdtId(ULong bdtId, ULong releaseId) {
-        if (bdtId == null || bdtId.longValue() <= 0L || releaseId == null || releaseId.longValue() <= 0L) {
+    public DtManifestRecord getBdtManifestByBdtId(ULong bdtId, String releaseId) {
+        if (bdtId == null || bdtId.longValue() <= 0L || !StringUtils.hasLength(releaseId)) {
             return null;
         }
         return dslContext.selectFrom(DT_MANIFEST)
@@ -224,15 +225,15 @@ public class CoreComponentRepository {
                 .fetchOneInto(CcBccpNode.class);
     }
 
-    public List<SummaryCcExt> getSummaryCcExtList(BigInteger releaseId) {
+    public List<SummaryCcExt> getSummaryCcExtList(String releaseId) {
         List<ULong> uegAccIds;
-        if (releaseId.longValue() > 0) {
+        if (StringUtils.hasLength(releaseId)) {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
                             .from(ACC)
                             .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                             .where(and(
                                     ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                                    ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                    ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                             ))
                             .groupBy(ACC.GUID)
                             .fetchInto(ULong.class);
@@ -241,10 +242,7 @@ public class CoreComponentRepository {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
                             .from(ACC)
                             .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                            .where(and(
-                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                                    ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(0))
-                            ))
+                            .where(ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()))
                             .groupBy(ACC.GUID)
                             .fetchInto(ULong.class);
         }
@@ -263,16 +261,16 @@ public class CoreComponentRepository {
                     item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(ACC.STATE)));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(ACC.OWNER_USER_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(ACC.OWNER_USER_ID));
                     return item;
                 }).collect(Collectors.toList());
     }
 
     public BigInteger getGlobalExtensionAccManifestId(BigInteger extensionAccManifestId) {
-        ULong releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
+        String releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
                 .from(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(extensionAccManifestId)))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)

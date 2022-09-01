@@ -19,7 +19,7 @@ public class GetAgencyIdListListRequest extends PaginationRequest<AgencyIdList> 
     private String name;
     private String definition;
     private String module;
-    private BigInteger releaseId;
+    private String releaseId;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
@@ -109,11 +109,11 @@ public class GetAgencyIdListListRequest extends PaginationRequest<AgencyIdList> 
         this.updateEndDate = updateEndDate;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 }

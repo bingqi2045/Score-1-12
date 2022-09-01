@@ -11,7 +11,7 @@ import java.util.List;
 public class UpliftValidationRequest {
     private ScoreUser requester;
     private BigInteger topLevelAsbiepId;
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
     private List<BieUpliftingMapping> mappingList;
     private BigInteger targetAsccpManifestId;
 }

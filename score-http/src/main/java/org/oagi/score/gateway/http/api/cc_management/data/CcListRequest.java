@@ -11,7 +11,7 @@ import java.util.*;
 @Data
 public class CcListRequest {
 
-    private BigInteger releaseId = BigInteger.ZERO;
+    private String releaseId;
     private CcListTypes types;
     private List<CcState> states = Collections.emptyList();
     private Boolean deprecated;
@@ -32,7 +32,7 @@ public class CcListRequest {
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
-    private Map<BigInteger, String> usernameMap;
+    private Map<String, String> usernameMap;
 
     public List<String> getDtTypes() {
         if (dtTypes != null && dtTypes.size() == 1) {

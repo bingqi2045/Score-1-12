@@ -27,9 +27,9 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }
@@ -41,7 +41,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private String guid;
         private String propertyTerm;
         private String den;
-        private BigInteger namespaceId = BigInteger.ZERO;
+        private String namespaceId;
         private boolean reusable;
         private boolean deprecated;
         private boolean nillable;
@@ -50,9 +50,9 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }

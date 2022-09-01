@@ -7,7 +7,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.gateway.http.api.bie_management.data.BieEvent;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -385,7 +384,7 @@ public class BieEditService implements InitializingBean {
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
         BigInteger asccpManifestId = extension.getAsccpManifestId();
-        BigInteger releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
+        String releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
         BigInteger roleOfAccManifestId = bieRepository.getRoleOfAccManifestIdByAsccpManifestId(asccpManifestId);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
@@ -419,12 +418,12 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public CreateExtensionResponse createGlobalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
-        BigInteger releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
+        String releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
         BigInteger roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(Tables.ACC_MANIFEST)
                 .join(Tables.ACC).on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
                 .where(and(
-                        Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        Tables.ACC_MANIFEST.RELEASE_ID.eq(releaseId),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension")
                 ))
                 .fetchOneInto(BigInteger.class);
@@ -456,7 +455,7 @@ public class BieEditService implements InitializingBean {
         return response;
     }
 
-    private BigInteger createAbieExtension(AuthenticatedPrincipal user, BigInteger roleOfAccManifestId, BigInteger releaseId) {
+    private BigInteger createAbieExtension(AuthenticatedPrincipal user, BigInteger roleOfAccManifestId, String releaseId) {
         BieEditAcc eAcc = bieRepository.getAccByAccManifestId(roleOfAccManifestId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
 
@@ -565,7 +564,7 @@ public class BieEditService implements InitializingBean {
 
     public List<AvailableCodeList> availableCodeListListByBccpManifestId(
             AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bccpManifestId) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
             states = Arrays.asList(CodeListState.Published);
@@ -575,7 +574,7 @@ public class BieEditService implements InitializingBean {
 
     public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
             AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bdtScManifestId) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
             states = Arrays.asList(CodeListState.Published);
@@ -600,7 +599,7 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public void reuseBIE(AuthenticatedPrincipal user, ReuseBIERequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
@@ -614,7 +613,7 @@ public class BieEditService implements InitializingBean {
             throw new IllegalArgumentException("Developer does not allow to reuse end user's BIE.");
         }
 
-        if (!topLevelAsbiepRecord.getOwnerUserId().toBigInteger().equals(requester.getAppUserId())) {
+        if (!topLevelAsbiepRecord.getOwnerUserId().equals(requester.getAppUserId())) {
             throw new IllegalArgumentException("Requester is not an owner of the target BIE.");
         }
         if (BieState.valueOf(topLevelAsbiepRecord.getState()) != BieState.WIP) {
@@ -646,7 +645,7 @@ public class BieEditService implements InitializingBean {
                 .fetchOneInto(ULong.class);
 
         asbieRecord.setToAsbiepId(reuseAsbiepId);
-        asbieRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+        asbieRecord.setLastUpdatedBy(requester.getAppUserId());
         asbieRecord.setLastUpdateTimestamp(LocalDateTime.now());
         asbieRecord.update(
                 ASBIE.TO_ASBIEP_ID,
@@ -760,7 +759,7 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public void removeReusedBIE(AuthenticatedPrincipal user, RemoveReusedBIERequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
                 .where(and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
@@ -783,7 +782,7 @@ public class BieEditService implements InitializingBean {
             throw new IllegalArgumentException("Developer does not allow to remove the end user's reused BIE.");
         }
 
-        if (!topLevelAsbiepRecord.getOwnerUserId().toBigInteger().equals(requester.getAppUserId())) {
+        if (!topLevelAsbiepRecord.getOwnerUserId().equals(requester.getAppUserId())) {
             throw new IllegalArgumentException("Requester is not an owner of the target BIE.");
         }
         if (BieState.valueOf(topLevelAsbiepRecord.getState()) != BieState.WIP) {
@@ -804,13 +803,13 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public void resetDetailBIE(AuthenticatedPrincipal user, ResetDetailBIERequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
                 .fetchOne();
 
-        if (!topLevelAsbiepRecord.getOwnerUserId().toBigInteger().equals(requester.getAppUserId())) {
+        if (!topLevelAsbiepRecord.getOwnerUserId().equals(requester.getAppUserId())) {
             throw new IllegalArgumentException("Requester is not an owner of the target BIE.");
         }
         if (BieState.valueOf(topLevelAsbiepRecord.getState()) != BieState.WIP) {
@@ -831,7 +830,7 @@ public class BieEditService implements InitializingBean {
                 abieRecord.setBizTerm(null);
                 abieRecord.setDefinition(null);
                 abieRecord.setRemark(null);
-                abieRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                abieRecord.setLastUpdatedBy(requester.getAppUserId());
                 abieRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
                 abieRecord.update(ABIE.BIZ_TERM,
@@ -847,7 +846,7 @@ public class BieEditService implements InitializingBean {
                 asbiepRecord.setBizTerm(null);
                 asbiepRecord.setDefinition(null);
                 asbiepRecord.setRemark(null);
-                asbiepRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                asbiepRecord.setLastUpdatedBy(requester.getAppUserId());
                 asbiepRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
                 asbiepRecord.update(ASBIEP.BIZ_TERM,
@@ -887,7 +886,7 @@ public class BieEditService implements InitializingBean {
 
                 asbieRecord.setDefinition(null);
                 asbieRecord.setIsNillable((byte) 0);
-                asbieRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                asbieRecord.setLastUpdatedBy(requester.getAppUserId());
                 asbieRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
                 asbieRecord.update(ASBIE.CARDINALITY_MIN,
@@ -899,7 +898,7 @@ public class BieEditService implements InitializingBean {
 
                 asbiep.setRemark(null);
                 asbiep.setBizTerm(null);
-                asbiep.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                asbiep.setLastUpdatedBy(requester.getAppUserId());
                 asbiep.setLastUpdateTimestamp(LocalDateTime.now());
 
                 asbiep.update(ASBIEP.BIZ_TERM,
@@ -946,7 +945,7 @@ public class BieEditService implements InitializingBean {
                 bbieRecord.setBdtPriRestriId(ULong.valueOf(bdtPriRestriList.get(0).getBdtPriRestriId()));
                 bbieRecord.setCodeListId(null);
                 bbieRecord.setAgencyIdListId(null);
-                bbieRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                bbieRecord.setLastUpdatedBy(requester.getAppUserId());
                 bbieRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
                 bbieRecord.update(BBIE.CARDINALITY_MIN,
@@ -1005,7 +1004,7 @@ public class BieEditService implements InitializingBean {
                 bbieScRecord.setDefinition(null);
                 bbieScRecord.setRemark(null);
                 bbieScRecord.setBizTerm(null);
-                bbieScRecord.setLastUpdatedBy(ULong.valueOf(requester.getAppUserId()));
+                bbieScRecord.setLastUpdatedBy(requester.getAppUserId());
                 bbieScRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
                 bbieScRecord.update(BBIE_SC.CARDINALITY_MIN,

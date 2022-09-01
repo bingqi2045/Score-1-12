@@ -41,7 +41,7 @@ public class PendingListService {
     private SessionService sessionService;
 
     public PageResponse<AppOauth2User> getPendingList(AuthenticatedPrincipal user, PendingListRequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isAdmin()) {
             throw new InsufficientAuthenticationException(
                     messages.getMessage(
@@ -202,9 +202,9 @@ public class PendingListService {
     }
 
     @Transactional
-    public void linkPendingToAppUser(long appOauth2UserId, long appUserId) {
+    public void linkPendingToAppUser(long appOauth2UserId, String appUserId) {
         AppUserRecord appUserRecord = dslContext.selectFrom(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId))).fetchOne();
+                .where(APP_USER.APP_USER_ID.eq(appUserId)).fetchOne();
 
         if (appUserRecord == null) {
             throw new IllegalArgumentException("Cannot find target Account");

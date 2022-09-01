@@ -12,5 +12,5 @@ public class AssignCCToModule {
     BigInteger moduleId;
     BigInteger moduleSetId;
     BigInteger moduleSetReleaseId;
-    BigInteger releaseId;
+    String releaseId;
 }

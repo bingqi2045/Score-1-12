@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
  * of one or more business context values.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -74,18 +74,18 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
 
     /**
      * Setter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity. 
+     * APP_USER table referring to the user who creates the entity.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(3, value);
     }
 
     /**
      * Getter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity. 
+     * APP_USER table referring to the user who creates the entity.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(3);
+    public String getCreatedBy() {
+        return (String) get(3);
     }
 
     /**
@@ -93,7 +93,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
      * APP_USER table  referring to the last user who has updated the business
      * context.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(4, value);
     }
 
@@ -102,8 +102,8 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
      * APP_USER table  referring to the last user who has updated the business
      * context.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(4);
+    public String getLastUpdatedBy() {
+        return (String) get(4);
     }
 
     /**
@@ -152,12 +152,12 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -177,12 +177,12 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return BizCtx.BIZ_CTX.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return BizCtx.BIZ_CTX.LAST_UPDATED_BY;
     }
 
@@ -212,12 +212,12 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getLastUpdatedBy();
     }
 
@@ -247,12 +247,12 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getLastUpdatedBy();
     }
 
@@ -285,13 +285,13 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public BizCtxRecord value4(ULong value) {
+    public BizCtxRecord value4(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BizCtxRecord value5(ULong value) {
+    public BizCtxRecord value5(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -309,7 +309,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     @Override
-    public BizCtxRecord values(ULong value1, String value2, String value3, ULong value4, ULong value5, LocalDateTime value6, LocalDateTime value7) {
+    public BizCtxRecord values(ULong value1, String value2, String value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -334,7 +334,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     /**
      * Create a detached, initialised BizCtxRecord
      */
-    public BizCtxRecord(ULong bizCtxId, String guid, String name, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public BizCtxRecord(ULong bizCtxId, String guid, String name, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BizCtx.BIZ_CTX);
 
         setBizCtxId(bizCtxId);

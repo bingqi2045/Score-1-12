@@ -21,8 +21,8 @@ public class CodeList {
     private BigInteger basedCodeListId = BigInteger.ZERO;
     private boolean extensibleIndicator;
     private BigInteger moduleId = BigInteger.ZERO;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private String state;

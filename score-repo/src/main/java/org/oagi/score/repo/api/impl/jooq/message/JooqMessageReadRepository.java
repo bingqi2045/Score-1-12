@@ -44,7 +44,7 @@ public class JooqMessageReadRepository
         if (message == null) {
             throw new ScoreDataAccessException("Message with ID: '" + request.getMessageId() + "' does not exist.");
         }
-        if (!message.get(MESSAGE.RECIPIENT_ID).equals(ULong.valueOf(requester.getUserId()))) {
+        if (!message.get(MESSAGE.RECIPIENT_ID).equals(requester.getUserId())) {
             throw new ScoreDataAccessException("You do not have a permission to access this message.");
         }
 
@@ -57,7 +57,7 @@ public class JooqMessageReadRepository
         }
 
         return new GetMessageResponse(request.getMessageId(),
-                new ScoreUser(message.get(APP_USER.APP_USER_ID).toBigInteger(),
+                new ScoreUser(message.get(APP_USER.APP_USER_ID),
                         message.get(APP_USER.LOGIN_ID),
                         (byte) 1 == message.get(APP_USER.IS_DEVELOPER) ? DEVELOPER : END_USER),
                 message.get(MESSAGE.SUBJECT),
@@ -85,7 +85,7 @@ public class JooqMessageReadRepository
             messageList.setSubject(record.get(MESSAGE.SUBJECT));
             messageList.setRead(record.get(MESSAGE.IS_READ) == (byte) 1);
             messageList.setSender(new ScoreUser(
-                    record.get(APP_USER.as("sender").APP_USER_ID.as("sender_user_id")).toBigInteger(),
+                    record.get(APP_USER.as("sender").APP_USER_ID.as("sender_user_id")),
                     record.get(APP_USER.as("sender").LOGIN_ID.as("sender_login_id")),
                     (byte) 1 == record.get(APP_USER.as("sender").IS_DEVELOPER.as("sender_is_developer")) ? DEVELOPER : END_USER
             ));
@@ -173,11 +173,11 @@ public class JooqMessageReadRepository
             GetCountOfUnreadMessagesRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
         List<Condition> conds = new ArrayList();
-        conds.add(MESSAGE.RECIPIENT_ID.eq(ULong.valueOf(requester.getUserId())));
+        conds.add(MESSAGE.RECIPIENT_ID.eq(requester.getUserId()));
         conds.add(MESSAGE.IS_READ.eq((byte) 0));
 
-        List<ULong> senderUserIds =
-                request.getSenders().stream().map(e -> ULong.valueOf(e.getUserId())).collect(Collectors.toList());
+        List<String> senderUserIds =
+                request.getSenders().stream().map(e -> e.getUserId()).collect(Collectors.toList());
         if (!senderUserIds.isEmpty()) {
             conds.add(senderUserIds.size() == 1 ?
                     MESSAGE.SENDER_ID.eq(senderUserIds.get(0)) :

@@ -42,7 +42,7 @@ public class ModuleSetReleaseController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetModuleSetReleaseListResponse getModuleSetReleaseList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                                    @RequestParam(name = "name", required = false) String name,
-                                                                   @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
+                                                                   @RequestParam(name = "releaseId", required = false) String releaseId,
                                                                    @RequestParam(name = "default", required = false) Boolean isDefault,
                                                                    @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                                    @RequestParam(name = "updateStart", required = false) String updateStart,

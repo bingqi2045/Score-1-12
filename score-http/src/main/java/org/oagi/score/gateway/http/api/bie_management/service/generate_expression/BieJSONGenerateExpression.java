@@ -66,7 +66,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         if (mergedTopLevelAsbieps.size() == 0) {
             throw new IllegalArgumentException("Can not found BIEs.");
         }
-        BigInteger releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
+        String releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
 
         /* Issue 587 */
         if (option.isIncludeMetaHeaderForJson()) {

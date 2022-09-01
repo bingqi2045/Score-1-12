@@ -74,16 +74,16 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
 
     /**
      * The column <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity. 
+     * APP_USER table referring to the user who creates the entity.
      */
-    public final TableField<BizCtxRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. ");
+    public final TableField<BizCtxRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity.");
 
     /**
      * The column <code>oagi.biz_ctx.last_updated_by</code>. Foreign key to the
      * APP_USER table  referring to the last user who has updated the business
      * context.
      */
-    public final TableField<BizCtxRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
+    public final TableField<BizCtxRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
 
     /**
      * The column <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when
@@ -224,21 +224,21 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

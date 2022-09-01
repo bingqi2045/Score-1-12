@@ -32,7 +32,7 @@ public class BusinessInformationEntityRepositoryTest {
      * prerequisites
      */
     private ULong userId = ULong.valueOf(1L);
-    private ULong releaseId = ULong.valueOf(1L);
+    private String releaseId = "4dfea06e-9ee1-435e-a025-aad37e164ae0";
     private LocalDateTime timestamp = LocalDateTime.now();
 
     @Test

@@ -26,10 +26,10 @@ public class JooqAccessControlScoreRepositoryFactory extends AccessControlScoreR
 
     @Override
     protected void ensureRequester(ScoreUser requester) throws ScoreDataAccessException {
-        BigInteger userId = requester.getUserId();
+        String userId = requester.getUserId();
         Record2<String, Byte> record = dslContext.select(APP_USER.LOGIN_ID, APP_USER.IS_DEVELOPER)
                 .from(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
+                .where(APP_USER.APP_USER_ID.eq(userId))
                 .fetchOptional().orElse(null);
 
         if (record == null) {

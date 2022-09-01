@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
  * ASBIEP. It is a contextualization of an ASCC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
+public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -255,7 +255,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * owner by default. ASBIEs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(12, value);
     }
 
@@ -265,24 +265,24 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * owner by default. ASBIEs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(12);
+    public String getCreatedBy() {
+        return (String) get(12);
     }
 
     /**
      * Setter for <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record. 
+     * referring to the user who has last updated the ASBIE record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(13, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record. 
+     * referring to the user who has last updated the ASBIE record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(13);
+    public String getLastUpdatedBy() {
+        return (String) get(13);
     }
 
     /**
@@ -391,12 +391,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> valuesRow() {
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> valuesRow() {
         return (Row19) super.valuesRow();
     }
 
@@ -461,12 +461,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return Asbie.ASBIE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<String> field14() {
         return Asbie.ASBIE.LAST_UPDATED_BY;
     }
 
@@ -556,12 +556,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component14() {
+    public String component14() {
         return getLastUpdatedBy();
     }
 
@@ -651,12 +651,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value14() {
+    public String value14() {
         return getLastUpdatedBy();
     }
 
@@ -758,13 +758,13 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord value13(ULong value) {
+    public AsbieRecord value13(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value14(ULong value) {
+    public AsbieRecord value14(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -800,7 +800,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, ULong value7, String value8, Integer value9, Integer value10, Byte value11, String value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, ULong value19) {
+    public AsbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, ULong value7, String value8, Integer value9, Integer value10, Byte value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, ULong value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -837,7 +837,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
+    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
         super(Asbie.ASBIE);
 
         setAsbieId(asbieId);

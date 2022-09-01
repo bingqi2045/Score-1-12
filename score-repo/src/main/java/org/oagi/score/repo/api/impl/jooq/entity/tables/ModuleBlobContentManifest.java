@@ -87,7 +87,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
      * Foreign key to the APP_USER table. It indicates the user who created this
      * record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleBlobContentManifestRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column
@@ -95,7 +95,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
      * key to the APP_USER table referring to the last user who updated the
      * record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleBlobContentManifestRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column
@@ -153,7 +153,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK, Indexes.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK);
+        return Arrays.asList(Indexes.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK);
     }
 
     @Override
@@ -275,21 +275,21 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<ULong, ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

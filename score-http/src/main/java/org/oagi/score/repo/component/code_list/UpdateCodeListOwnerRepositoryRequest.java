@@ -8,11 +8,11 @@ import java.math.BigInteger;
 public class UpdateCodeListOwnerRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger codeListManifestId;
-    private final BigInteger ownerId;
+    private final String ownerId;
 
     public UpdateCodeListOwnerRepositoryRequest(AuthenticatedPrincipal user,
                                                 BigInteger codeListManifestId,
-                                                BigInteger ownerId) {
+                                                String ownerId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
         this.ownerId = ownerId;
@@ -22,7 +22,7 @@ public class UpdateCodeListOwnerRepositoryRequest extends RepositoryRequest {
         return codeListManifestId;
     }
 
-    public BigInteger getOwnerId() {
+    public String getOwnerId() {
         return ownerId;
     }
 }

@@ -10,7 +10,7 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
 
     private BigInteger asccManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger asccId;
 
@@ -40,7 +40,7 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -49,7 +49,7 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
         return getAsccId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 

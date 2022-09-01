@@ -36,7 +36,7 @@ public class CodeListReadRepository {
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(BccpManifestRecord.class);
 
-        Result<Record2<ULong, ULong>> result = dslContext.selectDistinct(
+        Result<Record2<ULong, String>> result = dslContext.selectDistinct(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 BCCP_MANIFEST.RELEASE_ID)
                 .from(BCCP_MANIFEST)
@@ -61,7 +61,7 @@ public class CodeListReadRepository {
                     .collect(Collectors.toList());
 
         } else {
-            return availableCodeListByReleaseId(bccpManifestRecord.getReleaseId().toBigInteger(), states);
+            return availableCodeListByReleaseId(bccpManifestRecord.getReleaseId(), states);
         }
     }
 
@@ -126,11 +126,11 @@ public class CodeListReadRepository {
         return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
-    private List<AvailableCodeList> availableCodeListByReleaseId(BigInteger releaseId, List<CodeListState> states) {
+    private List<AvailableCodeList> availableCodeListByReleaseId(String releaseId, List<CodeListState> states) {
 
         List<Condition> conditions = new ArrayList();
 
-        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(releaseId));
         if (!states.isEmpty()) {
             conditions.add(CODE_LIST.STATE.in(states));
         }
@@ -154,7 +154,7 @@ public class CodeListReadRepository {
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
                 .fetchOneInto(DtScManifestRecord.class);
 
-        Result<Record2<ULong, ULong>> result = dslContext.selectDistinct(
+        Result<Record2<ULong, String>> result = dslContext.selectDistinct(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 DT_SC_MANIFEST.RELEASE_ID)
                 .from(DT_SC_MANIFEST)
@@ -178,7 +178,7 @@ public class CodeListReadRepository {
                     .collect(Collectors.toList());
 
         } else {
-            return availableCodeListByReleaseId(dtScManifestRecord.getReleaseId().toBigInteger(), states);
+            return availableCodeListByReleaseId(dtScManifestRecord.getReleaseId(), states);
         }
     }
 }

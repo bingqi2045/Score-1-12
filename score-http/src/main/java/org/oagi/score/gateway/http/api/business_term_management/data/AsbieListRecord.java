@@ -28,6 +28,6 @@ public class AsbieListRecord {
     private String topLevelAsccpPropertyTerm;
     private List<BusinessContext> businessContexts;
     private String owner;
-    private BigInteger ownerUserId;
+    private String ownerUserId;
     private AccessPrivilege access;
 }

@@ -26,7 +26,7 @@ public class Acc extends Auditable implements CoreComponent, Serializable {
 
     private OagisComponentType oagisComponentType;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private ScoreUser owner;
 
@@ -122,11 +122,11 @@ public class Acc extends Auditable implements CoreComponent, Serializable {
         return oagisComponentType.isGroup();
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

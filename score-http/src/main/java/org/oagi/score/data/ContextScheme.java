@@ -17,8 +17,8 @@ public class ContextScheme implements Serializable {
     private String schemeAgencyId;
     private String schemeVersionId;
     private BigInteger ctxCategoryId = BigInteger.ZERO;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
 }

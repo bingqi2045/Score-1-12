@@ -130,13 +130,13 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * owner by default. ASBIEPs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public final TableField<AsbiepRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.");
+    public final TableField<AsbiepRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.");
 
     /**
      * The column <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record. 
+     * referring to the last user who has updated the ASBIEP record.
      */
-    public final TableField<AsbiepRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record. ");
+    public final TableField<AsbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record.");
 
     /**
      * The column <code>oagi.asbiep.creation_timestamp</code>. Timestamp when
@@ -318,21 +318,21 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
         return (Row14) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

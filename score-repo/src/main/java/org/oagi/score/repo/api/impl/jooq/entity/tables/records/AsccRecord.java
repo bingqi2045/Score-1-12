@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
  * ASCCP. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
+public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -252,7 +252,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(12, value);
     }
 
@@ -264,8 +264,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(12);
+    public String getCreatedBy() {
+        return (String) get(12);
     }
 
     /**
@@ -274,9 +274,9 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(13, value);
     }
 
@@ -286,10 +286,10 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(13);
+    public String getOwnerUserId() {
+        return (String) get(13);
     }
 
     /**
@@ -299,7 +299,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(14, value);
     }
 
@@ -310,8 +310,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(14);
+    public String getLastUpdatedBy() {
+        return (String) get(14);
     }
 
     /**
@@ -428,12 +428,12 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
         return (Row20) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
         return (Row20) super.valuesRow();
     }
 
@@ -498,17 +498,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return Ascc.ASCC.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<String> field14() {
         return Ascc.ASCC.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field15() {
+    public Field<String> field15() {
         return Ascc.ASCC.LAST_UPDATED_BY;
     }
 
@@ -598,17 +598,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component14() {
+    public String component14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component15() {
+    public String component15() {
         return getLastUpdatedBy();
     }
 
@@ -698,17 +698,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value14() {
+    public String value14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value15() {
+    public String value15() {
         return getLastUpdatedBy();
     }
 
@@ -810,19 +810,19 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public AsccRecord value13(ULong value) {
+    public AsccRecord value13(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsccRecord value14(ULong value) {
+    public AsccRecord value14(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value15(ULong value) {
+    public AsccRecord value15(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -858,7 +858,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, ULong value15, LocalDateTime value16, LocalDateTime value17, String value18, ULong value19, ULong value20) {
+    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, String value13, String value14, String value15, LocalDateTime value16, LocalDateTime value17, String value18, ULong value19, ULong value20) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -896,7 +896,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
+    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
         super(Ascc.ASCC);
 
         setAsccId(asccId);

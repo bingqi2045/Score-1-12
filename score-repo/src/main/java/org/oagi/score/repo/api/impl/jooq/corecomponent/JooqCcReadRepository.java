@@ -30,12 +30,12 @@ public class JooqCcReadRepository
         super(dslContext);
     }
 
-    private ULong getReleaseIdByAsccpManifestId(ULong asccpManifestId) {
+    private String getReleaseIdByAsccpManifestId(ULong asccpManifestId) {
         return dslContext().select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .join(ASCCP_MANIFEST).on(RELEASE.RELEASE_ID.eq(ASCCP_MANIFEST.RELEASE_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestId))
-                .fetchOptionalInto(ULong.class).orElse(null);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     private class CcManifestList {
@@ -163,7 +163,7 @@ public class JooqCcReadRepository
         Map<ULong, DtManifestRecord> dtManifestRecordMap;
         Map<ULong, List<DtScManifestRecord>> dtScManifestRecordMap;
 
-        CcMap(DSLContext dslContext, ULong releaseId) {
+        CcMap(DSLContext dslContext, String releaseId) {
             accManifestRecordMap = dslContext.selectFrom(ACC_MANIFEST)
                     .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId))
                     .fetchStream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
@@ -198,13 +198,13 @@ public class JooqCcReadRepository
         return record -> {
             AccManifest accManifest = new AccManifest();
             accManifest.setAccManifestId(record.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
-            accManifest.setReleaseId(record.get(ACC_MANIFEST.RELEASE_ID).toBigInteger());
+            accManifest.setReleaseId(record.get(ACC_MANIFEST.RELEASE_ID));
             accManifest.setAccId(record.get(ACC_MANIFEST.ACC_ID).toBigInteger());
             if (record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID) != null) {
                 accManifest.setBasedAccManifestId(record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID).toBigInteger());
             }
             accManifest.setConflict((byte) 1 == record.get(ACC_MANIFEST.CONFLICT));
-            accManifest.setLogId(record.get(ACC_MANIFEST.LOG_ID).toBigInteger());
+            accManifest.setLogId(record.get(ACC_MANIFEST.LOG_ID));
             if (record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID) != null) {
                 accManifest.setPrevAccManifestId(record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID).toBigInteger());
             }
@@ -219,7 +219,7 @@ public class JooqCcReadRepository
         return record -> {
             AsccManifest asccManifest = new AsccManifest();
             asccManifest.setAsccManifestId(record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID).toBigInteger());
-            asccManifest.setReleaseId(record.get(ASCC_MANIFEST.RELEASE_ID).toBigInteger());
+            asccManifest.setReleaseId(record.get(ASCC_MANIFEST.RELEASE_ID));
             asccManifest.setAsccId(record.get(ASCC_MANIFEST.ASCC_ID).toBigInteger());
             asccManifest.setSeqKeyId(record.get(ASCC_MANIFEST.SEQ_KEY_ID).toBigInteger());
             asccManifest.setFromAccManifestId(record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID).toBigInteger());
@@ -239,7 +239,7 @@ public class JooqCcReadRepository
         return record -> {
             BccManifest bccManifest = new BccManifest();
             bccManifest.setBccManifestId(record.get(BCC_MANIFEST.BCC_MANIFEST_ID).toBigInteger());
-            bccManifest.setReleaseId(record.get(BCC_MANIFEST.RELEASE_ID).toBigInteger());
+            bccManifest.setReleaseId(record.get(BCC_MANIFEST.RELEASE_ID));
             bccManifest.setBccId(record.get(BCC_MANIFEST.BCC_ID).toBigInteger());
             bccManifest.setSeqKeyId(record.get(BCC_MANIFEST.SEQ_KEY_ID).toBigInteger());
             bccManifest.setFromAccManifestId(record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID).toBigInteger());
@@ -280,11 +280,11 @@ public class JooqCcReadRepository
         return record -> {
             AsccpManifest asccpManifest = new AsccpManifest();
             asccpManifest.setAsccpManifestId(record.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
-            asccpManifest.setReleaseId(record.get(ASCCP_MANIFEST.RELEASE_ID).toBigInteger());
+            asccpManifest.setReleaseId(record.get(ASCCP_MANIFEST.RELEASE_ID));
             asccpManifest.setAsccpId(record.get(ASCCP_MANIFEST.ASCCP_ID).toBigInteger());
             asccpManifest.setRoleOfAccManifestId(record.get(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID).toBigInteger());
             asccpManifest.setConflict((byte) 1 == record.get(ASCCP_MANIFEST.CONFLICT));
-            asccpManifest.setLogId(record.get(ASCCP_MANIFEST.LOG_ID).toBigInteger());
+            asccpManifest.setLogId(record.get(ASCCP_MANIFEST.LOG_ID));
             if (record.get(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID) != null) {
                 asccpManifest.setPrevAsccpManifestId(record.get(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID).toBigInteger());
             }
@@ -299,11 +299,11 @@ public class JooqCcReadRepository
         return record -> {
             BccpManifest bccpManifest = new BccpManifest();
             bccpManifest.setBccpManifestId(record.get(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
-            bccpManifest.setReleaseId(record.get(BCCP_MANIFEST.RELEASE_ID).toBigInteger());
+            bccpManifest.setReleaseId(record.get(BCCP_MANIFEST.RELEASE_ID));
             bccpManifest.setBccpId(record.get(BCCP_MANIFEST.BCCP_ID).toBigInteger());
             bccpManifest.setBdtManifestId(record.get(BCCP_MANIFEST.BDT_MANIFEST_ID).toBigInteger());
             bccpManifest.setConflict((byte) 1 == record.get(BCCP_MANIFEST.CONFLICT));
-            bccpManifest.setLogId(record.get(BCCP_MANIFEST.LOG_ID).toBigInteger());
+            bccpManifest.setLogId(record.get(BCCP_MANIFEST.LOG_ID));
             if (record.get(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID) != null) {
                 bccpManifest.setPrevBccpManifestId(record.get(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID).toBigInteger());
             }
@@ -318,13 +318,13 @@ public class JooqCcReadRepository
         return record -> {
             DtManifest dtManifest = new DtManifest();
             dtManifest.setDtManifestId(record.get(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
-            dtManifest.setReleaseId(record.get(DT_MANIFEST.RELEASE_ID).toBigInteger());
+            dtManifest.setReleaseId(record.get(DT_MANIFEST.RELEASE_ID));
             dtManifest.setDtId(record.get(DT_MANIFEST.DT_ID).toBigInteger());
             if (record.get(DT_MANIFEST.BASED_DT_MANIFEST_ID) != null) {
                 dtManifest.setBasedDtManifestId(record.get(DT_MANIFEST.BASED_DT_MANIFEST_ID).toBigInteger());
             }
             dtManifest.setConflict((byte) 1 == record.get(DT_MANIFEST.CONFLICT));
-            dtManifest.setLogId(record.get(DT_MANIFEST.LOG_ID).toBigInteger());
+            dtManifest.setLogId(record.get(DT_MANIFEST.LOG_ID));
             if (record.get(DT_MANIFEST.PREV_DT_MANIFEST_ID) != null) {
                 dtManifest.setPrevDtManifestId(record.get(DT_MANIFEST.PREV_DT_MANIFEST_ID).toBigInteger());
             }
@@ -339,7 +339,7 @@ public class JooqCcReadRepository
         return record -> {
             DtScManifest dtScManifest = new DtScManifest();
             dtScManifest.setDtScManifestId(record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).toBigInteger());
-            dtScManifest.setReleaseId(record.get(DT_SC_MANIFEST.RELEASE_ID).toBigInteger());
+            dtScManifest.setReleaseId(record.get(DT_SC_MANIFEST.RELEASE_ID));
             dtScManifest.setDtScId(record.get(DT_SC_MANIFEST.DT_SC_ID).toBigInteger());
             dtScManifest.setOwnerDtManifestId(record.get(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID).toBigInteger());
             dtScManifest.setConflict((byte) 1 == record.get(DT_SC_MANIFEST.CONFLICT));
@@ -402,9 +402,7 @@ public class JooqCcReadRepository
             acc.setDefinitionSource(record.get(ACC.DEFINITION_SOURCE));
             acc.setObjectClassQualifier(record.get(ACC.OBJECT_CLASS_QUALIFIER));
             acc.setOagisComponentType(OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)));
-            if (record.get(ACC.NAMESPACE_ID) != null) {
-                acc.setNamespaceId(record.get(ACC.NAMESPACE_ID).toBigInteger());
-            }
+            acc.setNamespaceId(record.get(ACC.NAMESPACE_ID));
             acc.setState(CcState.valueOf(record.get(ACC.STATE)));
             acc.setDeprecated((byte) 1 == record.get(ACC.IS_DEPRECATED));
             acc.setAbstract((byte) 1 == record.get(ACC.IS_ABSTRACT));
@@ -420,11 +418,11 @@ public class JooqCcReadRepository
             acc.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -433,11 +431,11 @@ public class JooqCcReadRepository
             acc.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -446,11 +444,11 @@ public class JooqCcReadRepository
             acc.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -588,9 +586,7 @@ public class JooqCcReadRepository
             asccp.setDen(record.get(ASCCP.DEN));
             asccp.setDefinition(record.get(ASCCP.DEFINITION));
             asccp.setDefinitionSource(record.get(ASCCP.DEFINITION_SOURCE));
-            if (record.get(ASCCP.NAMESPACE_ID) != null) {
-                asccp.setNamespaceId(record.get(ASCCP.NAMESPACE_ID).toBigInteger());
-            }
+            asccp.setNamespaceId(record.get(ASCCP.NAMESPACE_ID));
             asccp.setState(CcState.valueOf(record.get(ASCCP.STATE)));
             asccp.setDeprecated((byte) 1 == record.get(ASCCP.IS_DEPRECATED));
             asccp.setReusable((byte) 1 == record.get(ASCCP.REUSABLE_INDICATOR));
@@ -607,11 +603,11 @@ public class JooqCcReadRepository
             asccp.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -620,11 +616,11 @@ public class JooqCcReadRepository
             asccp.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -633,11 +629,11 @@ public class JooqCcReadRepository
             asccp.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -696,9 +692,7 @@ public class JooqCcReadRepository
             bccp.setDen(record.get(BCCP.DEN));
             bccp.setDefinition(record.get(BCCP.DEFINITION));
             bccp.setDefinitionSource(record.get(BCCP.DEFINITION_SOURCE));
-            if (record.get(BCCP.NAMESPACE_ID) != null) {
-                bccp.setNamespaceId(record.get(BCCP.NAMESPACE_ID).toBigInteger());
-            }
+            bccp.setNamespaceId(record.get(BCCP.NAMESPACE_ID));
             bccp.setState(CcState.valueOf(record.get(BCCP.STATE)));
             bccp.setDeprecated((byte) 1 == record.get(BCCP.IS_DEPRECATED));
             bccp.setNillable((byte) 1 == record.get(BCCP.IS_NILLABLE));
@@ -716,11 +710,11 @@ public class JooqCcReadRepository
             bccp.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -729,11 +723,11 @@ public class JooqCcReadRepository
             bccp.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -742,11 +736,11 @@ public class JooqCcReadRepository
             bccp.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -809,9 +803,7 @@ public class JooqCcReadRepository
             dt.setDefinition(record.get(DT.DEFINITION));
             dt.setDefinitionSource(record.get(DT.DEFINITION_SOURCE));
             dt.setContentComponentDefinition(record.get(DT.CONTENT_COMPONENT_DEFINITION));
-            if (record.get(DT.NAMESPACE_ID) != null) {
-                dt.setNamespaceId(record.get(DT.NAMESPACE_ID).toBigInteger());
-            }
+            dt.setNamespaceId(record.get(DT.NAMESPACE_ID));
             dt.setState(CcState.valueOf(record.get(DT.STATE)));
             dt.setDeprecated((byte) 1 == record.get(DT.IS_DEPRECATED));
             dt.setCommonlyUsed((byte) 1 == record.get(DT.COMMONLY_USED));
@@ -827,11 +819,11 @@ public class JooqCcReadRepository
             dt.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -840,11 +832,11 @@ public class JooqCcReadRepository
             dt.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -853,11 +845,11 @@ public class JooqCcReadRepository
             dt.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -979,7 +971,7 @@ public class JooqCcReadRepository
         ScoreUser requester = request.getRequester();
         ULong asccpManifestId = ULong.valueOf(request.getAsccpManifestId());
 
-        ULong releaseId = getReleaseIdByAsccpManifestId(asccpManifestId);
+        String releaseId = getReleaseIdByAsccpManifestId(asccpManifestId);
         if (releaseId == null) {
             throw new ScoreDataAccessException();
         }
@@ -1068,7 +1060,7 @@ public class JooqCcReadRepository
         if (asccpManifestId == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
         }
-        BigInteger nextReleaseId = request.getNextReleaseId();
+        String nextReleaseId = request.getNextReleaseId();
         if (nextReleaseId == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
         }
@@ -1089,7 +1081,7 @@ public class JooqCcReadRepository
                 break;
             }
 
-            if (record.get(ASCCP_MANIFEST.RELEASE_ID).toBigInteger().equals(nextReleaseId)) {
+            if (record.get(ASCCP_MANIFEST.RELEASE_ID).equals(nextReleaseId)) {
                 nextAsccpManifestId = record.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID);
             }
 

@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record16;
 import org.jooq.Row16;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 
 
@@ -21,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
  * XMLSchemaBuiltinType Patterns schemas.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
+public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<String, String, String, String, String, String, String, String, String, Integer, String, String, String, LocalDateTime, LocalDateTime, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -178,45 +177,51 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     /**
-     * Setter for <code>oagi.xbt.created_by</code>.
+     * Setter for <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
+     * table identifying user who created the xbt.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.created_by</code>.
+     * Getter for <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
+     * table identifying user who created the xbt.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(10);
+    public String getCreatedBy() {
+        return (String) get(10);
     }
 
     /**
-     * Setter for <code>oagi.xbt.owner_user_id</code>.
+     * Setter for <code>oagi.xbt.owner_user_id</code>. Foreign key to the
+     * APP_USER table identifying the user who can update or delete the record.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.owner_user_id</code>.
+     * Getter for <code>oagi.xbt.owner_user_id</code>. Foreign key to the
+     * APP_USER table identifying the user who can update or delete the record.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(11);
+    public String getOwnerUserId() {
+        return (String) get(11);
     }
 
     /**
-     * Setter for <code>oagi.xbt.last_updated_by</code>.
+     * Setter for <code>oagi.xbt.last_updated_by</code>. Foreign key to the
+     * APP_USER table identifying the user who last updated the record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(12, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.last_updated_by</code>.
+     * Getter for <code>oagi.xbt.last_updated_by</code>. Foreign key to the
+     * APP_USER table identifying the user who last updated the record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(12);
+    public String getLastUpdatedBy() {
+        return (String) get(12);
     }
 
     /**
@@ -275,12 +280,12 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+    public Row16<String, String, String, String, String, String, String, String, String, Integer, String, String, String, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
         return (Row16) super.fieldsRow();
     }
 
     @Override
-    public Row16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> valuesRow() {
+    public Row16<String, String, String, String, String, String, String, String, String, Integer, String, String, String, LocalDateTime, LocalDateTime, Byte> valuesRow() {
         return (Row16) super.valuesRow();
     }
 
@@ -335,17 +340,17 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return Xbt.XBT.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field12() {
+    public Field<String> field12() {
         return Xbt.XBT.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return Xbt.XBT.LAST_UPDATED_BY;
     }
 
@@ -415,17 +420,17 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component12() {
+    public String component12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getLastUpdatedBy();
     }
 
@@ -495,17 +500,17 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value12() {
+    public String value12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getLastUpdatedBy();
     }
 
@@ -585,19 +590,19 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public XbtRecord value11(ULong value) {
+    public XbtRecord value11(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public XbtRecord value12(ULong value) {
+    public XbtRecord value12(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public XbtRecord value13(ULong value) {
+    public XbtRecord value13(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -621,7 +626,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     @Override
-    public XbtRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, Byte value16) {
+    public XbtRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, Integer value10, String value11, String value12, String value13, LocalDateTime value14, LocalDateTime value15, Byte value16) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -655,7 +660,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     /**
      * Create a detached, initialised XbtRecord
      */
-    public XbtRecord(String xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, String subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
+    public XbtRecord(String xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, String subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
         super(Xbt.XBT);
 
         setXbtId(xbtId);

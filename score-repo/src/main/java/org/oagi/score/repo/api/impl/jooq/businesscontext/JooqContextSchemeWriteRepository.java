@@ -41,7 +41,7 @@ public class JooqContextSchemeWriteRepository
             CreateContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxSchemeRecord record = new CtxSchemeRecord();
@@ -97,7 +97,7 @@ public class JooqContextSchemeWriteRepository
             UpdateContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxSchemeRecord record = dslContext().selectFrom(CTX_SCHEME)
@@ -196,7 +196,7 @@ public class JooqContextSchemeWriteRepository
             DeleteContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         List<BigInteger> contextSchemeIdList = request.getContextSchemeIdList();

@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
  * can be then added as a property of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
+public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -158,24 +158,18 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Setter for <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(8, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(8);
+    public String getNamespaceId() {
+        return (String) get(8);
     }
 
     /**
@@ -214,26 +208,24 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Setter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity. 
+     * table referring to the user who creates the entity.
      * 
-     * This column never change between the history and the current record for a
-     * given revision. The history record should have the same value as that of
-     * its current record.
+     * This column never change between the history and the current record. The
+     * history record should have the same value as that of its current record.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(11, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity. 
+     * table referring to the user who creates the entity.
      * 
-     * This column never change between the history and the current record for a
-     * given revision. The history record should have the same value as that of
-     * its current record.
+     * This column never change between the history and the current record. The
+     * history record should have the same value as that of its current record.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(11);
+    public String getCreatedBy() {
+        return (String) get(11);
     }
 
     /**
@@ -244,7 +236,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(12, value);
     }
 
@@ -256,8 +248,8 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(12);
+    public String getOwnerUserId() {
+        return (String) get(12);
     }
 
     /**
@@ -267,7 +259,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(13, value);
     }
 
@@ -278,8 +270,8 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(13);
+    public String getLastUpdatedBy() {
+        return (String) get(13);
     }
 
     /**
@@ -452,12 +444,12 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
+    public Row22<ULong, String, String, String, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> valuesRow() {
+    public Row22<ULong, String, String, String, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> valuesRow() {
         return (Row22) super.valuesRow();
     }
 
@@ -502,7 +494,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<String> field9() {
         return Bccp.BCCP.NAMESPACE_ID;
     }
 
@@ -517,17 +509,17 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field12() {
+    public Field<String> field12() {
         return Bccp.BCCP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return Bccp.BCCP.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<String> field14() {
         return Bccp.BCCP.LAST_UPDATED_BY;
     }
 
@@ -612,7 +604,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public ULong component9() {
+    public String component9() {
         return getNamespaceId();
     }
 
@@ -627,17 +619,17 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public ULong component12() {
+    public String component12() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component14() {
+    public String component14() {
         return getLastUpdatedBy();
     }
 
@@ -722,7 +714,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public ULong value9() {
+    public String value9() {
         return getNamespaceId();
     }
 
@@ -737,17 +729,17 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public ULong value12() {
+    public String value12() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value14() {
+    public String value14() {
         return getLastUpdatedBy();
     }
 
@@ -840,7 +832,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public BccpRecord value9(ULong value) {
+    public BccpRecord value9(String value) {
         setNamespaceId(value);
         return this;
     }
@@ -858,19 +850,19 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public BccpRecord value12(ULong value) {
+    public BccpRecord value12(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BccpRecord value13(ULong value) {
+    public BccpRecord value13(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public BccpRecord value14(ULong value) {
+    public BccpRecord value14(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -924,7 +916,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     @Override
-    public BccpRecord values(ULong value1, String value2, String value3, String value4, ULong value5, String value6, String value7, String value8, ULong value9, Byte value10, ULong value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, String value19, String value20, ULong value21, ULong value22) {
+    public BccpRecord values(ULong value1, String value2, String value3, String value4, ULong value5, String value6, String value7, String value8, String value9, Byte value10, ULong value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, String value19, String value20, ULong value21, ULong value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -964,7 +956,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     /**
      * Create a detached, initialised BccpRecord
      */
-    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacementBccpId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
+    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, String namespaceId, Byte isDeprecated, ULong replacementBccpId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
         super(Bccp.BCCP);
 
         setBccpId(bccpId);

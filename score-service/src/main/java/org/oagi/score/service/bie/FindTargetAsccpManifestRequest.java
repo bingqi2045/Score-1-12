@@ -12,7 +12,7 @@ public class FindTargetAsccpManifestRequest {
 
     private BigInteger topLevelAsbiepId;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
     private boolean includingBieDocument;
 
@@ -28,7 +28,7 @@ public class FindTargetAsccpManifestRequest {
         return this;
     }
 
-    public FindTargetAsccpManifestRequest withTargetReleaseId(BigInteger targetReleaseId) {
+    public FindTargetAsccpManifestRequest withTargetReleaseId(String targetReleaseId) {
         this.setTargetReleaseId(targetReleaseId);
         return this;
     }

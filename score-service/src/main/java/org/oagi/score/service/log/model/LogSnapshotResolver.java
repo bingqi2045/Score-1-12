@@ -22,8 +22,8 @@ public class LogSnapshotResolver {
     @Autowired
     private DSLContext dslContext;
 
-    public Map<String, Object> getNamespace(ULong namespaceId) {
-        if (namespaceId == null || namespaceId.longValue() <= 0L) {
+    public Map<String, Object> getNamespace(String namespaceId) {
+        if (!StringUtils.hasLength(namespaceId)) {
             return new HashMap();
         }
 
@@ -40,8 +40,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getUser(ULong userId) {
-        if (userId == null || userId.longValue() <= 0L) {
+    public Map<String, Object> getUser(String userId) {
+        if (!StringUtils.hasLength(userId)) {
             return new HashMap();
         }
 

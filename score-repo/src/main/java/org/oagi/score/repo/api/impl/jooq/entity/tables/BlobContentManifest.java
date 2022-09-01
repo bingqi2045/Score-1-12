@@ -64,9 +64,10 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.blob_content_manifest.release_id</code>.
+     * The column <code>oagi.blob_content_manifest.release_id</code>. Foreign
+     * key to the RELEASE table.
      */
-    public final TableField<BlobContentManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BlobContentManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.blob_content_manifest.conflict</code>. This
@@ -232,21 +233,21 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row6<ULong, ULong, String, Byte, ULong, ULong> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class Namespace {
 
-    private BigInteger namespaceId = BigInteger.ZERO;
+    private String namespaceId;
     private String uri;
     private String prefix;
     private String description;

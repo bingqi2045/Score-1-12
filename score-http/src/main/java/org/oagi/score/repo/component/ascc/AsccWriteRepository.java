@@ -9,8 +9,6 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.component.bcc.RefactorBccRepositoryRequest;
-import org.oagi.score.repo.component.bcc.RefactorBccRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -36,8 +33,6 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_MANIFEST;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 
 @Repository
 public class AsccWriteRepository {
@@ -123,12 +118,12 @@ public class AsccWriteRepository {
     }
 
     public CreateAsccRepositoryResponse createAscc(CreateAsccRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ACC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))
                 ))
                 .fetchOne();
@@ -139,7 +134,7 @@ public class AsccWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(and(
-                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ASCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))
                 ))
                 .fetchOne();
@@ -204,7 +199,7 @@ public class AsccWriteRepository {
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());
-        asccManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        asccManifest.setReleaseId(request.getReleaseId());
         asccManifest.setFromAccManifestId(accManifestRecord.getAccManifestId());
         asccManifest.setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId());
         asccManifest.setAsccManifestId(
@@ -218,13 +213,13 @@ public class AsccWriteRepository {
         if (request.getLogAction() != null) {
             upsertLogIntoAccAndAssociationsByAction(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp, request.getLogHash(), request.getLogAction()
             );
         } else {
             upsertLogIntoAccAndAssociations(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp
             );
         }
@@ -235,16 +230,16 @@ public class AsccWriteRepository {
 
     private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
                                                  AccManifestRecord accManifestRecord,
-                                                 ULong releaseId,
-                                                 ULong userId, LocalDateTime timestamp) {
+                                                 String releaseId,
+                                                 String userId, LocalDateTime timestamp) {
         upsertLogIntoAccAndAssociationsByAction(accRecord, accManifestRecord, releaseId, userId, timestamp, LogUtils.generateHash(), LogAction.Modified);
     }
 
     private void upsertLogIntoAccAndAssociationsByAction(AccRecord accRecord,
-                                                 AccManifestRecord accManifestRecord,
-                                                 ULong releaseId,
-                                                 ULong userId, LocalDateTime timestamp,
-                                                 String hash, LogAction action) {
+                                                         AccManifestRecord accManifestRecord,
+                                                         String releaseId,
+                                                         String userId, LocalDateTime timestamp,
+                                                         String hash, LogAction action) {
         LogRecord logRecord =
                 logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
@@ -255,8 +250,8 @@ public class AsccWriteRepository {
     }
 
     public UpdateAsccPropertiesRepositoryResponse updateAsccProperties(UpdateAsccPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -340,8 +335,8 @@ public class AsccWriteRepository {
     }
 
     public DeleteAsccRepositoryResponse deleteAscc(DeleteAsccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -423,8 +418,8 @@ public class AsccWriteRepository {
     }
 
     public RefactorAsccRepositoryResponse refactor(RefactorAsccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord targetAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -548,7 +543,7 @@ public class AsccWriteRepository {
     }
 
     private List<AsccManifestRecord> getRefactorTargetAsccManifestList(AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
-        ULong releaseId = asccManifestRecord.getReleaseId();
+        String releaseId = asccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
         Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)

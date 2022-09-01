@@ -17,7 +17,7 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
     private String definitionSource;
     private boolean deprecated;
     private boolean nillable;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger bccpManifestId) {
@@ -92,11 +92,11 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
         this.nillable = nillable;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 }

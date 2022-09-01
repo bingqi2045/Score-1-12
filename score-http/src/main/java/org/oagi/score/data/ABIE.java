@@ -12,8 +12,8 @@ public class ABIE implements BIE {
     private String guid;
     private BigInteger basedAccManifestId = BigInteger.ZERO;
     private String definition;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private Integer state;

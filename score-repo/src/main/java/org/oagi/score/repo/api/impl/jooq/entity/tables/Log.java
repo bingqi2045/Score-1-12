@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function11;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.JSON;
 import org.jooq.Name;
@@ -29,7 +28,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -58,9 +56,9 @@ public class Log extends TableImpl<LogRecord> {
     }
 
     /**
-     * The column <code>oagi.log.log_id</code>.
+     * The column <code>oagi.log.log_id</code>. Primary, internal database key.
      */
-    public final TableField<LogRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<LogRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.log.hash</code>. The unique hash to identify the
@@ -103,17 +101,17 @@ public class Log extends TableImpl<LogRecord> {
     /**
      * The column <code>oagi.log.prev_log_id</code>.
      */
-    public final TableField<LogRecord, ULong> PREV_LOG_ID = createField(DSL.name("prev_log_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<LogRecord, String> PREV_LOG_ID = createField(DSL.name("prev_log_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.log.next_log_id</code>.
      */
-    public final TableField<LogRecord, ULong> NEXT_LOG_ID = createField(DSL.name("next_log_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<LogRecord, String> NEXT_LOG_ID = createField(DSL.name("next_log_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.log.created_by</code>.
      */
-    public final TableField<LogRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<LogRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.log.creation_timestamp</code>.
@@ -161,11 +159,6 @@ public class Log extends TableImpl<LogRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.LOG_REFERENCE);
-    }
-
-    @Override
-    public Identity<LogRecord, ULong> getIdentity() {
-        return (Identity<LogRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -258,21 +251,21 @@ public class Log extends TableImpl<LogRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, UInteger, UInteger, String, String, JSON, ULong, ULong, ULong, LocalDateTime> fieldsRow() {
+    public Row11<String, String, UInteger, UInteger, String, String, JSON, String, String, String, LocalDateTime> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super ULong, ? super String, ? super UInteger, ? super UInteger, ? super String, ? super String, ? super JSON, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function11<? super String, ? super String, ? super UInteger, ? super UInteger, ? super String, ? super String, ? super JSON, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super ULong, ? super String, ? super UInteger, ? super UInteger, ? super String, ? super String, ? super JSON, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super String, ? super String, ? super UInteger, ? super UInteger, ? super String, ? super String, ? super JSON, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

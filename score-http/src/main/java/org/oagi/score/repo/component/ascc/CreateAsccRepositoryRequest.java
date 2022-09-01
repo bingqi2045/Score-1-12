@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
+    private final String releaseId;
     private final BigInteger accManifestId;
     private final BigInteger asccpManifestId;
     private int pos = -1;
@@ -23,7 +23,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     private LogAction logAction;
 
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger releaseId,
+                                       String releaseId,
                                        BigInteger accManifestId,
                                        BigInteger asccpManifestId) {
         super(user);
@@ -34,7 +34,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
-                                       BigInteger releaseId,
+                                       String releaseId,
                                        BigInteger accManifestId,
                                        BigInteger asccpManifestId) {
         super(user, localDateTime);
@@ -43,7 +43,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
         this.asccpManifestId = asccpManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 

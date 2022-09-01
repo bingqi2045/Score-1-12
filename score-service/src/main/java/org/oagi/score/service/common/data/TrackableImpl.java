@@ -7,10 +7,10 @@ import java.math.BigInteger;
 @Data
 public abstract class TrackableImpl implements Trackable {
 
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
 
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
 

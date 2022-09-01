@@ -28,7 +28,7 @@ public class CodeListForList {
     private String revision;
     private String state;
     private AccessPrivilege access;
-    private BigInteger ownerId;
+    private String ownerId;
     private String owner;
     private String lastUpdateUser;
     private Date lastUpdateTimestamp;

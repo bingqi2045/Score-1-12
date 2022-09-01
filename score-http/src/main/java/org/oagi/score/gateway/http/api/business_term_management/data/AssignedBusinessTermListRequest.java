@@ -13,7 +13,7 @@ public class AssignedBusinessTermListRequest {
     private BigInteger assignedBtId;
     private String businessContext;
     private BigInteger bieId;
-    private BigInteger releaseId;
+    private String releaseId;
     private List<String> bieTypes;
     private String bieDen;
     private String isPrimary;

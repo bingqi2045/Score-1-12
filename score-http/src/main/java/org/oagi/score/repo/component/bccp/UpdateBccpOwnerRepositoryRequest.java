@@ -8,11 +8,11 @@ import java.math.BigInteger;
 public class UpdateBccpOwnerRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger bccpManifestId;
-    private final BigInteger ownerId;
+    private final String ownerId;
 
     public UpdateBccpOwnerRepositoryRequest(AuthenticatedPrincipal user,
                                             BigInteger bccpManifestId,
-                                            BigInteger ownerId) {
+                                            String ownerId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
         this.ownerId = ownerId;
@@ -22,7 +22,7 @@ public class UpdateBccpOwnerRepositoryRequest extends RepositoryRequest {
         return bccpManifestId;
     }
 
-    public BigInteger getOwnerId() {
+    public String getOwnerId() {
         return ownerId;
     }
 }

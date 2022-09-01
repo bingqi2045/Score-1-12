@@ -80,14 +80,14 @@ public class JooqBieWriteRepository
     }
 
     private TopLevelAsbiepRecord insertTopLevelAsbiep(CreateBieRequest request) {
-        ULong userId = ULong.valueOf(request.getRequester().getUserId());
+        String userId = request.getRequester().getUserId();
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = new TopLevelAsbiepRecord();
         topLevelAsbiepRecord.setReleaseId(dslContext().select(ASCCP_MANIFEST.RELEASE_ID)
                 .from(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
                         ULong.valueOf(request.getTopLevelAsbiep().getAsbiep().getBasedAsccpManifestId())))
-                .fetchOneInto(ULong.class)
+                .fetchOneInto(String.class)
         );
         topLevelAsbiepRecord.setState(BieState.WIP.name());
         topLevelAsbiepRecord.setStatus(request.getStatus());
@@ -124,7 +124,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         AbieRecord abieRecord = new AbieRecord();
         abieRecord.setGuid(abie.getGuid());
@@ -154,7 +154,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         AsbiepRecord asbiepRecord = new AsbiepRecord();
         asbiepRecord.setGuid(asbiep.getGuid());
@@ -185,7 +185,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         BbiepRecord bbiepRecord = new BbiepRecord();
         bbiepRecord.setGuid(bbiep.getGuid());
@@ -215,7 +215,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         AsbieRecord asbieRecord = new AsbieRecord();
         asbieRecord.setGuid(asbie.getGuid());
@@ -251,7 +251,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         BbieRecord bbieRecord = new BbieRecord();
         bbieRecord.setGuid(bbie.getGuid());
@@ -300,7 +300,7 @@ public class JooqBieWriteRepository
             return;
         }
 
-        ULong userId = ULong.valueOf(user.getUserId());
+        String userId = user.getUserId();
 
         BbieScRecord bbieScRecord = new BbieScRecord();
         bbieScRecord.setGuid(bbieSc.getGuid());

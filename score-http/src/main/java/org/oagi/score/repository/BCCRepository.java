@@ -67,9 +67,9 @@ public class BCCRepository implements ScoreRepository<BCC, BigInteger> {
     }
 
     @Override
-    public List<BCC> findAllByReleaseId(BigInteger releaseId) {
+    public List<BCC> findAllByReleaseId(String releaseId) {
         return getSelectJoinStep()
-                .where(Tables.BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.BCC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(BCC.class);
     }
 

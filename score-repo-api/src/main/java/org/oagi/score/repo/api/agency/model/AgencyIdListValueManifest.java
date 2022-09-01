@@ -9,7 +9,7 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
 
     private BigInteger agencyIdListValueManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger agencyIdListValueId;
 
@@ -40,11 +40,11 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 

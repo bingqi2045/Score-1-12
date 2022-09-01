@@ -70,7 +70,7 @@ public class AccountListController {
 
     @RequestMapping(value = "/account/{appUserId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppUser getAccount(@PathVariable("appUserId") long appUserId) {
+    public AppUser getAccount(@PathVariable("appUserId") String appUserId) {
         return service.getAccountById(appUserId);
     }
 

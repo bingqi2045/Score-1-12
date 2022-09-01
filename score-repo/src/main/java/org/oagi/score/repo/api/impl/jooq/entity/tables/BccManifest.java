@@ -58,9 +58,10 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     public final TableField<BccManifestRecord, ULong> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>oagi.bcc_manifest.release_id</code>.
+     * The column <code>oagi.bcc_manifest.release_id</code>. Foreign key to the
+     * RELEASE table.
      */
-    public final TableField<BccManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BccManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.bcc_manifest.bcc_id</code>.
@@ -293,21 +294,21 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+    public Row10<ULong, String, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

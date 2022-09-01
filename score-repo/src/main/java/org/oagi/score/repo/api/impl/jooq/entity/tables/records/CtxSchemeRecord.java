@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
  * context category.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -178,7 +178,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * Setter for <code>oagi.ctx_scheme.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this context scheme.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(9, value);
     }
 
@@ -186,8 +186,8 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * Getter for <code>oagi.ctx_scheme.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this context scheme.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(9);
+    public String getCreatedBy() {
+        return (String) get(9);
     }
 
     /**
@@ -195,7 +195,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * the APP_USER table. It identifies the user who last updated the context
      * scheme.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(10, value);
     }
 
@@ -204,8 +204,8 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * the APP_USER table. It identifies the user who last updated the context
      * scheme.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(10);
+    public String getLastUpdatedBy() {
+        return (String) get(10);
     }
 
     /**
@@ -254,12 +254,12 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
@@ -309,12 +309,12 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<String> field10() {
         return CtxScheme.CTX_SCHEME.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return CtxScheme.CTX_SCHEME.LAST_UPDATED_BY;
     }
 
@@ -374,12 +374,12 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong component10() {
+    public String component10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getLastUpdatedBy();
     }
 
@@ -439,12 +439,12 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong value10() {
+    public String value10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getLastUpdatedBy();
     }
 
@@ -513,13 +513,13 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord value10(ULong value) {
+    public CtxSchemeRecord value10(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public CtxSchemeRecord value11(ULong value) {
+    public CtxSchemeRecord value11(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -537,7 +537,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13) {
+    public CtxSchemeRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, ULong value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -568,7 +568,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     /**
      * Create a detached, initialised CtxSchemeRecord
      */
-    public CtxSchemeRecord(ULong ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, ULong ctxCategoryId, ULong codeListId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public CtxSchemeRecord(ULong ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, ULong ctxCategoryId, ULong codeListId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxScheme.CTX_SCHEME);
 
         setCtxSchemeId(ctxSchemeId);

@@ -23,8 +23,8 @@ public class BizCtxRepository implements ScoreRepository<BizCtx, BigInteger> {
     private DSLContext dslContext;
 
     private SelectJoinStep<Record7<
-            ULong, String, String, ULong,
-            ULong, LocalDateTime, LocalDateTime>> getSelectBizCtx() {
+            ULong, String, String, String,
+            String, LocalDateTime, LocalDateTime>> getSelectBizCtx() {
         return dslContext.select(
                 Tables.BIZ_CTX.BIZ_CTX_ID,
                 Tables.BIZ_CTX.GUID,

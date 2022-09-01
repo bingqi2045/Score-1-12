@@ -9,14 +9,14 @@ import java.util.List;
 public class CreateCodeListRestrictionRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger dtManifestId;
-    private final BigInteger releaseId;
+    private final String releaseId;
 
     private BigInteger codeListManifestId;
 
 
 
     public CreateCodeListRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                      BigInteger dtManifestId, BigInteger releaseId) {
+                                                      BigInteger dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
@@ -26,7 +26,7 @@ public class CreateCodeListRestrictionRepositoryRequest extends RepositoryReques
         return dtManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 

@@ -12,6 +12,6 @@ public class AnalysisBieUpliftingRequest {
 
     private BigInteger topLevelAsbiepId;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
 }

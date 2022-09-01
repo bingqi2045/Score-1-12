@@ -95,7 +95,7 @@ public class CommentRepository {
         private String reference;
         private String text;
         private ULong prevCommentId;
-        private ULong createdBy;
+        private String createdBy;
 
         public InsertCommentArguments setReference(String reference) {
             this.reference = reference;
@@ -119,11 +119,7 @@ public class CommentRepository {
             return this;
         }
 
-        public InsertCommentArguments setCreatedBy(BigInteger createdBy) {
-            return setCreatedBy(ULong.valueOf(createdBy));
-        }
-
-        public InsertCommentArguments setCreatedBy(ULong createdBy) {
+        public InsertCommentArguments setCreatedBy(String createdBy) {
             this.createdBy = createdBy;
             return this;
         }
@@ -156,28 +152,24 @@ public class CommentRepository {
                 .returning().fetchOne().getCommentId().longValue();
     }
 
-    public BigInteger getOwnerIdByCommentId(long commentId) {
+    public String getOwnerIdByCommentId(long commentId) {
         return dslContext.select(COMMENT.CREATED_BY)
                 .from(COMMENT)
                 .where(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentId)))
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     @Data
     public class UpdateCommentArguments {
 
-        private final ULong userId;
+        private final String userId;
         private ULong commentId;
 
         private String text;
         private Boolean hide;
         private Boolean delete;
 
-        public UpdateCommentArguments(BigInteger userId) {
-            this(ULong.valueOf(userId));
-        }
-
-        public UpdateCommentArguments(ULong userId) {
+        public UpdateCommentArguments(String userId) {
             this.userId = userId;
         }
 
@@ -223,7 +215,7 @@ public class CommentRepository {
         }
     }
 
-    public UpdateCommentArguments updateComment(BigInteger userId) {
+    public UpdateCommentArguments updateComment(String userId) {
         return new UpdateCommentArguments(userId);
     }
 

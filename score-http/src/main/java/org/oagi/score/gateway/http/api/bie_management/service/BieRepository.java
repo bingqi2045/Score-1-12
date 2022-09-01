@@ -1,7 +1,7 @@
 package org.oagi.score.gateway.http.api.bie_management.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
-import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
@@ -35,7 +35,7 @@ public class BieRepository {
     @Autowired
     private SessionService sessionService;
 
-    public List<SummaryBie> getSummaryBieList(BigInteger releaseId) {
+    public List<SummaryBie> getSummaryBieList(String releaseId) {
 
         SelectOnConditionStep step = dslContext.select(
                 TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
@@ -52,8 +52,8 @@ public class BieRepository {
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID));
 
         SelectConditionStep cond;
-        if (releaseId.longValue() > 0) {
-            cond = step.where(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+        if (!StringUtils.isEmpty(releaseId)) {
+            cond = step.where(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(releaseId));
         } else {
             cond = step.where(TOP_LEVEL_ASBIEP.RELEASE_ID.isNotNull());
         }
@@ -61,7 +61,7 @@ public class BieRepository {
         return cond.fetchInto(SummaryBie.class);
     }
 
-    public BigInteger getAccManifestIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId, BigInteger releaseId) {
+    public BigInteger getAccManifestIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId, String releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(TOP_LEVEL_ASBIEP)
@@ -72,7 +72,7 @@ public class BieRepository {
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(and(
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
                 .fetchOneInto(BigInteger.class);
     }
@@ -104,7 +104,7 @@ public class BieRepository {
                 .fetchOneInto(BieEditAcc.class);
     }
 
-    public BieEditAcc getAcc(BigInteger accManifestId, BigInteger releaseId) {
+    public BieEditAcc getAcc(BigInteger accManifestId, String releaseId) {
         return dslContext.select(
                 ACC_MANIFEST.ACC_MANIFEST_ID,
                 ACC.ACC_ID,
@@ -125,7 +125,7 @@ public class BieRepository {
                 .leftJoin(ACC_MANIFEST.as("base"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId))
-                        .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                        .and(ACC_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .fetchOptionalInto(BieEditAcc.class).orElse(null);
     }
 
@@ -172,7 +172,7 @@ public class BieRepository {
                 .fetchOptionalInto(BccForBie.class).orElse(null);
     }
 
-    public BieEditBccp getBccp(BigInteger bccpId, BigInteger releaseId) {
+    public BieEditBccp getBccp(BigInteger bccpId, String releaseId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -190,7 +190,7 @@ public class BieRepository {
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(LOG)
                 .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCCP_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 
@@ -467,13 +467,13 @@ public class BieRepository {
                 .fetchInto(BieEditBcc.class);
     }
 
-    public BigInteger createTopLevelAsbiep(BigInteger userId, BigInteger releaseId, BieState state) {
+    public BigInteger createTopLevelAsbiep(String userId, String releaseId, BieState state) {
         TopLevelAsbiepRecord record = new TopLevelAsbiepRecord();
         LocalDateTime timestamp = LocalDateTime.now();
-        record.setOwnerUserId(ULong.valueOf(userId));
-        record.setReleaseId(ULong.valueOf(releaseId));
+        record.setOwnerUserId(userId);
+        record.setReleaseId(releaseId);
         record.setState(state.name());
-        record.setLastUpdatedBy(ULong.valueOf(userId));
+        record.setLastUpdatedBy(userId);
         record.setLastUpdateTimestamp(timestamp);
 
         return dslContext.insertInto(TOP_LEVEL_ASBIEP)
@@ -506,15 +506,15 @@ public class BieRepository {
     }
 
     public AsbiepRecord createAsbiep(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger abieId, BigInteger topLevelAsbiepId) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(ASBIEP)
                 .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asccpManifestId))
                 .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(abieId))
-                .set(ASBIEP.CREATED_BY, ULong.valueOf(userId))
-                .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ASBIEP.CREATED_BY, userId)
+                .set(ASBIEP.LAST_UPDATED_BY, userId)
                 .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
@@ -525,7 +525,7 @@ public class BieRepository {
                                    BigInteger basedAsccManifestId,
                                    int seqKey, BigInteger topLevelAsbiepId) {
 
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         Record2<Integer, Integer> cardinality = dslContext.select(
@@ -551,8 +551,8 @@ public class BieRepository {
                 .set(ASBIE.CARDINALITY_MIN, cardinality.get(ASCC.CARDINALITY_MIN))
                 .set(ASBIE.CARDINALITY_MAX, cardinality.get(ASCC.CARDINALITY_MAX))
                 .set(ASBIE.IS_NILLABLE, AsccpNillable)
-                .set(ASBIE.CREATED_BY, ULong.valueOf(userId))
-                .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ASBIE.CREATED_BY, userId)
+                .set(ASBIE.LAST_UPDATED_BY, userId)
                 .set(ASBIE.CREATION_TIMESTAMP, timestamp)
                 .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
@@ -563,14 +563,14 @@ public class BieRepository {
     }
 
     public BbiepRecord createBbiep(AuthenticatedPrincipal user, BigInteger basedBccpManifestId, BigInteger topLevelAsbiepId) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(BBIEP)
                 .set(BBIEP.GUID, ScoreGuid.randomGuid())
                 .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(basedBccpManifestId))
-                .set(BBIEP.CREATED_BY, ULong.valueOf(userId))
-                .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(BBIEP.CREATED_BY, userId)
+                .set(BBIEP.LAST_UPDATED_BY, userId)
                 .set(BBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
@@ -582,7 +582,7 @@ public class BieRepository {
                                  BigInteger bdtManifestId,
                                  int seqKey, BigInteger topLevelAsbiepId) {
 
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         BccRecord bccRecord = dslContext.select(
@@ -614,8 +614,8 @@ public class BieRepository {
                 .set(BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
                 .set(BBIE.IS_NILLABLE, bccRecord.getIsNillable())
                 .set(BBIE.IS_NULL, (byte) ((0)))
-                .set(BBIE.CREATED_BY, ULong.valueOf(userId))
-                .set(BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(BBIE.CREATED_BY, userId)
+                .set(BBIE.LAST_UPDATED_BY, userId)
                 .set(BBIE.CREATION_TIMESTAMP, timestamp)
                 .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))

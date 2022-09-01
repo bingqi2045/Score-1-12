@@ -13,20 +13,20 @@ import java.util.Map;
 public interface ValueDomainReadRepository {
 
     List<CodeList> getCodeListList(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 
     Map<BigInteger, BdtPriRestri> getBdtPriRestriMap(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 
     Map<BigInteger, BdtScPriRestri> getBdtScPriRestriMap(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 
     Map<BigInteger, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 
     Map<BigInteger, List<BdtScPriRestri>> getBdtScPriRestriBdtScIdMap(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 
     List<AgencyIdList> getAgencyIdListList(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 }

@@ -9,7 +9,7 @@ public class GetReleaseRequest extends Request {
 
     private BigInteger topLevelAsbiepId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String releaseNum;
 
@@ -17,15 +17,15 @@ public class GetReleaseRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public GetReleaseRequest withReleaseId(BigInteger releaseId) {
+    public GetReleaseRequest withReleaseId(String releaseId) {
         setReleaseId(releaseId);
         return this;
     }

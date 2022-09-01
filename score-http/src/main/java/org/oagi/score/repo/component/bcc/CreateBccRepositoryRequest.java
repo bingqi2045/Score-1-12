@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class CreateBccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
+    private final String releaseId;
     private final BigInteger accManifestId;
     private final BigInteger bccpManifestId;
     private final boolean attribute;
@@ -21,7 +21,7 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     private CcState initialState = CcState.WIP;
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger releaseId,
+                                      String releaseId,
                                       BigInteger accManifestId,
                                       BigInteger bccpManifestId,
                                       boolean attribute) {
@@ -34,7 +34,7 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger releaseId,
+                                      String releaseId,
                                       BigInteger accManifestId,
                                       BigInteger bccpManifestId,
                                       boolean attribute) {
@@ -45,7 +45,7 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
         this.attribute = attribute;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 

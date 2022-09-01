@@ -26,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -113,19 +112,22 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>oagi.xbt.created_by</code>.
+     * The column <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
+     * table identifying user who created the xbt.
      */
-    public final TableField<XbtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying user who created the xbt.");
 
     /**
-     * The column <code>oagi.xbt.owner_user_id</code>.
+     * The column <code>oagi.xbt.owner_user_id</code>. Foreign key to the
+     * APP_USER table identifying the user who can update or delete the record.
      */
-    public final TableField<XbtRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
 
     /**
-     * The column <code>oagi.xbt.last_updated_by</code>.
+     * The column <code>oagi.xbt.last_updated_by</code>. Foreign key to the
+     * APP_USER table identifying the user who last updated the record.
      */
-    public final TableField<XbtRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
 
     /**
      * The column <code>oagi.xbt.creation_timestamp</code>.
@@ -287,21 +289,21 @@ public class Xbt extends TableImpl<XbtRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<String, String, String, String, String, String, String, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+    public Row16<String, String, String, String, String, String, String, String, String, Integer, String, String, String, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
         return (Row16) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function16<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function16<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function16<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function16<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

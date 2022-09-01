@@ -58,9 +58,10 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     public final TableField<XbtManifestRecord, ULong> XBT_MANIFEST_ID = createField(DSL.name("xbt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>oagi.xbt_manifest.release_id</code>.
+     * The column <code>oagi.xbt_manifest.release_id</code>. Foreign key to the
+     * RELEASE table.
      */
-    public final TableField<XbtManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.xbt_manifest.xbt_id</code>. Foreign key to the XBT
@@ -78,7 +79,7 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
      * The column <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed
      * to a log for the current record.
      */
-    public final TableField<XbtManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<XbtManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.xbt_manifest.prev_xbt_manifest_id</code>.
@@ -245,21 +246,21 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, String, Byte, ULong, ULong, ULong> fieldsRow() {
+    public Row7<ULong, String, String, Byte, String, ULong, ULong> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

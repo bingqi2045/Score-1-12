@@ -22,8 +22,8 @@ public class XbtRepository implements ScoreRepository<Xbt, String> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record16<String, ULong, ULong, String, ULong,
-            ULong, String, String, LocalDateTime, Byte,
+    private SelectOnConditionStep<Record16<String, String, String, String, String,
+            String, String, String, LocalDateTime, Byte,
             String, String, LocalDateTime, String, String,
             Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY, XBT.LAST_UPDATED_BY, XBT.NAME, XBT.OWNER_USER_ID,

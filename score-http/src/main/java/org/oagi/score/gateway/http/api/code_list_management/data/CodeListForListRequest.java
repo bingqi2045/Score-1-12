@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class CodeListForListRequest {
 
-    private long releaseId;
+    private String releaseId;
     private String name;
     private String definition;
     private String module;

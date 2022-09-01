@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.configuration.security;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
@@ -22,6 +21,7 @@ import java.util.Map;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.user.model.ScoreUser.SYSTEM_USER_ID;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,10 +36,10 @@ public class SessionService {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    public boolean isDeveloper(BigInteger userId) {
+    public boolean isDeveloper(String userId) {
         Record record = dslContext.select(APP_USER.IS_DEVELOPER)
                 .from(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
+                .where(APP_USER.APP_USER_ID.eq(userId))
                 .fetchOptional().orElse(null);
         if (record == null) {
             return false;
@@ -47,28 +47,28 @@ public class SessionService {
         return (byte) 1 == record.get(APP_USER.IS_DEVELOPER);
     }
 
-    public BigInteger userId(User user) {
+    public String userId(User user) {
         if (user == null) {
-            return BigInteger.ZERO;
+            return null;
         }
         return dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
-                .fetchOptional(APP_USER.APP_USER_ID).orElse(ULong.valueOf(0L)).toBigInteger();
+                .fetchOptional(APP_USER.APP_USER_ID).orElse(null);
     }
 
-    public BigInteger userId(OAuth2User user) {
+    public String userId(OAuth2User user) {
         if (user == null) {
-            return BigInteger.valueOf(0);
+            return null;
         }
         return dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .join(APP_OAUTH2_USER).on(APP_USER.APP_USER_ID.eq(APP_OAUTH2_USER.APP_USER_ID))
                 .where(APP_OAUTH2_USER.SUB.equalIgnoreCase((String) user.getAttribute("sub")))
-                .fetchOptional(APP_USER.APP_USER_ID).orElse(ULong.valueOf(0L)).toBigInteger();
+                .fetchOptional(APP_USER.APP_USER_ID).orElse(null);
     }
 
-    public BigInteger userId(AuthenticatedPrincipal principal) {
+    public String userId(AuthenticatedPrincipal principal) {
         if (principal == null) {
             throw new ScoreDataAccessException("User does not exist.");
         }
@@ -77,11 +77,11 @@ public class SessionService {
         } else if (principal instanceof OAuth2User) {
             return userId((OAuth2User) principal);
         } else {
-            return BigInteger.valueOf(0);
+            return null;
         }
     }
 
-    public AppUser getAppUser(String username) {
+    public AppUser getAppUserByUsername(String username) {
         return dslContext.select(
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
@@ -95,7 +95,7 @@ public class SessionService {
                 .fetchOneInto(AppUser.class);
     }
 
-    public AppUser getAppUser(BigInteger appUserId) {
+    public AppUser getAppUserById(String appUserId) {
         return dslContext.select(
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
@@ -105,15 +105,15 @@ public class SessionService {
                 APP_USER.IS_ADMIN.as("admin"),
                 APP_USER.IS_ENABLED.as("enabled")
         ).from(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)))
+                .where(APP_USER.APP_USER_ID.eq(appUserId))
                 .fetchOneInto(AppUser.class);
     }
 
-    public AppUser getAppUser(User user) {
-        return getAppUser(user.getUsername());
+    public AppUser getAppUserByUsername(User user) {
+        return getAppUserByUsername(user.getUsername());
     }
 
-    public AppUser getAppUser(OAuth2User user) {
+    public AppUser getAppUserByUsername(OAuth2User user) {
         String sub = user.getAttribute("sub");
         return dslContext.select(
                 APP_USER.APP_USER_ID,
@@ -129,13 +129,13 @@ public class SessionService {
                 .fetchOneInto(AppUser.class);
     }
 
-    public AppUser getAppUser(AuthenticatedPrincipal user) {
+    public AppUser getAppUserByUsername(AuthenticatedPrincipal user) {
         if (user instanceof User) {
-            return getAppUser((User) user);
+            return getAppUserByUsername((User) user);
         } else if (user instanceof OAuth2User) {
-            return getAppUser((OAuth2User) user);
+            return getAppUserByUsername((OAuth2User) user);
         }
-        return getAppUser(user.getName());
+        return getAppUserByUsername(user.getName());
     }
 
     public void invalidateByUsername(String username) {
@@ -145,14 +145,14 @@ public class SessionService {
         });
     }
 
-    public org.oagi.score.repo.api.user.model.ScoreUser getScoreUserByUserId(BigInteger userId) {
+    public org.oagi.score.repo.api.user.model.ScoreUser getScoreUserByUserId(String userId) {
         ScoreUserReadRepository repo = scoreRepositoryFactory.createScoreUserReadRepository();
         GetScoreUserRequest request = new GetScoreUserRequest().withUserId(userId);
         return repo.getScoreUser(request).getUser();
     }
 
     public org.oagi.score.repo.api.user.model.ScoreUser getScoreSystemUser() {
-        return getScoreUserByUserId(BigInteger.ZERO);
+        return getScoreUserByUserId(SYSTEM_USER_ID);
     }
 
     public org.oagi.score.repo.api.user.model.ScoreUser asScoreUser(AuthenticatedPrincipal user) {

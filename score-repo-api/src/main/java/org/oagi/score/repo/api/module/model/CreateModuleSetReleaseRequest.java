@@ -9,7 +9,7 @@ public class CreateModuleSetReleaseRequest extends Request {
 
     private BigInteger moduleSetId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String moduleSetReleaseName;
 
@@ -27,11 +27,11 @@ public class CreateModuleSetReleaseRequest extends Request {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 

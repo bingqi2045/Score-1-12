@@ -59,9 +59,9 @@ public class BCCPRepository implements ScoreRepository<BCCP, BigInteger> {
     }
 
     @Override
-    public List<BCCP> findAllByReleaseId(BigInteger releaseId) {
+    public List<BCCP> findAllByReleaseId(String releaseId) {
         return getSelectOnConditionStep()
-                .where(Tables.BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.BCCP_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(BCCP.class);
     }
 

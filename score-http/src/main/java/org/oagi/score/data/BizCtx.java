@@ -11,8 +11,8 @@ public class BizCtx {
     private BigInteger bizCtxId = BigInteger.ZERO;
     private String guid;
     private String name;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
 }

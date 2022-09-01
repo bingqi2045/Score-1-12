@@ -320,25 +320,23 @@ public class MigrationService {
         writeInsertStatements(writer, MODULE_XBT_MANIFEST, MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleXbtManifestId())));
         writeInsertStatements(writer, MODULE_BLOB_CONTENT_MANIFEST, MODULE_BLOB_CONTENT_MANIFEST.MODULE_BLOB_CONTENT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxModuleBlobContentManifestId())));
 
-        writeInsertStatements(writer, LOG, LOG.LOG_ID.lessOrEqual(ULong.valueOf(metadata.getMaxLogId())));
+        writeInsertStatements(writer, LOG, null);
         writeInsertStatements(writer, SEQ_KEY, SEQ_KEY.SEQ_KEY_ID.lessOrEqual(ULong.valueOf(metadata.getMaxSeqKeyId())));
-        writeInsertStatements(writer, NAMESPACE, NAMESPACE.NAMESPACE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxNamespaceId())));
-        writeInsertStatements(writer, RELEASE, RELEASE.RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getTargetReleaseId())));
+        writeInsertStatements(writer, NAMESPACE, null);
+        writeInsertStatements(writer, RELEASE, null);
 
         writeInsertUpdateStatements(writer, APP_USER, APP_USER.APP_USER_ID,
-                APP_USER.IS_DEVELOPER.eq((byte) 1),
-                APP_USER.APP_USER_ID.greaterOrEqual(ULong.valueOf(2)),
-                APP_USER.APP_USER_ID.lessThan(ULong.valueOf(metadata.getDelimiterId())));
+                APP_USER.IS_DEVELOPER.eq((byte) 1));
 
         writer.println("");
         writer.println("-- Dump completed on " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 
-    public File makeMigrationDataFile(AuthenticatedPrincipal user, BigInteger targetReleaseId) throws IOException {
+    public File makeMigrationDataFile(AuthenticatedPrincipal user, String targetReleaseId) throws IOException {
         Path tempDir = Files.createTempDirectory("mig-" + UUID.randomUUID());
 
-        MigrationMetadata metadata = makeMigrationMetadata(sessionService.getAppUser(user),
-                ULong.valueOf(targetReleaseId));
+        MigrationMetadata metadata = makeMigrationMetadata(sessionService.getAppUserByUsername(user),
+                targetReleaseId);
         File dumpFile = makeDumpFile(metadata, tempDir);
 
         String targetReleaseNum = metadata.getReleaseIdNumMap().get(targetReleaseId);
@@ -363,7 +361,7 @@ public class MigrationService {
             jsonWriter.name("release");
             jsonWriter.beginObject();
 
-            jsonWriter.name("id").value(targetReleaseId.longValue());
+            jsonWriter.name("id").value(targetReleaseId);
             jsonWriter.name("release_num").value(targetReleaseNum);
 
             jsonWriter.endObject(); // end of "release" property.
@@ -390,13 +388,13 @@ public class MigrationService {
             jsonWriter.name("releases");
             jsonWriter.beginArray();
 
-            List<BigInteger> releaseIdList = new ArrayList(metadata.getReleaseIdNumMap().keySet());
+            List<String> releaseIdList = new ArrayList(metadata.getReleaseIdNumMap().keySet());
             releaseIdList.remove(targetReleaseId);
             releaseIdList.sort(Comparator.naturalOrder());
-            for (BigInteger releaseId : releaseIdList) {
+            for (String releaseId : releaseIdList) {
                 jsonWriter.beginObject();
 
-                jsonWriter.name("id").value(releaseId.longValue());
+                jsonWriter.name("id").value(releaseId);
                 jsonWriter.name("release_num").value(metadata.getReleaseIdNumMap().get(releaseId));
 
                 jsonWriter.endObject();
@@ -550,16 +548,16 @@ public class MigrationService {
                 metadata.getTargetReleaseNum().replaceAll("\\.", "_"));
     }
 
-    private MigrationMetadata makeMigrationMetadata(AppUser user, ULong releaseId) {
+    private MigrationMetadata makeMigrationMetadata(AppUser user, String releaseId) {
         MigrationMetadata metadata = new MigrationMetadata();
-        metadata.setTargetReleaseId(releaseId.toBigInteger());
+        metadata.setTargetReleaseId(releaseId);
         metadata.setMaintainer(user.getName());
         metadata.setMaintainerEmail(null);
 
         for (ReleaseRecord releaseRecord : dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.lessOrEqual(releaseId))
                 .fetch()) {
-            metadata.addRelease(releaseRecord.getReleaseId().toBigInteger(), releaseRecord.getReleaseNum());
+            metadata.addRelease(releaseRecord.getReleaseId(), releaseRecord.getReleaseNum());
         }
 
         metadata.setMaxAccManifestId(dslContext.select(max(ACC_MANIFEST.ACC_MANIFEST_ID))
@@ -705,11 +703,9 @@ public class MigrationService {
 
         metadata.setMaxModuleSetId(dslContext.select(max(MODULE_SET_RELEASE.MODULE_SET_ID))
                 .from(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getTargetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleSetReleaseId(dslContext.select(max(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID))
                 .from(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.RELEASE_ID.lessOrEqual(ULong.valueOf(metadata.getTargetReleaseId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxModuleId(dslContext.select(max(MODULE.MODULE_ID))
                 .from(MODULE)

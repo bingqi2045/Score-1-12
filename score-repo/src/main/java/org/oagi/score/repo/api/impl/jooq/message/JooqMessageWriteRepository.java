@@ -31,8 +31,8 @@ public class JooqMessageWriteRepository
         Map<ScoreUser, BigInteger> messageIds = new HashMap();
         for (ScoreUser recipient : request.getRecipients()) {
             MessageRecord message = new MessageRecord();
-            message.setSenderId(ULong.valueOf(sender.getUserId()));
-            message.setRecipientId(ULong.valueOf(recipient.getUserId()));
+            message.setSenderId(sender.getUserId());
+            message.setRecipientId(recipient.getUserId());
             message.setSubject(request.getSubject());
             message.setBody(request.getBody());
             message.setBodyContentType(request.getBodyContentType());

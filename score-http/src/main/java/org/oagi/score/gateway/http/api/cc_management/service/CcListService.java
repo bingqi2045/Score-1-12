@@ -82,7 +82,7 @@ public class CcListService {
 
     @Transactional
     public void transferOwnership(AuthenticatedPrincipal user, String type, BigInteger manifestId, String targetLoginId) {
-        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+        AppUser targetUser = sessionService.getAppUserByUsername(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
@@ -129,7 +129,7 @@ public class CcListService {
     }
 
     public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(AuthenticatedPrincipal user) {
-        BigInteger requesterId = sessionService.userId(user);
+        String requesterId = sessionService.userId(user);
 
         Release workingRelease = releaseRepository.getWorkingRelease();
 
@@ -138,8 +138,8 @@ public class CcListService {
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .where(and(
                         ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                        ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(workingRelease.getReleaseId())),
-                        ACC.OWNER_USER_ID.eq(ULong.valueOf(requesterId))
+                        ACC_MANIFEST.RELEASE_ID.notEqual(workingRelease.getReleaseId()),
+                        ACC.OWNER_USER_ID.eq(requesterId)
                 ))
                 .fetchInto(ULong.class);
 
@@ -180,7 +180,7 @@ public class CcListService {
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
                     item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
@@ -224,7 +224,7 @@ public class CcListService {
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
                     item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));

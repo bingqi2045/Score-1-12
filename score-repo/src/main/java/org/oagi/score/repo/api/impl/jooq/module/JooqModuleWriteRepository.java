@@ -7,8 +7,8 @@ import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleWriteRepository;
-import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
+import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -38,7 +38,7 @@ public class JooqModuleWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public CreateModuleResponse createModule(CreateModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (hasDuplicateName(request.getParentModuleId(), request.getName())) {
@@ -56,7 +56,7 @@ public class JooqModuleWriteRepository
                 .set(MODULE.TYPE, request.getModuleType().name())
                 .set(MODULE.NAME, request.getName())
                 .set(MODULE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                .set(MODULE.NAMESPACE_ID, (request.getNamespaceId() != null) ? ULong.valueOf(request.getNamespaceId()) : null)
+                .set(MODULE.NAMESPACE_ID, request.getNamespaceId())
                 .set(MODULE.VERSION_NUM, request.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
                 .set(MODULE.OWNER_USER_ID, requesterUserId)
@@ -71,9 +71,7 @@ public class JooqModuleWriteRepository
         module.setParentModuleId(moduleRecord.getParentModuleId().toBigInteger());
         module.setName(moduleRecord.getName());
         module.setVersionNum(moduleRecord.getVersionNum());
-        if (moduleRecord.getNamespaceId() != null) {
-            module.setNamespaceId(moduleRecord.getNamespaceId().toBigInteger());
-        }
+        module.setNamespaceId(moduleRecord.getNamespaceId());
         module.setCreatedBy(requester);
         module.setCreationTimestamp(
                 Date.from(moduleRecord.getCreationTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
@@ -88,7 +86,7 @@ public class JooqModuleWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateModuleResponse updateModule(UpdateModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
@@ -99,11 +97,7 @@ public class JooqModuleWriteRepository
             throw new IllegalArgumentException("Cannot found a module record [moduleId=" + request.getModuleId() + "]");
         }
 
-        if (request.getNamespaceId() != null) {
-            moduleRecord.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
-        } else {
-            moduleRecord.setNamespaceId(null);
-        }
+        moduleRecord.setNamespaceId(request.getNamespaceId());
 
         if (StringUtils.hasLength(request.getVersionNum())) {
             moduleRecord.setVersionNum(request.getVersionNum());
@@ -195,7 +189,7 @@ public class JooqModuleWriteRepository
     @Override
     public void copyModule(CopyModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
@@ -211,7 +205,7 @@ public class JooqModuleWriteRepository
         }
     }
 
-    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
+    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, String requesterUserId, LocalDateTime timestamp, boolean copySub) {
         String path;
         if (parent.getPath().length() == 0) {
             path = target.getName();
@@ -245,7 +239,7 @@ public class JooqModuleWriteRepository
 
     }
 
-    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
+    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, String requesterUserId, LocalDateTime timestamp, boolean copySub) {
         ModuleRecord duplicated = dslContext().selectFrom(MODULE).where(and(
                 MODULE.PARENT_MODULE_ID.eq(parent.getModuleId()),
                 MODULE.NAME.eq(target.getName())

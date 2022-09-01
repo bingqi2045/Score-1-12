@@ -8,11 +8,11 @@ import java.math.BigInteger;
 public class UpdateAsccpOwnerRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger asccpManifestId;
-    private final BigInteger ownerId;
+    private final String ownerId;
 
     public UpdateAsccpOwnerRepositoryRequest(AuthenticatedPrincipal user,
                                              BigInteger asccpManifestId,
-                                             BigInteger ownerId) {
+                                             String ownerId) {
         super(user);
         this.asccpManifestId = asccpManifestId;
         this.ownerId = ownerId;
@@ -22,7 +22,7 @@ public class UpdateAsccpOwnerRepositoryRequest extends RepositoryRequest {
         return asccpManifestId;
     }
 
-    public BigInteger getOwnerId() {
+    public String getOwnerId() {
         return ownerId;
     }
 }

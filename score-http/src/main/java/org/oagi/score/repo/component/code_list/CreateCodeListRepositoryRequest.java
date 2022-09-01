@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 public class CreateCodeListRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger basedCodeListManifestId;
-    private final BigInteger releaseId;
+    private final String releaseId;
 
     private String initialName = "Code List";
 
     public CreateCodeListRepositoryRequest(AuthenticatedPrincipal user,
                                            LocalDateTime localDateTime,
                                            BigInteger basedCodeListManifestId,
-                                           BigInteger releaseId) {
+                                           String releaseId) {
         super(user, localDateTime);
         this.basedCodeListManifestId = basedCodeListManifestId;
         this.releaseId = releaseId;
@@ -30,7 +30,7 @@ public class CreateCodeListRepositoryRequest extends RepositoryRequest {
         return this.basedCodeListManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return this.releaseId;
     }
 

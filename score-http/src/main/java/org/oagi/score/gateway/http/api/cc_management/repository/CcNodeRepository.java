@@ -45,7 +45,11 @@ public class CcNodeRepository {
     @Autowired
     private UserRepository userRepository;
 
-    private SelectOnConditionStep<Record16<ULong, String, String, ULong, Integer, String, String, Byte, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
+    private SelectOnConditionStep<Record16<
+            ULong, String, String, ULong, Integer,
+            String, String, Byte, String, String,
+            UInteger, UInteger, String, String, String,
+            ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                         ACC.ACC_ID,
                         ACC.GUID,
@@ -72,12 +76,12 @@ public class CcNodeRepository {
                 .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID));
     }
 
-    public CcAccNode getAccNodeByAccId(AuthenticatedPrincipal user, BigInteger accId, BigInteger releaseId) {
+    public CcAccNode getAccNodeByAccId(AuthenticatedPrincipal user, BigInteger accId, String releaseId) {
         AccManifestRecord accManifestRecord =
                 dslContext.selectFrom(ACC_MANIFEST)
                         .where(and(
                                 ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)),
-                                ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                         ))
                         .fetchOne();
 
@@ -91,7 +95,7 @@ public class CcNodeRepository {
         return arrangeAccNode(user, accNode);
     }
 
-    public CcAccNode getAccNodeFromAsccByAsccpId(AuthenticatedPrincipal user, BigInteger toAsccpId, ULong releaseId) {
+    public CcAccNode getAccNodeFromAsccByAsccpId(AuthenticatedPrincipal user, BigInteger toAsccpId, String releaseId) {
         CcAsccNode asccNode = dslContext.select(
                         ASCC.ASCC_ID,
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
@@ -122,7 +126,7 @@ public class CcNodeRepository {
         accNode.setGroup(oagisComponentType.isGroup());
         boolean isWorkingRelease = accNode.getReleaseNum().equals("Working");
         accNode.setAccess(AccessPrivilege.toAccessPrivilege(
-                sessionService.getAppUser(user), sessionService.getAppUser(accNode.getOwnerUserId()),
+                sessionService.getAppUserByUsername(user), sessionService.getAppUserById(accNode.getOwnerUserId()),
                 accNode.getState(), isWorkingRelease));
         accNode.setHasChild(hasChild(accNode));
         accNode.setHasExtension(hasExtension(user, accNode));
@@ -175,8 +179,11 @@ public class CcNodeRepository {
         }
     }
 
-    private SelectOnConditionStep<Record15<ULong, String, String, ULong, String, String, ULong, UInteger, UInteger,
-            ULong, String, ULong, ULong, ULong, ULong>> selectOnConditionStepForAsccpNode() {
+    private SelectOnConditionStep<Record15<
+            ULong, String, String, ULong, String,
+            String, String, UInteger, UInteger,
+            String, String, ULong, String, ULong,
+            ULong>> selectOnConditionStepForAsccpNode() {
         return dslContext.select(
                         ASCCP.ASCCP_ID,
                         ASCCP.GUID,
@@ -209,8 +216,8 @@ public class CcNodeRepository {
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcAsccpNode.class);
 
-        AppUser requester = sessionService.getAppUser(user);
-        AppUser owner = sessionService.getAppUser(asccpNode.getOwnerUserId());
+        AppUser requester = sessionService.getAppUserByUsername(user);
+        AppUser owner = sessionService.getAppUserById(asccpNode.getOwnerUserId());
         boolean isWorkingRelease = asccpNode.getReleaseNum().equals("Working");
         asccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, asccpNode.getState(), isWorkingRelease));
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
@@ -218,7 +225,7 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public CcAsccpNode getAsccpNodeByRoleOfAccId(BigInteger roleOfAccId, ULong releaseId) {
+    public CcAsccpNode getAsccpNodeByRoleOfAccId(BigInteger roleOfAccId, String releaseId) {
         CcAsccpNode asccpNode = selectOnConditionStepForAsccpNode()
                 .where(and(
                         ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(roleOfAccId)),
@@ -236,8 +243,8 @@ public class CcNodeRepository {
 
     private SelectOnConditionStep<Record14<
             ULong, String, String, ULong, String,
-            ULong, UInteger, UInteger, ULong, String,
-            ULong, ULong, ULong, ULong>> selectOnConditionStepForBccpNode() {
+            String, UInteger, UInteger, String, String,
+            ULong, String, ULong, ULong>> selectOnConditionStepForBccpNode() {
         return dslContext.select(
                         BCCP.BCCP_ID,
                         BCCP.GUID,
@@ -264,7 +271,10 @@ public class CcNodeRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID));
     }
 
-    private SelectOnConditionStep<Record15<ULong, String, String, String, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong, ULong, ULong, ULong>> selectOnConditionStepForBdtNode() {
+    private SelectOnConditionStep<Record15<
+            ULong, String, String, String, String,
+            String, UInteger, UInteger, String, String,
+            ULong, ULong, String, ULong, ULong>> selectOnConditionStepForBdtNode() {
         return dslContext.select(
                         DT.DT_ID.as("bdt_id"),
                         DT.GUID,
@@ -290,7 +300,10 @@ public class CcNodeRepository {
                 .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID));
     }
 
-    private SelectOnConditionStep<Record13<ULong, String, String, String, ULong, UInteger, UInteger, ULong, String, ULong, ULong, ULong, ULong>> selectOnConditionStepForDtScNode() {
+    private SelectOnConditionStep<Record13<
+            ULong, String, String, String, String,
+            UInteger, UInteger, String, String, ULong,
+            String, ULong, ULong>> selectOnConditionStepForDtScNode() {
         return dslContext.select(
                         DT_SC.DT_SC_ID.as("dt_sc_id"),
                         DT_SC.GUID,
@@ -323,8 +336,8 @@ public class CcNodeRepository {
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBccpNode.class);
 
-        AppUser requester = sessionService.getAppUser(user);
-        AppUser owner = sessionService.getAppUser(bccpNode.getOwnerUserId());
+        AppUser requester = sessionService.getAppUserByUsername(user);
+        AppUser owner = sessionService.getAppUserById(bccpNode.getOwnerUserId());
         boolean isWorkingRelease = bccpNode.getReleaseNum().equals("Working");
         bccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, bccpNode.getState(), isWorkingRelease));
         bccpNode.setHasChild(hasChild(bccpNode));
@@ -337,8 +350,8 @@ public class CcNodeRepository {
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtNode.class);
 
-        AppUser requester = sessionService.getAppUser(user);
-        AppUser owner = sessionService.getAppUser(bdtNode.getOwnerUserId());
+        AppUser requester = sessionService.getAppUserByUsername(user);
+        AppUser owner = sessionService.getAppUserById(bdtNode.getOwnerUserId());
         boolean isWorkingRelease = bdtNode.getReleaseNum().equals("Working");
         bdtNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, bdtNode.getState(), isWorkingRelease));
         bdtNode.setHasChild(hasChild(bdtNode));
@@ -351,8 +364,8 @@ public class CcNodeRepository {
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtScNode.class);
 
-        AppUser requester = sessionService.getAppUser(user);
-        AppUser owner = sessionService.getAppUser(dtScNode.getOwnerUserId());
+        AppUser requester = sessionService.getAppUserByUsername(user);
+        AppUser owner = sessionService.getAppUserById(dtScNode.getOwnerUserId());
         boolean isWorkingRelease = dtScNode.getReleaseNum().equals("Working");
         dtScNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, dtScNode.getState(), isWorkingRelease));
 
@@ -1049,11 +1062,11 @@ public class CcNodeRepository {
         return bdtScPriRestriList;
     }
 
-    public AccManifestRecord getAccManifestByAcc(BigInteger accId, BigInteger releaseId) {
+    public AccManifestRecord getAccManifestByAcc(BigInteger accId, String releaseId) {
         return dslContext.selectFrom(ACC_MANIFEST)
                 .where(and(
                         ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)),
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
                 .fetchOne();
     }

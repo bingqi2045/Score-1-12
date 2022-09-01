@@ -1345,8 +1345,8 @@ public class BieUpliftingService {
                 targetCcDocument,
                 mappingList);
 
-        BigInteger sourceReleaseId = sourceBieDocument.getCcDocument().getAsccpManifest(sourceBieDocument.getRootAsbiep().getBasedAsccpManifestId()).getReleaseId();
-        BigInteger targetReleaseId = targetCcDocument.getAsccpManifest(targetAsccpManifestId).getReleaseId();
+        String sourceReleaseId = sourceBieDocument.getCcDocument().getAsccpManifest(sourceBieDocument.getRootAsbiep().getBasedAsccpManifestId()).getReleaseId();
+        String targetReleaseId = targetCcDocument.getAsccpManifest(targetAsccpManifestId).getReleaseId();
 
         ValueDomainReadRepository valueDomainReadRepository = scoreRepositoryFactory.createValueDomainReadRepository();
         List<CodeList> sourceCodeListList = valueDomainReadRepository.getCodeListList(sourceReleaseId);

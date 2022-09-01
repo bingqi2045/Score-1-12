@@ -81,7 +81,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
     @Transactional
     public void createBieFromExistingBie(AuthenticatedPrincipal user, CreateBieFromExistingBieRequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         ULong asbiepId = dslContext.select(ASBIE.TO_ASBIEP_ID)
@@ -370,7 +370,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private final TopLevelAsbiep sourceTopLevelAsbiep;
         private final TopLevelAsbiep targetTopLevelAsbiep;
         private List<BigInteger> bizCtxIds;
-        private final BigInteger userId;
+        private final String userId;
         private final String sourceAsccpKey;
 
         private LocalDateTime timestamp;
@@ -604,8 +604,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ABIE.PATH, getPath(abie.getPath()))
                     .set(ABIE.HASH_PATH, getHashPath(abie.getPath()))
                     .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
-                    .set(ABIE.CREATED_BY, ULong.valueOf(userId))
-                    .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(ABIE.CREATED_BY, userId)
+                    .set(ABIE.LAST_UPDATED_BY, userId)
                     .set(ABIE.CREATION_TIMESTAMP, timestamp)
                     .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     // .set(ABIE.STATE, BieState.Initiating.getValue())
@@ -624,8 +624,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ASBIEP.DEFINITION, asbiep.getDefinition())
                     .set(ASBIEP.REMARK, asbiep.getRemark())
                     .set(ASBIEP.BIZ_TERM, asbiep.getBizTerm())
-                    .set(ASBIEP.CREATED_BY, ULong.valueOf(userId))
-                    .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(ASBIEP.CREATED_BY, userId)
+                    .set(ASBIEP.LAST_UPDATED_BY, userId)
                     .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
@@ -642,8 +642,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIEP.DEFINITION, bbiep.getDefinition())
                     .set(BBIEP.REMARK, bbiep.getRemark())
                     .set(BBIEP.BIZ_TERM, bbiep.getBizTerm())
-                    .set(BBIEP.CREATED_BY, ULong.valueOf(userId))
-                    .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(BBIEP.CREATED_BY, userId)
+                    .set(BBIEP.LAST_UPDATED_BY, userId)
                     .set(BBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
@@ -666,8 +666,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ASBIE.IS_NILLABLE, (byte) ((asbie.isNillable()) ? 1 : 0))
                     .set(ASBIE.IS_USED, (byte) ((asbie.isUsed()) ? 1 : 0))
                     .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(asbie.getSeqKey()))
-                    .set(ASBIE.CREATED_BY, ULong.valueOf(userId))
-                    .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(ASBIE.CREATED_BY, userId)
+                    .set(ASBIE.LAST_UPDATED_BY, userId)
                     .set(ASBIE.CREATION_TIMESTAMP, timestamp)
                     .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
@@ -697,8 +697,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE.IS_NULL, (byte) ((bbie.isNill()) ? 1 : 0))
                     .set(BBIE.SEQ_KEY, BigDecimal.valueOf(bbie.getSeqKey()))
                     .set(BBIE.IS_USED, (byte) ((bbie.isUsed()) ? 1 : 0))
-                    .set(BBIE.CREATED_BY, ULong.valueOf(userId))
-                    .set(BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(BBIE.CREATED_BY, userId)
+                    .set(BBIE.LAST_UPDATED_BY, userId)
                     .set(BBIE.CREATION_TIMESTAMP, timestamp)
                     .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
@@ -726,8 +726,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
                     .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .set(BBIE.CREATED_BY, ULong.valueOf(userId))
-                    .set(BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(BBIE.CREATED_BY, userId)
+                    .set(BBIE.LAST_UPDATED_BY, userId)
                     .set(BBIE.CREATION_TIMESTAMP, timestamp)
                     .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();

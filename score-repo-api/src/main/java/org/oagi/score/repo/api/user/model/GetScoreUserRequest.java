@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 public class GetScoreUserRequest extends Request {
 
-    private BigInteger userId;
+    private String userId;
 
     private String username;
 
@@ -16,15 +16,15 @@ public class GetScoreUserRequest extends Request {
         super();
     }
 
-    public BigInteger getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public GetScoreUserRequest withUserId(BigInteger userId) {
+    public GetScoreUserRequest withUserId(String userId) {
         setUserId(userId);
         return this;
     }

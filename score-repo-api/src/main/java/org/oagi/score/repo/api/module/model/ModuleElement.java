@@ -12,7 +12,7 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String namespaceUri;
 
@@ -52,11 +52,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

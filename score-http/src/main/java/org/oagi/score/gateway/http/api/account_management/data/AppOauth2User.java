@@ -9,7 +9,7 @@ import java.util.Date;
 public class AppOauth2User {
 
     private long appOauth2UserId;
-    private BigInteger appUserId;
+    private String appUserId;
     private String providerName;
     private String name;
     private String email;

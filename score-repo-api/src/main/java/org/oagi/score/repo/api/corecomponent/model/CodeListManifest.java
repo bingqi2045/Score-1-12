@@ -9,7 +9,7 @@ public class CodeListManifest implements CcManifest, Serializable {
 
     private BigInteger CodeListManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger CodeListId;
 
@@ -17,7 +17,7 @@ public class CodeListManifest implements CcManifest, Serializable {
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
     private BigInteger prevBccpManifestId;
 
@@ -32,11 +32,11 @@ public class CodeListManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -64,11 +64,11 @@ public class CodeListManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 

@@ -28,8 +28,8 @@ public class AccountService {
     private SessionService sessionService;
 
     @Transactional
-    public void setEnable(AuthenticatedPrincipal user, long targetUserId, boolean enabled) {
-        AppUser requester = sessionService.getAppUser(user);
+    public void setEnable(AuthenticatedPrincipal user, String targetUserId, boolean enabled) {
+        AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isDeveloper()) {
             throw new InsufficientAuthenticationException(
                     messages.getMessage(
@@ -38,7 +38,7 @@ public class AccountService {
         }
 
         AppUserRecord targetAppUser = dslContext.selectFrom(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(targetUserId)))
+                .where(APP_USER.APP_USER_ID.eq(targetUserId))
                 .fetchOptional().orElse(null);
         if (targetAppUser == null) {
             throw new IllegalArgumentException();

@@ -31,7 +31,7 @@ public class JooqCodeListReadRepository
     }
 
     @Override
-    public Map<BigInteger, CodeList> getCodeListMap(BigInteger ReleaseId) throws ScoreDataAccessException {
+    public Map<BigInteger, CodeList> getCodeListMap(String releaseId) throws ScoreDataAccessException {
         List<CodeList> codeListRecords = dslContext()
                 .select(CODE_LIST.CODE_LIST_ID,
                         CODE_LIST.GUID,
@@ -42,7 +42,7 @@ public class JooqCodeListReadRepository
                         CODE_LIST.NEXT_CODE_LIST_ID)
                 .from(CODE_LIST)
                 .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
-                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(ReleaseId)))
+                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(CodeList.class);
 
         return codeListRecords.stream()

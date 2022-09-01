@@ -8,7 +8,7 @@ public interface ScoreRepository<T, PK> {
 
     List<T> findAll();
 
-    default List<T> findAllByReleaseId(BigInteger releaseId) {
+    default List<T> findAllByReleaseId(String releaseId) {
         return Collections.emptyList();
     }
 

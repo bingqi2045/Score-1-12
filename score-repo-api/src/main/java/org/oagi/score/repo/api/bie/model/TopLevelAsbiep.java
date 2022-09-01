@@ -14,7 +14,7 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
 
     private BigInteger asbiepId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String propertyTerm;
 
@@ -50,11 +50,11 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
         this.asbiepId = asbiepId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 

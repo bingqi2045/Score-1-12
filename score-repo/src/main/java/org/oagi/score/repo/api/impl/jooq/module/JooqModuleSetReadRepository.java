@@ -69,11 +69,11 @@ public class JooqModuleSetReadRepository
             moduleSet.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -82,11 +82,11 @@ public class JooqModuleSetReadRepository
             moduleSet.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -247,7 +247,7 @@ public class JooqModuleSetReadRepository
                     }
                     module.setPath(record.get(MODULE.PATH));
                     if (record.get(MODULE.NAMESPACE_ID) != null) {
-                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID));
                         module.setNamespaceUri(record.get(NAMESPACE.URI));
                     }
                     module.setName(record.get(MODULE.NAME));
@@ -286,7 +286,7 @@ public class JooqModuleSetReadRepository
                     }
                     module.setPath(record.get(MODULE.PATH));
                     if (record.get(MODULE.NAMESPACE_ID) != null) {
-                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID).toBigInteger());
+                        module.setNamespaceId(record.get(MODULE.NAMESPACE_ID));
                         module.setNamespaceUri(record.get(NAMESPACE.URI));
                     }
                     module.setName(record.get(MODULE.NAME));

@@ -17,7 +17,7 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
     private OagisComponentType componentType;
     private boolean isAbstract;
     private boolean deprecated;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 BigInteger accManifestId) {
@@ -84,11 +84,11 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
         this.deprecated = deprecated;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 }

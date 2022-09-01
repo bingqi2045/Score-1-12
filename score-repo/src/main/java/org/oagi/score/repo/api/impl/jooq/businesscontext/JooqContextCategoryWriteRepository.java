@@ -37,7 +37,7 @@ public class JooqContextCategoryWriteRepository
             CreateContextCategoryRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxCategoryRecord record = new CtxCategoryRecord();
@@ -64,7 +64,7 @@ public class JooqContextCategoryWriteRepository
             UpdateContextCategoryRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxCategoryRecord record = dslContext().selectFrom(CTX_CATEGORY)

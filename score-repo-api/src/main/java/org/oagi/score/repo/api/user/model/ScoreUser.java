@@ -6,27 +6,29 @@ import java.util.*;
 
 public final class ScoreUser implements Serializable {
 
-    private BigInteger userId;
+    public static final String SYSTEM_USER_ID = "3291889a-0dad-4262-b2f1-4ec4754c41cd";
+
+    private String userId;
 
     private String username;
 
     private Collection<ScoreRole> roles;
 
-    public ScoreUser(BigInteger userId, String username, ScoreRole role) {
+    public ScoreUser(String userId, String username, ScoreRole role) {
         this(userId, username, Arrays.asList(role));
     }
 
-    public ScoreUser(BigInteger userId, String username, Collection<ScoreRole> roles) {
+    public ScoreUser(String userId, String username, Collection<ScoreRole> roles) {
         this.userId = userId;
         this.username = username;
         this.roles = roles;
     }
 
-    public BigInteger getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

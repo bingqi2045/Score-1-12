@@ -79,7 +79,7 @@ public class CodeListUpliftingService {
                 .fetchOne();
 
 
-        ULong targetReleaseId = ULong.valueOf(request.getTargetReleaseId());
+        String targetReleaseId = request.getTargetReleaseId();
         LocalDateTime timestamp = LocalDateTime.now();
         CodeListManifestRecord newCodeListManifest = new CodeListManifestRecord();
         newCodeListManifest.setReleaseId(targetReleaseId);
@@ -260,7 +260,7 @@ public class CodeListUpliftingService {
         LogRecord logRecord = logRepository.insertCodeListLog(newCodeListManifest,
                 newCodeList,
                 LogAction.Added,
-                ULong.valueOf(requester.getUserId()),
+                requester.getUserId(),
                 timestamp);
         newCodeListManifest.setLogId(logRecord.getLogId());
         dslContext.update(CODE_LIST_MANIFEST)
@@ -283,10 +283,10 @@ public class CodeListUpliftingService {
         newCodeListValue.setDefinition(codeListValue.getDefinition());
         newCodeListValue.setDefinitionSource(codeListValue.getDefinitionSource());
         newCodeListValue.setIsDeprecated(codeListValue.getIsDeprecated());
-        newCodeListValue.setOwnerUserId(ULong.valueOf(requester.getUserId()));
-        newCodeListValue.setCreatedBy(ULong.valueOf(requester.getUserId()));
+        newCodeListValue.setOwnerUserId(requester.getUserId());
+        newCodeListValue.setCreatedBy(requester.getUserId());
         newCodeListValue.setCreationTimestamp(timestamp);
-        newCodeListValue.setLastUpdatedBy(ULong.valueOf(requester.getUserId()));
+        newCodeListValue.setLastUpdatedBy(requester.getUserId());
         newCodeListValue.setLastUpdateTimestamp(timestamp);
         return newCodeListValue;
     }
@@ -309,10 +309,10 @@ public class CodeListUpliftingService {
         newCodeList.setNamespaceId(codeList.getNamespaceId());
         newCodeList.setExtensibleIndicator(codeList.getExtensibleIndicator());
         newCodeList.setIsDeprecated(codeList.getIsDeprecated());
-        newCodeList.setOwnerUserId(ULong.valueOf(requester.getUserId()));
-        newCodeList.setCreatedBy(ULong.valueOf(requester.getUserId()));
+        newCodeList.setOwnerUserId(requester.getUserId());
+        newCodeList.setCreatedBy(requester.getUserId());
         newCodeList.setCreationTimestamp(timestamp);
-        newCodeList.setLastUpdatedBy(ULong.valueOf(requester.getUserId()));
+        newCodeList.setLastUpdatedBy(requester.getUserId());
         newCodeList.setLastUpdateTimestamp(timestamp);
         newCodeList.setState(CcState.WIP.name());
         return newCodeList;

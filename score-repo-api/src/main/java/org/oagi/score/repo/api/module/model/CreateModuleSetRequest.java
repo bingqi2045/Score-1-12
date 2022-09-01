@@ -15,7 +15,7 @@ public class CreateModuleSetRequest extends Request {
 
     private boolean createModuleSetRelease;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
     private BigInteger targetModuleSetReleaseId;
 
@@ -55,11 +55,11 @@ public class CreateModuleSetRequest extends Request {
         this.createModuleSetRelease = createModuleSetRelease;
     }
 
-    public BigInteger getTargetReleaseId() {
+    public String getTargetReleaseId() {
         return targetReleaseId;
     }
 
-    public void setTargetReleaseId(BigInteger targetReleaseId) {
+    public void setTargetReleaseId(String targetReleaseId) {
         this.targetReleaseId = targetReleaseId;
     }
 

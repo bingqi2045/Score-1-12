@@ -15,7 +15,7 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String namespaceUri;
 
@@ -57,11 +57,11 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

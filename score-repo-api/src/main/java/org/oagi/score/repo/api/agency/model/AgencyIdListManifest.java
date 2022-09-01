@@ -11,13 +11,13 @@ public class AgencyIdListManifest implements CcManifest, Serializable {
 
     private BigInteger agencyIdListManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger agencyIdListId;
 
     private BigInteger basedAgencyIdListManifestId;
 
-    private BigInteger logId;
+    private String logId;
 
     private boolean conflict;
 
@@ -44,11 +44,11 @@ public class AgencyIdListManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -68,11 +68,11 @@ public class AgencyIdListManifest implements CcManifest, Serializable {
         this.basedAgencyIdListManifestId = basedAgencyIdListManifestId;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 

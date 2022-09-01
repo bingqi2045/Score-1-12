@@ -8,7 +8,7 @@ public class ScoreModule {
 
     private ULong moduleSetReleaseId;
     private ULong moduleSetId;
-    private ULong releaseId;
+    private String releaseId;
     private ULong moduleId;
     private String name;
     private ULong moduleNamespaceId;

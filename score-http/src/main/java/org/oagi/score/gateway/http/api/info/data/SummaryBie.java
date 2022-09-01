@@ -15,7 +15,7 @@ public class SummaryBie {
     private LocalDateTime lastUpdateTimestamp;
     private BieState state;
 
-    private BigInteger ownerUserId;
+    private String ownerUserId;
     private String ownerUsername;
 
     private String propertyTerm;

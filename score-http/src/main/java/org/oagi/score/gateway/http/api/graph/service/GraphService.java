@@ -57,21 +57,21 @@ public class GraphService {
                 AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                         .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
                         .fetchOne();
-                ccGraphContext = new CoreComponentGraphContext(dslContext, accManifestRecord.getReleaseId().toBigInteger());
+                ccGraphContext = new CoreComponentGraphContext(dslContext, accManifestRecord.getReleaseId());
                 node = ccGraphContext.toNode(accManifestRecord);
                 break;
             case "ASCCP":
                 AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                         .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
                         .fetchOne();
-                ccGraphContext = new CoreComponentGraphContext(dslContext, asccpManifestRecord.getReleaseId().toBigInteger());
+                ccGraphContext = new CoreComponentGraphContext(dslContext, asccpManifestRecord.getReleaseId());
                 node = ccGraphContext.toNode(asccpManifestRecord);
                 break;
             case "BCCP":
                 BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                         .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getManifestId())))
                         .fetchOne();
-                ccGraphContext = new CoreComponentGraphContext(dslContext, bccpManifestRecord.getReleaseId().toBigInteger());
+                ccGraphContext = new CoreComponentGraphContext(dslContext, bccpManifestRecord.getReleaseId());
                 node = ccGraphContext.toNode(bccpManifestRecord);
                 break;
             default:
@@ -129,12 +129,12 @@ public class GraphService {
     }
 
     public Graph getBieGraph(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
-        boolean excludeUEG = sessionService.getAppUser(user).isDeveloper();
+        boolean excludeUEG = sessionService.getAppUserByUsername(user).isDeveloper();
         BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAsbiepId(topLevelAsbiepId);
         return getAsccpGraph(asccpManifestId, excludeUEG);
     }
 
-    public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger targetReleaseId) {
+    public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, String targetReleaseId) {
         return bieRepository.getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(topLevelAsbiepId, targetReleaseId);
     }
 

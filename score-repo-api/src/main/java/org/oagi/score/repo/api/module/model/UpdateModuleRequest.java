@@ -13,7 +13,7 @@ public class UpdateModuleRequest extends Request {
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String versionNum;
 
@@ -41,11 +41,11 @@ public class UpdateModuleRequest extends Request {
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

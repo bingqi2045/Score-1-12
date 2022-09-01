@@ -22,7 +22,7 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
 
     private String definitionSource;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private ScoreUser owner;
 
@@ -102,11 +102,11 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
         this.definitionSource = definitionSource;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

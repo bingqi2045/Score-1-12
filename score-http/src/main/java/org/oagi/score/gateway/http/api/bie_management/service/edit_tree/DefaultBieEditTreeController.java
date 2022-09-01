@@ -85,7 +85,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         this.state = topLevelAsbiep.getState();
         this.forceBieUpdate = true;
 
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         accessPrivilege = AccessPrivilege.Prohibited;
         switch (this.state) {
             case Initiating:
@@ -172,7 +172,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private boolean hasChild(BieEditAbieNode abieNode) {
         BigInteger fromAccManifestId;
         BigInteger topLevelAsbiepId = abieNode.getTopLevelAsbiepId();
-        BigInteger releaseId = abieNode.getReleaseId();
+        String releaseId = abieNode.getReleaseId();
         BieEditAcc acc = null;
         if (topLevelAsbiepId != null && topLevelAsbiepId.compareTo(BigInteger.ZERO) > 0) {
             fromAccManifestId = repository.getAccManifestIdByTopLevelAsbiepId(topLevelAsbiepId, releaseId);
@@ -414,7 +414,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditAsbiepNode asbiepNode = new BieEditAsbiepNode();
 
         BigInteger topLevelAsbiepId = topLevelAsbiep.getTopLevelAsbiepId();
-        BigInteger releaseId = topLevelAsbiep.getReleaseId();
+        String releaseId = topLevelAsbiep.getReleaseId();
 
         asbiepNode.setTopLevelAsbiepId(topLevelAsbiepId);
         asbiepNode.setReleaseId(releaseId);
@@ -486,7 +486,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBbiepNode bbiepNode = new BieEditBbiepNode();
 
         BigInteger topLevelAsbiepId = topLevelAsbiep.getTopLevelAsbiepId();
-        BigInteger releaseId = topLevelAsbiep.getReleaseId();
+        String releaseId = topLevelAsbiep.getReleaseId();
 
         bbiepNode.setTopLevelAsbiepId(topLevelAsbiepId);
         bbiepNode.setReleaseId(releaseId);
@@ -1119,7 +1119,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(ABIE.REMARK, emptyToNull(abieNodeDetail.getAsbiepRemark()))
                 .set(ABIE.BIZ_TERM, emptyToNull(abieNodeDetail.getAsbiepBizTerm()))
                 .set(ABIE.DEFINITION, emptyToNull(abieNodeDetail.getAsccpDefinition()))
-                .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(ABIE.LAST_UPDATED_BY, sessionService.userId(user))
                 .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ABIE.ABIE_ID.eq(ULong.valueOf(abieNodeDetail.getAbieId())))
                 .execute();
@@ -1148,13 +1148,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .execute();
         }
 
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.update(ASBIE)
                 .set(ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed() ? 1 : 0))
                 .set(ASBIE.DEFINITION, emptyToNull(asbiepNodeDetail.getAsbiepDefinition()))
-                .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ASBIE.LAST_UPDATED_BY, userId)
                 .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                 .execute();
@@ -1162,7 +1162,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         dslContext.update(ASBIEP)
                 .set(ASBIEP.BIZ_TERM, emptyToNull(asbiepNodeDetail.getAsbiepBizTerm()))
                 .set(ASBIEP.REMARK, emptyToNull(asbiepNodeDetail.getAsbiepRemark()))
-                .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ASBIEP.LAST_UPDATED_BY, userId)
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbiepId())))
                 .execute();
@@ -1233,13 +1233,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(BBIE.EXAMPLE, emptyToNull(bbiepNodeDetail.getExample()))
                 .where(BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.update(BBIEP)
                 .set(BBIEP.BIZ_TERM, emptyToNull(bbiepNodeDetail.getBizTerm()))
                 .set(BBIEP.REMARK, emptyToNull(bbiepNodeDetail.getRemark()))
-                .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(BBIEP.LAST_UPDATED_BY, userId)
                 .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbiepId())))
                 .execute();

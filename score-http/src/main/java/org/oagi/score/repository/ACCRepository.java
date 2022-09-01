@@ -60,9 +60,9 @@ public class ACCRepository implements ScoreRepository<ACC, BigInteger> {
     }
 
     @Override
-    public List<ACC> findAllByReleaseId(BigInteger releaseId) {
+    public List<ACC> findAllByReleaseId(String releaseId) {
         return getSelectOnConditionStep()
-                .where(Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.ACC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(ACC.class);
     }
 

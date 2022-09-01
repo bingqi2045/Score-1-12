@@ -15,7 +15,7 @@ public class CodeList {
     private String guid;
     private BigInteger basedCodeListManifestId;
     private String basedCodeListName;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private String namespaceUri;
 
     private BigInteger agencyIdListValueManifestId;
@@ -30,15 +30,15 @@ public class CodeList {
 
     private boolean extensible;
     private boolean deprecated;
-    private BigInteger ownerId;
+    private String ownerId;
     private String state;
     private AccessPrivilege access;
 
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseState;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
 

@@ -59,9 +59,9 @@ public class ASCCPRepository implements ScoreRepository<ASCCP, BigInteger> {
     }
 
     @Override
-    public List<ASCCP> findAllByReleaseId(BigInteger releaseId) {
+    public List<ASCCP> findAllByReleaseId(String releaseId) {
         return getSelectOnConditionStep()
-                .where(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(ASCCP.class);
     }
 

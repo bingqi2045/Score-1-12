@@ -6,7 +6,7 @@ public interface CcManifest {
 
     BigInteger getManifestId();
 
-    BigInteger getReleaseId();
+    String getReleaseId();
 
     BigInteger getBasedCcId();
 

@@ -3,8 +3,6 @@ package org.oagi.score.gateway.http.api.namespace_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Record6;
 import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
@@ -13,6 +11,8 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.component.namespace.NamespaceReadRepository;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,9 +20,9 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -41,21 +41,21 @@ public class NamespaceService {
     private NamespaceReadRepository readRepository;
 
     public List<SimpleNamespace> getSimpleNamespaces(AuthenticatedPrincipal user) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI, NAMESPACE.IS_STD_NMSP.as("standard"))
                 .from(NAMESPACE)
                 .fetchInto(SimpleNamespace.class);
     }
 
     public PageResponse<NamespaceList> getNamespaceList(AuthenticatedPrincipal user, NamespaceListRequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         return readRepository.fetch(requester, request);
     }
 
-    public Namespace getNamespace(AuthenticatedPrincipal user, BigInteger namespaceId) {
-        BigInteger userId = sessionService.userId(user);
+    public Namespace getNamespace(AuthenticatedPrincipal user, String namespaceId) {
+        String userId = sessionService.userId(user);
 
-        Record6<ULong, String, String, String, Byte, ULong> result =
+        Record6<String, String, String, String, Byte, String> result =
                 dslContext.select(NAMESPACE.NAMESPACE_ID,
                         NAMESPACE.URI,
                         NAMESPACE.PREFIX,
@@ -63,21 +63,21 @@ public class NamespaceService {
                         NAMESPACE.IS_STD_NMSP,
                         NAMESPACE.OWNER_USER_ID)
                         .from(NAMESPACE)
-                        .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
+                        .where(NAMESPACE.NAMESPACE_ID.eq(namespaceId))
                         .fetchOne();
 
         Namespace namespace = new Namespace();
-        namespace.setNamespaceId(result.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
+        namespace.setNamespaceId(result.get(NAMESPACE.NAMESPACE_ID));
         namespace.setUri(result.get(NAMESPACE.URI));
         namespace.setPrefix(result.get(NAMESPACE.PREFIX));
         namespace.setDescription(result.get(NAMESPACE.DESCRIPTION));
         namespace.setStd(result.get(NAMESPACE.IS_STD_NMSP) == 1);
-        namespace.setCanEdit(result.get(NAMESPACE.OWNER_USER_ID).toBigInteger().equals(userId));
+        namespace.setCanEdit(result.get(NAMESPACE.OWNER_USER_ID).equals(userId));
         return namespace;
     }
 
     @Transactional
-    public BigInteger create(AuthenticatedPrincipal user, Namespace namespace) {
+    public String create(AuthenticatedPrincipal user, Namespace namespace) {
         String uri = namespace.getUri();
         boolean isURIExist = dslContext.selectCount()
                 .from(NAMESPACE)
@@ -94,25 +94,27 @@ public class NamespaceService {
             throw new IllegalArgumentException("Namespace Prefix '" + namespace.getPrefix() + "' exists.");
         }
 
-        AppUser requester = sessionService.getAppUser(user);
-        BigInteger userId = requester.getAppUserId();
+        AppUser requester = sessionService.getAppUserByUsername(user);
+        String userId = requester.getAppUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         NamespaceRecord namespaceRecord = new NamespaceRecord();
+        namespaceRecord.setNamespaceId(UUID.randomUUID().toString());
         namespaceRecord.setUri(namespace.getUri());
         namespaceRecord.setPrefix(namespace.getPrefix());
         namespaceRecord.setDescription(namespace.getDescription());
         namespaceRecord.setIsStdNmsp((byte) (requester.isDeveloper() ? 1 : 0));
-        namespaceRecord.setOwnerUserId(ULong.valueOf(userId));
-        namespaceRecord.setCreatedBy(ULong.valueOf(userId));
-        namespaceRecord.setLastUpdatedBy(ULong.valueOf(userId));
+        namespaceRecord.setOwnerUserId(userId);
+        namespaceRecord.setCreatedBy(userId);
+        namespaceRecord.setLastUpdatedBy(userId);
         namespaceRecord.setCreationTimestamp(timestamp);
         namespaceRecord.setLastUpdateTimestamp(timestamp);
 
-        return dslContext.insertInto(NAMESPACE)
+        dslContext.insertInto(NAMESPACE)
                 .set(namespaceRecord)
-                .returning(NAMESPACE.NAMESPACE_ID)
-                .fetchOne().getNamespaceId().toBigInteger();
+                .execute();
+
+        return namespaceRecord.getNamespaceId();
     }
 
     @Transactional
@@ -122,7 +124,7 @@ public class NamespaceService {
                 .from(NAMESPACE)
                 .where(and(
                         NAMESPACE.URI.eq(uri),
-                        NAMESPACE.NAMESPACE_ID.notEqual(ULong.valueOf(namespace.getNamespaceId()))
+                        NAMESPACE.NAMESPACE_ID.notEqual(namespace.getNamespaceId())
                 ))
                 .fetchOneInto(Integer.class) > 0;
         if (isUriExist) {
@@ -133,14 +135,14 @@ public class NamespaceService {
                 .from(NAMESPACE)
                 .where(and(
                         NAMESPACE.PREFIX.eq(namespace.getPrefix()),
-                        NAMESPACE.NAMESPACE_ID.notEqual(ULong.valueOf(namespace.getNamespaceId()))
+                        NAMESPACE.NAMESPACE_ID.notEqual(namespace.getNamespaceId())
                 ))
                 .fetchOneInto(Integer.class) > 0;
         if (isPrefixExist) {
             throw new IllegalArgumentException("Namespace Prefix '" + namespace.getPrefix() + "' exists.");
         }
 
-        ULong userId = ULong.valueOf(sessionService.userId(user));
+        String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         int res = dslContext.update(NAMESPACE)
@@ -150,7 +152,7 @@ public class NamespaceService {
                 .set(NAMESPACE.LAST_UPDATED_BY, userId)
                 .set(NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(NAMESPACE.OWNER_USER_ID.eq(userId),
-                        NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
+                        NAMESPACE.NAMESPACE_ID.eq(namespace.getNamespaceId())).execute();
 
         if (res != 1) {
             throw new AccessDeniedException("Access is denied");
@@ -158,8 +160,8 @@ public class NamespaceService {
     }
 
     @Transactional
-    public void transferOwnership(AuthenticatedPrincipal user, BigInteger namespaceId, String targetLoginId) {
-        AppUser owner = sessionService.getAppUser(user.getName());
+    public void transferOwnership(AuthenticatedPrincipal user, String namespaceId, String targetLoginId) {
+        AppUser owner = sessionService.getAppUserByUsername(user.getName());
         LocalDateTime timestamp = LocalDateTime.now();
 
         AppUserRecord targetUserRecord = dslContext.selectFrom(APP_USER)
@@ -178,10 +180,10 @@ public class NamespaceService {
 
         int res = dslContext.update(NAMESPACE)
                 .set(NAMESPACE.OWNER_USER_ID, targetUserRecord.getAppUserId())
-                .set(NAMESPACE.LAST_UPDATED_BY, ULong.valueOf(owner.getAppUserId()))
+                .set(NAMESPACE.LAST_UPDATED_BY, owner.getAppUserId())
                 .set(NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(NAMESPACE.OWNER_USER_ID.eq(ULong.valueOf(owner.getAppUserId())),
-                        NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
+                .where(NAMESPACE.OWNER_USER_ID.eq(owner.getAppUserId()),
+                        NAMESPACE.NAMESPACE_ID.eq(namespace.getNamespaceId())).execute();
 
         if (res != 1) {
             throw new AccessDeniedException("Access is denied");
@@ -189,11 +191,11 @@ public class NamespaceService {
     }
 
     @Transactional
-    public void discard(AuthenticatedPrincipal user, BigInteger namespaceId) {
-        ULong userId = ULong.valueOf(sessionService.userId(user));
+    public void discard(AuthenticatedPrincipal user, String namespaceId) {
+        String userId = sessionService.userId(user);
 
         NamespaceRecord namespaceRecord = dslContext.selectFrom(NAMESPACE)
-                .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
+                .where(NAMESPACE.NAMESPACE_ID.eq(namespaceId))
                 .fetchOptional().orElse(null);
         if (namespaceRecord == null) {
             throw new EmptyResultDataAccessException(1);

@@ -36,7 +36,7 @@ public class AgencyIdController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetSimpleAgencyIdListValuesResponse getSimpleAgencyIdListValues(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("releaseId") BigInteger releaseId) {
+            @PathVariable("releaseId") String releaseId) {
         return service.getSimpleAgencyIdListValues(sessionService.asScoreUser(user), releaseId);
     }
 
@@ -59,7 +59,7 @@ public class AgencyIdController {
                                                            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                            @RequestParam(name = "updateStart", required = false) String updateStart,
                                                            @RequestParam(name = "updateEnd", required = false) String updateEnd,
-                                                           @RequestParam(name = "releaseId", required = true) BigInteger releaseId,
+                                                           @RequestParam(name = "releaseId", required = true) String releaseId,
                                                            @RequestParam(name = "sortActive") String sortActive,
                                                            @RequestParam(name = "sortDirection") String sortDirection,
                                                            @RequestParam(name = "pageIndex") int pageIndex,
@@ -182,7 +182,7 @@ public class AgencyIdController {
     @RequestMapping(value = "/agency_id_list/check_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
             @RequestParam(name = "listId") String listId,
             @RequestParam(name = "agencyIdListValueManifestId", required = false) Long agencyIdListValueManifestId,
@@ -201,7 +201,7 @@ public class AgencyIdController {
     @RequestMapping(value = "/agency_id_list/check_name_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkNameUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
             @RequestParam(name = "agencyIdListName") String agencyIdListName) {
 

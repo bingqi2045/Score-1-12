@@ -134,7 +134,7 @@ public class BusinessTermService {
     }
     public PageResponse<AssignedBusinessTermListRecord> getBusinessTermAssignmentList(AuthenticatedPrincipal user, AssignedBusinessTermListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
 
         PaginationResponse<AssignedBusinessTermListRecord> result = businessTermRepository
                 .getBieBiztermList(request, AssignedBusinessTermListRecord.class);

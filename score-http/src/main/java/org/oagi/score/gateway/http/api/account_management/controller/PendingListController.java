@@ -82,7 +82,7 @@ public class PendingListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity linkToUser(@PathVariable("appOauth2UserId") long appOauth2UserId,
                                      @RequestBody Map<String, Object> body) {
-        long appUserId = ((Integer) body.get("appUserId"));
+        String appUserId = ((String) body.get("appUserId"));
         service.linkPendingToAppUser(appOauth2UserId, appUserId);
         return ResponseEntity.noContent().build();
     }

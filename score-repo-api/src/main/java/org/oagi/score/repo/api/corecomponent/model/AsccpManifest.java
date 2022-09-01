@@ -9,7 +9,7 @@ public class AsccpManifest implements CcManifest, Serializable {
 
     private BigInteger asccpManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger asccpId;
 
@@ -17,7 +17,7 @@ public class AsccpManifest implements CcManifest, Serializable {
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
     private BigInteger prevAsccpManifestId;
 
@@ -37,7 +37,7 @@ public class AsccpManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -46,7 +46,7 @@ public class AsccpManifest implements CcManifest, Serializable {
         return getAsccpId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -74,11 +74,11 @@ public class AsccpManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 

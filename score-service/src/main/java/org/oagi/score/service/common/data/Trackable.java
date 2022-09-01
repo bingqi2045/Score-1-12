@@ -7,10 +7,10 @@ public interface Trackable extends Serializable {
 
     BigInteger getId();
 
-    BigInteger getReleaseId();
+    String getReleaseId();
     String getReleaseNum();
 
-    BigInteger getLogId();
+    String getLogId();
     int getRevisionNum();
     int getRevisionTrackingNum();
 

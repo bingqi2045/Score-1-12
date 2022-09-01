@@ -72,7 +72,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (mergedTopLevelAsbieps.size() == 0) {
             throw new IllegalArgumentException("Cannot found BIEs.");
         }
-        BigInteger releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
+        String releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
         /*
          * Issue #587
          */

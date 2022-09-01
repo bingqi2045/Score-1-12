@@ -64,7 +64,7 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
      * the record in `app_user`. If it is not set, this is treated as a pending
      * record.
      */
-    public final TableField<AppOauth2UserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.BIGINTUNSIGNED, this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
+    public final TableField<AppOauth2UserRecord, String> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.CHAR(36).nullable(false), this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
 
     /**
      * The column <code>oagi.app_oauth2_user.oauth2_app_id</code>. A reference
@@ -239,21 +239,21 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, ULong, String, String, String, String, String, String, LocalDateTime> fieldsRow() {
+    public Row10<ULong, String, ULong, String, String, String, String, String, String, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

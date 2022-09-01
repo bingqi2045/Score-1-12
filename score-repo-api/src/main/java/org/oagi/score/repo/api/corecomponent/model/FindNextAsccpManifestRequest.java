@@ -9,7 +9,7 @@ public class FindNextAsccpManifestRequest extends Request {
 
     private BigInteger asccpManifestId;
 
-    private BigInteger nextReleaseId;
+    private String nextReleaseId;
 
     public FindNextAsccpManifestRequest(ScoreUser requester) {
         super(requester);
@@ -28,15 +28,15 @@ public class FindNextAsccpManifestRequest extends Request {
         return this;
     }
 
-    public BigInteger getNextReleaseId() {
+    public String getNextReleaseId() {
         return nextReleaseId;
     }
 
-    public void setNextReleaseId(BigInteger nextReleaseId) {
+    public void setNextReleaseId(String nextReleaseId) {
         this.nextReleaseId = nextReleaseId;
     }
 
-    public FindNextAsccpManifestRequest withNextReleaseId(BigInteger nextReleaseId) {
+    public FindNextAsccpManifestRequest withNextReleaseId(String nextReleaseId) {
         setNextReleaseId(nextReleaseId);
         return this;
     }

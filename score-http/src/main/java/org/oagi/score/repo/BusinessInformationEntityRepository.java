@@ -31,18 +31,14 @@ public class BusinessInformationEntityRepository {
     private DSLContext dslContext;
 
     public class InsertTopLevelAsbiepArguments {
-        private ULong releaseId;
-        private ULong userId;
+        private String releaseId;
+        private String userId;
         private BieState bieState = WIP;
         private String version;
         private String status;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertTopLevelAsbiepArguments setReleaseId(BigInteger releaseId) {
-            return setReleaseId(ULong.valueOf(releaseId));
-        }
-
-        public InsertTopLevelAsbiepArguments setReleaseId(ULong releaseId) {
+        public InsertTopLevelAsbiepArguments setReleaseId(String releaseId) {
             this.releaseId = releaseId;
             return this;
         }
@@ -62,11 +58,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertTopLevelAsbiepArguments setUserId(BigInteger userId) {
-            return setUserId(ULong.valueOf(userId));
-        }
-
-        public InsertTopLevelAsbiepArguments setUserId(ULong userId) {
+        public InsertTopLevelAsbiepArguments setUserId(String userId) {
             this.userId = userId;
             return this;
         }
@@ -84,7 +76,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public ULong getReleaseId() {
+        public String getReleaseId() {
             return releaseId;
         }
 
@@ -100,7 +92,7 @@ public class BusinessInformationEntityRepository {
             return status;
         }
 
-        public ULong getUserId() {
+        public String getUserId() {
             return userId;
         }
 
@@ -134,17 +126,13 @@ public class BusinessInformationEntityRepository {
     }
 
     public class InsertAbieArguments {
-        private ULong userId;
+        private String userId;
         private ULong accManifestId;
         private String path;
         private ULong topLevelAsbiepId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertAbieArguments setUserId(BigInteger userId) {
-            return setUserId(ULong.valueOf(userId));
-        }
-
-        public InsertAbieArguments setUserId(ULong userId) {
+        public InsertAbieArguments setUserId(String userId) {
             this.userId = userId;
             return this;
         }
@@ -189,7 +177,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public ULong getUserId() {
+        public String getUserId() {
             return userId;
         }
 
@@ -281,7 +269,7 @@ public class BusinessInformationEntityRepository {
         private ULong roleOfAbieId;
         private ULong topLevelAsbiepId;
         private String path;
-        private ULong userId;
+        private String userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
         public InsertAsbiepArguments setAsccpManifestId(BigInteger asccpManifestId) {
@@ -320,11 +308,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAsbiepArguments setUserId(BigInteger userId) {
-            return setUserId(ULong.valueOf(userId));
-        }
-
-        public InsertAsbiepArguments setUserId(ULong userId) {
+        public InsertAsbiepArguments setUserId(String userId) {
             this.userId = userId;
             return this;
         }
@@ -354,7 +338,7 @@ public class BusinessInformationEntityRepository {
             return topLevelAsbiepId;
         }
 
-        public ULong getUserId() {
+        public String getUserId() {
             return userId;
         }
 
@@ -552,7 +536,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setAccess(ULong userId, AccessPrivilege access) {
+        public SelectBieListArguments setAccess(String userId, AccessPrivilege access) {
             if (access != null) {
                 switch (access) {
                     case CanEdit:
@@ -629,9 +613,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setReleaseId(BigInteger releaseId) {
-            if (releaseId != null && releaseId.longValue() > 0) {
-                conditions.add(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+        public SelectBieListArguments setReleaseId(String releaseId) {
+            if (StringUtils.hasLength(releaseId)) {
+                conditions.add(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(releaseId));
             }
             return this;
         }
@@ -682,7 +666,7 @@ public class BusinessInformationEntityRepository {
 
     private SelectOnConditionStep<Record14<
             ULong, String, String, String, String,
-            String, String, ULong, String, String,
+            String, String, String, String, String,
             String, LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.selectDistinct(
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
@@ -717,12 +701,12 @@ public class BusinessInformationEntityRepository {
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
         SelectOnConditionStep<Record14<
                 ULong, String, String, String, String,
-                String, String, ULong, String, String,
+                String, String, String, String, String,
                 String, LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
         SelectConnectByStep<Record14<
                 ULong, String, String, String, String,
-                String, String, ULong, String, String,
+                String, String, String, String, String,
                 String, LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
@@ -730,7 +714,7 @@ public class BusinessInformationEntityRepository {
         SortField sortField = arguments.getSortField();
         SelectWithTiesAfterOffsetStep<Record14<
                 ULong, String, String, String, String,
-                String, String, ULong, String, String,
+                String, String, String, String, String,
                 String, LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
@@ -763,7 +747,7 @@ public class BusinessInformationEntityRepository {
                 .fetchOptionalInto(BigInteger.class).orElse(null);
     }
 
-    public AsccpManifestRecord getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(BigInteger topLevelAsbiepId, BigInteger releaseId) {
+    public AsccpManifestRecord getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(BigInteger topLevelAsbiepId, String releaseId) {
         BigInteger asccp_id = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
@@ -779,7 +763,7 @@ public class BusinessInformationEntityRepository {
 
         return dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(and(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccp_id)),
-                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                        ASCCP_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 

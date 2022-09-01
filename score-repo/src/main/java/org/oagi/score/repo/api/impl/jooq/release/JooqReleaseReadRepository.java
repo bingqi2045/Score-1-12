@@ -57,7 +57,7 @@ public class JooqReleaseReadRepository
     private RecordMapper<Record, Release> mapper() {
         return record -> {
             Release release = new Release();
-            release.setReleaseId(record.get(RELEASE.RELEASE_ID).toBigInteger());
+            release.setReleaseId(record.get(RELEASE.RELEASE_ID));
             release.setGuid(record.get(RELEASE.GUID));
             release.setReleaseNum(record.get(RELEASE.RELEASE_NUM));
             release.setReleaseNote(record.get(RELEASE.RELEASE_NOTE));
@@ -68,11 +68,11 @@ public class JooqReleaseReadRepository
             release.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -81,11 +81,11 @@ public class JooqReleaseReadRepository
             release.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -103,7 +103,7 @@ public class JooqReleaseReadRepository
         Release release;
         if (request.getReleaseId() != null) {
             release = (Release) select()
-                    .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                    .where(RELEASE.RELEASE_ID.eq(request.getReleaseId()))
                     .fetchOne(mapper());
         } else if (request.getTopLevelAsbiepId() != null) {
             release = (Release) select()

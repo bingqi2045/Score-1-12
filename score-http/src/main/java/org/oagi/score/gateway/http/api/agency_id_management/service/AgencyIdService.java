@@ -49,7 +49,7 @@ public class AgencyIdService {
     @Autowired
     private LogRepository logRepository;
 
-    public GetSimpleAgencyIdListValuesResponse getSimpleAgencyIdListValues(ScoreUser user, BigInteger releaseId) {
+    public GetSimpleAgencyIdListValuesResponse getSimpleAgencyIdListValues(ScoreUser user, String releaseId) {
         List<SimpleAgencyIdList> simpleAgencyIdLists;
         if (user.hasAnyRole(ScoreRole.END_USER)) {
             simpleAgencyIdLists = dslContext.select(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
@@ -62,7 +62,7 @@ public class AgencyIdService {
                     .join(RELEASE)
                     .on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                     .where(and(
-                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            RELEASE.RELEASE_ID.eq(releaseId),
                             RELEASE.STATE.in(Published.name(), Production.name()),
                             or(
                                     AGENCY_ID_LIST.STATE.in(Published.name(), Production.name()),
@@ -83,7 +83,7 @@ public class AgencyIdService {
                     .join(APP_USER)
                     .on(AGENCY_ID_LIST.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
                     .where(and(
-                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            RELEASE.RELEASE_ID.eq(releaseId),
                             RELEASE.STATE.in(Published.name(), Production.name()),
                             or(
                                     AGENCY_ID_LIST.STATE.in(Published.name(), Production.name()),
@@ -103,7 +103,7 @@ public class AgencyIdService {
                 .from(AGENCY_ID_LIST_VALUE)
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST)
                 .on(and(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID),
-                        AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                        AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(
                         simpleAgencyIdLists.stream().map(e -> ULong.valueOf(e.getAgencyIdListManifestId())).collect(Collectors.toList())
                 ))
@@ -121,8 +121,8 @@ public class AgencyIdService {
         AgencyIdList agencyIdList = scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdList(manifestId);
         boolean isWorkingRelease = agencyIdList.getReleaseNum().equals("Working");
         agencyIdList.setAccess(
-                AccessPrivilege.toAccessPrivilege(sessionService.getAppUser(user.getUserId()),
-                        sessionService.getAppUser(agencyIdList.getOwner().getUserId()),
+                AccessPrivilege.toAccessPrivilege(sessionService.getAppUserByUsername(user.getUserId()),
+                        sessionService.getAppUserByUsername(agencyIdList.getOwner().getUserId()),
                         agencyIdList.getState().name(), isWorkingRelease).name()
         );
         if (agencyIdList.getPrevAgencyIdListId() != null) {
@@ -174,7 +174,7 @@ public class AgencyIdService {
     public boolean hasSameAgencyIdList(SameAgencyIdListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
         if (params.getAgencyIdListManifestId() != null) {
@@ -216,7 +216,7 @@ public class AgencyIdService {
     public boolean hasSameNameAgencyIdList(SameNameAgencyIdListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
 

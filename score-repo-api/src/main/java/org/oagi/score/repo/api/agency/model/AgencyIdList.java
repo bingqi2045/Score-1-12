@@ -11,7 +11,7 @@ import java.util.List;
 
 public class AgencyIdList extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String releaseNum;
 
@@ -53,7 +53,7 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private String remark;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private ScoreUser owner;
 
@@ -95,11 +95,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.releaseState = releaseState;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -237,11 +237,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.definition = definition;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

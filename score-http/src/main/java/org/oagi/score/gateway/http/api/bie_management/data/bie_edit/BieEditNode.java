@@ -12,7 +12,7 @@ import java.util.List;
 public class BieEditNode {
 
     private BigInteger topLevelAsbiepId;
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String type;
     private String guid;

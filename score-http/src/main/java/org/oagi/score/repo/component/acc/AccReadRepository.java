@@ -40,11 +40,11 @@ public class AccReadRepository {
                 .fetchOptionalInto(AccRecord.class).orElse(null);
     }
 
-    public AccManifestRecord getAllExtensionAccManifest(BigInteger releaseId) {
+    public AccManifestRecord getAllExtensionAccManifest(String releaseId) {
         return dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(releaseId),
                         ACC.TYPE.eq(CcACCType.AllExtension.name())))
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
@@ -55,17 +55,17 @@ public class AccReadRepository {
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
 
-    public List<CcList> getBaseAccList(BigInteger accManifestId, BigInteger releaseId) {
+    public List<CcList> getBaseAccList(BigInteger accManifestId, String releaseId) {
 
         ULong defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(releaseId)))
                 .fetchOne();
         if (defaultModuleSetRelease != null) {
             defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
         }
 
-        List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).fetch();
+        List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
 
         AccManifestRecord accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(ULong.valueOf(accManifestId))).findFirst().orElse(null);
 

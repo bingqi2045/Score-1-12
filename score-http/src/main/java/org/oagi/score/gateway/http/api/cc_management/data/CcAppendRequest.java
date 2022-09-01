@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 @Data
 public class CcAppendRequest {
-    private BigInteger releaseId;
+    private String releaseId;
     private BigInteger accManifestId;
     private BigInteger asccpManifestId;
     private BigInteger bccpManifestId;

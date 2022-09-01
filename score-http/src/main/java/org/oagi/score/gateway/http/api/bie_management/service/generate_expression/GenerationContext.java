@@ -161,11 +161,11 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, ASBIEP> findASBIEPMap;
     private Map<BigInteger, ASBIEP> findAsbiepByRoleOfAbieIdMap;
     private Map<BigInteger, BBIEP> findBBIEPMap;
-    private Map<BigInteger, String> findUserNameMap;
+    private Map<String, String> findUserNameMap;
     private Map<BigInteger, List<AsbieBizterm>> findAsbieBiztermByAsbieIdMap;
     private Map<BigInteger, List<BbieBizterm>> findBbieBiztermByBbieIdMap;
 
-    private Map<BigInteger, Release> findReleaseMap;
+    private Map<String, Release> findReleaseMap;
     private Map<BigInteger, ContextScheme> findContextSchemeMap;
     private Map<BigInteger, ContextCategory> findContextCategoryMap;
 
@@ -194,7 +194,7 @@ public class GenerationContext implements InitializingBean {
             throw new IllegalStateException("'topLevelAsbieps' parameter must not be null.");
         }
 
-        Set<BigInteger> releaseIdSet = topLevelAsbieps.stream().map(e -> e.getReleaseId()).collect(Collectors.toSet());
+        Set<String> releaseIdSet = topLevelAsbieps.stream().map(e -> e.getReleaseId()).collect(Collectors.toSet());
         if (releaseIdSet.size() != 1) {
             throw new UnsupportedOperationException("`releaseId` for all `topLevelAsbieps` parameter must be same.");
         }
@@ -221,7 +221,7 @@ public class GenerationContext implements InitializingBean {
         return refTopLevelAsbiepSet;
     }
 
-    private void init(Collection<BigInteger> topLevelAsbiepIds, BigInteger releaseId) {
+    private void init(Collection<BigInteger> topLevelAsbiepIds, String releaseId) {
         List<BdtPriRestri> bdtPriRestriList = bdtPriRestriRepository.findAll();
         findBdtPriRestriByBdtIdAndDefaultIsTrueMap = bdtPriRestriList.stream()
                 .filter(e -> e.isDefault())
@@ -476,15 +476,15 @@ public class GenerationContext implements InitializingBean {
         return (bbieId != null && bbieId.longValue() > 0L) ? findBbieBiztermByBbieIdMap.get(bbieId) : Collections.emptyList();
     }
 
-    public String findUserName(BigInteger userId) {
-        return (userId != null && userId.longValue() > 0L) ? findUserNameMap.get(userId) : null;
+    public String findUserName(String userId) {
+        return StringUtils.hasLength(userId) ? findUserNameMap.get(userId) : null;
     }
 
-    public Release findRelease(BigInteger releaseId) {
-        return (releaseId != null && releaseId.longValue() > 0L) ? findReleaseMap.get(releaseId) : null;
+    public Release findRelease(String releaseId) {
+        return StringUtils.hasLength(releaseId) ? findReleaseMap.get(releaseId) : null;
     }
 
-    public String findReleaseNumber(BigInteger releaseId) {
+    public String findReleaseNumber(String releaseId) {
         Release release = findRelease(releaseId);
         return (release != null) ? release.getReleaseNum() : null;
     }

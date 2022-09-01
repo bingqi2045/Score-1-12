@@ -21,7 +21,7 @@ public class XbtListController {
 
     @RequestMapping(value = "/xbt/simple_list/{releaseId}", method = RequestMethod.GET)
     public List<Xbt> getSimpleXbtList(
-            @PathVariable("releaseId") BigInteger releaseId,
+            @PathVariable("releaseId") String releaseId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
         return service.getXbtSimpleList(user, releaseId);
     }

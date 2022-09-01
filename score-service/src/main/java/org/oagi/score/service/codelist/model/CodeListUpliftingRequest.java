@@ -12,6 +12,6 @@ public class CodeListUpliftingRequest {
 
     private BigInteger codeListManifestId;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
 }

@@ -52,7 +52,7 @@ public class LogController {
     @RequestMapping(value = "/logs/{logId}/snapshot", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String getSnapshot(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("logId") BigInteger logId,
+                              @PathVariable("logId") String logId,
                               @RequestParam(name = "reference") String reference,
                               @RequestParam(name = "type") String type,
                               @RequestParam(name = "manifestId") BigInteger manifestId) {

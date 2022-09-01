@@ -29,7 +29,7 @@ public class SeqKeyWriteRepositoryTest
     private SeqKeyWriteRepository repository;
     private ScoreUser requester;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private BigInteger allExtensionAccManifestId;
 
@@ -70,9 +70,9 @@ public class SeqKeyWriteRepositoryTest
         bccRecord.setDen("All Extension. " + propertyTerm + ". " + representationTerm);
         bccRecord.setIsDeprecated((byte) 0);
         bccRecord.setIsNillable((byte) 0);
-        bccRecord.setOwnerUserId(ULong.valueOf(requester.getUserId()));
-        bccRecord.setCreatedBy(ULong.valueOf(requester.getUserId()));
-        bccRecord.setLastUpdatedBy(ULong.valueOf(requester.getUserId()));
+        bccRecord.setOwnerUserId(requester.getUserId());
+        bccRecord.setCreatedBy(requester.getUserId());
+        bccRecord.setLastUpdatedBy(requester.getUserId());
         bccRecord.setCreationTimestamp(LocalDateTime.now());
         bccRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
@@ -87,11 +87,11 @@ public class SeqKeyWriteRepositoryTest
         bccManifestRecord.setToBccpManifestId(dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
                 .where(and(
-                        BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        BCCP_MANIFEST.RELEASE_ID.eq(releaseId),
                         BCCP_MANIFEST.BCCP_ID.eq(bccRecord.getToBccpId())
                 ))
                 .fetchOneInto(ULong.class));
-        bccManifestRecord.setReleaseId(ULong.valueOf(releaseId));
+        bccManifestRecord.setReleaseId(releaseId);
         bccManifestRecord.setBccId(ULong.valueOf(bccId));
 
         return dslContext().insertInto(BCC_MANIFEST)

@@ -64,9 +64,9 @@ public class ASCCRepository implements ScoreRepository<ASCC, BigInteger> {
     }
 
     @Override
-    public List<ASCC> findAllByReleaseId(BigInteger releaseId) {
+    public List<ASCC> findAllByReleaseId(String releaseId) {
         return getSelectJoinStep()
-                .where(Tables.ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.ASCC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(ASCC.class);
     }
 

@@ -14,7 +14,7 @@ public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest
     private BigInteger agencyIdListValueManifestId;
     private String versionId;
     private String listId;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private String definition;
     private String definitionSource;
     private String remark;
@@ -70,11 +70,11 @@ public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest
         this.listId = listId;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

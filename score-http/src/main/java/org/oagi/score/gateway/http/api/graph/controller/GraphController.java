@@ -100,7 +100,7 @@ public class GraphController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                               @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                              @PathVariable("targetReleaseId") BigInteger targetReleaseId) {
+                                              @PathVariable("targetReleaseId") String targetReleaseId) {
 
         AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);
         Graph graph;

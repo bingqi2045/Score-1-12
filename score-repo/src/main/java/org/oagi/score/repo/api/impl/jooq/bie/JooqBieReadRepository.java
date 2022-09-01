@@ -65,7 +65,7 @@ public class JooqBieReadRepository
             TopLevelAsbiep topLevelAsbiep = new TopLevelAsbiep();
             topLevelAsbiep.setTopLevelAsbiepId(record.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
             topLevelAsbiep.setAsbiepId(record.get(TOP_LEVEL_ASBIEP.ASBIEP_ID).toBigInteger());
-            topLevelAsbiep.setReleaseId(record.get(TOP_LEVEL_ASBIEP.RELEASE_ID).toBigInteger());
+            topLevelAsbiep.setReleaseId(record.get(TOP_LEVEL_ASBIEP.RELEASE_ID));
             topLevelAsbiep.setPropertyTerm(record.get(ASCCP.PROPERTY_TERM));
             topLevelAsbiep.setGuid(record.get(ASCCP.GUID));
             topLevelAsbiep.setState(BieState.valueOf(record.get(TOP_LEVEL_ASBIEP.STATE)));
@@ -77,11 +77,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -90,11 +90,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -103,11 +103,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 

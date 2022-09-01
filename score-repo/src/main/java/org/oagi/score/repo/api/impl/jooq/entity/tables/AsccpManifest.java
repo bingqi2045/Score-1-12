@@ -58,9 +58,10 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     public final TableField<AsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>oagi.asccp_manifest.release_id</code>.
+     * The column <code>oagi.asccp_manifest.release_id</code>. Foreign key to
+     * the RELEASE table.
      */
-    public final TableField<AsccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.asccp_manifest.asccp_id</code>.
@@ -82,7 +83,7 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
      * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed
      * to a log for the current record.
      */
-    public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<AsccpManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column
@@ -279,21 +280,21 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row9<ULong, String, ULong, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

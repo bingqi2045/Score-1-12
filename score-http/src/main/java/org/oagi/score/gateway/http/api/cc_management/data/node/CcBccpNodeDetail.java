@@ -32,9 +32,9 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }
@@ -48,7 +48,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String den;
         private boolean nillable;
         private boolean deprecated;
-        private BigInteger namespaceId = BigInteger.ZERO;
+        private String namespaceId;
         private String defaultValue;
         private String fixedValue;
         private String definition;
@@ -56,9 +56,9 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }
@@ -77,9 +77,9 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }

@@ -150,7 +150,7 @@ public class Ascc extends TableImpl<AsccRecord> {
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public final TableField<AsccRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
+    public final TableField<AsccRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.ascc.owner_user_id</code>. Foreign key to the
@@ -158,9 +158,9 @@ public class Ascc extends TableImpl<AsccRecord> {
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public final TableField<AsccRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
+    public final TableField<AsccRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
      * The column <code>oagi.ascc.last_updated_by</code>. A foreign key to the
@@ -169,7 +169,7 @@ public class Ascc extends TableImpl<AsccRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public final TableField<AsccRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
+    public final TableField<AsccRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
      * The column <code>oagi.ascc.creation_timestamp</code>. Timestamp when the
@@ -408,21 +408,21 @@ public class Ascc extends TableImpl<AsccRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
         return (Row20) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

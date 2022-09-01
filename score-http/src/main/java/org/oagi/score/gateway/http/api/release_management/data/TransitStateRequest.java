@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class TransitStateRequest {
 
-    private BigInteger releaseId;
+    private String releaseId;
     private String state;
 
     private ReleaseValidationRequest validationRequest;

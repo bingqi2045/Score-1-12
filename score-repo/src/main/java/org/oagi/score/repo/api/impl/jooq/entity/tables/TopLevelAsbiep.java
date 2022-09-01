@@ -68,9 +68,11 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     public final TableField<TopLevelAsbiepRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.");
 
     /**
-     * The column <code>oagi.top_level_asbiep.owner_user_id</code>.
+     * The column <code>oagi.top_level_asbiep.owner_user_id</code>. Foreign key
+     * to the APP_USER table identifying the user who can update or delete the
+     * record.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TopLevelAsbiepRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
 
     /**
      * The column <code>oagi.top_level_asbiep.last_update_timestamp</code>. The
@@ -82,14 +84,13 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
      * The column <code>oagi.top_level_asbiep.last_updated_by</code>. A foreign
      * key referring to the last user who has updated any related bie records.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated any related bie records.");
+    public final TableField<TopLevelAsbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated any related bie records.");
 
     /**
      * The column <code>oagi.top_level_asbiep.release_id</code>. Foreign key to
-     * the RELEASE table. It identifies the release, for which this module is
-     * associated.
+     * the RELEASE table.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the RELEASE table. It identifies the release, for which this module is associated.");
+    public final TableField<TopLevelAsbiepRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.top_level_asbiep.version</code>. This column hold a
@@ -257,21 +258,21 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String, String, String> fieldsRow() {
+    public Row9<ULong, ULong, String, LocalDateTime, String, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

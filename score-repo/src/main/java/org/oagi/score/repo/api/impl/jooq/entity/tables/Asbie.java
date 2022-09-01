@@ -151,13 +151,13 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * owner by default. ASBIEs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public final TableField<AsbieRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.");
+    public final TableField<AsbieRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.");
 
     /**
      * The column <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record. 
+     * referring to the user who has last updated the ASBIE record.
      */
-    public final TableField<AsbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record. ");
+    public final TableField<AsbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record.");
 
     /**
      * The column <code>oagi.asbie.creation_timestamp</code>. Timestamp when the
@@ -367,21 +367,21 @@ public class Asbie extends TableImpl<AsbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

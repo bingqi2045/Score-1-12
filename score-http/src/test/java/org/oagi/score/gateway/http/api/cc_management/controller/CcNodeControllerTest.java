@@ -85,7 +85,7 @@ public class CcNodeControllerTest {
     @WithMockScoreUser(username = "oagis", password = "oagis", role = DEVELOPER_GRANTED_AUTHORITY)
     public void testCreateAsccpForDeveloper() throws Exception {
         CcAsccpCreateRequest ccAsccpCreateRequest = new CcAsccpCreateRequest();
-        BigInteger releaseId = getReleaseId("Working");
+        String releaseId = getReleaseId("Working");
         ccAsccpCreateRequest.setReleaseId(releaseId);
         ccAsccpCreateRequest.setRoleOfAccManifestId(
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
@@ -94,7 +94,7 @@ public class CcNodeControllerTest {
                         .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                         .where(and(
                                 ACC.OBJECT_CLASS_TERM.eq("All Extension"),
-                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                RELEASE.RELEASE_ID.eq(releaseId)
                         ))
                         .fetchOneInto(BigInteger.class)
         );
@@ -109,7 +109,7 @@ public class CcNodeControllerTest {
     @WithMockScoreUser(username = "oagis", password = "oagis", role = DEVELOPER_GRANTED_AUTHORITY)
     public void testCreateBccpForDeveloper() throws Exception {
         CcBccpCreateRequest ccBccpCreateRequest = new CcBccpCreateRequest();
-        BigInteger releaseId = getReleaseId("Working");
+        String releaseId = getReleaseId("Working");
         ccBccpCreateRequest.setReleaseId(releaseId);
         ccBccpCreateRequest.setBdtManifestId(
                 dslContext.select(DT_MANIFEST.DT_MANIFEST_ID)
@@ -118,7 +118,7 @@ public class CcNodeControllerTest {
                         .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                         .where(and(
                                 DT.DEN.eq("Action_ Code. Type"),
-                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                RELEASE.RELEASE_ID.eq(releaseId)
                         ))
                         .fetchOneInto(BigInteger.class)
         );
@@ -151,7 +151,7 @@ public class CcNodeControllerTest {
     @WithMockScoreUser(username = "oagis", password = "oagis", role = DEVELOPER_GRANTED_AUTHORITY)
     public void accTest() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        BigInteger releaseId = getReleaseId("Working");
+        String releaseId = getReleaseId("Working");
 
         // create Acc
         CcAccCreateRequest ccAccCreateRequest = new CcAccCreateRequest();
@@ -218,7 +218,7 @@ public class CcNodeControllerTest {
                         .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                         .where(and(
                                 DT.DEN.eq("Action_ Code. Type"),
-                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                RELEASE.RELEASE_ID.eq(releaseId)
                         ))
                         .fetchOneInto(BigInteger.class)
         );

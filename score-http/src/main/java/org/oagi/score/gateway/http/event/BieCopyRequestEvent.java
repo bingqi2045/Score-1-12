@@ -16,6 +16,6 @@ public class BieCopyRequestEvent implements Event {
     private BigInteger sourceTopLevelAsbiepId;
     private BigInteger copiedTopLevelAsbiepId;
     private List<BigInteger> bizCtxIds;
-    private BigInteger userId;
+    private String userId;
 
 }

@@ -37,9 +37,10 @@ public class BusinessTermRepository {
     private DSLContext dslContext;
 
     private SelectConditionStep<Record14<
-            String,ULong,ULong,String,String,String,ULong,String,
-            String,ULong,String,String,String,LocalDateTime>> getAsbieBiztermAssignmentList(
-                    AssignedBusinessTermListRequest request) {
+            String, ULong, ULong, String, String,
+            String, ULong, String, String, String,
+            String, String, String, LocalDateTime>> getAsbieBiztermAssignmentList(
+            AssignedBusinessTermListRequest request) {
         List<Condition> conditions = setConditions(request);
         if (request.getAssignedBtId() != null) {
             conditions.add(ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(ULong.valueOf(request.getAssignedBtId())));
@@ -97,8 +98,9 @@ public class BusinessTermRepository {
     }
 
     private SelectConditionStep<Record14<
-            String,ULong,ULong,String,String,String,ULong,String,
-            String,ULong,String,String,String,LocalDateTime>>
+            String, ULong, ULong, String, String,
+            String, ULong, String, String, String,
+            String, String, String, LocalDateTime>>
     getBbieBiztermAssignmentList(AssignedBusinessTermListRequest request) {
         List<Condition> conditions = setConditions(request);
         if (request.getAssignedBtId() != null) {

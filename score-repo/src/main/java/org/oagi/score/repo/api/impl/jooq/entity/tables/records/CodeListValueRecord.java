@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
  * can no longer be changed.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
+public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, ULong, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -205,18 +205,20 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Setter for <code>oagi.code_list_value.created_by</code>. Foreign key to
-     * the APP_USER table. It indicates the user who created the code list.
+     * the APP_USER table. It indicates the user who created the code list
+     * value.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(10, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.created_by</code>. Foreign key to
-     * the APP_USER table. It indicates the user who created the code list.
+     * the APP_USER table. It indicates the user who created the code list
+     * value.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(10);
+    public String getCreatedBy() {
+        return (String) get(10);
     }
 
     /**
@@ -227,7 +229,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(11, value);
     }
 
@@ -239,26 +241,26 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(11);
+    public String getOwnerUserId() {
+        return (String) get(11);
     }
 
     /**
      * Setter for <code>oagi.code_list_value.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the code
-     * list.
+     * list value.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(12, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the code
-     * list.
+     * list value.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(12);
+    public String getLastUpdatedBy() {
+        return (String) get(12);
     }
 
     /**
@@ -339,12 +341,12 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
         return (Row17) super.fieldsRow();
     }
 
     @Override
-    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
         return (Row17) super.valuesRow();
     }
 
@@ -399,17 +401,17 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return CodeListValue.CODE_LIST_VALUE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field12() {
+    public Field<String> field12() {
         return CodeListValue.CODE_LIST_VALUE.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return CodeListValue.CODE_LIST_VALUE.LAST_UPDATED_BY;
     }
 
@@ -484,17 +486,17 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component12() {
+    public String component12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getLastUpdatedBy();
     }
 
@@ -569,17 +571,17 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value12() {
+    public String value12() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getLastUpdatedBy();
     }
 
@@ -664,19 +666,19 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     @Override
-    public CodeListValueRecord value11(ULong value) {
+    public CodeListValueRecord value11(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value12(ULong value) {
+    public CodeListValueRecord value12(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value13(ULong value) {
+    public CodeListValueRecord value13(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -706,7 +708,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     @Override
-    public CodeListValueRecord values(ULong value1, String value2, ULong value3, ULong value4, String value5, String value6, String value7, String value8, Byte value9, ULong value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, ULong value16, ULong value17) {
+    public CodeListValueRecord values(ULong value1, String value2, ULong value3, ULong value4, String value5, String value6, String value7, String value8, Byte value9, ULong value10, String value11, String value12, String value13, LocalDateTime value14, LocalDateTime value15, ULong value16, ULong value17) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -741,7 +743,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, ULong basedCodeListValueId, String value, String meaning, String definition, String definitionSource, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, ULong basedCodeListValueId, String value, String meaning, String definition, String definitionSource, Byte isDeprecated, ULong replacementCodeListValueId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         setCodeListValueId(codeListValueId);

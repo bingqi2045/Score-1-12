@@ -17,8 +17,8 @@ public class BbieBizterm {
     private String businessTerm;
     private String guid;
     private String externalRefUri;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
 

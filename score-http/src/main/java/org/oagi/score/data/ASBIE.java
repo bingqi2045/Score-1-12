@@ -18,8 +18,8 @@ public class ASBIE implements BIE {
     private int cardinalityMax;
     private boolean nillable;
     private String remark;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private double seqKey;

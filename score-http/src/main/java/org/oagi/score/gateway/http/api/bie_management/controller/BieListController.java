@@ -49,7 +49,7 @@ public class BieListController {
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
                                             @RequestParam(name = "updateEnd", required = false) String updateEnd,
                                             @RequestParam(name = "ownedByDeveloper", required = false) Boolean ownedByDeveloper,
-                                            @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
+                                            @RequestParam(name = "releaseId", required = false) String releaseId,
                                             @RequestParam(name = "sortActive") String sortActive,
                                             @RequestParam(name = "sortDirection") String sortDirection,
                                             @RequestParam(name = "pageIndex") int pageIndex,
@@ -76,7 +76,7 @@ public class BieListController {
 
         request.setOwnedByDeveloper(ownedByDeveloper);
 
-        if (releaseId != null && releaseId.compareTo(BigInteger.ZERO) > 0) {
+        if (StringUtils.hasLength(releaseId)) {
             request.setReleaseId(releaseId);
         }
 
@@ -136,7 +136,7 @@ public class BieListController {
                                                              @RequestParam(name = "updateStart", required = false) String updateStart,
                                                              @RequestParam(name = "updateEnd", required = false) String updateEnd,
                                                              @RequestParam(name = "ownedByDeveloper", required = false) Boolean ownedByDeveloper,
-                                                             @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
+                                                             @RequestParam(name = "releaseId", required = false) String releaseId,
                                                              @RequestParam(name = "sortActive") String sortActive,
                                                              @RequestParam(name = "sortDirection") String sortDirection,
                                                              @RequestParam(name = "pageIndex") int pageIndex,
@@ -160,7 +160,7 @@ public class BieListController {
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setOwnedByDeveloper(ownedByDeveloper);
 
-        if (releaseId != null && releaseId.compareTo(BigInteger.ZERO) > 0) {
+        if (StringUtils.hasLength(releaseId)) {
             request.setReleaseId(releaseId);
         }
 

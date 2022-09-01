@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
  * components will be generated during the expression generation.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record13<ULong, ULong, ULong, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -123,23 +123,19 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.module.namespace_id</code>. Note that a release
-     * record has a namespace associated. The NAMESPACE_ID, if specified here,
-     * overrides the release's namespace. However, the NAMESPACE_ID associated
-     * with the component takes the highest precedence.
+     * Setter for <code>oagi.module.namespace_id</code>. Foreign key to the
+     * NAMESPACE table.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.module.namespace_id</code>. Note that a release
-     * record has a namespace associated. The NAMESPACE_ID, if specified here,
-     * overrides the release's namespace. However, the NAMESPACE_ID associated
-     * with the component takes the highest precedence.
+     * Getter for <code>oagi.module.namespace_id</code>. Foreign key to the
+     * NAMESPACE table.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(6);
+    public String getNamespaceId() {
+        return (String) get(6);
     }
 
     /**
@@ -162,7 +158,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Setter for <code>oagi.module.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this MODULE.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(8, value);
     }
 
@@ -170,8 +166,8 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Getter for <code>oagi.module.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this MODULE.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(8);
+    public String getCreatedBy() {
+        return (String) get(8);
     }
 
     /**
@@ -181,7 +177,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(9, value);
     }
 
@@ -192,15 +188,15 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(9);
+    public String getLastUpdatedBy() {
+        return (String) get(9);
     }
 
     /**
      * Setter for <code>oagi.module.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(10, value);
     }
 
@@ -208,8 +204,8 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
      * Getter for <code>oagi.module.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(10);
+    public String getOwnerUserId() {
+        return (String) get(10);
     }
 
     /**
@@ -258,12 +254,12 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<ULong, ULong, ULong, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row13<ULong, ULong, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
@@ -298,7 +294,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Module.MODULE.NAMESPACE_ID;
     }
 
@@ -308,17 +304,17 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<String> field9() {
         return Module.MODULE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<String> field10() {
         return Module.MODULE.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return Module.MODULE.OWNER_USER_ID;
     }
 
@@ -363,7 +359,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getNamespaceId();
     }
 
@@ -373,17 +369,17 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong component9() {
+    public String component9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component10() {
+    public String component10() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getOwnerUserId();
     }
 
@@ -428,7 +424,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getNamespaceId();
     }
 
@@ -438,17 +434,17 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ULong value9() {
+    public String value9() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value10() {
+    public String value10() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getOwnerUserId();
     }
 
@@ -499,7 +495,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ModuleRecord value7(ULong value) {
+    public ModuleRecord value7(String value) {
         setNamespaceId(value);
         return this;
     }
@@ -511,19 +507,19 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ModuleRecord value9(ULong value) {
+    public ModuleRecord value9(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public ModuleRecord value10(ULong value) {
+    public ModuleRecord value10(String value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public ModuleRecord value11(ULong value) {
+    public ModuleRecord value11(String value) {
         setOwnerUserId(value);
         return this;
     }
@@ -541,7 +537,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     @Override
-    public ModuleRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, String value6, ULong value7, String value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13) {
+    public ModuleRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -572,7 +568,7 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     /**
      * Create a detached, initialised ModuleRecord
      */
-    public ModuleRecord(ULong moduleId, ULong moduleSetId, ULong parentModuleId, String type, String path, String name, ULong namespaceId, String versionNum, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleRecord(ULong moduleId, ULong moduleSetId, ULong parentModuleId, String type, String path, String name, String namespaceId, String versionNum, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Module.MODULE);
 
         setModuleId(moduleId);

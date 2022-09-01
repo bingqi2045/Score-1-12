@@ -10,7 +10,7 @@ public class ModuleSetModule {
 
     private BigInteger moduleId = BigInteger.ZERO;
     private String path;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private String namespaceUri;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;

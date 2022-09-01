@@ -294,6 +294,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(accRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -306,9 +307,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(accRecord.getCreatedBy());
             logRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             accManifestRecord.setLogId(logId);
             accManifestRecord.update(ACC_MANIFEST.LOG_ID);
@@ -406,6 +408,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(asccpRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -415,9 +418,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(asccpRecord.getCreatedBy());
             logRecord.setCreationTimestamp(asccpRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             asccpManifestRecord.setLogId(logId);
             asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
@@ -465,6 +469,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(bccpRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -474,9 +479,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(bccpRecord.getCreatedBy());
             logRecord.setCreationTimestamp(bccpRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             bccpManifestRecord.setLogId(logId);
             bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
@@ -534,6 +540,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(codeListRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -546,9 +553,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(codeListRecord.getCreatedBy());
             logRecord.setCreationTimestamp(codeListRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             codeListManifestRecord.setLogId(logId);
             codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
@@ -635,6 +643,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(agencyIdListRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -647,9 +656,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(agencyIdListRecord.getCreatedBy());
             logRecord.setCreationTimestamp(agencyIdListRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             agencyIdListManifestRecord.setLogId(logId);
             agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
@@ -736,6 +746,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(dtRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -748,9 +759,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(dtRecord.getCreatedBy());
             logRecord.setCreationTimestamp(dtRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             dtManifestRecord.setLogId(logId);
             dtManifestRecord.update(DT_MANIFEST.LOG_ID);
@@ -827,6 +839,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             LogRecord logRecord = new LogRecord();
+            logRecord.setLogId(UUID.randomUUID().toString());
             logRecord.setHash(generateHash());
             logRecord.setReference(xbtRecord.getGuid());
             logRecord.setRevisionNum(UInteger.valueOf(1));
@@ -836,9 +849,10 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setCreatedBy(xbtRecord.getCreatedBy());
             logRecord.setCreationTimestamp(xbtRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
+            dslContext.insertInto(LOG)
                     .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+                    .execute();
+            String logId = logRecord.getLogId();
 
             xbtManifestRecord.setLogId(logId);
             xbtManifestRecord.update(XBT_MANIFEST.LOG_ID);

@@ -201,24 +201,18 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
     /**
      * Setter for <code>oagi.dt.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(10, value);
     }
 
     /**
      * Getter for <code>oagi.dt.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(10);
+    public String getNamespaceId() {
+        return (String) get(10);
     }
 
     /**
@@ -281,7 +275,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Setter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER
      * table. It indicates the user who created this DT.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(14, value);
     }
 
@@ -289,8 +283,8 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Getter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER
      * table. It indicates the user who created this DT.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(14);
+    public String getCreatedBy() {
+        return (String) get(14);
     }
 
     /**
@@ -300,7 +294,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(15, value);
     }
 
@@ -311,30 +305,32 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(15);
+    public String getLastUpdatedBy() {
+        return (String) get(15);
     }
 
     /**
      * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.\n\nThe
-     * ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * the entity, and who can transfer the ownership to another user.
+     * 
+     * The ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(16, value);
     }
 
     /**
      * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.\n\nThe
-     * ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * the entity, and who can transfer the ownership to another user.
+     * 
+     * The ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(16);
+    public String getOwnerUserId() {
+        return (String) get(16);
     }
 
     /**
@@ -470,7 +466,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, ULong basedDtId, String den, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, ULong basedDtId, String den, String definition, String definitionSource, String namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         setDtId(dtId);

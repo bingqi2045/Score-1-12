@@ -5,7 +5,6 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.common.data.CcState;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -119,7 +117,7 @@ public class BccWriteRepository {
     }
 
     public CreateBccRepositoryResponse createBcc(CreateBccRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
@@ -176,7 +174,7 @@ public class BccWriteRepository {
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
-        bccManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        bccManifestRecord.setReleaseId(request.getReleaseId());
         bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
         bccManifestRecord.setToBccpManifestId(bccpManifestRecord.getBccpManifestId());
         bccManifestRecord.setBccManifestId(
@@ -190,13 +188,13 @@ public class BccWriteRepository {
         if (request.getLogAction() != null) {
             upsertLogIntoAccAndAssociationsByAction(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp, request.getLogHash(), request.getLogAction()
             );
         } else {
             upsertLogIntoAccAndAssociations(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp
             );
         }
@@ -208,17 +206,17 @@ public class BccWriteRepository {
 
     private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
                                                  AccManifestRecord accManifestRecord,
-                                                 ULong releaseId,
-                                                 ULong userId, LocalDateTime timestamp) {
+                                                 String releaseId,
+                                                 String userId, LocalDateTime timestamp) {
         upsertLogIntoAccAndAssociationsByAction(accRecord, accManifestRecord, releaseId, userId, timestamp, LogUtils.generateHash(), LogAction.Modified);
     }
 
     private void upsertLogIntoAccAndAssociationsByAction(AccRecord accRecord,
-                                                            AccManifestRecord accManifestRecord,
-                                                            ULong releaseId,
-                                                            ULong userId,
-                                                            LocalDateTime timestamp,
-                                                            String hash, LogAction action) {
+                                                         AccManifestRecord accManifestRecord,
+                                                         String releaseId,
+                                                         String userId,
+                                                         LocalDateTime timestamp,
+                                                         String hash, LogAction action) {
 
         if (action.equals(LogAction.IGNORE)) {
             return;
@@ -233,8 +231,8 @@ public class BccWriteRepository {
     }
 
     public UpdateBccPropertiesRepositoryResponse updateBccProperties(UpdateBccPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -349,8 +347,8 @@ public class BccWriteRepository {
     }
 
     public DeleteBccRepositoryResponse deleteBcc(DeleteBccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -421,8 +419,8 @@ public class BccWriteRepository {
     }
 
     public RefactorBccRepositoryResponse refactor(RefactorBccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         BccManifestRecord targetBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -544,7 +542,7 @@ public class BccWriteRepository {
     }
 
     private List<BccManifestRecord> getRefactorTargetBccManifestList(BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
-        ULong releaseId = bccManifestRecord.getReleaseId();
+        String releaseId = bccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
         Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)

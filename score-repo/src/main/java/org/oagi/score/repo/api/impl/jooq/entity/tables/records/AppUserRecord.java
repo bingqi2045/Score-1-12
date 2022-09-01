@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 
 
@@ -18,22 +17,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
  * purposes.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record8<ULong, String, String, String, String, Byte, Byte, Byte> {
+public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record8<String, String, String, String, String, Byte, Byte, Byte> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.app_user.app_user_id</code>. Primary key column.
+     * Setter for <code>oagi.app_user.app_user_id</code>. Primary, internal
+     * database key.
      */
-    public void setAppUserId(ULong value) {
+    public void setAppUserId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.app_user.app_user_id</code>. Primary key column.
+     * Getter for <code>oagi.app_user.app_user_id</code>. Primary, internal
+     * database key.
      */
-    public ULong getAppUserId() {
-        return (ULong) get(0);
+    public String getAppUserId() {
+        return (String) get(0);
     }
 
     /**
@@ -145,7 +146,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -154,17 +155,17 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
+    public Row8<String, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     @Override
-    public Row8<ULong, String, String, String, String, Byte, Byte, Byte> valuesRow() {
+    public Row8<String, String, String, String, String, Byte, Byte, Byte> valuesRow() {
         return (Row8) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return AppUser.APP_USER.APP_USER_ID;
     }
 
@@ -204,7 +205,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAppUserId();
     }
 
@@ -244,7 +245,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAppUserId();
     }
 
@@ -284,7 +285,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
-    public AppUserRecord value1(ULong value) {
+    public AppUserRecord value1(String value) {
         setAppUserId(value);
         return this;
     }
@@ -332,7 +333,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
-    public AppUserRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6, Byte value7, Byte value8) {
+    public AppUserRecord values(String value1, String value2, String value3, String value4, String value5, Byte value6, Byte value7, Byte value8) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -358,7 +359,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     /**
      * Create a detached, initialised AppUserRecord
      */
-    public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte isDeveloper, Byte isAdmin, Byte isEnabled) {
+    public AppUserRecord(String appUserId, String loginId, String password, String name, String organization, Byte isDeveloper, Byte isAdmin, Byte isEnabled) {
         super(AppUser.APP_USER);
 
         setAppUserId(appUserId);

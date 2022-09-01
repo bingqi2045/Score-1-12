@@ -62,13 +62,13 @@ public class Message extends TableImpl<MessageRecord> {
      * The column <code>oagi.message.sender_id</code>. The user who created this
      * record.
      */
-    public final TableField<MessageRecord, ULong> SENDER_ID = createField(DSL.name("sender_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The user who created this record.");
+    public final TableField<MessageRecord, String> SENDER_ID = createField(DSL.name("sender_id"), SQLDataType.CHAR(36).nullable(false), this, "The user who created this record.");
 
     /**
      * The column <code>oagi.message.recipient_id</code>. The user who is a
      * target to possess this record.
      */
-    public final TableField<MessageRecord, ULong> RECIPIENT_ID = createField(DSL.name("recipient_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The user who is a target to possess this record.");
+    public final TableField<MessageRecord, String> RECIPIENT_ID = createField(DSL.name("recipient_id"), SQLDataType.CHAR(36).nullable(false), this, "The user who is a target to possess this record.");
 
     /**
      * The column <code>oagi.message.subject</code>. A subject of the message
@@ -220,21 +220,21 @@ public class Message extends TableImpl<MessageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, String, String, String, Byte, LocalDateTime> fieldsRow() {
+    public Row8<ULong, String, String, String, String, String, Byte, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

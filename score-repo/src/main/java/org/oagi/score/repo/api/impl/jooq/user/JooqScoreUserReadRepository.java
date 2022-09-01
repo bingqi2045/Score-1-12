@@ -45,11 +45,11 @@ public class JooqScoreUserReadRepository
             ScoreRole userRole = (byte) 1 == record.get(APP_USER.IS_DEVELOPER) ? DEVELOPER : END_USER;
             boolean isAdmin = (byte) 1 == record.get(APP_USER.IS_ADMIN);
             ScoreUser user = (isAdmin) ? new ScoreUser(
-                    record.get(APP_USER.APP_USER_ID).toBigInteger(),
+                    record.get(APP_USER.APP_USER_ID),
                     record.get(APP_USER.LOGIN_ID),
                     Arrays.asList(userRole, ADMINISTRATOR)
             ) : new ScoreUser(
-                    record.get(APP_USER.APP_USER_ID).toBigInteger(),
+                    record.get(APP_USER.APP_USER_ID),
                     record.get(APP_USER.LOGIN_ID),
                     Arrays.asList(userRole)
             );
@@ -62,9 +62,9 @@ public class JooqScoreUserReadRepository
     public GetScoreUserResponse getScoreUser(GetScoreUserRequest request) throws ScoreDataAccessException {
         List<Condition> conds = new ArrayList();
 
-        BigInteger userId = request.getUserId();
+        String userId = request.getUserId();
         if (userId != null) {
-            conds.add(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)));
+            conds.add(APP_USER.APP_USER_ID.eq(userId));
         }
         String username = request.getUsername();
         if (StringUtils.hasLength(username)) {

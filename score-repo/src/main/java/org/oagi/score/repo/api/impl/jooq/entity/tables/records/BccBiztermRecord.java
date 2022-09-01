@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm;
  * business term and BCC. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> implements Record7<ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> implements Record7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -74,38 +74,38 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
 
     /**
      * Setter for <code>oagi.bcc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bcc_bizterm record. The creator of
-     * the bcc_bizterm is also its owner by default.
+     * referring to the user who creates the BCC_BIZTERM record. The creator of
+     * the BCC_BIZTERM is also its owner by default.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(3, value);
     }
 
     /**
      * Getter for <code>oagi.bcc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bcc_bizterm record. The creator of
-     * the bcc_bizterm is also its owner by default.
+     * referring to the user who creates the BCC_BIZTERM record. The creator of
+     * the BCC_BIZTERM is also its owner by default.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(3);
+    public String getCreatedBy() {
+        return (String) get(3);
     }
 
     /**
      * Setter for <code>oagi.bcc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bcc_bizterm record. This
+     * referring to the last user who has updated the BCC_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(4, value);
     }
 
     /**
      * Getter for <code>oagi.bcc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bcc_bizterm record. This
+     * referring to the last user who has updated the BCC_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(4);
+    public String getLastUpdatedBy() {
+        return (String) get(4);
     }
 
     /**
@@ -154,12 +154,12 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -179,12 +179,12 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return BccBizterm.BCC_BIZTERM.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return BccBizterm.BCC_BIZTERM.LAST_UPDATED_BY;
     }
 
@@ -214,12 +214,12 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getLastUpdatedBy();
     }
 
@@ -249,12 +249,12 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getLastUpdatedBy();
     }
 
@@ -287,13 +287,13 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public BccBiztermRecord value4(ULong value) {
+    public BccBiztermRecord value4(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BccBiztermRecord value5(ULong value) {
+    public BccBiztermRecord value5(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -311,7 +311,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public BccBiztermRecord values(ULong value1, ULong value2, ULong value3, ULong value4, ULong value5, LocalDateTime value6, LocalDateTime value7) {
+    public BccBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -336,7 +336,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     /**
      * Create a detached, initialised BccBiztermRecord
      */
-    public BccBiztermRecord(ULong bccBiztermId, ULong businessTermId, ULong bccId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public BccBiztermRecord(ULong bccBiztermId, ULong businessTermId, ULong bccId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BccBizterm.BCC_BIZTERM);
 
         setBccBiztermId(bccBiztermId);

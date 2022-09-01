@@ -8,14 +8,14 @@ import java.math.BigInteger;
 public class CreateAgencyIdListRestrictionRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger dtManifestId;
-    private final BigInteger releaseId;
+    private final String releaseId;
     
     private BigInteger agencyIdListManifestId;
 
 
 
     public CreateAgencyIdListRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                          BigInteger dtManifestId, BigInteger releaseId) {
+                                                          BigInteger dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
@@ -25,7 +25,7 @@ public class CreateAgencyIdListRestrictionRepositoryRequest extends RepositoryRe
         return dtManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 

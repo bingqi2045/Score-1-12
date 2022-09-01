@@ -39,7 +39,7 @@ public class CommentService {
 
     @Transactional
     public void postComments(AuthenticatedPrincipal user, PostCommentRequest request) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
 
         long commentId = repository.insertComment()
                 .setReference(request.getReference())
@@ -65,9 +65,9 @@ public class CommentService {
 
     @Transactional
     public void updateComments(AuthenticatedPrincipal user, UpdateCommentRequest request) {
-        BigInteger userId = sessionService.userId(user);
-        BigInteger ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
-        if (ownerId.equals(BigInteger.ZERO)) {
+        String userId = sessionService.userId(user);
+        String ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
+        if (ownerId == null) {
             throw new EmptyResultDataAccessException(1);
         }
 

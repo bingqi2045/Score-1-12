@@ -50,7 +50,7 @@ public class CodeListService extends EventHandler {
     private SelectOnConditionStep<Record22<
             ULong, ULong, String, String, ULong,
             String, String, ULong, String, String,
-            String, LocalDateTime, ULong, String, String,
+            String, LocalDateTime, String, String, String,
             Byte, String, Byte, String, String,
             String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
         return dslContext.select(
@@ -94,7 +94,7 @@ public class CodeListService extends EventHandler {
 
         ULong defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId())))
                 .fetchOne();
 
         if (defaultModuleSetRelease != null) {
@@ -104,12 +104,12 @@ public class CodeListService extends EventHandler {
         SelectOnConditionStep<Record22<
                 ULong, ULong, String, String, ULong,
                 String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> step = getSelectOnConditionStep(defaultModuleSetReleaseId);
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
 
         if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
@@ -121,17 +121,17 @@ public class CodeListService extends EventHandler {
             conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getAccess() != null) {
-            AppUser requester = sessionService.getAppUser(user);
+            AppUser requester = sessionService.getAppUserByUsername(user);
             switch (request.getAccess()) {
                 case CanEdit:
-                    conditions.add(CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId())));
+                    conditions.add(CODE_LIST.OWNER_USER_ID.eq(requester.getAppUserId()));
                     break;
 
                 case CanView:
                     conditions.add(
                             or(
                                     CODE_LIST.STATE.in(QA.name(), Production.name()),
-                                    CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId()))
+                                    CODE_LIST.OWNER_USER_ID.eq(requester.getAppUserId())
                             )
                     );
                     break;
@@ -166,7 +166,7 @@ public class CodeListService extends EventHandler {
         SelectConnectByStep<Record22<
                 ULong, ULong, String, String, ULong,
                 String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
@@ -202,7 +202,7 @@ public class CodeListService extends EventHandler {
         SelectWithTiesAfterOffsetStep<Record22<
                 ULong, ULong, String, String, ULong,
                 String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> offsetStep = null;
         if (sortField != null) {
@@ -219,13 +219,13 @@ public class CodeListService extends EventHandler {
                 offsetStep.fetchInto(CodeListForList.class) : conditionStep.fetchInto(CodeListForList.class);
 
         String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))).fetchOneInto(String.class);
+                .where(RELEASE.RELEASE_ID.eq(request.getReleaseId())).fetchOneInto(String.class);
         boolean isWorkingRelease = releaseNum.equals("Working");
 
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         result.stream().forEach(e -> {
             e.setAccess(
-                    AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(e.getOwnerId()),
+                    AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUserById(e.getOwnerId()),
                             CcState.valueOf(e.getState()), isWorkingRelease)
             );
             e.setOwnerId(null); // hide sensitive information
@@ -299,12 +299,12 @@ public class CodeListService extends EventHandler {
         }
 
         String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(codeList.getReleaseId()))).fetchOneInto(String.class);
+                .where(RELEASE.RELEASE_ID.eq(codeList.getReleaseId())).fetchOneInto(String.class);
         boolean isWorkingRelease = releaseNum.equals("Working");
 
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         codeList.setAccess(
-                AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(codeList.getOwnerId()),
+                AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUserById(codeList.getOwnerId()),
                         CcState.valueOf(codeList.getState()), isWorkingRelease)
         );
         codeList.setOwnerId(null); // hide sensitive information
@@ -580,7 +580,7 @@ public class CodeListService extends EventHandler {
                 codeListValueRecord.setCodeListValueId(null);
                 codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
 
-                ULong requesterId = codeListRecord.getOwnerUserId();
+                String requesterId = codeListRecord.getOwnerUserId();
                 LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();
 
                 if (!codeListValueRecord.getOwnerUserId().equals(requesterId)) {
@@ -637,7 +637,7 @@ public class CodeListService extends EventHandler {
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
 
-            ULong requesterId = codeListRecord.getOwnerUserId();
+            String requesterId = codeListRecord.getOwnerUserId();
             LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();
 
             if (!isUpdate) {
@@ -720,7 +720,7 @@ public class CodeListService extends EventHandler {
     public boolean hasSameCodeList(SameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 CODE_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
 
@@ -742,7 +742,7 @@ public class CodeListService extends EventHandler {
     public boolean hasSameNameCodeList(SameNameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 CODE_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
 
@@ -759,7 +759,7 @@ public class CodeListService extends EventHandler {
 
     @Transactional
     public void transferOwnership(AuthenticatedPrincipal user, BigInteger manifestId, String targetLoginId) {
-        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+        AppUser targetUser = sessionService.getAppUserByUsername(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }

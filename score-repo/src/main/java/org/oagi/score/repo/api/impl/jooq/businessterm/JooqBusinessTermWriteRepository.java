@@ -37,7 +37,7 @@ public class JooqBusinessTermWriteRepository
             CreateBusinessTermRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BusinessTermRecord record = new BusinessTermRecord();
@@ -67,7 +67,7 @@ public class JooqBusinessTermWriteRepository
             throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         List<BigInteger> createdRecordIds = request.getBusinessTermList().stream().map(businessTerm -> {
@@ -117,7 +117,7 @@ public class JooqBusinessTermWriteRepository
             UpdateBusinessTermRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BusinessTermRecord record = dslContext().selectFrom(BUSINESS_TERM)

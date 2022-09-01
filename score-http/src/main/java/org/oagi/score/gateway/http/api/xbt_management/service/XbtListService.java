@@ -21,7 +21,7 @@ public class XbtListService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<Xbt> getXbtSimpleList(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public List<Xbt> getXbtSimpleList(AuthenticatedPrincipal user, String releaseId) {
 
         return dslContext.select(XBT.XBT_ID,
                 XBT_MANIFEST.XBT_MANIFEST_ID.as("manifestId"),
@@ -40,7 +40,7 @@ public class XbtListService {
                 XBT.IS_DEPRECATED
             ).from(XBT_MANIFEST)
                 .join(XBT).on(XBT_MANIFEST.XBT_ID.eq(XBT.XBT_ID))
-                .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(XBT_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(Xbt.class);
     }
 }

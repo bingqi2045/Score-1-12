@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class UnassignComponentsRequest {
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private List<BigInteger> accManifestIds = Collections.emptyList();
     private List<BigInteger> asccpManifestIds = Collections.emptyList();

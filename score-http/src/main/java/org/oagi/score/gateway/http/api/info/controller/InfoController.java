@@ -56,7 +56,7 @@ public class InfoController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public SummaryBieInfo getSummaryBieInfo(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @RequestParam(name="releaseId", required=false, defaultValue="-1") BigInteger releaseId) {
+                                            @RequestParam(name="releaseId", required=false, defaultValue="-1") String releaseId) {
         return bieInfoService.getSummaryBieInfo(user, releaseId);
     }
 
@@ -64,7 +64,7 @@ public class InfoController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public SummaryCcExtInfo getSummaryCcExtInfo(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                @RequestParam(name = "releaseId", required=false, defaultValue="-1") BigInteger releaseId) {
+                                                @RequestParam(name = "releaseId", required=false, defaultValue="-1") String releaseId) {
         return ccInfoService.getSummaryCcExtInfo(user, releaseId);
     }
 

@@ -136,7 +136,7 @@ public class AsccReadRepository {
 
     public Map<ULong, List<String>> getBlockerReasonMap(AppUser requester, AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
 
-        ULong releaseId = asccManifestRecord.getReleaseId();
+        String releaseId = asccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
         Map<ULong, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
@@ -200,7 +200,7 @@ public class AsccReadRepository {
                 map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
             }
 
-            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))
+            if (!acc.getOwnerUserId().equals(requester.getAppUserId())
                     && !acc.getState().equals(CcState.Production.name())
                     && !acc.getState().equals(CcState.Published.name())) {
                 map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");
@@ -223,7 +223,7 @@ public class AsccReadRepository {
                 map.get(amr.getAccManifestId()).add("Direct association: 'WIP' state required.");
             }
 
-            if (!acc.getOwnerUserId().equals(ULong.valueOf(requester.getAppUserId()))
+            if (!acc.getOwnerUserId().equals(requester.getAppUserId())
                     && !acc.getState().equals(CcState.Production.name())
                     && !acc.getState().equals(CcState.Published.name())) {
                 map.get(amr.getAccManifestId()).add("Direct association: Ownership required.");

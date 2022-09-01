@@ -88,7 +88,7 @@ public class Comment extends TableImpl<CommentRecord> {
     /**
      * The column <code>oagi.comment.created_by</code>.
      */
-    public final TableField<CommentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CommentRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.comment.creation_timestamp</code>.
@@ -225,21 +225,21 @@ public class Comment extends TableImpl<CommentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, Byte, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<ULong, String, String, Byte, Byte, ULong, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

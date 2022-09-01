@@ -15,8 +15,8 @@ public class ASBIEP implements BIE {
     private String definition;
     private String remark;
     private String bizTerm;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;

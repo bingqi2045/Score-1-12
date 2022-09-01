@@ -21,7 +21,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 public class CodeListGraphContext implements GraphContext {
 
     private DSLContext dslContext;
-    private ULong releaseId;
+    private String releaseId;
 
     private Map<ULong, CodeListManifest> codeListManifestMap;
     private Map<ULong, List<CodeListValueManifest>> codeListValueManifestMap;
@@ -33,7 +33,7 @@ public class CodeListGraphContext implements GraphContext {
         private ULong basedCodeListManifestId;
         private String name;
         private String state;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevCodeListManifestId;
     }
 
@@ -45,12 +45,12 @@ public class CodeListGraphContext implements GraphContext {
         private String meaning;
         private String value;
         private String state;
-        private ULong releaseId;
+        private String releaseId;
     }
 
-    public CodeListGraphContext(DSLContext dslContext, BigInteger releaseId) {
+    public CodeListGraphContext(DSLContext dslContext, String releaseId) {
         this.dslContext = dslContext;
-        this.releaseId = ULong.valueOf(releaseId);
+        this.releaseId = releaseId;
 
         codeListManifestMap = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,

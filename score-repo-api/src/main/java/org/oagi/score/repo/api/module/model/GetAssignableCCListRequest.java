@@ -15,7 +15,7 @@ public class GetAssignableCCListRequest extends Request {
     }
 
     BigInteger moduleSetReleaseId;
-    BigInteger releaseId;
+    String releaseId;
 
     public BigInteger getModuleSetReleaseId() {
         return moduleSetReleaseId;
@@ -25,11 +25,11 @@ public class GetAssignableCCListRequest extends Request {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 }

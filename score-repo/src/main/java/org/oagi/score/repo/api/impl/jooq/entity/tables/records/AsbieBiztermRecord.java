@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsbieBizterm;
  * ascc_bizterm and ASBIE. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> implements Record9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> implements Record9<ULong, ULong, ULong, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -106,38 +106,38 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
 
     /**
      * Setter for <code>oagi.asbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the asbie_bizterm record. The creator
-     * of the asbie_bizterm is also its owner by default.
+     * referring to the user who creates the ASBIE_BIZTERM record. The creator
+     * of the ASBIE_BIZTERM is also its owner by default.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(5, value);
     }
 
     /**
      * Getter for <code>oagi.asbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the asbie_bizterm record. The creator
-     * of the asbie_bizterm is also its owner by default.
+     * referring to the user who creates the ASBIE_BIZTERM record. The creator
+     * of the ASBIE_BIZTERM is also its owner by default.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(5);
+    public String getCreatedBy() {
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.asbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the asbie_bizterm record. This
+     * referring to the last user who has updated the ASBIE_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(6, value);
     }
 
     /**
      * Getter for <code>oagi.asbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the asbie_bizterm record. This
+     * referring to the last user who has updated the ASBIE_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(6);
+    public String getLastUpdatedBy() {
+        return (String) get(6);
     }
 
     /**
@@ -186,12 +186,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<ULong, ULong, ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row9<ULong, ULong, ULong, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row9) super.valuesRow();
     }
 
@@ -221,12 +221,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return AsbieBizterm.ASBIE_BIZTERM.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return AsbieBizterm.ASBIE_BIZTERM.LAST_UPDATED_BY;
     }
 
@@ -266,12 +266,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getLastUpdatedBy();
     }
 
@@ -311,12 +311,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getLastUpdatedBy();
     }
 
@@ -361,13 +361,13 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public AsbieBiztermRecord value6(ULong value) {
+    public AsbieBiztermRecord value6(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsbieBiztermRecord value7(ULong value) {
+    public AsbieBiztermRecord value7(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -385,7 +385,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public AsbieBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, ULong value6, ULong value7, LocalDateTime value8, LocalDateTime value9) {
+    public AsbieBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, String value6, String value7, LocalDateTime value8, LocalDateTime value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -412,7 +412,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     /**
      * Create a detached, initialised AsbieBiztermRecord
      */
-    public AsbieBiztermRecord(ULong asbieBiztermId, ULong asccBiztermId, ULong asbieId, String primaryIndicator, String typeCode, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public AsbieBiztermRecord(ULong asbieBiztermId, ULong asccBiztermId, ULong asbieId, String primaryIndicator, String typeCode, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(AsbieBizterm.ASBIE_BIZTERM);
 
         setAsbieBiztermId(asbieBiztermId);

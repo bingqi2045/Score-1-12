@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
  * usually associated to BIE or CC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> implements Record11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> {
+public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> implements Record11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -93,7 +93,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
      * referring to the user who creates the business term. The creator of the
      * business term is also its owner by default.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(4, value);
     }
 
@@ -102,8 +102,8 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
      * referring to the user who creates the business term. The creator of the
      * business term is also its owner by default.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(4);
+    public String getCreatedBy() {
+        return (String) get(4);
     }
 
     /**
@@ -111,7 +111,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
      * referring to the last user who has updated the business term record. This
      * may be the user who is in the same group as the creator.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(5, value);
     }
 
@@ -120,8 +120,8 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
      * referring to the last user who has updated the business term record. This
      * may be the user who is in the same group as the creator.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(5);
+    public String getLastUpdatedBy() {
+        return (String) get(5);
     }
 
     /**
@@ -218,12 +218,12 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
+    public Row11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     @Override
-    public Row11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> valuesRow() {
+    public Row11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> valuesRow() {
         return (Row11) super.valuesRow();
     }
 
@@ -248,12 +248,12 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return BusinessTerm.BUSINESS_TERM.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return BusinessTerm.BUSINESS_TERM.LAST_UPDATED_BY;
     }
 
@@ -303,12 +303,12 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getLastUpdatedBy();
     }
 
@@ -358,12 +358,12 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getLastUpdatedBy();
     }
 
@@ -417,13 +417,13 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public BusinessTermRecord value5(ULong value) {
+    public BusinessTermRecord value5(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BusinessTermRecord value6(ULong value) {
+    public BusinessTermRecord value6(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -459,7 +459,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public BusinessTermRecord values(ULong value1, String value2, String value3, String value4, ULong value5, ULong value6, LocalDateTime value7, LocalDateTime value8, String value9, String value10, String value11) {
+    public BusinessTermRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8, String value9, String value10, String value11) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -488,7 +488,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     /**
      * Create a detached, initialised BusinessTermRecord
      */
-    public BusinessTermRecord(ULong businessTermId, String guid, String businessTerm, String definition, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String externalRefUri, String externalRefId, String comment) {
+    public BusinessTermRecord(ULong businessTermId, String guid, String businessTerm, String definition, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String externalRefUri, String externalRefId, String comment) {
         super(BusinessTerm.BUSINESS_TERM);
 
         setBusinessTermId(businessTermId);

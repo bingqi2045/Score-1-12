@@ -112,14 +112,14 @@ public class Abie extends TableImpl<AbieRecord> {
      * by default. ABIEs created as children of another ABIE have the same
      * CREATED_BY as its parent.
      */
-    public final TableField<AbieRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.");
+    public final TableField<AbieRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.");
 
     /**
      * The column <code>oagi.abie.last_updated_by</code>. A foreign key
      * referring to the last user who has updated the ABIE record. This may be
      * the user who is in the same group as the creator.
      */
-    public final TableField<AbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.");
+    public final TableField<AbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.abie.creation_timestamp</code>. Timestamp when the
@@ -331,21 +331,21 @@ public class Abie extends TableImpl<AbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> fieldsRow() {
+    public Row15<ULong, String, ULong, String, String, ULong, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, ULong> fieldsRow() {
         return (Row15) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

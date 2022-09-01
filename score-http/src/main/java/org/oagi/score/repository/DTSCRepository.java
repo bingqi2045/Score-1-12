@@ -44,9 +44,9 @@ public class DTSCRepository implements ScoreRepository<DTSC, BigInteger> {
     }
 
     @Override
-    public List<DTSC> findAllByReleaseId(BigInteger releaseId) {
+    public List<DTSC> findAllByReleaseId(String releaseId) {
         return getSelectJoinStep()
-                .where(Tables.DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.DT_SC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(DTSC.class);
     }
 

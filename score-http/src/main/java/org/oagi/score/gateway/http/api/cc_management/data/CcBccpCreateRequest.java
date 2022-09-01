@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class CcBccpCreateRequest {
 
-    private BigInteger releaseId;
+    private String releaseId;
     private BigInteger bdtManifestId;
 
 }

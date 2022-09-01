@@ -17,5 +17,5 @@ public abstract class CcNode extends TrackableImpl {
     private CcState state;
     private boolean hasChild;
     private AccessPrivilege access;
-    private BigInteger ownerUserId = BigInteger.ZERO;
+    private String ownerUserId;
 }

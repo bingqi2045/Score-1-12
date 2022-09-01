@@ -131,25 +131,22 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
     /**
      * The column <code>oagi.agency_id_list.namespace_id</code>. Foreign key to
-     * the NAMESPACE table. This is the namespace to which the entity belongs.
-     * This namespace column is primarily used in the case the component is a
-     * user's component because there is also a namespace assigned at the
-     * release level.
+     * the NAMESPACE table.
      */
-    public final TableField<AgencyIdListRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
+    public final TableField<AgencyIdListRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
 
     /**
      * The column <code>oagi.agency_id_list.created_by</code>. Foreign key to
      * the APP_USER table. It indicates the user who created the agency ID list.
      */
-    public final TableField<AgencyIdListRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the agency ID list.");
+    public final TableField<AgencyIdListRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the agency ID list.");
 
     /**
      * The column <code>oagi.agency_id_list.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the agency
      * ID list.
      */
-    public final TableField<AgencyIdListRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.");
+    public final TableField<AgencyIdListRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.");
 
     /**
      * The column <code>oagi.agency_id_list.creation_timestamp</code>. Timestamp
@@ -194,7 +191,7 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public final TableField<AgencyIdListRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<AgencyIdListRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
      * The column <code>oagi.agency_id_list.prev_agency_id_list_id</code>. A
@@ -413,21 +410,21 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, ULong, String, ULong, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row22<ULong, String, String, String, String, ULong, String, ULong, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, ULong, String, ULong, ULong> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

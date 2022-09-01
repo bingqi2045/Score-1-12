@@ -110,21 +110,19 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setDefinition(e.get(AGENCY_ID_LIST.DEFINITION));
             agencyIdList.setDefinitionSource(e.get(AGENCY_ID_LIST.DEFINITION_SOURCE));
             agencyIdList.setRemark(e.get(AGENCY_ID_LIST.REMARK));
-            if (e.get(AGENCY_ID_LIST.NAMESPACE_ID) != null) {
-                agencyIdList.setNamespaceId(e.get(AGENCY_ID_LIST.NAMESPACE_ID).toBigInteger());
-            }
+            agencyIdList.setNamespaceId(e.get(AGENCY_ID_LIST.NAMESPACE_ID));
             agencyIdList.setOwner(new ScoreUser(
-                    e.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                    e.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                     e.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                     (byte) 1 == e.get(APP_USER.as("owner").IS_DEVELOPER.as("owner_is_developer")) ? DEVELOPER : END_USER
             ));
             agencyIdList.setCreatedBy(new ScoreUser(
-                    e.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                    e.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                     e.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                     (byte) 1 == e.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
             ));
             agencyIdList.setLastUpdatedBy(new ScoreUser(
-                    e.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                    e.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                     e.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                     (byte) 1 == e.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
             ));
@@ -132,7 +130,7 @@ public class JooqAgencyIdListReadRepository
             agencyIdList.setState(CcState.valueOf(e.get(AGENCY_ID_LIST.STATE)));
             agencyIdList.setReleaseState(e.get(RELEASE.STATE.as("release_state")));
             agencyIdList.setReleaseNum(e.get(RELEASE.RELEASE_NUM));
-            agencyIdList.setReleaseId(e.get(RELEASE.RELEASE_ID).toBigInteger());
+            agencyIdList.setReleaseId(e.get(RELEASE.RELEASE_ID));
             agencyIdList.setRevisionNum(e.get(LOG.REVISION_NUM).toString());
             agencyIdList.setModulePath(e.get(MODULE.PATH));
             agencyIdList.setCreationTimestamp(Date.from(e.get(AGENCY_ID_LIST.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
@@ -158,7 +156,7 @@ public class JooqAgencyIdListReadRepository
 
         ULong defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext().selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId())))
                 .fetchOne();
 
         if (defaultModuleSetRelease != null) {
@@ -196,7 +194,7 @@ public class JooqAgencyIdListReadRepository
     private Collection<Condition> getConditions(GetAgencyIdListListRequest request) {
         List<Condition> conditions = new ArrayList();
 
-        conditions.add(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
 
         if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), AGENCY_ID_LIST.NAME));

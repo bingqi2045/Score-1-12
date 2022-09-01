@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class NamespaceList {
 
-    private BigInteger namespaceId = BigInteger.ZERO;
+    private String namespaceId;
     private String uri;
     private String prefix;
     private String owner;

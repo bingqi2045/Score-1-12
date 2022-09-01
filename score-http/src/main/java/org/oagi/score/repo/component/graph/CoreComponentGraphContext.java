@@ -30,7 +30,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 public class CoreComponentGraphContext implements GraphContext {
 
     private DSLContext dslContext;
-    private ULong releaseId;
+    private String releaseId;
 
     private Map<ULong, AccManifest> accManifestMap;
     private Map<ULong, List<AccManifest>> accManifestMapByBasedAccManifestId;
@@ -55,7 +55,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevAccManifestId;
     }
 
@@ -68,7 +68,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevAsccpManifestId;
     }
 
@@ -82,7 +82,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevBccpManifestId;
     }
 
@@ -96,7 +96,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private int cardinalityMax;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevAsccManifestId;
 
         private BigInteger seqKeyId;
@@ -115,7 +115,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private BCCEntityType entityType;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevBccManifestId;
 
         private BigInteger seqKeyId;
@@ -132,7 +132,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String den;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevDtManifestId;
     }
 
@@ -149,13 +149,13 @@ public class CoreComponentGraphContext implements GraphContext {
         private String representationTerm;
         private String State;
         private Byte isDeprecated;
-        private ULong releaseId;
+        private String releaseId;
         private ULong prevDtScManifestId;
     }
 
-    public CoreComponentGraphContext(DSLContext dslContext, BigInteger releaseId) {
+    public CoreComponentGraphContext(DSLContext dslContext, String releaseId) {
         this.dslContext = dslContext;
-        this.releaseId = ULong.valueOf(releaseId);
+        this.releaseId = releaseId;
 
         List<AccManifest> accManifestList = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                 ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE, ACC.GUID,

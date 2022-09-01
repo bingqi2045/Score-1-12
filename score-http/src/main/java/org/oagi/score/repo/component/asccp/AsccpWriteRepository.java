@@ -10,6 +10,7 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
@@ -57,7 +58,7 @@ public class AsccpWriteRepository {
     }
 
     public CreateAsccpRepositoryResponse createAsccp(CreateAsccpRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord roleOfAccManifest = dslContext.selectFrom(ACC_MANIFEST)
@@ -76,9 +77,7 @@ public class AsccpWriteRepository {
         asccp.setIsDeprecated((byte) 0);
         asccp.setIsNillable((byte) 0);
         asccp.setType(request.getInitialType().name());
-        if (request.getNamespaceId() != null) {
-            asccp.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
-        }
+        asccp.setNamespaceId(request.getNamespaceId());
         asccp.setCreatedBy(userId);
         asccp.setLastUpdatedBy(userId);
         asccp.setOwnerUserId(userId);
@@ -94,7 +93,7 @@ public class AsccpWriteRepository {
         AsccpManifestRecord asccpManifest = new AsccpManifestRecord();
         asccpManifest.setAsccpId(asccp.getAsccpId());
         asccpManifest.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
-        asccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        asccpManifest.setReleaseId(request.getReleaseId());
         asccpManifest = dslContext.insertInto(ASCCP_MANIFEST)
                 .set(asccpManifest)
                 .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne();
@@ -137,8 +136,8 @@ public class AsccpWriteRepository {
     }
 
     public ReviseAsccpRepositoryResponse reviseAsccp(ReviseAsccpRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -161,12 +160,12 @@ public class AsccpWriteRepository {
             }
         }
 
-        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
+        String workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
-        ULong targetReleaseId = asccpManifestRecord.getReleaseId();
+        String targetReleaseId = asccpManifestRecord.getReleaseId();
         if (user.isDeveloper()) {
             if (!targetReleaseId.equals(workingReleaseId)) {
                 throw new IllegalArgumentException("It only allows to revise the component in 'Working' branch for developers.");
@@ -236,8 +235,8 @@ public class AsccpWriteRepository {
     }
 
     public UpdateAsccpPropertiesRepositoryResponse updateAsccpProperties(UpdateAsccpPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -288,12 +287,12 @@ public class AsccpWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
         }
-        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+        if (!StringUtils.hasLength(request.getNamespaceId())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .setNull(ASCCP.NAMESPACE_ID);
         } else {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(ASCCP.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+                    .set(ASCCP.NAMESPACE_ID, request.getNamespaceId());
         }
 
         if (moreStep != null) {
@@ -348,8 +347,8 @@ public class AsccpWriteRepository {
     }
 
     public UpdateAsccpPropertiesRepositoryResponse updateAsccpNamespace(UpdateAsccpPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -365,12 +364,12 @@ public class AsccpWriteRepository {
         // update asccp record.
         UpdateSetFirstStep<AsccpRecord> firstStep = dslContext.update(ASCCP);
         UpdateSetMoreStep<AsccpRecord> moreStep = null;
-        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+        if (!StringUtils.hasLength(request.getNamespaceId())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .setNull(ASCCP.NAMESPACE_ID);
         } else {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(ASCCP.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+                    .set(ASCCP.NAMESPACE_ID, request.getNamespaceId());
         }
 
         if (moreStep != null) {
@@ -399,8 +398,8 @@ public class AsccpWriteRepository {
     }
 
     public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpBdt(UpdateAsccpRoleOfAccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -452,8 +451,8 @@ public class AsccpWriteRepository {
     }
 
     public UpdateAsccpStateRepositoryResponse updateAsccpState(UpdateAsccpStateRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -513,8 +512,8 @@ public class AsccpWriteRepository {
     }
 
     public DeleteAsccpRepositoryResponse deleteAsccp(DeleteAsccpRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -557,8 +556,8 @@ public class AsccpWriteRepository {
     }
 
     public PurgeAsccpRepositoryResponse purgeAsccp(PurgeAsccpRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -585,7 +584,7 @@ public class AsccpWriteRepository {
         }
 
         // discard Log
-        ULong logId = asccpManifestRecord.getLogId();
+        String logId = asccpManifestRecord.getLogId();
         dslContext.update(ASCCP_MANIFEST)
                 .setNull(ASCCP_MANIFEST.LOG_ID)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
@@ -619,8 +618,8 @@ public class AsccpWriteRepository {
     }
 
     public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -659,8 +658,8 @@ public class AsccpWriteRepository {
     }
 
     public UpdateAsccpOwnerRepositoryResponse updateAsccpOwner(UpdateAsccpOwnerRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -681,7 +680,7 @@ public class AsccpWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        asccpRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        asccpRecord.setOwnerUserId(request.getOwnerId());
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.update(ASCCP.OWNER_USER_ID, ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
@@ -700,7 +699,7 @@ public class AsccpWriteRepository {
     }
 
     public CancelRevisionAsccpRepositoryResponse cancelRevisionAsccp(CancelRevisionAsccpRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -773,7 +772,7 @@ public class AsccpWriteRepository {
             throw new IllegalArgumentException("There is no change to be reset.");
         }
 
-        List<ULong> deleteLogTargets = new ArrayList<>();
+        List<String> deleteLogTargets = new ArrayList<>();
 
         while (cursorLog.getPrevLogId() != null) {
             if (!cursorLog.getRevisionNum().equals(logNum)) {
@@ -810,7 +809,7 @@ public class AsccpWriteRepository {
         asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
         asccpRecord.setDefinition(serializer.getSnapshotString(snapshot.get("definition")));
         asccpRecord.setDefinitionSource(serializer.getSnapshotString(snapshot.get("definitionSource")));
-        asccpRecord.setNamespaceId(serializer.getSnapshotId(snapshot.get("namespaceId")));
+        asccpRecord.setNamespaceId(serializer.getSnapshotString(snapshot.get("namespaceId")));
         asccpRecord.setIsDeprecated(serializer.getSnapshotByte(snapshot.get("deprecated")));
         asccpRecord.setIsNillable(serializer.getSnapshotByte(snapshot.get("nillable")));
         asccpRecord.setReusableIndicator(serializer.getSnapshotByte(snapshot.get("reusable")));

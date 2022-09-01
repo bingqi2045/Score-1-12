@@ -46,7 +46,7 @@ public class ReleaseController {
 
     @RequestMapping(value = "/simple_release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public SimpleRelease getSimpleRelease(@PathVariable("id") BigInteger releaseId) {
+    public SimpleRelease getSimpleRelease(@PathVariable("id") String releaseId) {
         return service.getSimpleReleaseByReleaseId(releaseId);
     }
 
@@ -126,7 +126,7 @@ public class ReleaseController {
     @RequestMapping(value = "/release/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("id") BigInteger releaseId,
+                              @PathVariable("id") String releaseId,
                               @RequestBody ReleaseDetail releaseDetail) {
         releaseDetail.setReleaseId(releaseId);
         service.updateRelease(user, releaseDetail);
@@ -135,36 +135,36 @@ public class ReleaseController {
     @RequestMapping(value = "/release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ReleaseDetail getReleaseDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                          @PathVariable("id") BigInteger releaseId) {
+                                          @PathVariable("id") String releaseId) {
         return service.getReleaseDetail(user, releaseId);
     }
 
     @RequestMapping(value = "/release/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void discard(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                        @PathVariable("id") BigInteger releaseId) {
+                        @PathVariable("id") String releaseId) {
         service.discard(user, Arrays.asList(releaseId));
     }
 
     @RequestMapping(value = "/release", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void discard(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                        @RequestParam(name = "releaseIds") String releaseIds) {
+    public void discards(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                         @RequestParam(name = "releaseIds") String releaseIds) {
         service.discard(user, Arrays.asList(releaseIds.split(",")).stream()
-                .map(e -> new BigInteger(e)).collect(Collectors.toList()));
+                .collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "/release/{id}/assignable", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AssignComponents assignComponents(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("id") BigInteger releaseId) {
+                                             @PathVariable("id") String releaseId) {
         return service.getAssignComponents(releaseId);
     }
 
     @RequestMapping(value = "/release/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void transitState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                             @PathVariable("id") BigInteger releaseId,
+                             @PathVariable("id") String releaseId,
                              @RequestBody TransitStateRequest request) {
         request.setReleaseId(releaseId);
         service.transitState(user, request);
@@ -180,7 +180,7 @@ public class ReleaseController {
     @RequestMapping(value = "/release/{id}/draft", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ReleaseValidationResponse createDraft(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                 @PathVariable("id") BigInteger releaseId,
+                                                 @PathVariable("id") String releaseId,
                                                  @RequestBody ReleaseValidationRequest request) {
         return service.createDraft(user, releaseId, request);
     }
@@ -188,7 +188,7 @@ public class ReleaseController {
     @RequestMapping(value = "/release/{id}/migration", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<InputStreamResource> createMigrationData(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                                   @PathVariable("id") BigInteger releaseId) throws IOException {
+                                                                   @PathVariable("id") String releaseId) throws IOException {
 
         File output = migrationService.makeMigrationDataFile(user, releaseId);
 

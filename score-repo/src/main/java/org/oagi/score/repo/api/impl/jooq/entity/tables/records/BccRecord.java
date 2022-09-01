@@ -244,7 +244,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * This column never change between the history and the current record. The
      * history record should have the same value as that of its current record.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(11, value);
     }
 
@@ -255,8 +255,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * This column never change between the history and the current record. The
      * history record should have the same value as that of its current record.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(11);
+    public String getCreatedBy() {
+        return (String) get(11);
     }
 
     /**
@@ -267,7 +267,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(12, value);
     }
 
@@ -279,8 +279,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(12);
+    public String getOwnerUserId() {
+        return (String) get(12);
     }
 
     /**
@@ -290,7 +290,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(13, value);
     }
 
@@ -301,8 +301,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(13);
+    public String getLastUpdatedBy() {
+        return (String) get(13);
     }
 
     /**
@@ -520,7 +520,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         setBccId(bccId);

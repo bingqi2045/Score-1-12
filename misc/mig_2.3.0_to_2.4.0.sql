@@ -272,14 +272,14 @@ CREATE PROCEDURE `update_uuid`(IN table_name VARCHAR(100))
 BEGIN
     DECLARE currentRow INT;
 
-    SET @sql = CONCAT('SELECT COUNT(*) INTO @rowCount FROM ', table_name);
+    SET @sql = CONCAT('SELECT COUNT(*) INTO @rowCount FROM `', table_name, '`');
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
     SET currentRow = 0;
 
     updateLoop: WHILE (currentRow < @rowCount) DO
-            SET @sql = CONCAT('UPDATE ', table_name, ' SET ', table_name, '_uuid = uuid_v4s() WHERE ', table_name, '_uuid IS NULL LIMIT 1');
+            SET @sql = CONCAT('UPDATE `', table_name, '` SET `', table_name, '_uuid` = uuid_v4s() WHERE `', table_name, '_uuid` IS NULL LIMIT 1');
             PREPARE stmt FROM @sql;
             EXECUTE stmt;
             DEALLOCATE PREPARE stmt;
@@ -287,6 +287,1411 @@ BEGIN
         END WHILE updateLoop;
 END//
 DELIMITER ;
+
+-- -------------------------------
+-- Change 'app_user_id' TO UUID --
+-- -------------------------------
+ALTER TABLE `app_user` ADD COLUMN `app_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `app_user_id`;
+CALL update_uuid('app_user');
+
+UPDATE `app_user` SET `app_user_uuid` = '3291889a-0dad-4262-b2f1-4ec4754c41cd' WHERE `login_id` = 'sysadm';
+
+ALTER TABLE `abie`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `abie` SET `abie`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `abie`.`created_by`;
+UPDATE `app_user`, `abie` SET `abie`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `abie`.`last_updated_by`;
+
+ALTER TABLE `acc`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `acc` SET `acc`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `acc`.`created_by`;
+UPDATE `app_user`, `acc` SET `acc`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `acc`.`owner_user_id`;
+UPDATE `app_user`, `acc` SET `acc`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `acc`.`last_updated_by`;
+
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `agency_id_list` SET `agency_id_list`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list`.`created_by`;
+UPDATE `app_user`, `agency_id_list` SET `agency_id_list`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list`.`owner_user_id`;
+UPDATE `app_user`, `agency_id_list` SET `agency_id_list`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list`.`last_updated_by`;
+
+ALTER TABLE `agency_id_list_value`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list value.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list value.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `agency_id_list_value` SET `agency_id_list_value`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list_value`.`created_by`;
+UPDATE `app_user`, `agency_id_list_value` SET `agency_id_list_value`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list_value`.`owner_user_id`;
+UPDATE `app_user`, `agency_id_list_value` SET `agency_id_list_value`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `agency_id_list_value`.`last_updated_by`;
+
+ALTER TABLE `app_oauth2_user`
+    ADD COLUMN `app_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A reference to the record in `app_user`. If it is not set, this is treated as a pending record.' AFTER `app_user_id`;
+
+UPDATE `app_user`, `app_oauth2_user` SET `app_oauth2_user`.`app_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `app_oauth2_user`.`app_user_id`;
+
+ALTER TABLE `asbie`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who has last updated the ASBIE record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `asbie` SET `asbie`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbie`.`created_by`;
+UPDATE `app_user`, `asbie` SET `asbie`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbie`.`last_updated_by`;
+
+ALTER TABLE `asbie_bizterm`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the ASBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the ASBIE_BIZTERM record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `asbie_bizterm` SET `asbie_bizterm`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbie_bizterm`.`created_by`;
+UPDATE `app_user`, `asbie_bizterm` SET `asbie_bizterm`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbie_bizterm`.`last_updated_by`;
+
+ALTER TABLE `asbiep`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the ASBIEP record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `asbiep` SET `asbiep`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbiep`.`created_by`;
+UPDATE `app_user`, `asbiep` SET `asbiep`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asbiep`.`last_updated_by`;
+
+ALTER TABLE `ascc`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `ascc` SET `ascc`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ascc`.`created_by`;
+UPDATE `app_user`, `ascc` SET `ascc`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ascc`.`owner_user_id`;
+UPDATE `app_user`, `ascc` SET `ascc`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ascc`.`last_updated_by`;
+
+ALTER TABLE `ascc_bizterm`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the ASCC_BIZTERM record. The creator of the ASCC_BIZTERM is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the ASCC_BIZTERM record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `ascc_bizterm` SET `ascc_bizterm`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ascc_bizterm`.`created_by`;
+UPDATE `app_user`, `ascc_bizterm` SET `ascc_bizterm`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ascc_bizterm`.`last_updated_by`;
+
+ALTER TABLE `asccp`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `asccp` SET `asccp`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asccp`.`created_by`;
+UPDATE `app_user`, `asccp` SET `asccp`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asccp`.`owner_user_id`;
+UPDATE `app_user`, `asccp` SET `asccp`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `asccp`.`last_updated_by`;
+
+ALTER TABLE `bbie`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who has last updated the BBIE record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bbie` SET `bbie`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie`.`created_by`;
+UPDATE `app_user`, `bbie` SET `bbie`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie`.`last_updated_by`;
+
+ALTER TABLE `bbie_bizterm`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the BBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the BBIE_BIZTERM record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bbie_bizterm` SET `bbie_bizterm`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie_bizterm`.`created_by`;
+UPDATE `app_user`, `bbie_bizterm` SET `bbie_bizterm`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie_bizterm`.`last_updated_by`;
+
+ALTER TABLE `bbie_sc`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who has last updated the BBIE_SC record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bbie_sc` SET `bbie_sc`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie_sc`.`created_by`;
+UPDATE `app_user`, `bbie_sc` SET `bbie_sc`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbie_sc`.`last_updated_by`;
+
+ALTER TABLE `bbiep`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the BBIEP. The creator of the BBIEP is also its owner by default. BBIEPs created as children of another ABIE have the same CREATED_BY'',' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the BBIEP record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bbiep` SET `bbiep`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbiep`.`created_by`;
+UPDATE `app_user`, `bbiep` SET `bbiep`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bbiep`.`last_updated_by`;
+
+ALTER TABLE `bcc`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bcc` SET `bcc`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bcc`.`created_by`;
+UPDATE `app_user`, `bcc` SET `bcc`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bcc`.`owner_user_id`;
+UPDATE `app_user`, `bcc` SET `bcc`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bcc`.`last_updated_by`;
+
+ALTER TABLE `bcc_bizterm`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the BCC_BIZTERM record. The creator of the BCC_BIZTERM is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the BCC_BIZTERM record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bcc_bizterm` SET `bcc_bizterm`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bcc_bizterm`.`created_by`;
+UPDATE `app_user`, `bcc_bizterm` SET `bcc_bizterm`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bcc_bizterm`.`last_updated_by`;
+
+ALTER TABLE `bccp`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `bccp` SET `bccp`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bccp`.`created_by`;
+UPDATE `app_user`, `bccp` SET `bccp`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bccp`.`owner_user_id`;
+UPDATE `app_user`, `bccp` SET `bccp`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `bccp`.`last_updated_by`;
+
+ALTER TABLE `biz_ctx`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table  referring to the last user who has updated the business context.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `biz_ctx` SET `biz_ctx`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `biz_ctx`.`created_by`;
+UPDATE `app_user`, `biz_ctx` SET `biz_ctx`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `biz_ctx`.`last_updated_by`;
+
+ALTER TABLE `business_term`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the user who creates the business term. The creator of the business term is also its owner by default.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated the business term record. This may be the user who is in the same group as the creator.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `business_term` SET `business_term`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `business_term`.`created_by`;
+UPDATE `app_user`, `business_term` SET `business_term`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `business_term`.`last_updated_by`;
+
+ALTER TABLE `code_list`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `code_list` SET `code_list`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list`.`created_by`;
+UPDATE `app_user`, `code_list` SET `code_list`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list`.`owner_user_id`;
+UPDATE `app_user`, `code_list` SET `code_list`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list`.`last_updated_by`;
+
+ALTER TABLE `code_list_value`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list value.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list value.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `code_list_value` SET `code_list_value`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list_value`.`created_by`;
+UPDATE `app_user`, `code_list_value` SET `code_list_value`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list_value`.`owner_user_id`;
+UPDATE `app_user`, `code_list_value` SET `code_list_value`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `code_list_value`.`last_updated_by`;
+
+ALTER TABLE `comment`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `created_by`;
+
+UPDATE `app_user`, `comment` SET `comment`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `comment`.`created_by`;
+
+ALTER TABLE `ctx_category`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context category.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `ctx_category` SET `ctx_category`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ctx_category`.`created_by`;
+UPDATE `app_user`, `ctx_category` SET `ctx_category`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ctx_category`.`last_updated_by`;
+
+ALTER TABLE `ctx_scheme`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this context scheme.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `ctx_scheme` SET `ctx_scheme`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ctx_scheme`.`created_by`;
+UPDATE `app_user`, `ctx_scheme` SET `ctx_scheme`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `ctx_scheme`.`last_updated_by`;
+
+ALTER TABLE `dt`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this DT.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `dt` SET `dt`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt`.`created_by`;
+UPDATE `app_user`, `dt` SET `dt`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt`.`owner_user_id`;
+UPDATE `app_user`, `dt` SET `dt`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt`.`last_updated_by`;
+
+ALTER TABLE `dt_sc`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the DT_SC.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the DT_SC.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `dt_sc` SET `dt_sc`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt_sc`.`created_by`;
+UPDATE `app_user`, `dt_sc` SET `dt_sc`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt_sc`.`owner_user_id`;
+UPDATE `app_user`, `dt_sc` SET `dt_sc`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `dt_sc`.`last_updated_by`;
+
+ALTER TABLE `exception`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.' AFTER `created_by`;
+
+UPDATE `app_user`, `exception` SET `exception`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `exception`.`created_by`;
+
+ALTER TABLE `log`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `created_by`;
+
+UPDATE `app_user`, `log` SET `log`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `log`.`created_by`;
+
+ALTER TABLE `message`
+    ADD COLUMN `sender_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The user who created this record.' AFTER `sender_id`,
+    ADD COLUMN `recipient_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The user who is a target to possess this record.' AFTER `recipient_id`;
+
+UPDATE `app_user`, `message` SET `message`.`sender_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `message`.`sender_id`;
+UPDATE `app_user`, `message` SET `message`.`recipient_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `message`.`recipient_id`;
+
+ALTER TABLE `module`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module` SET `module`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module`.`created_by`;
+UPDATE `app_user`, `module` SET `module`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module`.`owner_user_id`;
+UPDATE `app_user`, `module` SET `module`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module`.`last_updated_by`;
+
+ALTER TABLE `module_acc_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_acc_manifest` SET `module_acc_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_acc_manifest`.`created_by`;
+UPDATE `app_user`, `module_acc_manifest` SET `module_acc_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_acc_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_agency_id_list_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_agency_id_list_manifest` SET `module_agency_id_list_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_agency_id_list_manifest`.`created_by`;
+UPDATE `app_user`, `module_agency_id_list_manifest` SET `module_agency_id_list_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_agency_id_list_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_asccp_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_asccp_manifest` SET `module_asccp_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_asccp_manifest`.`created_by`;
+UPDATE `app_user`, `module_asccp_manifest` SET `module_asccp_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_asccp_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_bccp_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_bccp_manifest` SET `module_bccp_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_bccp_manifest`.`created_by`;
+UPDATE `app_user`, `module_bccp_manifest` SET `module_bccp_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_bccp_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_blob_content_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_blob_content_manifest` SET `module_blob_content_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_blob_content_manifest`.`created_by`;
+UPDATE `app_user`, `module_blob_content_manifest` SET `module_blob_content_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_blob_content_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_code_list_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_code_list_manifest` SET `module_code_list_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_code_list_manifest`.`created_by`;
+UPDATE `app_user`, `module_code_list_manifest` SET `module_code_list_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_code_list_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_dt_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_dt_manifest` SET `module_dt_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_dt_manifest`.`created_by`;
+UPDATE `app_user`, `module_dt_manifest` SET `module_dt_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_dt_manifest`.`last_updated_by`;
+
+ALTER TABLE `module_set`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_set` SET `module_set`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_set`.`created_by`;
+UPDATE `app_user`, `module_set` SET `module_set`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_set`.`last_updated_by`;
+
+ALTER TABLE `module_set_release`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_set_release` SET `module_set_release`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_set_release`.`created_by`;
+UPDATE `app_user`, `module_set_release` SET `module_set_release`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_set_release`.`last_updated_by`;
+
+ALTER TABLE `module_xbt_manifest`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `module_xbt_manifest` SET `module_xbt_manifest`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_xbt_manifest`.`created_by`;
+UPDATE `app_user`, `module_xbt_manifest` SET `module_xbt_manifest`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `module_xbt_manifest`.`last_updated_by`;
+
+ALTER TABLE `namespace`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the namespace.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `namespace` SET `namespace`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `namespace`.`created_by`;
+UPDATE `app_user`, `namespace` SET `namespace`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `namespace`.`owner_user_id`;
+UPDATE `app_user`, `namespace` SET `namespace`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `namespace`.`last_updated_by`;
+
+ALTER TABLE `release`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the namespace.' AFTER `created_by`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `release` SET `release`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `release`.`created_by`;
+UPDATE `app_user`, `release` SET `release`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `release`.`last_updated_by`;
+
+ALTER TABLE `top_level_asbiep`
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key referring to the last user who has updated any related bie records.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `top_level_asbiep` SET `top_level_asbiep`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `top_level_asbiep`.`owner_user_id`;
+UPDATE `app_user`, `top_level_asbiep` SET `top_level_asbiep`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `top_level_asbiep`.`last_updated_by`;
+
+ALTER TABLE `xbt`
+    ADD COLUMN `created_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the xbt.' AFTER `created_by`,
+    ADD COLUMN `owner_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.' AFTER `owner_user_id`,
+    ADD COLUMN `last_updated_by_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.' AFTER `last_updated_by`;
+
+UPDATE `app_user`, `xbt` SET `xbt`.`created_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `xbt`.`created_by`;
+UPDATE `app_user`, `xbt` SET `xbt`.`owner_user_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `xbt`.`owner_user_id`;
+UPDATE `app_user`, `xbt` SET `xbt`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
+WHERE `app_user`.`app_user_id` = `xbt`.`last_updated_by`;
+
+-- Drop old `app_user_id` columns
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_created_by_fk`;
+ALTER TABLE `abie` DROP COLUMN `created_by`;
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_last_updated_by_fk`;
+ALTER TABLE `abie` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_created_by_fk`;
+ALTER TABLE `acc` DROP COLUMN `created_by`;
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_last_updated_by_fk`;
+ALTER TABLE `acc` DROP COLUMN `last_updated_by`;
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_owner_user_id_fk`;
+ALTER TABLE `acc` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_created_by_fk`;
+ALTER TABLE `agency_id_list` DROP COLUMN `created_by`;
+ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_last_updated_by_fk`;
+ALTER TABLE `agency_id_list` DROP COLUMN `last_updated_by`;
+ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_owner_user_id_fk`;
+ALTER TABLE `agency_id_list` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `agency_id_list_value` DROP FOREIGN KEY `agency_id_list_value_created_by_fk`;
+ALTER TABLE `agency_id_list_value` DROP COLUMN `created_by`;
+ALTER TABLE `agency_id_list_value` DROP FOREIGN KEY `agency_id_list_value_last_updated_by_fk`;
+ALTER TABLE `agency_id_list_value` DROP COLUMN `last_updated_by`;
+ALTER TABLE `agency_id_list_value` DROP FOREIGN KEY `agency_id_list_value_owner_user_id_fk`;
+ALTER TABLE `agency_id_list_value` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `app_oauth2_user` DROP FOREIGN KEY `app_oauth2_user_app_user_id_fk`;
+ALTER TABLE `app_oauth2_user` DROP COLUMN `app_user_id`;
+
+ALTER TABLE `asbie` DROP FOREIGN KEY `asbie_created_by_fk`;
+ALTER TABLE `asbie` DROP COLUMN `created_by`;
+ALTER TABLE `asbie` DROP FOREIGN KEY `asbie_last_updated_by_fk`;
+ALTER TABLE `asbie` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `asbie_bizterm` DROP COLUMN `created_by`;
+ALTER TABLE `asbie_bizterm` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `asbiep` DROP FOREIGN KEY `asbiep_created_by_fk`;
+ALTER TABLE `asbiep` DROP COLUMN `created_by`;
+ALTER TABLE `asbiep` DROP FOREIGN KEY `asbiep_last_updated_by_fk`;
+ALTER TABLE `asbiep` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_created_by_fk`;
+ALTER TABLE `ascc` DROP COLUMN `created_by`;
+ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_last_updated_by_fk`;
+ALTER TABLE `ascc` DROP COLUMN `last_updated_by`;
+ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_owner_user_id_fk`;
+ALTER TABLE `ascc` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `ascc_bizterm` DROP COLUMN `created_by`;
+ALTER TABLE `ascc_bizterm` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_created_by_fk`;
+ALTER TABLE `asccp` DROP COLUMN `created_by`;
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_last_updated_by_fk`;
+ALTER TABLE `asccp` DROP COLUMN `last_updated_by`;
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_owner_user_id_fk`;
+ALTER TABLE `asccp` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_created_by_fk`;
+ALTER TABLE `bbie` DROP COLUMN `created_by`;
+ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_last_updated_by_fk`;
+ALTER TABLE `bbie` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `bbie_bizterm` DROP COLUMN `created_by`;
+ALTER TABLE `bbie_bizterm` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_created_by_fk`;
+ALTER TABLE `bbie_sc` DROP COLUMN `created_by`;
+ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_last_updated_by_fk`;
+ALTER TABLE `bbie_sc` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_created_by_fk`;
+ALTER TABLE `bbiep` DROP COLUMN `created_by`;
+ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_last_updated_by_fk`;
+ALTER TABLE `bbiep` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_created_by_fk`;
+ALTER TABLE `bcc` DROP COLUMN `created_by`;
+ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_last_updated_by_fk`;
+ALTER TABLE `bcc` DROP COLUMN `last_updated_by`;
+ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_owner_user_id_fk`;
+ALTER TABLE `bcc` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `bcc_bizterm` DROP COLUMN `created_by`;
+ALTER TABLE `bcc_bizterm` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_created_by_fk`;
+ALTER TABLE `bccp` DROP COLUMN `created_by`;
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_last_updated_by_fk`;
+ALTER TABLE `bccp` DROP COLUMN `last_updated_by`;
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_owner_user_id_fk`;
+ALTER TABLE `bccp` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `biz_ctx` DROP FOREIGN KEY `biz_ctx_created_by_fk`;
+ALTER TABLE `biz_ctx` DROP COLUMN `created_by`;
+ALTER TABLE `biz_ctx` DROP FOREIGN KEY `biz_ctx_last_updated_by_fk`;
+ALTER TABLE `biz_ctx` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `business_term` DROP COLUMN `created_by`;
+ALTER TABLE `business_term` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_created_by_fk`;
+ALTER TABLE `code_list` DROP COLUMN `created_by`;
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_last_updated_by_fk`;
+ALTER TABLE `code_list` DROP COLUMN `last_updated_by`;
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_owner_user_id_fk`;
+ALTER TABLE `code_list` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `code_list_value` DROP FOREIGN KEY `code_list_value_created_by_fk`;
+ALTER TABLE `code_list_value` DROP COLUMN `created_by`;
+ALTER TABLE `code_list_value` DROP FOREIGN KEY `code_list_value_last_updated_by_fk`;
+ALTER TABLE `code_list_value` DROP COLUMN `last_updated_by`;
+ALTER TABLE `code_list_value` DROP FOREIGN KEY `code_list_value_owner_user_id_fk`;
+ALTER TABLE `code_list_value` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `comment` DROP FOREIGN KEY `comment_created_by_fk`;
+ALTER TABLE `comment` DROP COLUMN `created_by`;
+
+ALTER TABLE `ctx_category` DROP FOREIGN KEY `ctx_category_created_by_fk`;
+ALTER TABLE `ctx_category` DROP COLUMN `created_by`;
+ALTER TABLE `ctx_category` DROP FOREIGN KEY `ctx_category_last_updated_by_fk`;
+ALTER TABLE `ctx_category` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `ctx_scheme` DROP FOREIGN KEY `ctx_scheme_created_by_fk`;
+ALTER TABLE `ctx_scheme` DROP COLUMN `created_by`;
+ALTER TABLE `ctx_scheme` DROP FOREIGN KEY `ctx_scheme_last_updated_by_fk`;
+ALTER TABLE `ctx_scheme` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_created_by_fk`;
+ALTER TABLE `dt` DROP COLUMN `created_by`;
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_last_updated_by_fk`;
+ALTER TABLE `dt` DROP COLUMN `last_updated_by`;
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_owner_user_id_fk`;
+ALTER TABLE `dt` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `dt_sc` DROP FOREIGN KEY `dt_sc_created_by_fk`;
+ALTER TABLE `dt_sc` DROP COLUMN `created_by`;
+ALTER TABLE `dt_sc` DROP FOREIGN KEY `dt_sc_last_updated_by_fk`;
+ALTER TABLE `dt_sc` DROP COLUMN `last_updated_by`;
+ALTER TABLE `dt_sc` DROP FOREIGN KEY `dt_sc_owner_user_id_fk`;
+ALTER TABLE `dt_sc` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `exception` DROP FOREIGN KEY `exception_created_by_fk`;
+ALTER TABLE `exception` DROP COLUMN `created_by`;
+
+ALTER TABLE `log` DROP FOREIGN KEY `log_created_by_fk`;
+ALTER TABLE `log` DROP COLUMN `created_by`;
+
+ALTER TABLE `message` DROP FOREIGN KEY `message_sender_id_fk`;
+ALTER TABLE `message` DROP COLUMN `sender_id`;
+ALTER TABLE `message` DROP FOREIGN KEY `message_recipient_id_fk`;
+ALTER TABLE `message` DROP COLUMN `recipient_id`;
+
+ALTER TABLE `module` DROP FOREIGN KEY `module_created_by_fk`;
+ALTER TABLE `module` DROP COLUMN `created_by`;
+ALTER TABLE `module` DROP FOREIGN KEY `module_last_updated_by_fk`;
+ALTER TABLE `module` DROP COLUMN `last_updated_by`;
+ALTER TABLE `module` DROP FOREIGN KEY `module_owner_user_id_fk`;
+ALTER TABLE `module` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `module_acc_manifest` DROP FOREIGN KEY `module_acc_manifest_created_by_fk`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_acc_manifest` DROP FOREIGN KEY `module_acc_manifest_last_updated_by_fk`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_agency_id_list_manifest` DROP FOREIGN KEY `module_agency_id_list_manifest_created_by_fk`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_agency_id_list_manifest` DROP FOREIGN KEY `module_agency_id_list_manifest_last_updated_by_fk`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_asccp_manifest` DROP FOREIGN KEY `module_asccp_manifest_created_by_fk`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_asccp_manifest` DROP FOREIGN KEY `module_asccp_manifest_last_updated_by_fk`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_bccp_manifest` DROP FOREIGN KEY `module_bccp_manifest_created_by_fk`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_bccp_manifest` DROP FOREIGN KEY `module_bccp_manifest_last_updated_by_fk`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_blob_content_manifest` DROP FOREIGN KEY `module_blob_content_manifest_created_by_fk`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_blob_content_manifest` DROP FOREIGN KEY `module_blob_content_manifest_last_updated_by_fk`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_code_list_manifest` DROP FOREIGN KEY `module_code_list_manifest_created_by_fk`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_code_list_manifest` DROP FOREIGN KEY `module_code_list_manifest_last_updated_by_fk`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_dt_manifest` DROP FOREIGN KEY `module_dt_manifest_created_by_fk`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_dt_manifest` DROP FOREIGN KEY `module_dt_manifest_last_updated_by_fk`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_set` DROP FOREIGN KEY `module_set_created_by_fk`;
+ALTER TABLE `module_set` DROP COLUMN `created_by`;
+ALTER TABLE `module_set` DROP FOREIGN KEY `module_set_last_updated_by_fk`;
+ALTER TABLE `module_set` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_assignment_created_by_fk`;
+ALTER TABLE `module_set_release` DROP COLUMN `created_by`;
+ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_assignment_last_updated_by_fk`;
+ALTER TABLE `module_set_release` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_created_by_fk`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `created_by`;
+ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_last_updated_by_fk`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `namespace` DROP FOREIGN KEY `namespace_created_by_fk`;
+ALTER TABLE `namespace` DROP COLUMN `created_by`;
+ALTER TABLE `namespace` DROP FOREIGN KEY `namespace_last_updated_by_fk`;
+ALTER TABLE `namespace` DROP COLUMN `last_updated_by`;
+ALTER TABLE `namespace` DROP FOREIGN KEY `namespace_owner_user_id_fk`;
+ALTER TABLE `namespace` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `release` DROP FOREIGN KEY `release_created_by_fk`;
+ALTER TABLE `release` DROP COLUMN `created_by`;
+ALTER TABLE `release` DROP FOREIGN KEY `release_last_updated_by_fk`;
+ALTER TABLE `release` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_owner_user_id_fk`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `owner_user_id`;
+ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_last_updated_by_fk`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `last_updated_by`;
+
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_created_by_fk`;
+ALTER TABLE `xbt` DROP COLUMN `created_by`;
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_last_updated_by_fk`;
+ALTER TABLE `xbt` DROP COLUMN `last_updated_by`;
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_owner_user_id_fk`;
+ALTER TABLE `xbt` DROP COLUMN `owner_user_id`;
+
+ALTER TABLE `app_user` DROP COLUMN `app_user_id`;
+
+-- Rename `app_user_uuid` TO `app_user_id`
+ALTER TABLE `app_user` CHANGE `app_user_uuid` `app_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `abie`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `acc`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `agency_id_list`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
+
+ALTER TABLE `agency_id_list_value`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list value.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list value.';
+
+ALTER TABLE `app_oauth2_user`
+    CHANGE `app_user_uuid` `app_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A reference to the record in `app_user`. If it is not set, this is treated as a pending record.';
+
+ALTER TABLE `asbie`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who has last updated the ASBIE record.';
+
+ALTER TABLE `asbie_bizterm`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the ASBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the ASBIE_BIZTERM record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `asbiep`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the ASBIEP record.';
+
+ALTER TABLE `ascc`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `ascc_bizterm`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the ASCC_BIZTERM record. The creator of the ASCC_BIZTERM is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the ASCC_BIZTERM record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `asccp`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `bbie`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who has last updated the BBIE record.';
+
+ALTER TABLE `bbie_bizterm`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the BBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the BBIE_BIZTERM record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `bbie_sc`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who has last updated the BBIE_SC record.';
+
+ALTER TABLE `bbiep`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the BBIEP. The creator of the BBIEP is also its owner by default. BBIEPs created as children of another ABIE have the same CREATED_BY'',',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the BBIEP record.';
+
+ALTER TABLE `bcc`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `bcc_bizterm`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the BCC_BIZTERM record. The creator of the BCC_BIZTERM is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the BCC_BIZTERM record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `bccp`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `biz_ctx`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the user who creates the entity.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table  referring to the last user who has updated the business context.';
+
+ALTER TABLE `business_term`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the user who creates the business term. The creator of the business term is also its owner by default.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated the business term record. This may be the user who is in the same group as the creator.';
+
+ALTER TABLE `code_list`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.';
+
+ALTER TABLE `code_list_value`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list value.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list value.';
+
+ALTER TABLE `comment`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL;
+
+ALTER TABLE `ctx_category`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context category.';
+
+ALTER TABLE `ctx_scheme`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this context scheme.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.';
+
+ALTER TABLE `dt`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this DT.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `dt_sc`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the DT_SC.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the DT_SC.';
+
+ALTER TABLE `exception`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.';
+
+ALTER TABLE `log`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL;
+
+ALTER TABLE `message`
+    CHANGE `sender_uuid` `sender_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The user who created this record.',
+    CHANGE `recipient_uuid` `recipient_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The user who is a target to possess this record.';
+
+ALTER TABLE `module`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).';
+
+ALTER TABLE `module_acc_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_agency_id_list_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_asccp_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_bccp_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_blob_content_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_code_list_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_dt_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_set`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_set_release`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `module_xbt_manifest`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.';
+
+ALTER TABLE `namespace`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the namespace.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.';
+
+ALTER TABLE `release`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the namespace.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.';
+
+ALTER TABLE `top_level_asbiep`
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key referring to the last user who has updated any related bie records.';
+
+ALTER TABLE `xbt`
+    CHANGE `created_by_uuid` `created_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying user who created the xbt.',
+    CHANGE `owner_user_uuid` `owner_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who can update or delete the record.',
+    CHANGE `last_updated_by_uuid` `last_updated_by` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the APP_USER table identifying the user who last updated the record.';
+
+-- Add foreign key constraints
+ALTER TABLE `app_user` ADD PRIMARY KEY (`app_user_id`);
+ALTER TABLE `abie`
+    ADD CONSTRAINT `abie_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `abie_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `acc`
+    ADD CONSTRAINT `acc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `acc_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `acc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `agency_id_list`
+    ADD CONSTRAINT `agency_id_list_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `agency_id_list_value`
+    ADD CONSTRAINT `agency_id_list_value_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_value_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_value_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `app_oauth2_user`
+    ADD CONSTRAINT `app_oauth2_user_app_user_id_fk` FOREIGN KEY (`app_user_id`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `asbie`
+    ADD CONSTRAINT `asbie_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `asbie_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `asbie_bizterm`
+    ADD CONSTRAINT `asbie_bizterm_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `asbie_bizterm_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `asbiep`
+    ADD CONSTRAINT `asbiep_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `asbiep_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `ascc`
+    ADD CONSTRAINT `ascc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ascc_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ascc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `ascc_bizterm`
+    ADD CONSTRAINT `ascc_bizterm_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ascc_bizterm_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `asccp`
+    ADD CONSTRAINT `asccp_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `asccp_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `asccp_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bbie`
+    ADD CONSTRAINT `bbie_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bbie_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bbie_bizterm`
+    ADD CONSTRAINT `bbie_bizterm_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bbie_bizterm_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bbie_sc`
+    ADD CONSTRAINT `bbie_sc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bbie_sc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bbiep`
+    ADD CONSTRAINT `bbiep_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bbiep_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bcc`
+    ADD CONSTRAINT `bcc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bcc_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bcc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bcc_bizterm`
+    ADD CONSTRAINT `bcc_bizterm_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bcc_bizterm_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `bccp`
+    ADD CONSTRAINT `bccp_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bccp_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `bccp_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `biz_ctx`
+    ADD CONSTRAINT `biz_ctx_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `biz_ctx_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `business_term`
+    ADD CONSTRAINT `business_term_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `business_term_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `code_list`
+    ADD CONSTRAINT `code_list_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `code_list_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `code_list_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `code_list_value`
+    ADD CONSTRAINT `code_list_value_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `code_list_value_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `code_list_value_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `comment`
+    ADD CONSTRAINT `comment_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `ctx_category`
+    ADD CONSTRAINT `ctx_category_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ctx_category_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `ctx_scheme`
+    ADD CONSTRAINT `ctx_scheme_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ctx_scheme_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `dt`
+    ADD CONSTRAINT `dt_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `dt_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `dt_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `dt_sc`
+    ADD CONSTRAINT `dt_sc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `dt_sc_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `dt_sc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `exception`
+    ADD CONSTRAINT `exception_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `log`
+    ADD CONSTRAINT `log_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `message`
+    ADD CONSTRAINT `message_sender_id_fk` FOREIGN KEY (`sender_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `message_recipient_id_fk` FOREIGN KEY (`recipient_id`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module`
+    ADD CONSTRAINT `module_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_acc_manifest`
+    ADD CONSTRAINT `module_acc_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_acc_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_agency_id_list_manifest`
+    ADD CONSTRAINT `module_agency_id_list_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_agency_id_list_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_asccp_manifest`
+    ADD CONSTRAINT `module_asccp_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_asccp_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_bccp_manifest`
+    ADD CONSTRAINT `module_bccp_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_bccp_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_blob_content_manifest`
+    ADD CONSTRAINT `module_blob_content_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_blob_content_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_code_list_manifest`
+    ADD CONSTRAINT `module_code_list_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_code_list_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_dt_manifest`
+    ADD CONSTRAINT `module_dt_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_dt_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_set`
+    ADD CONSTRAINT `module_set_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_set_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_set_release`
+    ADD CONSTRAINT `module_set_release_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_set_release_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `module_xbt_manifest`
+    ADD CONSTRAINT `module_xbt_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `module_xbt_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `namespace`
+    ADD CONSTRAINT `namespace_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `namespace_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `namespace_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `release`
+    ADD CONSTRAINT `release_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `release_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `top_level_asbiep`
+    ADD CONSTRAINT `top_level_asbiep_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `top_level_asbiep_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+ALTER TABLE `xbt`
+    ADD CONSTRAINT `xbt_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `xbt_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `xbt_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+-- --------------------------------
+-- Change 'namespace_id' TO UUID --
+-- --------------------------------
+ALTER TABLE `namespace` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `namespace_id`;
+CALL update_uuid('namespace');
+
+ALTER TABLE `acc` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `acc` SET `acc`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `acc`.`namespace_id`;
+
+ALTER TABLE `agency_id_list` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `agency_id_list` SET `agency_id_list`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `agency_id_list`.`namespace_id`;
+
+ALTER TABLE `asccp` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `asccp` SET `asccp`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `asccp`.`namespace_id`;
+
+ALTER TABLE `bccp` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `bccp` SET `bccp`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `bccp`.`namespace_id`;
+
+ALTER TABLE `code_list` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `code_list` SET `code_list`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `code_list`.`namespace_id`;
+
+ALTER TABLE `dt` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `dt` SET `dt`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `dt`.`namespace_id`;
+
+ALTER TABLE `module` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `module` SET `module`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `module`.`namespace_id`;
+
+ALTER TABLE `release` ADD COLUMN `namespace_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.' AFTER `namespace_id`;
+UPDATE `namespace`, `release` SET `release`.`namespace_uuid` = `namespace`.`namespace_uuid`
+WHERE `namespace`.`namespace_id` = `release`.`namespace_id`;
+
+-- Drop old `namespace_id` columns
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_namespace_id_fk`;
+ALTER TABLE `acc` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_namespace_id_fk`;
+ALTER TABLE `agency_id_list` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_namespace_id_fk`;
+ALTER TABLE `asccp` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_namespace_id_fk`;
+ALTER TABLE `bccp` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_namespace_id_fk`;
+ALTER TABLE `code_list` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_namespace_id_fk`;
+ALTER TABLE `dt` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `module` DROP FOREIGN KEY `module_namespace_id_fk`;
+ALTER TABLE `module` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `release` DROP FOREIGN KEY `release_namespace_id_fk`;
+ALTER TABLE `release` DROP COLUMN `namespace_id`;
+
+ALTER TABLE `namespace` DROP COLUMN `namespace_id`;
+
+-- Rename `namespace_uuid` TO `namespace_id`
+ALTER TABLE `namespace` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `acc` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `agency_id_list` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `asccp` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `bccp` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `code_list` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `dt` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `module` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+ALTER TABLE `release` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table.';
+
+-- Add foreign key constraints
+ALTER TABLE `namespace` ADD PRIMARY KEY (`namespace_id`);
+ALTER TABLE `acc` ADD CONSTRAINT `acc_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `agency_id_list` ADD CONSTRAINT `agency_id_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `asccp` ADD CONSTRAINT `asccp_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `bccp` ADD CONSTRAINT `bccp_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `code_list` ADD CONSTRAINT `code_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `dt` ADD CONSTRAINT `dt_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `module` ADD CONSTRAINT `module_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+ALTER TABLE `release` ADD CONSTRAINT `release_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+
+-- --------------------------------
+-- Change `release_id` TO UUID --
+-- --------------------------------
+ALTER TABLE `release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `release_id`;
+CALL update_uuid('release');
+
+-- Static UUID for 'Working' release.
+UPDATE `release` SET `release_uuid` = 'c6dcd936-4f4c-4c2c-97d0-b0eb62d157e7' WHERE `release_num` = 'Working';
+
+ALTER TABLE `acc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `acc_manifest` SET `acc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `acc_manifest`.`release_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `agency_id_list_manifest`.`release_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `agency_id_list_value_manifest` SET `agency_id_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `agency_id_list_value_manifest`.`release_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `ascc_manifest` SET `ascc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `ascc_manifest`.`release_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `asccp_manifest` SET `asccp_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `asccp_manifest`.`release_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `bcc_manifest` SET `bcc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `bcc_manifest`.`release_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `bccp_manifest` SET `bccp_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `bccp_manifest`.`release_id`;
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `blob_content_manifest` SET `blob_content_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `blob_content_manifest`.`release_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `code_list_manifest` SET `code_list_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `code_list_manifest`.`release_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `code_list_value_manifest` SET `code_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `code_list_value_manifest`.`release_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `dt_manifest` SET `dt_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `dt_manifest`.`release_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `dt_sc_manifest` SET `dt_sc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `dt_sc_manifest`.`release_id`;
+
+ALTER TABLE `module_set_release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `module_set_release` SET `module_set_release`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `module_set_release`.`release_id`;
+
+ALTER TABLE `top_level_asbiep` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `top_level_asbiep` SET `top_level_asbiep`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `top_level_asbiep`.`release_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `xbt_manifest` SET `xbt_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `xbt_manifest`.`release_id`;
+
+-- Drop old `release_id` columns
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_release_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_release_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_release_id_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_release_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_release_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_release_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_release_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_release_id_fk`;
+ALTER TABLE `blob_content_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_release_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_release_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_release_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_manifest_release_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_release_id_fk`;
+ALTER TABLE `module_set_release` DROP COLUMN `release_id`;
+
+ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_release_id_fk`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `release_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_release_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `release` DROP COLUMN `release_id`;
+
+-- Rename `release_uuid` TO `release_id`
+ALTER TABLE `release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `acc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `ascc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `asccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `bcc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `bccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `blob_content_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `code_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `code_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `dt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `dt_sc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `module_set_release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `top_level_asbiep` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `xbt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+
+-- Add foreign key constraints
+ALTER TABLE `release` ADD PRIMARY KEY (`release_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `module_set_release` ADD CONSTRAINT `module_set_release_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `top_level_asbiep` ADD CONSTRAINT `top_level_asbiep_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+
+-- --------------------------
+-- Change 'log_id' TO UUID --
+-- --------------------------
+ALTER TABLE `log` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `log_id`;
+CALL update_uuid('log');
+
+ALTER TABLE `log`
+    ADD COLUMN `prev_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_log_id`,
+    ADD COLUMN `next_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_log_id`;
+
+UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`prev_log_uuid` = tmp2.`log_uuid`
+WHERE tmp2.`log_id` = tmp1.`prev_log_id`;
+UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`next_log_uuid` = tmp2.`log_uuid`
+WHERE tmp2.`log_id` = tmp1.`next_log_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `acc_manifest` SET `acc_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `acc_manifest`.`log_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `agency_id_list_manifest`.`log_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `asccp_manifest` SET `asccp_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `asccp_manifest`.`log_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `bccp_manifest` SET `bccp_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `bccp_manifest`.`log_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `code_list_manifest` SET `code_list_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `code_list_manifest`.`log_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `dt_manifest` SET `dt_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `dt_manifest`.`log_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `xbt_manifest` SET `xbt_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `xbt_manifest`.`log_id`;
+
+-- Drop old `log_id` columns
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_log_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_log_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_log_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_log_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_log_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_log_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_log_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `log` DROP FOREIGN KEY `log_prev_log_id_fk`;
+ALTER TABLE `log` DROP COLUMN `prev_log_id`;
+
+ALTER TABLE `log` DROP FOREIGN KEY `log_next_log_id_fk`;
+ALTER TABLE `log` DROP COLUMN `next_log_id`;
+
+ALTER TABLE `log` DROP COLUMN `log_id`;
+
+-- Rename `log_uuid` TO `log_id`
+ALTER TABLE `log` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `log`
+    CHANGE `prev_log_uuid` `prev_log_id` char(36) CHARACTER SET ascii DEFAULT NULL,
+    CHANGE `next_log_uuid` `next_log_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `asccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `bccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `code_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `dt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `xbt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+
+-- Add foreign key constraints
+ALTER TABLE `log` ADD PRIMARY KEY (`log_id`);
+ALTER TABLE `log`
+    ADD CONSTRAINT `log_prev_log_id_fk` FOREIGN KEY (`prev_log_id`) REFERENCES `log` (`log_id`),
+    ADD CONSTRAINT `log_next_log_id_fk` FOREIGN KEY (`next_log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
 
 -- --------------------------
 -- Change `xbt_id` TO UUID --
@@ -464,132 +1869,132 @@ ALTER TABLE `bdt_sc_pri_restri` ADD CONSTRAINT `bdt_sc_pri_restri_cdt_sc_awd_pri
 -- Add xbt primitives
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('0d6f0c93-0222-47aa-952c-1c10c9e69883', '3395a2f88a397a2e85345fee3ec1746e', 'non positive integer', 'xsd:nonPositiveInteger', '{\"type\":\"number\", \"multipleOf\":1, \"maximum\":0, \"exclusiveMaximum\":false}', '{\"type\":\"integer\", \"maximum\":0, \"exclusiveMaximum\":false}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('0d6f0c93-0222-47aa-952c-1c10c9e69883', '3395a2f88a397a2e85345fee3ec1746e', 'non positive integer', 'xsd:nonPositiveInteger', '{\"type\":\"number\", \"multipleOf\":1, \"maximum\":0, \"exclusiveMaximum\":false}', '{\"type\":\"integer\", \"maximum\":0, \"exclusiveMaximum\":false}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'non positive integer' AND subtype.`name` = 'integer';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('1dce4776-e435-41cc-9941-372c6ab0754c', 'f9044b20770e252037c894464e8e18df', 'negative integer', 'xsd:negativeInteger', '{\"type\":\"number\", \"multipleOf\":1, \"maximum\":0, \"exclusiveMaximum\":true}', '{\"type\":\"integer\", \"maximum\":0, \"exclusiveMaximum\":true}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('1dce4776-e435-41cc-9941-372c6ab0754c', 'f9044b20770e252037c894464e8e18df', 'negative integer', 'xsd:negativeInteger', '{\"type\":\"number\", \"multipleOf\":1, \"maximum\":0, \"exclusiveMaximum\":true}', '{\"type\":\"integer\", \"maximum\":0, \"exclusiveMaximum\":true}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'negative integer' AND subtype.`name` = 'non positive integer';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('010e4563-02d8-4715-acb6-5d7227988ca7', 'd484e5046be205ffe7ef0a84651ab595', 'long', 'xsd:long', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-9223372036854775808, \"maximum\":9223372036854775807}', '{\"type\":\"integer\", \"minimum\":-9223372036854775808, \"maximum\":9223372036854775807}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('010e4563-02d8-4715-acb6-5d7227988ca7', 'd484e5046be205ffe7ef0a84651ab595', 'long', 'xsd:long', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-9223372036854775808, \"maximum\":9223372036854775807}', '{\"type\":\"integer\", \"minimum\":-9223372036854775808, \"maximum\":9223372036854775807}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'long' AND subtype.`name` = 'integer';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('c22e47f7-66db-433a-a1b4-9b1a151983b3', '8278dee5e8106cc9e2e02b4f6ee4c85f', 'int', 'xsd:int', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-2147483648, \"maximum\":2147483647}', '{\"type\":\"integer\", \"minimum\":-2147483648, \"maximum\":2147483647}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('c22e47f7-66db-433a-a1b4-9b1a151983b3', '8278dee5e8106cc9e2e02b4f6ee4c85f', 'int', 'xsd:int', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-2147483648, \"maximum\":2147483647}', '{\"type\":\"integer\", \"minimum\":-2147483648, \"maximum\":2147483647}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'int' AND subtype.`name` = 'long';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('9895d011-6625-41f8-a01c-29692ae323e9', 'c776d8ccc5050987b0af9873a2ef95ab', 'short', 'xsd:short', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-32768, \"maximum\":32767}', '{\"type\":\"integer\", \"minimum\":-32768, \"maximum\":32767}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('9895d011-6625-41f8-a01c-29692ae323e9', 'c776d8ccc5050987b0af9873a2ef95ab', 'short', 'xsd:short', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-32768, \"maximum\":32767}', '{\"type\":\"integer\", \"minimum\":-32768, \"maximum\":32767}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'short' AND subtype.`name` = 'int';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('eba1be95-9fc1-4cd8-88c9-75e3c61fcddb', '9aa5f0beeb9d08109e0f6834790ab9a4', 'byte', 'xsd:byte', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-128, \"maximum\":127}', '{\"type\":\"integer\", \"minimum\":-128, \"maximum\":127}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('eba1be95-9fc1-4cd8-88c9-75e3c61fcddb', '9aa5f0beeb9d08109e0f6834790ab9a4', 'byte', 'xsd:byte', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":-128, \"maximum\":127}', '{\"type\":\"integer\", \"minimum\":-128, \"maximum\":127}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'byte' AND subtype.`name` = 'short';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('5dcfb77e-2869-4f77-9462-250ce7b7c492', 'a54e126ffd199e8df4bb44bc903926e8', 'unsigned long', 'xsd:unsignedLong', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":18446744073709551615}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":18446744073709551615}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('5dcfb77e-2869-4f77-9462-250ce7b7c492', 'a54e126ffd199e8df4bb44bc903926e8', 'unsigned long', 'xsd:unsignedLong', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":18446744073709551615}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":18446744073709551615}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'unsigned long' AND subtype.`name` = 'non negative integer';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('65ead9cc-35eb-47fc-9006-078df7cfa32a', '12c448fbbe86ca3b7e93a7df771e0b94', 'unsigned int', 'xsd:unsignedInt', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":4294967295}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":4294967295}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('65ead9cc-35eb-47fc-9006-078df7cfa32a', '12c448fbbe86ca3b7e93a7df771e0b94', 'unsigned int', 'xsd:unsignedInt', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":4294967295}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":4294967295}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'unsigned int' AND subtype.`name` = 'unsigned long';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('2877cf6b-357b-4e0a-95f5-1e91413638d2', 'a422d1c18d382571e92ab3b0f85c37f7', 'unsigned short', 'xsd:unsignedShort', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":65535}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":65535}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('2877cf6b-357b-4e0a-95f5-1e91413638d2', 'a422d1c18d382571e92ab3b0f85c37f7', 'unsigned short', 'xsd:unsignedShort', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":65535}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":65535}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'unsigned short' AND subtype.`name` = 'unsigned int';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('8c093c3b-1216-401d-bda9-bdb450e02bad', '8451efe9c107d51a33ea623668afaa4a', 'unsigned byte', 'xsd:unsignedByte', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":255}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":255}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('8c093c3b-1216-401d-bda9-bdb450e02bad', '8451efe9c107d51a33ea623668afaa4a', 'unsigned byte', 'xsd:unsignedByte', '{\"type\":\"number\", \"multipleOf\":1, \"minimum\":0, \"maximum\":255}', '{\"type\":\"integer\", \"minimum\":0, \"maximum\":255}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'unsigned byte' AND subtype.`name` = 'unsigned short';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('7fd4451b-6ad1-4930-8570-34c67cb66081', '4ee4e35beded482a401d14879671cf2b', 'name', 'xsd:Name', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('7fd4451b-6ad1-4930-8570-34c67cb66081', '4ee4e35beded482a401d14879671cf2b', 'name', 'xsd:Name', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'name' AND subtype.`name` = 'token';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('d5af9325-d1c8-4bd0-8583-8ac06b4956d2', '954467cfde776fc6d45ed393de47ecff', 'non-colonized name', 'xsd:NCName', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('d5af9325-d1c8-4bd0-8583-8ac06b4956d2', '954467cfde776fc6d45ed393de47ecff', 'non-colonized name', 'xsd:NCName', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'non-colonized name' AND subtype.`name` = 'name';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('98a97e1c-5d7c-429d-851e-2e0516015b7b', 'aafa09d5c14648f3fbd90808944d9f75', 'name token', 'xsd:NMTOKEN', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('98a97e1c-5d7c-429d-851e-2e0516015b7b', 'aafa09d5c14648f3fbd90808944d9f75', 'name token', 'xsd:NMTOKEN', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'name token' AND subtype.`name` = 'token';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('de57e550-fcaf-481d-b8a3-6b301ee48988', 'd99546b1bc2acfd6e87c1ea1487f5a59', 'name tokens', 'xsd:NMTOKENS', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('de57e550-fcaf-481d-b8a3-6b301ee48988', 'd99546b1bc2acfd6e87c1ea1487f5a59', 'name tokens', 'xsd:NMTOKENS', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'name tokens' AND subtype.`name` = 'name token';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b', '864c5d84696bdd17f7b36f61b2d42a0e', 'identifier', 'xsd:ID', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b', '864c5d84696bdd17f7b36f61b2d42a0e', 'identifier', 'xsd:ID', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'identifier' AND subtype.`name` = 'non-colonized name';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('fddb814a-96b9-4392-bd07-2af08233e5f1', 'b20c9e033be4afc6ef1b11659afc4103', 'identifier reference', 'xsd:IDREF', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('fddb814a-96b9-4392-bd07-2af08233e5f1', 'b20c9e033be4afc6ef1b11659afc4103', 'identifier reference', 'xsd:IDREF', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'identifier reference' AND subtype.`name` = 'non-colonized name';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('a08258f8-0ee9-44a4-b937-323ef1bb907d', '6112fe6c7fe8978d26dfc39f45f3c04b', 'identifier references', 'xsd:IDREFS', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('a08258f8-0ee9-44a4-b937-323ef1bb907d', '6112fe6c7fe8978d26dfc39f45f3c04b', 'identifier references', 'xsd:IDREFS', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'identifier references' AND subtype.`name` = 'identifier reference';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('126c78b2-0fb7-4dc4-9cc0-881aa205f7f3', 'ec21905187690f7af17686e7214013d2', 'entity', 'xsd:ENTITY', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('126c78b2-0fb7-4dc4-9cc0-881aa205f7f3', 'ec21905187690f7af17686e7214013d2', 'entity', 'xsd:ENTITY', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'entity' AND subtype.`name` = 'non-colonized name';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('06f9b3ea-7699-4355-a02d-4826c47a78a9', '31cbacbd62c00094596914a66bd2b175', 'entities', 'xsd:ENTITIES', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('06f9b3ea-7699-4355-a02d-4826c47a78a9', '31cbacbd62c00094596914a66bd2b175', 'entities', 'xsd:ENTITIES', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'entities' AND subtype.`name` = 'entity';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('1cdcbd74-1896-4f8c-b2ab-c68e47976e18', '13e5d1379633033e1d1f8671c62ffb61', 'qualified name', 'xsd:QName', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('1cdcbd74-1896-4f8c-b2ab-c68e47976e18', '13e5d1379633033e1d1f8671c62ffb61', 'qualified name', 'xsd:QName', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'qualified name' AND subtype.`name` = 'any simple type';
 
 INSERT INTO `xbt` (`xbt_id`, `guid`, `name`, `builtIn_type`, `jbt_draft05_map`, `openapi30_map`, `schema_definition`, `revision_doc`, `state`, `created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `is_deprecated`)
 VALUES
-    ('18bc4b23-48da-426c-9986-2b4a7bc38f39', '169bb1ded95c8edc188262c21affb79c', 'notation', 'xsd:NOTATION', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
+    ('18bc4b23-48da-426c-9986-2b4a7bc38f39', '169bb1ded95c8edc188262c21affb79c', 'notation', 'xsd:NOTATION', '{\"type\":\"string\"}', '{\"type\":\"string\"}', NULL, NULL, 3, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 0);
 UPDATE `xbt`, `xbt` AS subtype SET `xbt`.`subtype_of_xbt_id` = subtype.`xbt_id` WHERE `xbt`.`name` = 'notation' AND subtype.`name` = 'any simple type';
 
 INSERT INTO `log` (`log_id`, `hash`, `revision_num`, `revision_tracking_num`, `log_action`, `reference`, `snapshot`, `prev_log_id`, `next_log_id`, `created_by`, `creation_timestamp`)
 VALUES
-    (27001, 'c2ddce6fcb8bbc558a24bd31a04bac4b', 1, 1, 'Added', 'd484e5046be205ffe7ef0a84651ab595', '{\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\", \"state\": 3, \"xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"created_by\": 1, \"builtIn_type\": \"xsd:long\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2cfd15d4-3678-4e65-be38-92629ed0ae45\", \"creation_timestamp\": \"2022-08-12T20:00:51.276113\", \"last_update_timestamp\": \"2022-08-12T20:00:51.276113\"}, \"xbtManifest\": {\"xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3156}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:long\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"subTypeOfXbt\": {\"guid\": \"f3bc6f3ca44b47e9a9a66997fc5d3c2b\", \"name\": \"integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.276113'),
-    (27002, 'e9ed5dcee2a7cb3c3cb86460ff6ede7e', 1, 1, 'Added', '31cbacbd62c00094596914a66bd2b175', '{\"guid\": \"31cbacbd62c00094596914a66bd2b175\", \"name\": \"entities\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"31cbacbd62c00094596914a66bd2b175\", \"name\": \"entities\", \"state\": 3, \"xbt_id\": \"06f9b3ea-7699-4355-a02d-4826c47a78a9\", \"created_by\": 1, \"builtIn_type\": \"xsd:ENTITIES\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"creation_timestamp\": \"2022-08-12T20:00:51.331423\", \"last_update_timestamp\": \"2022-08-12T20:00:51.331423\"}, \"xbtManifest\": {\"xbt_id\": \"06f9b3ea-7699-4355-a02d-4826c47a78a9\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3167}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ENTITIES\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.331423'),
-    (27003, '13460d8ef61ae7a07a052dcfe7b40980', 1, 1, 'Added', '3395a2f88a397a2e85345fee3ec1746e', '{\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\", \"state\": 3, \"xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"created_by\": 1, \"builtIn_type\": \"xsd:nonPositiveInteger\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2cfd15d4-3678-4e65-be38-92629ed0ae45\", \"creation_timestamp\": \"2022-08-12T20:00:51.268162\", \"last_update_timestamp\": \"2022-08-12T20:00:51.268162\"}, \"xbtManifest\": {\"xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3178}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:nonPositiveInteger\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"subTypeOfXbt\": {\"guid\": \"f3bc6f3ca44b47e9a9a66997fc5d3c2b\", \"name\": \"integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.268162'),
-    (27004, '78915018bd18a7f21a9a3d78985337c4', 1, 1, 'Added', 'ec21905187690f7af17686e7214013d2', '{\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\", \"state\": 3, \"xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"created_by\": 1, \"builtIn_type\": \"xsd:ENTITY\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.328373\", \"last_update_timestamp\": \"2022-08-12T20:00:51.328373\"}, \"xbtManifest\": {\"xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3189}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ENTITY\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.328373'),
-    (27005, '96d30429ae122a86d9aa1c57beed80d2', 1, 1, 'Added', 'f9044b20770e252037c894464e8e18df', '{\"guid\": \"f9044b20770e252037c894464e8e18df\", \"name\": \"negative integer\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"f9044b20770e252037c894464e8e18df\", \"name\": \"negative integer\", \"state\": 3, \"xbt_id\": \"1dce4776-e435-41cc-9941-372c6ab0754c\", \"created_by\": 1, \"builtIn_type\": \"xsd:negativeInteger\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"creation_timestamp\": \"2022-08-12T20:00:51.272934\", \"last_update_timestamp\": \"2022-08-12T20:00:51.272934\"}, \"xbtManifest\": {\"xbt_id\": \"1dce4776-e435-41cc-9941-372c6ab0754c\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3200}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:negativeInteger\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"subTypeOfXbt\": {\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.272934'),
-    (27006, '0434b935ee0c9017efb00012d3a1404a', 1, 1, 'Added', 'a422d1c18d382571e92ab3b0f85c37f7', '{\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\", \"state\": 3, \"xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedShort\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"creation_timestamp\": \"2022-08-12T20:00:51.298955\", \"last_update_timestamp\": \"2022-08-12T20:00:51.298955\"}, \"xbtManifest\": {\"xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3211}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedShort\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"subTypeOfXbt\": {\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":65535}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.298955'),
-    (27007, 'eade834ba5d0469dbad2261eaa29be8b', 1, 1, 'Added', 'a54e126ffd199e8df4bb44bc903926e8', '{\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\", \"state\": 3, \"xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedLong\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"1df3a62d-53e1-46a0-b31c-bd0d6c50ff7c\", \"creation_timestamp\": \"2022-08-12T20:00:51.290947\", \"last_update_timestamp\": \"2022-08-12T20:00:51.290947\"}, \"xbtManifest\": {\"xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3222}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedLong\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"subTypeOfXbt\": {\"guid\": \"da82a62e6bfd4db88710442a67356ff9\", \"name\": \"non negative integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.290947'),
-    (27008, '5c54836a2785f25be328eafa08507423', 1, 1, 'Added', '12c448fbbe86ca3b7e93a7df771e0b94', '{\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\", \"state\": 3, \"xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedInt\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"creation_timestamp\": \"2022-08-12T20:00:51.294112\", \"last_update_timestamp\": \"2022-08-12T20:00:51.294112\"}, \"xbtManifest\": {\"xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3233}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedInt\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"subTypeOfXbt\": {\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.294112'),
-    (27009, '7de6bddd104817bae8ec945f823f627c', 1, 1, 'Added', '4ee4e35beded482a401d14879671cf2b', '{\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\", \"state\": 3, \"xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"created_by\": 1, \"builtIn_type\": \"xsd:Name\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"f4fb8c41-6374-4f7e-a340-7ba1b871e778\", \"creation_timestamp\": \"2022-08-12T20:00:51.30583\", \"last_update_timestamp\": \"2022-08-12T20:00:51.30583\"}, \"xbtManifest\": {\"xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3244}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:Name\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"0963dd2d22084b4893ff69ff303e57d9\", \"name\": \"token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.305830'),
-    (27010, 'f65bd7e40f0f37b4869f1c721abb126a', 1, 1, 'Added', '8451efe9c107d51a33ea623668afaa4a', '{\"guid\": \"8451efe9c107d51a33ea623668afaa4a\", \"name\": \"unsigned byte\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"8451efe9c107d51a33ea623668afaa4a\", \"name\": \"unsigned byte\", \"state\": 3, \"xbt_id\": \"8c093c3b-1216-401d-bda9-bdb450e02bad\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedByte\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.302249\", \"last_update_timestamp\": \"2022-08-12T20:00:51.302249\"}, \"xbtManifest\": {\"xbt_id\": \"8c093c3b-1216-401d-bda9-bdb450e02bad\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3255}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedByte\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"subTypeOfXbt\": {\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":255}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.302249'),
-    (27011, '22520c48f6f324a509147f90903809c5', 1, 1, 'Added', 'c776d8ccc5050987b0af9873a2ef95ab', '{\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\", \"state\": 3, \"xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"created_by\": 1, \"builtIn_type\": \"xsd:short\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"creation_timestamp\": \"2022-08-12T20:00:51.282907\", \"last_update_timestamp\": \"2022-08-12T20:00:51.282907\"}, \"xbtManifest\": {\"xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3266}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:short\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"subTypeOfXbt\": {\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.282907'),
-    (27012, 'e6501e1d8d2eeb6f8f9f707bf635a123', 1, 1, 'Added', 'aafa09d5c14648f3fbd90808944d9f75', '{\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\", \"state\": 3, \"xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"created_by\": 1, \"builtIn_type\": \"xsd:NMTOKEN\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"f4fb8c41-6374-4f7e-a340-7ba1b871e778\", \"creation_timestamp\": \"2022-08-12T20:00:51.311743\", \"last_update_timestamp\": \"2022-08-12T20:00:51.311743\"}, \"xbtManifest\": {\"xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3277}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NMTOKEN\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"0963dd2d22084b4893ff69ff303e57d9\", \"name\": \"token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.311743'),
-    (27013, 'ab0c78811f66b17f8b50b7a7068ceb39', 1, 1, 'Added', '6112fe6c7fe8978d26dfc39f45f3c04b', '{\"guid\": \"6112fe6c7fe8978d26dfc39f45f3c04b\", \"name\": \"identifier references\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"6112fe6c7fe8978d26dfc39f45f3c04b\", \"name\": \"identifier references\", \"state\": 3, \"xbt_id\": \"a08258f8-0ee9-44a4-b937-323ef1bb907d\", \"created_by\": 1, \"builtIn_type\": \"xsd:IDREFS\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"creation_timestamp\": \"2022-08-12T20:00:51.325116\", \"last_update_timestamp\": \"2022-08-12T20:00:51.325116\"}, \"xbtManifest\": {\"xbt_id\": \"a08258f8-0ee9-44a4-b937-323ef1bb907d\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3288}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:IDREFS\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.325116'),
-    (27014, '490331d583e0b9ae5b39def271f7fef3', 1, 1, 'Added', '864c5d84696bdd17f7b36f61b2d42a0e', '{\"guid\": \"864c5d84696bdd17f7b36f61b2d42a0e\", \"name\": \"identifier\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"864c5d84696bdd17f7b36f61b2d42a0e\", \"name\": \"identifier\", \"state\": 3, \"xbt_id\": \"a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b\", \"created_by\": 1, \"builtIn_type\": \"xsd:ID\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.319093\", \"last_update_timestamp\": \"2022-08-12T20:00:51.319093\"}, \"xbtManifest\": {\"xbt_id\": \"a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3299}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ID\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.319093'),
-    (27015, '9d856cd06d4dfbeb5995a51df92a0f1b', 1, 1, 'Added', '8278dee5e8106cc9e2e02b4f6ee4c85f', '{\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\", \"state\": 3, \"xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"created_by\": 1, \"builtIn_type\": \"xsd:int\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"creation_timestamp\": \"2022-08-12T20:00:51.279799\", \"last_update_timestamp\": \"2022-08-12T20:00:51.279799\"}, \"xbtManifest\": {\"xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3310}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:int\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"subTypeOfXbt\": {\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.279799'),
-    (27016, '32166e9cf169c36d648443cbc046a486', 1, 1, 'Added', '954467cfde776fc6d45ed393de47ecff', '{\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\", \"state\": 3, \"xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"created_by\": 1, \"builtIn_type\": \"xsd:NCName\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"creation_timestamp\": \"2022-08-12T20:00:51.309084\", \"last_update_timestamp\": \"2022-08-12T20:00:51.309084\"}, \"xbtManifest\": {\"xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3321}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NCName\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.309084'),
-    (27017, '740a949857d90afbfc48384e77ab129b', 1, 1, 'Added', 'd99546b1bc2acfd6e87c1ea1487f5a59', '{\"guid\": \"d99546b1bc2acfd6e87c1ea1487f5a59\", \"name\": \"name tokens\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"d99546b1bc2acfd6e87c1ea1487f5a59\", \"name\": \"name tokens\", \"state\": 3, \"xbt_id\": \"de57e550-fcaf-481d-b8a3-6b301ee48988\", \"created_by\": 1, \"builtIn_type\": \"xsd:NMTOKENS\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"creation_timestamp\": \"2022-08-12T20:00:51.315503\", \"last_update_timestamp\": \"2022-08-12T20:00:51.315503\"}, \"xbtManifest\": {\"xbt_id\": \"de57e550-fcaf-481d-b8a3-6b301ee48988\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3332}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NMTOKENS\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.315503'),
-    (27018, 'a090a4401b6131a332b36983af0ba019', 1, 1, 'Added', '9aa5f0beeb9d08109e0f6834790ab9a4', '{\"guid\": \"9aa5f0beeb9d08109e0f6834790ab9a4\", \"name\": \"byte\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"9aa5f0beeb9d08109e0f6834790ab9a4\", \"name\": \"byte\", \"state\": 3, \"xbt_id\": \"eba1be95-9fc1-4cd8-88c9-75e3c61fcddb\", \"created_by\": 1, \"builtIn_type\": \"xsd:byte\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"creation_timestamp\": \"2022-08-12T20:00:51.286613\", \"last_update_timestamp\": \"2022-08-12T20:00:51.286613\"}, \"xbtManifest\": {\"xbt_id\": \"eba1be95-9fc1-4cd8-88c9-75e3c61fcddb\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3343}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:byte\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"subTypeOfXbt\": {\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-128, \\\"maximum\\\":127}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.286613'),
-    (27019, '6dbba707cffde0d9ea0be31bed0739f5', 1, 1, 'Added', 'b20c9e033be4afc6ef1b11659afc4103', '{\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\", \"state\": 3, \"xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"created_by\": 1, \"builtIn_type\": \"xsd:IDREF\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.322015\", \"last_update_timestamp\": \"2022-08-12T20:00:51.322015\"}, \"xbtManifest\": {\"xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3354}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:IDREF\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-12 20:00:51.322015'),
-    (27020, '97b81c75beb9735080f8136d0f13d3ba', 1, 1, 'Added', '169bb1ded95c8edc188262c21affb79c', '{\"guid\": \"169bb1ded95c8edc188262c21affb79c\", \"name\": \"notation\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"169bb1ded95c8edc188262c21affb79c\", \"name\": \"notation\", \"state\": 3, \"xbt_id\": \"1cdcbd74-1896-4f8c-b2ab-c68e47976e18\", \"created_by\": 1, \"builtIn_type\": \"xsd:NOTATION\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"a5d1f255-ff15-4c38-a5f5-6b3660a80a88\", \"creation_timestamp\": \"2022-08-13 04:15:46.126781\", \"last_update_timestamp\": \"2022-08-13 04:15:46.126781\"}, \"xbtManifest\": {\"xbt_id\": \"18bc4b23-48da-426c-9986-2b4a7bc38f39\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3376}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NOTATION\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"7114441198054ad78d2fcf9bcdab2cbf\", \"name\": \"any simple type\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-13 04:30:38.195407'),
-    (27021, 'f742e9879e085dd8bd1dd7e790509b3c', 1, 1, 'Added', '13e5d1379633033e1d1f8671c62ffb61', '{\"guid\": \"13e5d1379633033e1d1f8671c62ffb61\", \"name\": \"qualified name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"13e5d1379633033e1d1f8671c62ffb61\", \"name\": \"qualified name\", \"state\": 3, \"xbt_id\": \"18bc4b23-48da-426c-9986-2b4a7bc38f39\", \"created_by\": 1, \"builtIn_type\": \"xsd:QName\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"a5d1f255-ff15-4c38-a5f5-6b3660a80a88\", \"creation_timestamp\": \"2022-08-13 04:15:46.133324\", \"last_update_timestamp\": \"2022-08-13 04:15:46.133324\"}, \"xbtManifest\": {\"xbt_id\": \"1cdcbd74-1896-4f8c-b2ab-c68e47976e18\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3365}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:QName\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"7114441198054ad78d2fcf9bcdab2cbf\", \"name\": \"any simple type\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, 1, '2022-08-13 04:30:57.641335');
+    (27001, 'c2ddce6fcb8bbc558a24bd31a04bac4b', 1, 1, 'Added', 'd484e5046be205ffe7ef0a84651ab595', '{\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\", \"state\": 3, \"xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"created_by\": 1, \"builtIn_type\": \"xsd:long\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2cfd15d4-3678-4e65-be38-92629ed0ae45\", \"creation_timestamp\": \"2022-08-12T20:00:51.276113\", \"last_update_timestamp\": \"2022-08-12T20:00:51.276113\"}, \"xbtManifest\": {\"xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3156}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:long\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\", \"subTypeOfXbt\": {\"guid\": \"f3bc6f3ca44b47e9a9a66997fc5d3c2b\", \"name\": \"integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-9223372036854775808, \\\"maximum\\\":9223372036854775807}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.276113'),
+    (27002, 'e9ed5dcee2a7cb3c3cb86460ff6ede7e', 1, 1, 'Added', '31cbacbd62c00094596914a66bd2b175', '{\"guid\": \"31cbacbd62c00094596914a66bd2b175\", \"name\": \"entities\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"31cbacbd62c00094596914a66bd2b175\", \"name\": \"entities\", \"state\": 3, \"xbt_id\": \"06f9b3ea-7699-4355-a02d-4826c47a78a9\", \"created_by\": 1, \"builtIn_type\": \"xsd:ENTITIES\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"creation_timestamp\": \"2022-08-12T20:00:51.331423\", \"last_update_timestamp\": \"2022-08-12T20:00:51.331423\"}, \"xbtManifest\": {\"xbt_id\": \"06f9b3ea-7699-4355-a02d-4826c47a78a9\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3167}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ENTITIES\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.331423'),
+    (27003, '13460d8ef61ae7a07a052dcfe7b40980', 1, 1, 'Added', '3395a2f88a397a2e85345fee3ec1746e', '{\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\", \"state\": 3, \"xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"created_by\": 1, \"builtIn_type\": \"xsd:nonPositiveInteger\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2cfd15d4-3678-4e65-be38-92629ed0ae45\", \"creation_timestamp\": \"2022-08-12T20:00:51.268162\", \"last_update_timestamp\": \"2022-08-12T20:00:51.268162\"}, \"xbtManifest\": {\"xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3178}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:nonPositiveInteger\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\", \"subTypeOfXbt\": {\"guid\": \"f3bc6f3ca44b47e9a9a66997fc5d3c2b\", \"name\": \"integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":false}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.268162'),
+    (27004, '78915018bd18a7f21a9a3d78985337c4', 1, 1, 'Added', 'ec21905187690f7af17686e7214013d2', '{\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"ec21905187690f7af17686e7214013d2\", \"name\": \"entity\", \"state\": 3, \"xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"created_by\": 1, \"builtIn_type\": \"xsd:ENTITY\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.328373\", \"last_update_timestamp\": \"2022-08-12T20:00:51.328373\"}, \"xbtManifest\": {\"xbt_id\": \"126c78b2-0fb7-4dc4-9cc0-881aa205f7f3\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3189}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ENTITY\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.328373'),
+    (27005, '96d30429ae122a86d9aa1c57beed80d2', 1, 1, 'Added', 'f9044b20770e252037c894464e8e18df', '{\"guid\": \"f9044b20770e252037c894464e8e18df\", \"name\": \"negative integer\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"f9044b20770e252037c894464e8e18df\", \"name\": \"negative integer\", \"state\": 3, \"xbt_id\": \"1dce4776-e435-41cc-9941-372c6ab0754c\", \"created_by\": 1, \"builtIn_type\": \"xsd:negativeInteger\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"0d6f0c93-0222-47aa-952c-1c10c9e69883\", \"creation_timestamp\": \"2022-08-12T20:00:51.272934\", \"last_update_timestamp\": \"2022-08-12T20:00:51.272934\"}, \"xbtManifest\": {\"xbt_id\": \"1dce4776-e435-41cc-9941-372c6ab0754c\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3200}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:negativeInteger\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\", \"subTypeOfXbt\": {\"guid\": \"3395a2f88a397a2e85345fee3ec1746e\", \"name\": \"non positive integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"maximum\\\":0, \\\"exclusiveMaximum\\\":true}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.272934'),
+    (27006, '0434b935ee0c9017efb00012d3a1404a', 1, 1, 'Added', 'a422d1c18d382571e92ab3b0f85c37f7', '{\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\", \"state\": 3, \"xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedShort\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"creation_timestamp\": \"2022-08-12T20:00:51.298955\", \"last_update_timestamp\": \"2022-08-12T20:00:51.298955\"}, \"xbtManifest\": {\"xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3211}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedShort\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":65535}\", \"subTypeOfXbt\": {\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":65535}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.298955'),
+    (27007, 'eade834ba5d0469dbad2261eaa29be8b', 1, 1, 'Added', 'a54e126ffd199e8df4bb44bc903926e8', '{\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\", \"state\": 3, \"xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedLong\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"1df3a62d-53e1-46a0-b31c-bd0d6c50ff7c\", \"creation_timestamp\": \"2022-08-12T20:00:51.290947\", \"last_update_timestamp\": \"2022-08-12T20:00:51.290947\"}, \"xbtManifest\": {\"xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3222}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedLong\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\", \"subTypeOfXbt\": {\"guid\": \"da82a62e6bfd4db88710442a67356ff9\", \"name\": \"non negative integer\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":18446744073709551615}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.290947'),
+    (27008, '5c54836a2785f25be328eafa08507423', 1, 1, 'Added', '12c448fbbe86ca3b7e93a7df771e0b94', '{\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"12c448fbbe86ca3b7e93a7df771e0b94\", \"name\": \"unsigned int\", \"state\": 3, \"xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedInt\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"5dcfb77e-2869-4f77-9462-250ce7b7c492\", \"creation_timestamp\": \"2022-08-12T20:00:51.294112\", \"last_update_timestamp\": \"2022-08-12T20:00:51.294112\"}, \"xbtManifest\": {\"xbt_id\": \"65ead9cc-35eb-47fc-9006-078df7cfa32a\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3233}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedInt\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\", \"subTypeOfXbt\": {\"guid\": \"a54e126ffd199e8df4bb44bc903926e8\", \"name\": \"unsigned long\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":4294967295}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.294112'),
+    (27009, '7de6bddd104817bae8ec945f823f627c', 1, 1, 'Added', '4ee4e35beded482a401d14879671cf2b', '{\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\", \"state\": 3, \"xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"created_by\": 1, \"builtIn_type\": \"xsd:Name\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"f4fb8c41-6374-4f7e-a340-7ba1b871e778\", \"creation_timestamp\": \"2022-08-12T20:00:51.30583\", \"last_update_timestamp\": \"2022-08-12T20:00:51.30583\"}, \"xbtManifest\": {\"xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3244}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:Name\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"0963dd2d22084b4893ff69ff303e57d9\", \"name\": \"token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.305830'),
+    (27010, 'f65bd7e40f0f37b4869f1c721abb126a', 1, 1, 'Added', '8451efe9c107d51a33ea623668afaa4a', '{\"guid\": \"8451efe9c107d51a33ea623668afaa4a\", \"name\": \"unsigned byte\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"8451efe9c107d51a33ea623668afaa4a\", \"name\": \"unsigned byte\", \"state\": 3, \"xbt_id\": \"8c093c3b-1216-401d-bda9-bdb450e02bad\", \"created_by\": 1, \"builtIn_type\": \"xsd:unsignedByte\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"2877cf6b-357b-4e0a-95f5-1e91413638d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.302249\", \"last_update_timestamp\": \"2022-08-12T20:00:51.302249\"}, \"xbtManifest\": {\"xbt_id\": \"8c093c3b-1216-401d-bda9-bdb450e02bad\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3255}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:unsignedByte\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":0, \\\"maximum\\\":255}\", \"subTypeOfXbt\": {\"guid\": \"a422d1c18d382571e92ab3b0f85c37f7\", \"name\": \"unsigned short\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":0, \\\"maximum\\\":255}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.302249'),
+    (27011, '22520c48f6f324a509147f90903809c5', 1, 1, 'Added', 'c776d8ccc5050987b0af9873a2ef95ab', '{\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\", \"state\": 3, \"xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"created_by\": 1, \"builtIn_type\": \"xsd:short\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"creation_timestamp\": \"2022-08-12T20:00:51.282907\", \"last_update_timestamp\": \"2022-08-12T20:00:51.282907\"}, \"xbtManifest\": {\"xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3266}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:short\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\", \"subTypeOfXbt\": {\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-32768, \\\"maximum\\\":32767}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.282907'),
+    (27012, 'e6501e1d8d2eeb6f8f9f707bf635a123', 1, 1, 'Added', 'aafa09d5c14648f3fbd90808944d9f75', '{\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\", \"state\": 3, \"xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"created_by\": 1, \"builtIn_type\": \"xsd:NMTOKEN\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"f4fb8c41-6374-4f7e-a340-7ba1b871e778\", \"creation_timestamp\": \"2022-08-12T20:00:51.311743\", \"last_update_timestamp\": \"2022-08-12T20:00:51.311743\"}, \"xbtManifest\": {\"xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3277}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NMTOKEN\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"0963dd2d22084b4893ff69ff303e57d9\", \"name\": \"token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.311743'),
+    (27013, 'ab0c78811f66b17f8b50b7a7068ceb39', 1, 1, 'Added', '6112fe6c7fe8978d26dfc39f45f3c04b', '{\"guid\": \"6112fe6c7fe8978d26dfc39f45f3c04b\", \"name\": \"identifier references\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"6112fe6c7fe8978d26dfc39f45f3c04b\", \"name\": \"identifier references\", \"state\": 3, \"xbt_id\": \"a08258f8-0ee9-44a4-b937-323ef1bb907d\", \"created_by\": 1, \"builtIn_type\": \"xsd:IDREFS\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"creation_timestamp\": \"2022-08-12T20:00:51.325116\", \"last_update_timestamp\": \"2022-08-12T20:00:51.325116\"}, \"xbtManifest\": {\"xbt_id\": \"a08258f8-0ee9-44a4-b937-323ef1bb907d\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3288}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:IDREFS\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.325116'),
+    (27014, '490331d583e0b9ae5b39def271f7fef3', 1, 1, 'Added', '864c5d84696bdd17f7b36f61b2d42a0e', '{\"guid\": \"864c5d84696bdd17f7b36f61b2d42a0e\", \"name\": \"identifier\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"864c5d84696bdd17f7b36f61b2d42a0e\", \"name\": \"identifier\", \"state\": 3, \"xbt_id\": \"a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b\", \"created_by\": 1, \"builtIn_type\": \"xsd:ID\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.319093\", \"last_update_timestamp\": \"2022-08-12T20:00:51.319093\"}, \"xbtManifest\": {\"xbt_id\": \"a7ed18d7-f5ae-455f-a03b-8d2705fa6d0b\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3299}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:ID\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.319093'),
+    (27015, '9d856cd06d4dfbeb5995a51df92a0f1b', 1, 1, 'Added', '8278dee5e8106cc9e2e02b4f6ee4c85f', '{\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"8278dee5e8106cc9e2e02b4f6ee4c85f\", \"name\": \"int\", \"state\": 3, \"xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"created_by\": 1, \"builtIn_type\": \"xsd:int\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"010e4563-02d8-4715-acb6-5d7227988ca7\", \"creation_timestamp\": \"2022-08-12T20:00:51.279799\", \"last_update_timestamp\": \"2022-08-12T20:00:51.279799\"}, \"xbtManifest\": {\"xbt_id\": \"c22e47f7-66db-433a-a1b4-9b1a151983b3\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3310}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:int\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\", \"subTypeOfXbt\": {\"guid\": \"d484e5046be205ffe7ef0a84651ab595\", \"name\": \"long\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-2147483648, \\\"maximum\\\":2147483647}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.279799'),
+    (27016, '32166e9cf169c36d648443cbc046a486', 1, 1, 'Added', '954467cfde776fc6d45ed393de47ecff', '{\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\", \"state\": 3, \"xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"created_by\": 1, \"builtIn_type\": \"xsd:NCName\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"7fd4451b-6ad1-4930-8570-34c67cb66081\", \"creation_timestamp\": \"2022-08-12T20:00:51.309084\", \"last_update_timestamp\": \"2022-08-12T20:00:51.309084\"}, \"xbtManifest\": {\"xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3321}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NCName\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"4ee4e35beded482a401d14879671cf2b\", \"name\": \"name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.309084'),
+    (27017, '740a949857d90afbfc48384e77ab129b', 1, 1, 'Added', 'd99546b1bc2acfd6e87c1ea1487f5a59', '{\"guid\": \"d99546b1bc2acfd6e87c1ea1487f5a59\", \"name\": \"name tokens\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"d99546b1bc2acfd6e87c1ea1487f5a59\", \"name\": \"name tokens\", \"state\": 3, \"xbt_id\": \"de57e550-fcaf-481d-b8a3-6b301ee48988\", \"created_by\": 1, \"builtIn_type\": \"xsd:NMTOKENS\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"98a97e1c-5d7c-429d-851e-2e0516015b7b\", \"creation_timestamp\": \"2022-08-12T20:00:51.315503\", \"last_update_timestamp\": \"2022-08-12T20:00:51.315503\"}, \"xbtManifest\": {\"xbt_id\": \"de57e550-fcaf-481d-b8a3-6b301ee48988\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3332}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NMTOKENS\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"aafa09d5c14648f3fbd90808944d9f75\", \"name\": \"name token\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.315503'),
+    (27018, 'a090a4401b6131a332b36983af0ba019', 1, 1, 'Added', '9aa5f0beeb9d08109e0f6834790ab9a4', '{\"guid\": \"9aa5f0beeb9d08109e0f6834790ab9a4\", \"name\": \"byte\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"9aa5f0beeb9d08109e0f6834790ab9a4\", \"name\": \"byte\", \"state\": 3, \"xbt_id\": \"eba1be95-9fc1-4cd8-88c9-75e3c61fcddb\", \"created_by\": 1, \"builtIn_type\": \"xsd:byte\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"9895d011-6625-41f8-a01c-29692ae323e9\", \"creation_timestamp\": \"2022-08-12T20:00:51.286613\", \"last_update_timestamp\": \"2022-08-12T20:00:51.286613\"}, \"xbtManifest\": {\"xbt_id\": \"eba1be95-9fc1-4cd8-88c9-75e3c61fcddb\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3343}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:byte\", \"openapi30Map\": \"{\\\"type\\\":\\\"integer\\\", \\\"minimum\\\":-128, \\\"maximum\\\":127}\", \"subTypeOfXbt\": {\"guid\": \"c776d8ccc5050987b0af9873a2ef95ab\", \"name\": \"short\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"number\\\", \\\"multipleOf\\\":1, \\\"minimum\\\":-128, \\\"maximum\\\":127}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.286613'),
+    (27019, '6dbba707cffde0d9ea0be31bed0739f5', 1, 1, 'Added', 'b20c9e033be4afc6ef1b11659afc4103', '{\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"b20c9e033be4afc6ef1b11659afc4103\", \"name\": \"identifier reference\", \"state\": 3, \"xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"created_by\": 1, \"builtIn_type\": \"xsd:IDREF\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"d5af9325-d1c8-4bd0-8583-8ac06b4956d2\", \"creation_timestamp\": \"2022-08-12T20:00:51.322015\", \"last_update_timestamp\": \"2022-08-12T20:00:51.322015\"}, \"xbtManifest\": {\"xbt_id\": \"fddb814a-96b9-4392-bd07-2af08233e5f1\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3354}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:IDREF\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"954467cfde776fc6d45ed393de47ecff\", \"name\": \"non-colonized name\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-12 20:00:51.322015'),
+    (27020, '97b81c75beb9735080f8136d0f13d3ba', 1, 1, 'Added', '169bb1ded95c8edc188262c21affb79c', '{\"guid\": \"169bb1ded95c8edc188262c21affb79c\", \"name\": \"notation\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"169bb1ded95c8edc188262c21affb79c\", \"name\": \"notation\", \"state\": 3, \"xbt_id\": \"1cdcbd74-1896-4f8c-b2ab-c68e47976e18\", \"created_by\": 1, \"builtIn_type\": \"xsd:NOTATION\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"a5d1f255-ff15-4c38-a5f5-6b3660a80a88\", \"creation_timestamp\": \"2022-08-13 04:15:46.126781\", \"last_update_timestamp\": \"2022-08-13 04:15:46.126781\"}, \"xbtManifest\": {\"xbt_id\": \"18bc4b23-48da-426c-9986-2b4a7bc38f39\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3376}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:NOTATION\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"7114441198054ad78d2fcf9bcdab2cbf\", \"name\": \"any simple type\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-13 04:30:38.195407'),
+    (27021, 'f742e9879e085dd8bd1dd7e790509b3c', 1, 1, 'Added', '13e5d1379633033e1d1f8671c62ffb61', '{\"guid\": \"13e5d1379633033e1d1f8671c62ffb61\", \"name\": \"qualified name\", \"state\": 3, \"_metadata\": {\"xbt\": {\"guid\": \"13e5d1379633033e1d1f8671c62ffb61\", \"name\": \"qualified name\", \"state\": 3, \"xbt_id\": \"18bc4b23-48da-426c-9986-2b4a7bc38f39\", \"created_by\": 1, \"builtIn_type\": \"xsd:QName\", \"is_deprecated\": false, \"openapi30_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"owner_user_id\": 1, \"jbt_draft05_map\": \"{\\\"type\\\":\\\"string\\\"}\", \"last_updated_by\": 1, \"subtype_of_xbt_id\": \"a5d1f255-ff15-4c38-a5f5-6b3660a80a88\", \"creation_timestamp\": \"2022-08-13 04:15:46.133324\", \"last_update_timestamp\": \"2022-08-13 04:15:46.133324\"}, \"xbtManifest\": {\"xbt_id\": \"1cdcbd74-1896-4f8c-b2ab-c68e47976e18\", \"conflict\": false, \"release_id\": 1, \"xbt_manifest_id\": 3365}}, \"component\": \"xbt\", \"ownerUser\": {\"roles\": [\"developer\"], \"username\": \"oagis\"}, \"deprecated\": false, \"builtInType\": \"xsd:QName\", \"openapi30Map\": \"{\\\"type\\\":\\\"string\\\"}\", \"subTypeOfXbt\": {\"guid\": \"7114441198054ad78d2fcf9bcdab2cbf\", \"name\": \"any simple type\"}, \"jbtDraft05Map\": \"{\\\"type\\\":\\\"string\\\"}\"}', NULL, NULL, (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'sysadm'), '2022-08-13 04:30:57.641335');
 
 SET FOREIGN_KEY_CHECKS = 0;
 INSERT INTO `xbt_manifest` (`xbt_manifest_id`, `release_id`, `xbt_id`, `conflict`, `log_id`, `prev_xbt_manifest_id`, `next_xbt_manifest_id`)

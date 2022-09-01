@@ -43,7 +43,7 @@ public class CodeListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CodeListForList> getCodeLists(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "module", required = false) String module,
@@ -178,7 +178,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/check_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
             @RequestParam(name = "listId") String listId,
             @RequestParam(name = "agencyIdListValueManifestId") Long agencyIdListValueManifestId,
@@ -197,7 +197,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/check_name_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkNameUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
             @RequestParam(name = "codeListName") String codeListName) {
 

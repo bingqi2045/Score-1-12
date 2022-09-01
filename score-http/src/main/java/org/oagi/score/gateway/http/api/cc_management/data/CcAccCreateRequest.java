@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CcAccCreateRequest {
 
-    private BigInteger releaseId;
+    private String releaseId;
 
 }

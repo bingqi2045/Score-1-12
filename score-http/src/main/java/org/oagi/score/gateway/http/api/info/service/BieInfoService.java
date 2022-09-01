@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,8 @@ public class BieInfoService {
     @Autowired
     private SessionService sessionService;
 
-    public SummaryBieInfo getSummaryBieInfo(AuthenticatedPrincipal user, BigInteger releaseId) {
-        AppUser requester = sessionService.getAppUser(user);
+    public SummaryBieInfo getSummaryBieInfo(AuthenticatedPrincipal user, String releaseId) {
+        AppUser requester = sessionService.getAppUserByUsername(user);
         if (user == null || requester == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");
         }

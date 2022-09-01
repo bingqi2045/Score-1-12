@@ -9,6 +9,6 @@ public class ModuleSetRequest {
     public String name;
     public String description;
     public boolean createModuleSetRelease;
-    public BigInteger targetReleaseId;
+    public String targetReleaseId;
     public BigInteger targetModuleSetReleaseId;
 }

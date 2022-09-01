@@ -220,13 +220,13 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * to the user who creates the BBIE_SC. The creator of the BBIE_SC is also
      * its owner by default.
      */
-    public final TableField<BbieScRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.");
+    public final TableField<BbieScRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.");
 
     /**
      * The column <code>oagi.bbie_sc.last_updated_by</code>. A foreign key
      * referring to the user who has last updated the BBIE_SC record.
      */
-    public final TableField<BbieScRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who has last updated the BBIE_SC record.");
+    public final TableField<BbieScRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the BBIE_SC record.");
 
     /**
      * The column <code>oagi.bbie_sc.creation_timestamp</code>. Timestamp when

@@ -23,7 +23,7 @@ public class BieUpliftingController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public FindTargetAsccpManifestResponse findTargetAsccpManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                                    @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                                   @RequestParam("targetReleaseId") BigInteger targetReleaseId) {
+                                                                   @RequestParam("targetReleaseId") String targetReleaseId) {
 
         FindTargetAsccpManifestRequest request = new FindTargetAsccpManifestRequest();
         request.setRequester(sessionService.asScoreUser(user));
@@ -38,7 +38,7 @@ public class BieUpliftingController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AnalysisBieUpliftingResponse analysisBieUplifting(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                             @RequestParam("targetReleaseId") BigInteger targetReleaseId) {
+                                                             @RequestParam("targetReleaseId") String targetReleaseId) {
 
         AnalysisBieUpliftingRequest request = new AnalysisBieUpliftingRequest();
         request.setRequester(sessionService.asScoreUser(user));
@@ -63,7 +63,7 @@ public class BieUpliftingController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UpliftValidationResponse validateUplift(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                             @PathVariable("targetReleaseId") BigInteger targetReleaseId,
+                                                             @PathVariable("targetReleaseId") String targetReleaseId,
                                                              @RequestBody UpliftValidationRequest request) {
         request.setRequester(sessionService.asScoreUser(user));
         request.setTopLevelAsbiepId(topLevelAsbiepId);

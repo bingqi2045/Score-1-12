@@ -12,7 +12,7 @@ import java.math.BigInteger;
 @AllArgsConstructor
 public class ReleaseCleanupEvent implements Event {
 
-    private BigInteger userId;
-    private BigInteger releaseId;
+    private String userId;
+    private String releaseId;
 
 }

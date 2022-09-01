@@ -83,7 +83,7 @@ public class Exception extends TableImpl<ExceptionRecord> {
      * APP_USER table. It indicates the user who is working on when the
      * exception occurs.
      */
-    public final TableField<ExceptionRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
+    public final TableField<ExceptionRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
 
     /**
      * The column <code>oagi.exception.creation_timestamp</code>. Timestamp when
@@ -205,21 +205,21 @@ public class Exception extends TableImpl<ExceptionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, byte[], ULong, LocalDateTime> fieldsRow() {
+    public Row6<ULong, String, String, byte[], String, LocalDateTime> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

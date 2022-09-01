@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function11;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
@@ -54,11 +52,10 @@ public class Release extends TableImpl<ReleaseRecord> {
     }
 
     /**
-     * The column <code>oagi.release.release_id</code>. RELEASE_ID must be an
-     * incremental integer. RELEASE_ID that is more than another RELEASE_ID is
-     * interpreted to be released later than the other.
+     * The column <code>oagi.release.release_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
+    public final TableField<ReleaseRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.release.guid</code>. A globally unique identifier
@@ -86,25 +83,21 @@ public class Release extends TableImpl<ReleaseRecord> {
 
     /**
      * The column <code>oagi.release.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. It identifies the namespace used with the release. It is
-     * particularly useful for a library that uses a single namespace such like
-     * the OAGIS 10.x. A library that uses multiple namespace but has a main
-     * namespace may also use this column as a specific namespace can be
-     * override at the module level.
+     * NAMESPACE table.
      */
-    public final TableField<ReleaseRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.");
+    public final TableField<ReleaseRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
 
     /**
      * The column <code>oagi.release.created_by</code>. Foreign key to the
      * APP_USER table identifying user who created the namespace.
      */
-    public final TableField<ReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
+    public final TableField<ReleaseRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
 
     /**
      * The column <code>oagi.release.last_updated_by</code>. Foreign key to the
      * APP_USER table identifying the user who last updated the record.
      */
-    public final TableField<ReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
+    public final TableField<ReleaseRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
 
     /**
      * The column <code>oagi.release.creation_timestamp</code>. The timestamp
@@ -160,11 +153,6 @@ public class Release extends TableImpl<ReleaseRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<ReleaseRecord, ULong> getIdentity() {
-        return (Identity<ReleaseRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -257,21 +245,21 @@ public class Release extends TableImpl<ReleaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String> fieldsRow() {
+    public Row11<String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -59,13 +59,13 @@ public class JooqModuleSetReleaseWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public CreateModuleSetReleaseResponse createModuleSetRelease(CreateModuleSetReleaseRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (request.isDefault()) {
             dslContext().update(MODULE_SET_RELEASE)
                     .set(MODULE_SET_RELEASE.IS_DEFAULT, (byte) 0)
-                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId()))
                     .execute();
         }
 
@@ -76,7 +76,7 @@ public class JooqModuleSetReleaseWriteRepository
 
         InsertSetMoreStep<ModuleSetReleaseRecord> insertSetMoreStep =
                 dslContext().insertInto(MODULE_SET_RELEASE)
-                        .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
+                        .set(MODULE_SET_RELEASE.RELEASE_ID, request.getReleaseId())
                         .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
                         .set(MODULE_SET_RELEASE.NAME, moduleSetReleaseName);
 
@@ -96,7 +96,7 @@ public class JooqModuleSetReleaseWriteRepository
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
         moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
-        moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId().toBigInteger());
+        moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId());
         moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId().toBigInteger());
         moduleSetRelease.setModuleSetReleaseName(moduleSetReleaseRecord.getName());
         moduleSetRelease.setDefault(request.isDefault());
@@ -118,13 +118,13 @@ public class JooqModuleSetReleaseWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateModuleSetReleaseResponse updateModuleSetRelease(UpdateModuleSetReleaseRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (request.isDefault()) {
             dslContext().update(MODULE_SET_RELEASE)
                     .set(MODULE_SET_RELEASE.IS_DEFAULT, (byte) 0)
-                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                    .where(MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId()))
                     .execute();
         }
 
@@ -135,7 +135,7 @@ public class JooqModuleSetReleaseWriteRepository
         String moduleSetReleaseDescription = request.getModuleSetReleaseDescription();
 
         UpdateSetStep updateSetStep = dslContext().update(MODULE_SET_RELEASE)
-                .set(MODULE_SET_RELEASE.RELEASE_ID, ULong.valueOf(request.getReleaseId()))
+                .set(MODULE_SET_RELEASE.RELEASE_ID, request.getReleaseId())
                 .set(MODULE_SET_RELEASE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
                 .set(MODULE_SET_RELEASE.NAME, moduleSetReleaseName);
 
@@ -157,7 +157,7 @@ public class JooqModuleSetReleaseWriteRepository
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
         moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId().toBigInteger());
-        moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId().toBigInteger());
+        moduleSetRelease.setReleaseId(moduleSetReleaseRecord.getReleaseId());
         moduleSetRelease.setModuleSetId(moduleSetReleaseRecord.getModuleSetId().toBigInteger());
         moduleSetRelease.setModuleSetReleaseName(moduleSetReleaseRecord.getName());
         moduleSetRelease.setModuleSetReleaseDescription(moduleSetReleaseRecord.getDescription());
@@ -206,10 +206,10 @@ public class JooqModuleSetReleaseWriteRepository
         return new DeleteModuleSetReleaseResponse();
     }
 
-    private void copyModuleCcManifest(ULong requesterUserId, LocalDateTime timestamp,
+    private void copyModuleCcManifest(String requesterUserId, LocalDateTime timestamp,
                                      ModuleSetReleaseRecord moduleSetReleaseRecord, ULong baseModuleSetReleaseId) {
 
-        ULong releaseId = moduleSetReleaseRecord.getReleaseId();
+        String releaseId = moduleSetReleaseRecord.getReleaseId();
 
         // copy MODULE_ACC_MANIFEST
         dslContext().insertInto(MODULE_ACC_MANIFEST,
@@ -445,9 +445,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_ACC_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_ACC_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ACC_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ACC_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_ACC_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ACC_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ACC_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.ASCCP)) {
@@ -455,9 +455,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_ASCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_ASCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ASCCP_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ASCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_ASCCP_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_ASCCP_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.BCCP)) {
@@ -465,9 +465,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_BCCP_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_BCCP_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_BCCP_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_BCCP_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_BCCP_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_BCCP_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_BCCP_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.DT)) {
@@ -475,9 +475,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_DT_MANIFEST.DT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_DT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_DT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_DT_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_DT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_DT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_DT_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_DT_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.CODE_LIST)) {
@@ -485,9 +485,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_CODE_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_CODE_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_CODE_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_CODE_LIST_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.AGENCY_ID_LIST)) {
@@ -495,9 +495,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_AGENCY_ID_LIST_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         } else if (request.getType().equals(CcType.XBT)) {
@@ -505,9 +505,9 @@ public class JooqModuleSetReleaseWriteRepository
                     .set(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID, ULong.valueOf(request.getModuleSetReleaseId()))
                     .set(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID, ULong.valueOf(request.getManifestId()))
                     .set(MODULE_XBT_MANIFEST.MODULE_ID, ULong.valueOf(request.getModuleId()))
-                    .set(MODULE_XBT_MANIFEST.CREATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_XBT_MANIFEST.CREATED_BY, request.getRequester().getUserId())
                     .set(MODULE_XBT_MANIFEST.CREATION_TIMESTAMP, request.getTimestamp())
-                    .set(MODULE_XBT_MANIFEST.LAST_UPDATED_BY, ULong.valueOf(request.getRequester().getUserId()))
+                    .set(MODULE_XBT_MANIFEST.LAST_UPDATED_BY, request.getRequester().getUserId())
                     .set(MODULE_XBT_MANIFEST.LAST_UPDATE_TIMESTAMP, request.getTimestamp())
                     .execute();
         }

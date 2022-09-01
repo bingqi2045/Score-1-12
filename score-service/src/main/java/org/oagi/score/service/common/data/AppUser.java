@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class AppUser {
 
-    private BigInteger appUserId;
+    private String appUserId;
     private String loginId;
     private String password;
     private String name;

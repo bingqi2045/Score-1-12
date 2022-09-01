@@ -29,13 +29,13 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private String definition;
     private String definitionSource;
     private boolean hasNoSc;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private CcState state;
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
     private String spec;

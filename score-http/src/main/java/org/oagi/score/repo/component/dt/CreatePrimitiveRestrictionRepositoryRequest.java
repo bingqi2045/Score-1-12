@@ -9,7 +9,7 @@ import java.util.List;
 public class CreatePrimitiveRestrictionRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger dtManifestId;
-    private final BigInteger releaseId;
+    private final String releaseId;
 
     private String primitive;
     private List<BigInteger> xbtManifestIdList;
@@ -17,7 +17,7 @@ public class CreatePrimitiveRestrictionRepositoryRequest extends RepositoryReque
 
 
     public CreatePrimitiveRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                       BigInteger dtManifestId, BigInteger releaseId) {
+                                                       BigInteger dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
@@ -27,7 +27,7 @@ public class CreatePrimitiveRestrictionRepositoryRequest extends RepositoryReque
         return dtManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 

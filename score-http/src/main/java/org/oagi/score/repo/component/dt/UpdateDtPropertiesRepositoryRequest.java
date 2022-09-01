@@ -19,7 +19,7 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private boolean deprecated;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private List<CcBdtPriRestri> bdtPriRestriList;
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
@@ -95,11 +95,11 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
         this.deprecated = deprecated;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

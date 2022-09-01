@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
  * an ASCCP.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
+public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<ULong, String, ULong, String, String, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> {
 
     private static final long serialVersionUID = 1L;
 
@@ -202,7 +202,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
      * owner by default. ASBIEPs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(9, value);
     }
 
@@ -212,24 +212,24 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
      * owner by default. ASBIEPs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(9);
+    public String getCreatedBy() {
+        return (String) get(9);
     }
 
     /**
      * Setter for <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record. 
+     * referring to the last user who has updated the ASBIEP record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(10, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record. 
+     * referring to the last user who has updated the ASBIEP record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(10);
+    public String getLastUpdatedBy() {
+        return (String) get(10);
     }
 
     /**
@@ -296,12 +296,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
         return (Row14) super.fieldsRow();
     }
 
     @Override
-    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> valuesRow() {
+    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> valuesRow() {
         return (Row14) super.valuesRow();
     }
 
@@ -351,12 +351,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<String> field10() {
         return Asbiep.ASBIEP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<String> field11() {
         return Asbiep.ASBIEP.LAST_UPDATED_BY;
     }
 
@@ -421,12 +421,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public ULong component10() {
+    public String component10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component11() {
+    public String component11() {
         return getLastUpdatedBy();
     }
 
@@ -491,12 +491,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public ULong value10() {
+    public String value10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value11() {
+    public String value11() {
         return getLastUpdatedBy();
     }
 
@@ -570,13 +570,13 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public AsbiepRecord value10(ULong value) {
+    public AsbiepRecord value10(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value11(ULong value) {
+    public AsbiepRecord value11(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -600,7 +600,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public AsbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, String value7, String value8, String value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, ULong value14) {
+    public AsbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, ULong value14) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -632,7 +632,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     /**
      * Create a detached, initialised AsbiepRecord
      */
-    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, String path, String hashPath, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
+    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, String path, String hashPath, ULong roleOfAbieId, String definition, String remark, String bizTerm, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(Asbiep.ASBIEP);
 
         setAsbiepId(asbiepId);

@@ -25,7 +25,7 @@ public class BieListRequest {
     private List<String> types = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
-    private BigInteger releaseId;
+    private String releaseId;
     private Date updateStartDate;
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;

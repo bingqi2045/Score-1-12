@@ -18,7 +18,7 @@ public class SummaryCcExt {
     private String lastUpdateUser;
 
     private String ownerUsername;
-    private BigInteger ownerUserId;
+    private String ownerUserId;
 
     private BigInteger topLevelAsbiepId;
     private BieState bieState;

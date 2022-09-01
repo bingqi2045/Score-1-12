@@ -19,7 +19,7 @@ public class BieList {
     private String releaseNum;
     private List<BusinessContext> businessContexts;
     private String owner;
-    private BigInteger ownerUserId;
+    private String ownerUserId;
     private AccessPrivilege access;
 
     private String version;

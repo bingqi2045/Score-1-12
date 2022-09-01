@@ -18,7 +18,6 @@ import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -212,8 +211,8 @@ public class DtScWriteRepository {
     }
 
     public UpdateDtScPropertiesRepositoryResponse updateDtScProperties(UpdateDtScPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
@@ -569,8 +568,8 @@ public class DtScWriteRepository {
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -630,8 +629,8 @@ public class DtScWriteRepository {
     }
 
     public DeleteDtScRepositoryResponse deleteDtSc(DeleteDtScRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)

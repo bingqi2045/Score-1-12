@@ -35,7 +35,7 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public CreateModuleSetResponse createModuleSet(CreateModuleSetRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (!StringUtils.hasLength(request.getName())) {
@@ -64,8 +64,8 @@ public class JooqModuleSetWriteRepository
         moduleSet.setLastUpdateTimestamp(
                 Date.from(moduleSetRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
-        ULong namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
-                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(ULong.class);
+        String namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
+                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(String.class);
 
         ULong rootModuleSetId = dslContext().insertInto(MODULE)
                 .setNull(MODULE.PARENT_MODULE_ID)
@@ -91,7 +91,7 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateModuleSetResponse updateModuleSet(UpdateModuleSetRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (!StringUtils.hasLength(request.getName())) {

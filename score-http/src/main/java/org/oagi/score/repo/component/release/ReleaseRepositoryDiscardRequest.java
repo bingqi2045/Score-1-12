@@ -8,21 +8,21 @@ import java.time.LocalDateTime;
 
 public class ReleaseRepositoryDiscardRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
+    private final String releaseId;
 
-    public ReleaseRepositoryDiscardRequest(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public ReleaseRepositoryDiscardRequest(AuthenticatedPrincipal user, String releaseId) {
         super(user);
         this.releaseId = releaseId;
     }
 
     public ReleaseRepositoryDiscardRequest(AuthenticatedPrincipal user,
                                            LocalDateTime localDateTime,
-                                           BigInteger releaseId) {
+                                           String releaseId) {
         super(user, localDateTime);
         this.releaseId = releaseId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 }

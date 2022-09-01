@@ -9,5 +9,5 @@ import java.util.Map;
 public interface CodeListReadRepository {
 
     Map<BigInteger, CodeList> getCodeListMap(
-            BigInteger ReleaseId) throws ScoreDataAccessException;
+            String releaseId) throws ScoreDataAccessException;
 }

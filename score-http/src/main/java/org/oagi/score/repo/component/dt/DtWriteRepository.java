@@ -50,7 +50,7 @@ public class DtWriteRepository {
 
     public CreateBdtRepositoryResponse createBdt(CreateBdtRepositoryRequest request) {
         ScoreUser requestor = sessionService.asScoreUser(request.getUser());
-        ULong userId = ULong.valueOf(requestor.getUserId());
+        String userId = requestor.getUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord basedBdtManifest = dslContext.selectFrom(DT_MANIFEST)
@@ -109,7 +109,7 @@ public class DtWriteRepository {
         DtManifestRecord bdtManifest = new DtManifestRecord();
         bdtManifest.setDtId(bdt.getDtId());
         bdtManifest.setBasedDtManifestId(basedBdtManifest.getDtManifestId());
-        bdtManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        bdtManifest.setReleaseId(request.getReleaseId());
         bdtManifest = dslContext.insertInto(DT_MANIFEST)
                 .set(bdtManifest)
                 .returning(DT_MANIFEST.DT_MANIFEST_ID).fetchOne();
@@ -121,7 +121,7 @@ public class DtWriteRepository {
         dslContext.select(DT_SC.DT_SC_ID, DT_SC.BASED_DT_SC_ID)
                 .from(DT_SC)
                 .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())), DT_SC.BASED_DT_SC_ID.isNotNull()))
+                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()), DT_SC.BASED_DT_SC_ID.isNotNull()))
                 .fetchStream().forEach(record -> {
                     basedScMap.put(record.get(DT_SC.DT_SC_ID), record.get(DT_SC.BASED_DT_SC_ID));
                 });
@@ -263,8 +263,8 @@ public class DtWriteRepository {
     }
 
     public ReviseDtRepositoryResponse reviseDt(ReviseDtRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -291,12 +291,12 @@ public class DtWriteRepository {
             throw new IllegalArgumentException("CDT can not be revised.");
         }
 
-        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
+        String workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
-        ULong targetReleaseId = dtManifestRecord.getReleaseId();
+        String targetReleaseId = dtManifestRecord.getReleaseId();
         if (user.isDeveloper()) {
             if (!targetReleaseId.equals(workingReleaseId)) {
                 throw new IllegalArgumentException("It only allows to revise the component in 'Working' branch for developers.");
@@ -410,8 +410,8 @@ public class DtWriteRepository {
     }
 
     public UpdateDtPropertiesRepositoryResponse updateDtProperties(UpdateDtPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -487,12 +487,12 @@ public class DtWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(DT.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }
-        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+        if (!StringUtils.hasLength(request.getNamespaceId())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .setNull(DT.NAMESPACE_ID);
         } else {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(DT.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+                    .set(DT.NAMESPACE_ID, request.getNamespaceId());
         }
 
         if (moreStep != null) {
@@ -804,8 +804,8 @@ public class DtWriteRepository {
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -865,8 +865,8 @@ public class DtWriteRepository {
     }
 
     public DeleteDtRepositoryResponse deleteDt(DeleteDtRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -909,8 +909,8 @@ public class DtWriteRepository {
     }
 
     public DiscardDtRepositoryResponse purgeDt(PurgeDtRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -935,7 +935,7 @@ public class DtWriteRepository {
         }
 
         // discard Log
-        ULong logId = dtManifestRecord.getLogId();
+        String logId = dtManifestRecord.getLogId();
         dslContext.update(DT_MANIFEST)
                 .setNull(DT_MANIFEST.LOG_ID)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
@@ -1032,8 +1032,8 @@ public class DtWriteRepository {
     }
 
     public UpdateDtOwnerRepositoryResponse updateDtOwner(UpdateDtOwnerRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -1054,7 +1054,7 @@ public class DtWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        bdtRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        bdtRecord.setOwnerUserId(request.getOwnerId());
         bdtRecord.setLastUpdatedBy(userId);
         bdtRecord.setLastUpdateTimestamp(timestamp);
         bdtRecord.update(DT.OWNER_USER_ID, DT.LAST_UPDATED_BY, DT.LAST_UPDATE_TIMESTAMP);
@@ -1073,7 +1073,7 @@ public class DtWriteRepository {
     }
 
     public CancelRevisionDtRepositoryResponse cancelRevisionDt(CancelRevisionDtRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -1257,8 +1257,8 @@ public class DtWriteRepository {
     }
 
     public CreateDtScRepositoryResponse createDtSc(CreateDtScRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
@@ -1277,9 +1277,9 @@ public class DtWriteRepository {
         dtScRecord.setOwnerDtId(ownerDtManifest.getDtId());
         dtScRecord.setCardinalityMin(0);
         dtScRecord.setCardinalityMax(1);
-        dtScRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
-        dtScRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
-        dtScRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
+        dtScRecord.setCreatedBy(user.getAppUserId());
+        dtScRecord.setLastUpdatedBy(user.getAppUserId());
+        dtScRecord.setOwnerUserId(user.getAppUserId());
         dtScRecord.setCreationTimestamp(request.getLocalDateTime());
         dtScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
