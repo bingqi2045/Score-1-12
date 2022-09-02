@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function20;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -57,10 +55,10 @@ public class Ascc extends TableImpl<AsccRecord> {
     }
 
     /**
-     * The column <code>oagi.ascc.ascc_id</code>. An internal, primary database
-     * key of an ASCC.
+     * The column <code>oagi.ascc.ascc_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<AsccRecord, ULong> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an ASCC.");
+    public final TableField<AsccRecord, String> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.ascc.guid</code>. A globally unique identifier
@@ -95,14 +93,14 @@ public class Ascc extends TableImpl<AsccRecord> {
      * key pointing to an ACC record. It is basically pointing to a parent data
      * element (type) of the TO_ASCCP_ID.
      */
-    public final TableField<AsccRecord, ULong> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.");
+    public final TableField<AsccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.");
 
     /**
      * The column <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID. 
+     * element of the FROM_ACC_ID.
      */
-    public final TableField<AsccRecord, ULong> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. ");
+    public final TableField<AsccRecord, String> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.CHAR(36), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.");
 
     /**
      * The column <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the
@@ -140,7 +138,7 @@ public class Ascc extends TableImpl<AsccRecord> {
      * The column <code>oagi.ascc.replacement_ascc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<AsccRecord, ULong> REPLACEMENT_ASCC_ID = createField(DSL.name("replacement_ascc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<AsccRecord, String> REPLACEMENT_ASCC_ID = createField(DSL.name("replacement_ascc_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.ascc.created_by</code>. A foreign key to the
@@ -203,13 +201,13 @@ public class Ascc extends TableImpl<AsccRecord> {
      * The column <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<AsccRecord, ULong> PREV_ASCC_ID = createField(DSL.name("prev_ascc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<AsccRecord, String> PREV_ASCC_ID = createField(DSL.name("prev_ascc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<AsccRecord, ULong> NEXT_ASCC_ID = createField(DSL.name("next_ascc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<AsccRecord, String> NEXT_ASCC_ID = createField(DSL.name("next_ascc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Ascc(Name alias, Table<AsccRecord> aliased) {
         this(alias, aliased, null);
@@ -252,11 +250,6 @@ public class Ascc extends TableImpl<AsccRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ASCC_ASCC_GUID_IDX, Indexes.ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<AsccRecord, ULong> getIdentity() {
-        return (Identity<AsccRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -408,21 +401,21 @@ public class Ascc extends TableImpl<AsccRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+    public Row20<String, String, Integer, Integer, Integer, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row20) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function20<? super String, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function20<? super ULong, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function20<? super String, ? super String, ? super Integer, ? super Integer, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

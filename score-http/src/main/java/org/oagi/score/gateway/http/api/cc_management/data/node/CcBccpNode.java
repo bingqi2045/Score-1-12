@@ -13,19 +13,19 @@ public class CcBccpNode extends CcNode implements SeqKeySupportable {
 
     private CcType type = CcType.BCCP;
 
-    private BigInteger bccId = BigInteger.ZERO;
+    private String bccId;
     private boolean attribute;
     private int seqKey;
 
-    private BigInteger bccpId = BigInteger.ZERO;
-    private BigInteger bdtId = BigInteger.ZERO;
+    private String bccpId;
+    private String bdtId;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger bccManifestId = BigInteger.ZERO;
     private BigInteger prevBccpId;
     private BigInteger nextBccpId;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return bccpId;
     }
 }

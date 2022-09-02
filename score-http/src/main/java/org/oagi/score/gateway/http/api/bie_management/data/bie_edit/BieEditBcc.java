@@ -10,9 +10,9 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditBcc extends TrackableImpl implements SeqKeySupportable, Cardinality {
+public class BieEditBcc extends TrackableImpl<String> implements SeqKeySupportable, Cardinality {
 
-    private BigInteger bccId;
+    private String bccId;
     private BigInteger bccManifestId;
     private String guid;
     private BigInteger fromAccManifestId;
@@ -28,7 +28,7 @@ public class BieEditBcc extends TrackableImpl implements SeqKeySupportable, Card
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return bccId;
     }
 

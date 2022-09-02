@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Row2;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
 
 
@@ -18,7 +17,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
  * represented in Blob.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record2<ULong, byte[]> {
+public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record2<String, byte[]> {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +25,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
      * Setter for <code>oagi.blob_content.blob_content_id</code>. Primary,
      * internal database key.
      */
-    public void setBlobContentId(ULong value) {
+    public void setBlobContentId(String value) {
         set(0, value);
     }
 
@@ -34,8 +33,8 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
      * Getter for <code>oagi.blob_content.blob_content_id</code>. Primary,
      * internal database key.
      */
-    public ULong getBlobContentId() {
-        return (ULong) get(0);
+    public String getBlobContentId() {
+        return (String) get(0);
     }
 
     /**
@@ -59,7 +58,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -68,17 +67,17 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, byte[]> fieldsRow() {
+    public Row2<String, byte[]> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Row2<ULong, byte[]> valuesRow() {
+    public Row2<String, byte[]> valuesRow() {
         return (Row2) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BlobContent.BLOB_CONTENT.BLOB_CONTENT_ID;
     }
 
@@ -88,7 +87,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBlobContentId();
     }
 
@@ -98,7 +97,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBlobContentId();
     }
 
@@ -108,7 +107,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public BlobContentRecord value1(ULong value) {
+    public BlobContentRecord value1(String value) {
         setBlobContentId(value);
         return this;
     }
@@ -120,7 +119,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public BlobContentRecord values(ULong value1, byte[] value2) {
+    public BlobContentRecord values(String value1, byte[] value2) {
         value1(value1);
         value2(value2);
         return this;
@@ -140,7 +139,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     /**
      * Create a detached, initialised BlobContentRecord
      */
-    public BlobContentRecord(ULong blobContentId, byte[] content) {
+    public BlobContentRecord(String blobContentId, byte[] content) {
         super(BlobContent.BLOB_CONTENT);
 
         setBlobContentId(blobContentId);

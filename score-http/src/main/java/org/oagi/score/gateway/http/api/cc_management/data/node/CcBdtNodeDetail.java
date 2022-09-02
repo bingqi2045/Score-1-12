@@ -12,14 +12,14 @@ public class CcBdtNodeDetail implements CcNodeDetail {
 
     private CcType type = CcType.DT;
 
-    private BigInteger bdtId = BigInteger.ZERO;
+    private String bdtId;
     private BigInteger manifestId;
     private String guid;
     private String dataTypeTerm;
     private String representationTerm;
     private String sixDigitId;
     private String qualifier;
-    private BigInteger basedBdtId;
+    private String basedBdtId;
     private BigInteger basedBdtManifestId;
     private String basedBdtDen;
     private String contentComponentDefinition;

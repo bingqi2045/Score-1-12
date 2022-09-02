@@ -55,8 +55,8 @@ public class BbieNode {
         private String example;
 
         private BigInteger bdtPriRestriId;
-        private BigInteger codeListId;
-        private BigInteger agencyIdListId;
+        private String codeListId;
+        private String agencyIdListId;
 
         public boolean isEmptyPrimitive() {
             return (bdtPriRestriId == null && codeListId == null && agencyIdListId == null);

@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class SimpleAgencyIdList {
 
     private BigInteger agencyIdListManifestId;
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
     private String name;
     private String state;
 

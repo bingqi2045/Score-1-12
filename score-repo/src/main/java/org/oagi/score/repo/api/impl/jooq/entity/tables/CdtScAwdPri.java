@@ -24,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriRecord;
@@ -63,7 +62,7 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
      * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key
      * pointing to the supplementary component (SC).
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
+    public final TableField<CdtScAwdPriRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to the supplementary component (SC).");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
@@ -193,21 +192,21 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<String, ULong, String, Byte> fieldsRow() {
+    public Row4<String, String, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super String, ? super ULong, ? super String, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super ULong, ? super String, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

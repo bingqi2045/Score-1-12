@@ -61,7 +61,7 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     /**
      * The column <code>oagi.blob_content_manifest.blob_content_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BlobContentManifestRecord, String> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.release_id</code>. Foreign
@@ -233,21 +233,21 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, String, Byte, ULong, ULong> fieldsRow() {
+    public Row6<ULong, String, String, Byte, ULong, ULong> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

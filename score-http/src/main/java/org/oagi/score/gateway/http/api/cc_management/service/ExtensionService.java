@@ -35,10 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -83,7 +80,7 @@ public class ExtensionService {
 
         AppUser requester = sessionService.getAppUserByUsername(user);
         String ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(String.class);
+                .where(ACC.ACC_ID.eq(ueAcc.getAccId())).fetchOneInto(String.class);
         AppUser owner = sessionService.getAppUserById(ownerUserId);
         boolean isWorkingRelease = ueAcc.getReleaseNum().equals("Working");
         AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, owner, ueAcc.getState(), isWorkingRelease);
@@ -274,8 +271,10 @@ public class ExtensionService {
     private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, AuthenticatedPrincipal user) {
         String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
+        String asccId = UUID.randomUUID().toString();
 
-        return dslContext.insertInto(Tables.ASCC,
+        dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.ASCC_ID,
                 Tables.ASCC.GUID,
                 Tables.ASCC.CARDINALITY_MIN,
                 Tables.ASCC.CARDINALITY_MAX,
@@ -290,11 +289,12 @@ public class ExtensionService {
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCC.STATE).values(
+                asccId,
                 ScoreGuid.randomGuid(),
                 0,
                 1,
                 1,
-                ULong.valueOf(eAcc.getAccId()),
+                eAcc.getAccId(),
                 ueAsccp.getAsccpId(),
                 eAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
                 (byte) 0,
@@ -304,7 +304,8 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.Production.name()
-        ).returning().fetchOne();
+        ).execute();
+        return dslContext.selectFrom(ASCC).where(ASCC.ASCC_ID.eq(asccId)).fetchOne();
     }
 
     private void createASCCManifestForExtension(
@@ -389,7 +390,7 @@ public class ExtensionService {
                 .collect(Collectors.toList());
 
         for (CcAsccpNodeDetail.Ascc ascc : asccList) {
-            response.getAsccResults().put(ascc.getAsccId().longValue(),
+            response.getAsccResults().put(ascc.getAsccId(),
                     updateAscc(extensionAcc, ascc, userId, timestamp)
             );
         }
@@ -399,7 +400,7 @@ public class ExtensionService {
                 .collect(Collectors.toList());
 
         for (CcBccpNodeDetail.Bcc bcc : bccList) {
-            response.getBccResults().put(bcc.getBccId().longValue(),
+            response.getBccResults().put(bcc.getBccId(),
                     updateBcc(extensionAcc, bcc, userId, timestamp)
             );
         }
@@ -412,12 +413,12 @@ public class ExtensionService {
                                String userId, LocalDateTime timestamp) {
 
         String guid = dslContext.select(ASCC.GUID).from(ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
+                .where(ASCC.ASCC_ID.eq(ascc.getAsccId()))
                 .fetchOneInto(String.class);
 
-        ULong asccId = dslContext.select(ASCC.ASCC_ID).from(ASCC)
+        String asccId = dslContext.select(ASCC.ASCC_ID).from(ASCC)
                 .where(ASCC.GUID.eq(guid))
-                .orderBy(ASCC.ASCC_ID.desc()).limit(1).fetchOneInto(ULong.class);
+                .orderBy(ASCC.ASCC_ID.desc()).limit(1).fetchOneInto(String.class);
 
         AsccRecord history = dslContext.selectFrom(Tables.ASCC)
                 .where(ASCC.ASCC_ID.eq(asccId))
@@ -438,7 +439,7 @@ public class ExtensionService {
         int result = dslContext.update(ASCC_MANIFEST)
                 .set(ASCC_MANIFEST.ASCC_ID, history.getAsccId())
                 .where(and(
-                        ASCC_MANIFEST.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())),
+                        ASCC_MANIFEST.ASCC_ID.eq(ascc.getAsccId()),
                         ASCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
                 )).execute();
 
@@ -450,12 +451,12 @@ public class ExtensionService {
                               String userId, LocalDateTime timestamp) {
 
         String guid = dslContext.select(BCC.GUID).from(BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
+                .where(BCC.BCC_ID.eq(bcc.getBccId()))
                 .fetchOneInto(String.class);
 
-        ULong bccId = dslContext.select(BCC.BCC_ID).from(BCC)
+        String bccId = dslContext.select(BCC.BCC_ID).from(BCC)
                 .where(BCC.GUID.eq(guid))
-                .orderBy(BCC.BCC_ID.desc()).limit(1).fetchOneInto(ULong.class);
+                .orderBy(BCC.BCC_ID.desc()).limit(1).fetchOneInto(String.class);
 
         BccRecord history = dslContext.selectFrom(Tables.BCC)
                 .where(BCC.BCC_ID.eq(bccId))
@@ -480,7 +481,7 @@ public class ExtensionService {
         int result = dslContext.update(BCC_MANIFEST)
                 .set(BCC_MANIFEST.BCC_ID, history.getBccId())
                 .where(and(
-                        BCC_MANIFEST.BCC_ID.eq(ULong.valueOf(bcc.getBccId())),
+                        BCC_MANIFEST.BCC_ID.eq(bcc.getBccId()),
                         BCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
                 )).execute();
 
@@ -539,7 +540,7 @@ public class ExtensionService {
                                        String targetAppUserId,
                                        String userId, LocalDateTime timestamp) {
 
-        Map<ULong, AsccManifestRecord> asccManifestRecordMap =
+        Map<String, AsccManifestRecord> asccManifestRecordMap =
                 dslContext.select(ASCC_MANIFEST.fields()).from(ASCC_MANIFEST)
                         .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                         .where(ACC_MANIFEST.ACC_ID.eq(accManifest.getAccId()))
@@ -577,7 +578,7 @@ public class ExtensionService {
                                       String targetAppUserId,
                                       String userId, LocalDateTime timestamp) {
 
-        Map<ULong, BccManifestRecord> bccManifestRecordMap =
+        Map<String, BccManifestRecord> bccManifestRecordMap =
                 dslContext.select(BCC_MANIFEST.fields()).from(BCC_MANIFEST)
                         .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                         .where(ACC_MANIFEST.ACC_ID.eq(accManifest.getAccId()))

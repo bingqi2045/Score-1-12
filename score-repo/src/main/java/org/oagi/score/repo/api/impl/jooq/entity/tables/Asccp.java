@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function21;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -56,10 +54,10 @@ public class Asccp extends TableImpl<AsccpRecord> {
     }
 
     /**
-     * The column <code>oagi.asccp.asccp_id</code>. An internal, primary
-     * database key of an ASCCP.
+     * The column <code>oagi.asccp.asccp_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<AsccpRecord, ULong> ASCCP_ID = createField(DSL.name("asccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an ASCCP.");
+    public final TableField<AsccpRecord, String> ASCCP_ID = createField(DSL.name("asccp_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.asccp.guid</code>. A globally unique identifier
@@ -96,7 +94,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.role_of_acc_id</code>. The ACC from which
      * this ASCCP is created (ASCCP applies role to the ACC).
      */
-    public final TableField<AsccpRecord, ULong> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.BIGINTUNSIGNED, this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
+    public final TableField<AsccpRecord, String> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.CHAR(36), this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
 
     /**
      * The column <code>oagi.asccp.den</code>. The dictionary entry name of the
@@ -185,7 +183,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.replacement_asccp_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<AsccpRecord, ULong> REPLACEMENT_ASCCP_ID = createField(DSL.name("replacement_asccp_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<AsccpRecord, String> REPLACEMENT_ASCCP_ID = createField(DSL.name("replacement_asccp_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.asccp.is_nillable</code>. This is corresponding to
@@ -199,13 +197,13 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<AsccpRecord, ULong> PREV_ASCCP_ID = createField(DSL.name("prev_asccp_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<AsccpRecord, String> PREV_ASCCP_ID = createField(DSL.name("prev_asccp_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<AsccpRecord, ULong> NEXT_ASCCP_ID = createField(DSL.name("next_asccp_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<AsccpRecord, String> NEXT_ASCCP_ID = createField(DSL.name("next_asccp_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Asccp(Name alias, Table<AsccpRecord> aliased) {
         this(alias, aliased, null);
@@ -248,11 +246,6 @@ public class Asccp extends TableImpl<AsccpRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<AsccpRecord, ULong> getIdentity() {
-        return (Identity<AsccpRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -404,21 +397,21 @@ public class Asccp extends TableImpl<AsccpRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row21<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, String, Byte, String, String> fieldsRow() {
         return (Row21) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function21<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function21<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super Byte, ? super Byte, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function21<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function21<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super Byte, ? super Byte, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

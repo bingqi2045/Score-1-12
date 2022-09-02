@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -22,7 +21,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -52,9 +50,9 @@ public class Dt extends TableImpl<DtRecord> {
     }
 
     /**
-     * The column <code>oagi.dt.dt_id</code>. Internal, primary database key.
+     * The column <code>oagi.dt.dt_id</code>. Primary, internal database key.
      */
-    public final TableField<DtRecord, ULong> DT_ID = createField(DSL.name("dt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<DtRecord, String> DT_ID = createField(DSL.name("dt_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.dt.guid</code>. A globally unique identifier
@@ -101,7 +99,7 @@ public class Dt extends TableImpl<DtRecord> {
      * DT table itself. This column must be blank when the DT_TYPE is CDT. This
      * column must not be blank when the DT_TYPE is BDT.
      */
-    public final TableField<DtRecord, ULong> BASED_DT_ID = createField(DSL.name("based_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.");
+    public final TableField<DtRecord, String> BASED_DT_ID = createField(DSL.name("based_dt_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.");
 
     /**
      * The column <code>oagi.dt.den</code>. Dictionary Entry Name of the data
@@ -202,19 +200,19 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.replacement_dt_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<DtRecord, ULong> REPLACEMENT_DT_ID = createField(DSL.name("replacement_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<DtRecord, String> REPLACEMENT_DT_ID = createField(DSL.name("replacement_dt_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt.prev_dt_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<DtRecord, ULong> PREV_DT_ID = createField(DSL.name("prev_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<DtRecord, String> PREV_DT_ID = createField(DSL.name("prev_dt_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.dt.next_dt_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<DtRecord, ULong> NEXT_DT_ID = createField(DSL.name("next_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<DtRecord, String> NEXT_DT_ID = createField(DSL.name("next_dt_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Dt(Name alias, Table<DtRecord> aliased) {
         this(alias, aliased, null);
@@ -257,11 +255,6 @@ public class Dt extends TableImpl<DtRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<DtRecord, ULong> getIdentity() {
-        return (Identity<DtRecord, ULong>) super.getIdentity();
     }
 
     @Override

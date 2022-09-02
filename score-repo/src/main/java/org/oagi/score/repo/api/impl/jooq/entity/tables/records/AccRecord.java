@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record22;
 import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 
 
@@ -26,24 +25,22 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
  * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record22<ULong, String, String, String, String, String, String, ULong, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> {
+public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record22<String, String, String, String, String, String, String, String, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, Byte, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key
-     * of an ACC.
+     * Setter for <code>oagi.acc.acc_id</code>. Primary, internal database key.
      */
-    public void setAccId(ULong value) {
+    public void setAccId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.acc_id</code>. A internal, primary database key
-     * of an ACC.
+     * Getter for <code>oagi.acc.acc_id</code>. Primary, internal database key.
      */
-    public ULong getAccId() {
-        return (ULong) get(0);
+    public String getAccId() {
+        return (String) get(0);
     }
 
     /**
@@ -156,7 +153,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * this ACC. In general CCS sense, a qualification can be a content
      * extension or restriction, but the current scope supports only extension.
      */
-    public void setBasedAccId(ULong value) {
+    public void setBasedAccId(String value) {
         set(7, value);
     }
 
@@ -166,8 +163,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * this ACC. In general CCS sense, a qualification can be a content
      * extension or restriction, but the current scope supports only extension.
      */
-    public ULong getBasedAccId() {
-        return (ULong) get(7);
+    public String getBasedAccId() {
+        return (String) get(7);
     }
 
     /**
@@ -386,7 +383,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * Setter for <code>oagi.acc.replacement_acc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public void setReplacementAccId(ULong value) {
+    public void setReplacementAccId(String value) {
         set(18, value);
     }
 
@@ -394,8 +391,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * Getter for <code>oagi.acc.replacement_acc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public ULong getReplacementAccId() {
-        return (ULong) get(18);
+    public String getReplacementAccId() {
+        return (String) get(18);
     }
 
     /**
@@ -424,7 +421,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * Setter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public void setPrevAccId(ULong value) {
+    public void setPrevAccId(String value) {
         set(20, value);
     }
 
@@ -432,15 +429,15 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * Getter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public ULong getPrevAccId() {
-        return (ULong) get(20);
+    public String getPrevAccId() {
+        return (String) get(20);
     }
 
     /**
      * Setter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public void setNextAccId(ULong value) {
+    public void setNextAccId(String value) {
         set(21, value);
     }
 
@@ -448,8 +445,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
      * Getter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public ULong getNextAccId() {
-        return (ULong) get(21);
+    public String getNextAccId() {
+        return (String) get(21);
     }
 
     // -------------------------------------------------------------------------
@@ -457,7 +454,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -466,17 +463,17 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, String, ULong, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row22<String, String, String, String, String, String, String, String, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, Byte, String, String> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row22<ULong, String, String, String, String, String, String, ULong, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> valuesRow() {
+    public Row22<String, String, String, String, String, String, String, String, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, Byte, String, String> valuesRow() {
         return (Row22) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Acc.ACC.ACC_ID;
     }
 
@@ -511,7 +508,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public Field<ULong> field8() {
+    public Field<String> field8() {
         return Acc.ACC.BASED_ACC_ID;
     }
 
@@ -566,7 +563,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<String> field19() {
         return Acc.ACC.REPLACEMENT_ACC_ID;
     }
 
@@ -576,17 +573,17 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<String> field21() {
         return Acc.ACC.PREV_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field22() {
+    public Field<String> field22() {
         return Acc.ACC.NEXT_ACC_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAccId();
     }
 
@@ -621,7 +618,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong component8() {
+    public String component8() {
         return getBasedAccId();
     }
 
@@ -676,7 +673,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong component19() {
+    public String component19() {
         return getReplacementAccId();
     }
 
@@ -686,17 +683,17 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong component21() {
+    public String component21() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong component22() {
+    public String component22() {
         return getNextAccId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAccId();
     }
 
@@ -731,7 +728,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong value8() {
+    public String value8() {
         return getBasedAccId();
     }
 
@@ -786,7 +783,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong value19() {
+    public String value19() {
         return getReplacementAccId();
     }
 
@@ -796,17 +793,17 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong value21() {
+    public String value21() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong value22() {
+    public String value22() {
         return getNextAccId();
     }
 
     @Override
-    public AccRecord value1(ULong value) {
+    public AccRecord value1(String value) {
         setAccId(value);
         return this;
     }
@@ -848,7 +845,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public AccRecord value8(ULong value) {
+    public AccRecord value8(String value) {
         setBasedAccId(value);
         return this;
     }
@@ -914,7 +911,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public AccRecord value19(ULong value) {
+    public AccRecord value19(String value) {
         setReplacementAccId(value);
         return this;
     }
@@ -926,19 +923,19 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public AccRecord value21(ULong value) {
+    public AccRecord value21(String value) {
         setPrevAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord value22(ULong value) {
+    public AccRecord value22(String value) {
         setNextAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, String value9, Integer value10, String value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, ULong value19, Byte value20, ULong value21, ULong value22) {
+    public AccRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, Integer value10, String value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, String value19, Byte value20, String value21, String value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -978,7 +975,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, String namespaceId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAccId, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
+    public AccRecord(String accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, String basedAccId, String objectClassQualifier, Integer oagisComponentType, String namespaceId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, String replacementAccId, Byte isAbstract, String prevAccId, String nextAccId) {
         super(Acc.ACC);
 
         setAccId(accId);

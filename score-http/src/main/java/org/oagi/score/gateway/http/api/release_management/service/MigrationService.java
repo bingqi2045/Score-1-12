@@ -272,37 +272,37 @@ public class MigrationService {
     }
 
     private void writeInsertStatements(PrintWriter writer, MigrationMetadata metadata) {
-        writeInsertStatements(writer, ACC, ACC.ACC_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAccId())));
+        writeInsertStatements(writer, ACC, null);
         writeInsertStatements(writer, ACC_MANIFEST, ACC_MANIFEST.ACC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAccManifestId())));
 
-        writeInsertStatements(writer, ASCC, ASCC.ASCC_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccId())));
+        writeInsertStatements(writer, ASCC, null);
         writeInsertStatements(writer, ASCC_MANIFEST, ASCC_MANIFEST.ASCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccManifestId())));
 
-        writeInsertStatements(writer, BCC, BCC.BCC_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccId())));
+        writeInsertStatements(writer, BCC, null);
         writeInsertStatements(writer, BCC_MANIFEST, BCC_MANIFEST.BCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccManifestId())));
 
-        writeInsertStatements(writer, ASCCP, ASCCP.ASCCP_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccpId())));
+        writeInsertStatements(writer, ASCCP, null);
         writeInsertStatements(writer, ASCCP_MANIFEST, ASCCP_MANIFEST.ASCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccpManifestId())));
 
-        writeInsertStatements(writer, BCCP, BCCP.BCCP_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccpId())));
+        writeInsertStatements(writer, BCCP, null);
         writeInsertStatements(writer, BCCP_MANIFEST, BCCP_MANIFEST.BCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccpManifestId())));
 
-        writeInsertStatements(writer, DT, DT.DT_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtId())));
+        writeInsertStatements(writer, DT, null);
         writeInsertStatements(writer, DT_MANIFEST, DT_MANIFEST.DT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtManifestId())));
 
-        writeInsertStatements(writer, DT_SC, DT_SC.DT_SC_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtScId())));
+        writeInsertStatements(writer, DT_SC, null);
         writeInsertStatements(writer, DT_SC_MANIFEST, DT_SC_MANIFEST.DT_SC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtScManifestId())));
 
-        writeInsertStatements(writer, AGENCY_ID_LIST, AGENCY_ID_LIST.AGENCY_ID_LIST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListId())));
+        writeInsertStatements(writer, AGENCY_ID_LIST, null);
         writeInsertStatements(writer, AGENCY_ID_LIST_MANIFEST, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListManifestId())));
 
-        writeInsertStatements(writer, AGENCY_ID_LIST_VALUE, AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListValueId())));
+        writeInsertStatements(writer, AGENCY_ID_LIST_VALUE, null);
         writeInsertStatements(writer, AGENCY_ID_LIST_VALUE_MANIFEST, AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListValueManifestId())));
 
-        writeInsertStatements(writer, CODE_LIST, CODE_LIST.CODE_LIST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListId())));
+        writeInsertStatements(writer, CODE_LIST, null);
         writeInsertStatements(writer, CODE_LIST_MANIFEST, CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListManifestId())));
 
-        writeInsertStatements(writer, CODE_LIST_VALUE, CODE_LIST_VALUE.CODE_LIST_VALUE_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueId())));
+        writeInsertStatements(writer, CODE_LIST_VALUE, null);
         writeInsertStatements(writer, CODE_LIST_VALUE_MANIFEST, CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueManifestId())));
 
         writeInsertStatements(writer, XBT, null);

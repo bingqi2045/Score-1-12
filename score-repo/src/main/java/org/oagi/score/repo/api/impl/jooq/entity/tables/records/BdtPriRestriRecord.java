@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
  * column among the three can have a value in a particular record.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, ULong, String, ULong, ULong, Byte> {
+public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, String, String, String, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Setter for <code>oagi.bdt_pri_restri.bdt_id</code>. Foreign key to the DT
      * table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public void setBdtId(ULong value) {
+    public void setBdtId(String value) {
         set(1, value);
     }
 
@@ -55,8 +55,8 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Getter for <code>oagi.bdt_pri_restri.bdt_id</code>. Foreign key to the DT
      * table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public ULong getBdtId() {
-        return (ULong) get(1);
+    public String getBdtId() {
+        return (String) get(1);
     }
 
     /**
@@ -79,7 +79,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Setter for <code>oagi.bdt_pri_restri.code_list_id</code>. Foreign key to
      * the CODE_LIST table.
      */
-    public void setCodeListId(ULong value) {
+    public void setCodeListId(String value) {
         set(3, value);
     }
 
@@ -87,8 +87,8 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Getter for <code>oagi.bdt_pri_restri.code_list_id</code>. Foreign key to
      * the CODE_LIST table.
      */
-    public ULong getCodeListId() {
-        return (ULong) get(3);
+    public String getCodeListId() {
+        return (String) get(3);
     }
 
     /**
@@ -96,7 +96,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * foreign key to the AGENCY_ID_LIST table. It is used in the case that the
      * BDT content can be restricted to an agency identification.
      */
-    public void setAgencyIdListId(ULong value) {
+    public void setAgencyIdListId(String value) {
         set(4, value);
     }
 
@@ -105,8 +105,8 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * foreign key to the AGENCY_ID_LIST table. It is used in the case that the
      * BDT content can be restricted to an agency identification.
      */
-    public ULong getAgencyIdListId() {
-        return (ULong) get(4);
+    public String getAgencyIdListId() {
+        return (String) get(4);
     }
 
     /**
@@ -143,12 +143,12 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, String, ULong, ULong, Byte> fieldsRow() {
+    public Row6<ULong, String, String, String, String, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, ULong, String, ULong, ULong, Byte> valuesRow() {
+    public Row6<ULong, String, String, String, String, Byte> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
@@ -158,7 +158,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BdtPriRestri.BDT_PRI_RESTRI.BDT_ID;
     }
 
@@ -168,12 +168,12 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return BdtPriRestri.BDT_PRI_RESTRI.CODE_LIST_ID;
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return BdtPriRestri.BDT_PRI_RESTRI.AGENCY_ID_LIST_ID;
     }
 
@@ -188,7 +188,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getBdtId();
     }
 
@@ -198,12 +198,12 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getCodeListId();
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getAgencyIdListId();
     }
 
@@ -218,7 +218,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getBdtId();
     }
 
@@ -228,12 +228,12 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getCodeListId();
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getAgencyIdListId();
     }
 
@@ -249,7 +249,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord value2(ULong value) {
+    public BdtPriRestriRecord value2(String value) {
         setBdtId(value);
         return this;
     }
@@ -261,13 +261,13 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord value4(ULong value) {
+    public BdtPriRestriRecord value4(String value) {
         setCodeListId(value);
         return this;
     }
 
     @Override
-    public BdtPriRestriRecord value5(ULong value) {
+    public BdtPriRestriRecord value5(String value) {
         setAgencyIdListId(value);
         return this;
     }
@@ -279,7 +279,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord values(ULong value1, ULong value2, String value3, ULong value4, ULong value5, Byte value6) {
+    public BdtPriRestriRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -303,7 +303,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     /**
      * Create a detached, initialised BdtPriRestriRecord
      */
-    public BdtPriRestriRecord(ULong bdtPriRestriId, ULong bdtId, String cdtAwdPriXpsTypeMapId, ULong codeListId, ULong agencyIdListId, Byte isDefault) {
+    public BdtPriRestriRecord(ULong bdtPriRestriId, String bdtId, String cdtAwdPriXpsTypeMapId, String codeListId, String agencyIdListId, Byte isDefault) {
         super(BdtPriRestri.BDT_PRI_RESTRI);
 
         setBdtPriRestriId(bdtPriRestriId);

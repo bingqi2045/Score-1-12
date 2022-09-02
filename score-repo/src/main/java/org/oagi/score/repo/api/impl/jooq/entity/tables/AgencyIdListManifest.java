@@ -67,7 +67,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     /**
      * The column <code>oagi.agency_id_list_manifest.agency_id_list_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
@@ -313,21 +313,21 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, ULong, ULong, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
+    public Row10<ULong, String, String, ULong, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

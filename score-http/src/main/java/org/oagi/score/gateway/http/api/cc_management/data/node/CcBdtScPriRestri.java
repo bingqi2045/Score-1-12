@@ -17,10 +17,10 @@ public class CcBdtScPriRestri {
     private String xbtId;
     private String xbtName;
 
-    private BigInteger codeListId;
+    private String codeListId;
     private String codeListName;
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
     private String agencyIdListName;
 
     private boolean isDefault;

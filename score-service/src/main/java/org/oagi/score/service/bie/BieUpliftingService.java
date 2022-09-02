@@ -460,10 +460,10 @@ public class BieUpliftingService {
         private List<AgencyIdList> targetAgencyIdListList;
 
         private Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap = new HashMap();
-        private Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = new HashMap();
+        private Map<String, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = new HashMap();
 
         private Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap = new HashMap();
-        private Map<BigInteger, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = new HashMap();
+        private Map<String, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = new HashMap();
 
         private Map<BigInteger, WrappedAsbiep> asbiepMap;
         private Map<BigInteger, WrappedAsbiep> roleOfAbieToAsbiepMap;
@@ -482,9 +482,9 @@ public class BieUpliftingService {
                             List<CodeList> sourceCodeListList,
                             List<CodeList> targetCodeListList,
                             Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap,
-                            Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap,
+                            Map<String, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap,
                             Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap,
-                            Map<BigInteger, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap,
+                            Map<String, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap,
                             List<AgencyIdList> sourceAgencyIdListList,
                             List<AgencyIdList> targetAgencyIdListList) {
 
@@ -1155,7 +1155,7 @@ public class BieUpliftingService {
                                     Bbie targetBbie,
                                     BigInteger dtManifestId,
                                     Map<BigInteger, BdtPriRestri> sourceMap,
-                                    Map<BigInteger, List<BdtPriRestri>> targetMap,
+                                    Map<String, List<BdtPriRestri>> targetMap,
                                     List<CodeList> codeListSourceList,
                                     List<AgencyIdList> agencyIdListSourceList) {
 
@@ -1239,12 +1239,12 @@ public class BieUpliftingService {
         }
 
         private BbieSc setValueDomain(BbieSc sourceBbieSc,
-                                    BbieSc targetBbieSc,
-                                    BigInteger dtScManifestId,
-                                    Map<BigInteger, BdtScPriRestri> sourceMap,
-                                    Map<BigInteger, List<BdtScPriRestri>> targetMap,
-                                    List<CodeList> codeListSourceList,
-                                    List<AgencyIdList> agencyIdListSourceList) {
+                                      BbieSc targetBbieSc,
+                                      BigInteger dtScManifestId,
+                                      Map<BigInteger, BdtScPriRestri> sourceMap,
+                                      Map<String, List<BdtScPriRestri>> targetMap,
+                                      List<CodeList> codeListSourceList,
+                                      List<AgencyIdList> agencyIdListSourceList) {
 
             BdtScPriRestri targetDefaultBdtScPriRestri;
             DtScManifest targetDtScManifest = targetCcDocument.getDtScManifest(dtScManifestId);
@@ -1356,10 +1356,10 @@ public class BieUpliftingService {
         List<AgencyIdList> targetAgencyIdListList = valueDomainReadRepository.getAgencyIdListList(targetReleaseId);
 
         Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap = valueDomainReadRepository.getBdtPriRestriMap(sourceReleaseId);
-        Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = valueDomainReadRepository.getBdtPriRestriBdtIdMap(targetReleaseId);
+        Map<String, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = valueDomainReadRepository.getBdtPriRestriBdtIdMap(targetReleaseId);
 
         Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap = valueDomainReadRepository.getBdtScPriRestriMap(sourceReleaseId);
-        Map<BigInteger, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = valueDomainReadRepository.getBdtScPriRestriBdtScIdMap(targetReleaseId);
+        Map<String, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = valueDomainReadRepository.getBdtScPriRestriBdtScIdMap(targetReleaseId);
 
         BieUpliftingHandler upliftingHandler =
                 new BieUpliftingHandler(request.getRequester(), bizCtxIds, customMappingTable,
@@ -1404,10 +1404,10 @@ public class BieUpliftingService {
         List<AgencyIdList> targetAgencyIdListList = valueDomainReadRepository.getAgencyIdListList(request.getTargetReleaseId());
 
         Map<BigInteger, BdtPriRestri> sourceBdtPriRestriMap = valueDomainReadRepository.getBdtPriRestriMap(sourceRelease.getReleaseId());
-        Map<BigInteger, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = valueDomainReadRepository.getBdtPriRestriBdtIdMap(request.getTargetReleaseId());
+        Map<String, List<BdtPriRestri>> targetBdtPriRestriBdtIdMap = valueDomainReadRepository.getBdtPriRestriBdtIdMap(request.getTargetReleaseId());
 
         Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap = valueDomainReadRepository.getBdtScPriRestriMap(sourceRelease.getReleaseId());
-        Map<BigInteger, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = valueDomainReadRepository.getBdtScPriRestriBdtScIdMap(request.getTargetReleaseId());
+        Map<String, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = valueDomainReadRepository.getBdtScPriRestriBdtScIdMap(request.getTargetReleaseId());
 
         request.getMappingList().forEach(mapping -> {
             BieUpliftingValidation validation = new BieUpliftingValidation();
@@ -1474,9 +1474,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtPriRestriIdMappable(BigInteger bdtPriRestriId,
-                                             BigInteger targetBdtId,
-                                             Map<BigInteger, BdtPriRestri> sourceMap,
-                                             Map<BigInteger, List<BdtPriRestri>> targetMap) {
+                                               String targetBdtId,
+                                               Map<BigInteger, BdtPriRestri> sourceMap,
+                                               Map<String, List<BdtPriRestri>> targetMap) {
         BdtPriRestri source = sourceMap.get(bdtPriRestriId);
         List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetBdtId);
 
@@ -1487,9 +1487,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtScPriRestriIdMappable(BigInteger bdtScPriRestriId,
-                                               BigInteger targetBdtScId,
-                                               Map<BigInteger, BdtScPriRestri> sourceMap,
-                                               Map<BigInteger, List<BdtScPriRestri>> targetMap) {
+                                                 String targetBdtScId,
+                                                 Map<BigInteger, BdtScPriRestri> sourceMap,
+                                                 Map<String, List<BdtScPriRestri>> targetMap) {
         BdtScPriRestri source = sourceMap.get(bdtScPriRestriId);
         List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetBdtScId);
 
@@ -1499,7 +1499,7 @@ public class BieUpliftingService {
         return "Primitive value '" + source.getXbtName() + "' is not allowed in the target node. Uplifted node will use its default primitive in the domain value restriction.";
     }
 
-    private List<CodeList> availableCodeListByCodeListId(BigInteger codeListId, List<CodeList> codeListMap) {
+    private List<CodeList> availableCodeListByCodeListId(String codeListId, List<CodeList> codeListMap) {
         if (codeListId == null) {
             return Collections.emptyList();
         }
@@ -1525,14 +1525,14 @@ public class BieUpliftingService {
         return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
-    private List<AgencyIdList> availableAgencyIdListByAgencyIdListId(BigInteger agencyIdListId, List<AgencyIdList> agencyIdListMap) {
+    private List<AgencyIdList> availableAgencyIdListByAgencyIdListId(String agencyIdListId, List<AgencyIdList> agencyIdListMap) {
         if (agencyIdListId == null) {
             return Collections.emptyList();
         }
 
         List<AgencyIdList> availableAgencyIdLists = agencyIdListMap.stream().filter(agencyIdList -> agencyIdList.getAgencyIdListId().equals(agencyIdListId)).collect(Collectors.toList());
 
-        List<BigInteger> basedAgencyIdListIds = availableAgencyIdLists.stream().map(AgencyIdList::getBasedAgencyIdListId).collect(Collectors.toList());
+        List<String> basedAgencyIdListIds = availableAgencyIdLists.stream().map(AgencyIdList::getBasedAgencyIdListId).collect(Collectors.toList());
 
         List<AgencyIdList> associatedAgencyIdLists = agencyIdListMap.stream().filter(agencyIdList -> basedAgencyIdListIds.contains(agencyIdList.getAgencyIdListId())).collect(Collectors.toList());
 
@@ -1551,9 +1551,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtCodeListIdMappable(CodeList codeList,
-                                           BigInteger targetBdtId,
-                                           Map<BigInteger, List<BdtPriRestri>> targetMap,
-                                           List<CodeList> targetCodeListList) {
+                                              String targetBdtId,
+                                              Map<String, List<BdtPriRestri>> targetMap,
+                                              List<CodeList> targetCodeListList) {
         
         List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetBdtId);
         List<BdtPriRestri> availableCodeListBdtPriRestri = availableBdtPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
@@ -1577,9 +1577,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtScCodeListIdMappable(CodeList codeList,
-                                           BigInteger targetBdtScId,
-                                           Map<BigInteger, List<BdtScPriRestri>> targetMap,
-                                           List<CodeList> targetCodeListList) {
+                                                String targetBdtScId,
+                                                Map<String, List<BdtScPriRestri>> targetMap,
+                                                List<CodeList> targetCodeListList) {
 
         List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetBdtScId);
         List<BdtScPriRestri> availableCodeListBdtScPriRestri = availableBdtScPriRestriList.stream().filter(e -> e.getCodeListId() != null).collect(Collectors.toList());
@@ -1603,9 +1603,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtAgencyIdListIdMappable(AgencyIdList agencyIdList,
-                                              BigInteger targetBdtId,
-                                              Map<BigInteger, List<BdtPriRestri>> targetMap,
-                                              List<AgencyIdList> targetAgencyIdListList) {
+                                                  String targetBdtId,
+                                                  Map<String, List<BdtPriRestri>> targetMap,
+                                                  List<AgencyIdList> targetAgencyIdListList) {
 
         List<BdtPriRestri> availableBdtPriRestriList = targetMap.get(targetBdtId);
         List<BdtPriRestri> availableAgencyIdListBdtPriRestri = availableBdtPriRestriList.stream().filter(e -> e.getAgencyIdListId() != null).collect(Collectors.toList());
@@ -1629,9 +1629,9 @@ public class BieUpliftingService {
     }
 
     private String checkBdtScAgencyIdListIdMappable(AgencyIdList agencyIdList,
-                                                BigInteger targetBdtScId,
-                                                Map<BigInteger, List<BdtScPriRestri>> targetMap,
-                                                List<AgencyIdList> targetAgencyIdListList) {
+                                                    String targetBdtScId,
+                                                    Map<String, List<BdtScPriRestri>> targetMap,
+                                                    List<AgencyIdList> targetAgencyIdListList) {
 
         List<BdtScPriRestri> availableBdtScPriRestriList = targetMap.get(targetBdtScId);
         List<BdtScPriRestri> availableAgencyIdListBdtScPriRestri = availableBdtScPriRestriList.stream().filter(e -> e.getAgencyIdListId() != null).collect(Collectors.toList());

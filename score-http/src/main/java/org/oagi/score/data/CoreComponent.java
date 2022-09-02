@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public interface CoreComponent extends Trackable {
 
-    BigInteger getId();
+    String getId();
 
     String getGuid();
 

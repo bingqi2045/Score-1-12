@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Ascc implements CoreComponent, CcAssociation, Serializable {
 
-    private BigInteger asccId;
+    private String asccId;
 
     private String guid;
 
@@ -22,20 +22,20 @@ public class Ascc implements CoreComponent, CcAssociation, Serializable {
 
     private boolean deprecated;
 
-    private BigInteger prevAsccId;
+    private String prevAsccId;
 
-    private BigInteger nextAsccId;
+    private String nextAsccId;
 
-    public BigInteger getAsccId() {
+    public String getAsccId() {
         return asccId;
     }
 
-    public void setAsccId(BigInteger asccId) {
+    public void setAsccId(String asccId) {
         this.asccId = asccId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getAsccId();
     }
 
@@ -96,19 +96,19 @@ public class Ascc implements CoreComponent, CcAssociation, Serializable {
         this.deprecated = deprecated;
     }
 
-    public BigInteger getPrevAsccId() {
+    public String getPrevAsccId() {
         return prevAsccId;
     }
 
-    public void setPrevAsccId(BigInteger prevAsccId) {
+    public void setPrevAsccId(String prevAsccId) {
         this.prevAsccId = prevAsccId;
     }
 
-    public BigInteger getNextAsccId() {
+    public String getNextAsccId() {
         return nextAsccId;
     }
 
-    public void setNextAsccId(BigInteger nextAsccId) {
+    public void setNextAsccId(String nextAsccId) {
         this.nextAsccId = nextAsccId;
     }
 

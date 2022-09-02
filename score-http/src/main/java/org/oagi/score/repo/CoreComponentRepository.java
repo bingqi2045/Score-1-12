@@ -147,8 +147,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public DtManifestRecord getBdtManifestByBdtId(ULong bdtId, String releaseId) {
-        if (bdtId == null || bdtId.longValue() <= 0L || !StringUtils.hasLength(releaseId)) {
+    public DtManifestRecord getBdtManifestByBdtId(String bdtId, String releaseId) {
+        if (!StringUtils.hasLength(bdtId) || !StringUtils.hasLength(releaseId)) {
             return null;
         }
         return dslContext.selectFrom(DT_MANIFEST)
@@ -156,8 +156,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AccRecord getAccById(ULong accId) {
-        if (accId == null || accId.longValue() <= 0L) {
+    public AccRecord getAccById(String accId) {
+        if (!StringUtils.hasLength(accId)) {
             return null;
         }
         return dslContext.selectFrom(ACC)
@@ -165,8 +165,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccRecord getAsccById(ULong asccId) {
-        if (asccId == null || asccId.longValue() <= 0L) {
+    public AsccRecord getAsccById(String asccId) {
+        if (!StringUtils.hasLength(asccId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC)
@@ -174,8 +174,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BccRecord getBccById(ULong bccId) {
-        if (bccId == null || bccId.longValue() <= 0L) {
+    public BccRecord getBccById(String bccId) {
+        if (!StringUtils.hasLength(bccId)) {
             return null;
         }
         return dslContext.selectFrom(BCC)
@@ -183,8 +183,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccpRecord getAsccpById(ULong asccpId) {
-        if (asccpId == null || asccpId.longValue() <= 0L) {
+    public AsccpRecord getAsccpById(String asccpId) {
+        if (!StringUtils.hasLength(asccpId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP)
@@ -192,8 +192,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BccpRecord getBccpById(ULong bccpId) {
-        if (bccpId == null || bccpId.longValue() <= 0L) {
+    public BccpRecord getBccpById(String bccpId) {
+        if (!StringUtils.hasLength(bccpId)) {
             return null;
         }
         return dslContext.selectFrom(BCCP)
@@ -201,8 +201,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public DtRecord getBdtById(ULong bdtId) {
-        if (bdtId == null || bdtId.longValue() <= 0L) {
+    public DtRecord getBdtById(String bdtId) {
+        if (!StringUtils.hasLength(bdtId)) {
             return null;
         }
         return dslContext.selectFrom(DT)
@@ -210,7 +210,7 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public CcBccpNode getBccpNodeByBccpId(AuthenticatedPrincipal user, long bccpId) {
+    public CcBccpNode getBccpNodeByBccpId(AuthenticatedPrincipal user, String bccpId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -221,7 +221,7 @@ public class CoreComponentRepository {
                 BCCP.PREV_BCCP_ID,
                 BCCP.NEXT_BCCP_ID)
                 .from(BCCP)
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(BCCP.BCCP_ID.eq(bccpId))
                 .fetchOneInto(CcBccpNode.class);
     }
 
@@ -257,7 +257,7 @@ public class CoreComponentRepository {
                 .where(ACC.ACC_ID.in(uegAccIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(ACC.ACC_ID));
                     item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(ACC.STATE)));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));

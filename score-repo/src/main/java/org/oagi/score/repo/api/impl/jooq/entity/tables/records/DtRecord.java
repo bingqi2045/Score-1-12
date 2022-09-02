@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 
 
@@ -22,17 +21,17 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
+     * Setter for <code>oagi.dt.dt_id</code>. Primary, internal database key.
      */
-    public void setDtId(ULong value) {
+    public void setDtId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
+     * Getter for <code>oagi.dt.dt_id</code>. Primary, internal database key.
      */
-    public ULong getDtId() {
-        return (ULong) get(0);
+    public String getDtId() {
+        return (String) get(0);
     }
 
     /**
@@ -140,7 +139,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * DT table itself. This column must be blank when the DT_TYPE is CDT. This
      * column must not be blank when the DT_TYPE is BDT.
      */
-    public void setBasedDtId(ULong value) {
+    public void setBasedDtId(String value) {
         set(6, value);
     }
 
@@ -149,8 +148,8 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * DT table itself. This column must be blank when the DT_TYPE is CDT. This
      * column must not be blank when the DT_TYPE is BDT.
      */
-    public ULong getBasedDtId() {
-        return (ULong) get(6);
+    public String getBasedDtId() {
+        return (String) get(6);
     }
 
     /**
@@ -399,7 +398,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Setter for <code>oagi.dt.replacement_dt_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public void setReplacementDtId(ULong value) {
+    public void setReplacementDtId(String value) {
         set(20, value);
     }
 
@@ -407,15 +406,15 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Getter for <code>oagi.dt.replacement_dt_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public ULong getReplacementDtId() {
-        return (ULong) get(20);
+    public String getReplacementDtId() {
+        return (String) get(20);
     }
 
     /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public void setPrevDtId(ULong value) {
+    public void setPrevDtId(String value) {
         set(21, value);
     }
 
@@ -423,15 +422,15 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public ULong getPrevDtId() {
-        return (ULong) get(21);
+    public String getPrevDtId() {
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public void setNextDtId(ULong value) {
+    public void setNextDtId(String value) {
         set(22, value);
     }
 
@@ -439,8 +438,8 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public ULong getNextDtId() {
-        return (ULong) get(22);
+    public String getNextDtId() {
+        return (String) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -448,7 +447,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -466,7 +465,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, ULong basedDtId, String den, String definition, String definitionSource, String namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(String dtId, String guid, String dataTypeTerm, String qualifier, String representationTerm, String sixDigitId, String basedDtId, String den, String definition, String definitionSource, String namespaceId, String contentComponentDefinition, String state, Byte commonlyUsed, String createdBy, String lastUpdatedBy, String ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, String replacementDtId, String prevDtId, String nextDtId) {
         super(Dt.DT);
 
         setDtId(dtId);

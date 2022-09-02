@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm;
  * business term and BCC. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> implements Record7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> {
+public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> implements Record7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,7 +60,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
      * Setter for <code>oagi.bcc_bizterm.bcc_id</code>. An internal ID of the
      * associated BCC
      */
-    public void setBccId(ULong value) {
+    public void setBccId(String value) {
         set(2, value);
     }
 
@@ -68,8 +68,8 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
      * Getter for <code>oagi.bcc_bizterm.bcc_id</code>. An internal ID of the
      * associated BCC
      */
-    public ULong getBccId() {
-        return (ULong) get(2);
+    public String getBccId() {
+        return (String) get(2);
     }
 
     /**
@@ -154,12 +154,12 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -174,7 +174,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return BccBizterm.BCC_BIZTERM.BCC_ID;
     }
 
@@ -209,7 +209,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getBccId();
     }
 
@@ -244,7 +244,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getBccId();
     }
 
@@ -281,7 +281,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public BccBiztermRecord value3(ULong value) {
+    public BccBiztermRecord value3(String value) {
         setBccId(value);
         return this;
     }
@@ -311,7 +311,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     }
 
     @Override
-    public BccBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
+    public BccBiztermRecord values(ULong value1, ULong value2, String value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -336,7 +336,7 @@ public class BccBiztermRecord extends UpdatableRecordImpl<BccBiztermRecord> impl
     /**
      * Create a detached, initialised BccBiztermRecord
      */
-    public BccBiztermRecord(ULong bccBiztermId, ULong businessTermId, ULong bccId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public BccBiztermRecord(ULong bccBiztermId, ULong businessTermId, String bccId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BccBizterm.BCC_BIZTERM);
 
         setBccBiztermId(bccBiztermId);

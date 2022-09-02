@@ -12,7 +12,7 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private CcType type = CcType.DT_SC;
     private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger bdtScId = BigInteger.ZERO;
+    private String bdtScId;
     private String guid;
     private String den;
     private int cardinalityMin;
@@ -40,7 +40,7 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private int revisionTrackingNum;
     private String spec;
     private BigInteger basedDtManifestId;
-    private BigInteger basedDtScId;
+    private String basedDtScId;
 
     private List<CcBdtScPriRestri> bdtScPriRestriList;
 }

@@ -1,7 +1,6 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.export.model.ModuleXbtID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -303,7 +302,7 @@ public class CcRepository {
     }
 
 
-    public List<ModuleCCID> findAllModuleAgencyIdListManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleAgencyIdList(String moduleSetReleaseId) {
         return dslContext.select(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID,
                 AGENCY_ID_LIST.AGENCY_ID_LIST_ID.as("ccId"),
                 MODULE.PATH.as("path"))
@@ -315,7 +314,7 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleCodeListManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleCodeList(String moduleSetReleaseId) {
         return dslContext.select(MODULE_CODE_LIST_MANIFEST.MODULE_ID,
                 CODE_LIST.CODE_LIST_ID.as("ccId"),
                 MODULE.PATH.as("path"))
@@ -327,7 +326,7 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleAccManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleAcc(String moduleSetReleaseId) {
         return dslContext.select(MODULE_ACC_MANIFEST.MODULE_ID,
                 ACC.ACC_ID.as("ccId"),
                 MODULE.PATH.as("path"))
@@ -339,7 +338,7 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleAsccpManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleAsccp(String moduleSetReleaseId) {
         return dslContext.select(MODULE_ASCCP_MANIFEST.MODULE_ID,
                 ASCCP.ASCCP_ID.as("ccId"),
                 MODULE.PATH.as("path"))
@@ -351,7 +350,7 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleBccpManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleBccp(String moduleSetReleaseId) {
         return dslContext.select(MODULE_BCCP_MANIFEST.MODULE_ID,
                 BCCP.BCCP_ID.as("ccId"),
                 MODULE.PATH.as("path"))
@@ -363,7 +362,7 @@ public class CcRepository {
                 .fetchInto(ModuleCCID.class);
     }
 
-    public List<ModuleCCID> findAllModuleDtManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleDt(String moduleSetReleaseId) {
         return dslContext.select(MODULE_DT_MANIFEST.MODULE_ID,
                 DT.DT_ID.as("ccId"),
                 MODULE.PATH)
@@ -387,7 +386,7 @@ public class CcRepository {
                 .fetchInto(ModuleXbtID.class);
     }
 
-    public List<ModuleCCID> findAllModuleBlobContentManifest(String moduleSetReleaseId) {
+    public List<ModuleCCID> findAllModuleBlobContent(String moduleSetReleaseId) {
         return dslContext.select(MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID,
                 BLOB_CONTENT.BLOB_CONTENT_ID.as("ccId"),
                 MODULE.PATH)

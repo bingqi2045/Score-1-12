@@ -79,9 +79,9 @@ public class JooqContextSchemeReadRepository
             contextScheme.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID));
             contextScheme.setContextCategoryName(record.get(CTX_CATEGORY.NAME));
             contextScheme.setImported(record.get(CTX_SCHEME.CODE_LIST_ID) != null);
-            ULong codeListId = record.get(CODE_LIST.CODE_LIST_ID);
+            String codeListId = record.get(CODE_LIST.CODE_LIST_ID);
             if (codeListId != null) {
-                contextScheme.setCodeListId(codeListId.toBigInteger());
+                contextScheme.setCodeListId(codeListId);
                 contextScheme.setCodeListName(record.get(CODE_LIST.NAME.as("code_list_name")));
             }
 

@@ -168,7 +168,7 @@ public class BieEditService implements InitializingBean {
     }
 
     @Transactional
-    public BccForBie getBcc(AuthenticatedPrincipal user, BigInteger bccId) {
+    public BccForBie getBcc(AuthenticatedPrincipal user, String bccId) {
         return bieRepository.getBcc(bccId);
     }
 

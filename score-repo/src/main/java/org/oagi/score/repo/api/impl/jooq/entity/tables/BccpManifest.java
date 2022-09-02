@@ -66,7 +66,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     /**
      * The column <code>oagi.bccp_manifest.bccp_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> BCCP_ID = createField(DSL.name("bccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestRecord, String> BCCP_ID = createField(DSL.name("bccp_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.bdt_manifest_id</code>.
@@ -279,21 +279,21 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, ULong, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
+    public Row9<ULong, String, String, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

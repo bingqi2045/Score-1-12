@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class ExtensionUpdateResponse {
 
-    private Map<Long, Boolean> asccResults = new HashMap();
-    private Map<Long, Boolean> bccResults = new HashMap();
+    private Map<String, Boolean> asccResults = new HashMap();
+    private Map<String, Boolean> bccResults = new HashMap();
 
 }

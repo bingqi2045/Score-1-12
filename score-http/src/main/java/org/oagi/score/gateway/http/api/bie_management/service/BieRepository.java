@@ -141,7 +141,7 @@ public class BieRepository {
                 .fetchOptionalInto(BieEditBbiep.class).orElse(null);
     }
 
-    public BccForBie getBcc(BigInteger bccId) {
+    public BccForBie getBcc(String bccId) {
         return dslContext.select(
                 BCC.BCC_ID,
                 BCC.GUID,
@@ -168,11 +168,11 @@ public class BieRepository {
                 .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(BCCP_MANIFEST)
                 .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                .where(BCC.BCC_ID.eq(bccId))
                 .fetchOptionalInto(BccForBie.class).orElse(null);
     }
 
-    public BieEditBccp getBccp(BigInteger bccpId, String releaseId) {
+    public BieEditBccp getBccp(BigInteger bccpManifestId, String releaseId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -190,7 +190,10 @@ public class BieRepository {
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(LOG)
                 .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCCP_MANIFEST.RELEASE_ID.eq(releaseId)))
+                .where(and(
+                        BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)),
+                        BCCP_MANIFEST.RELEASE_ID.eq(releaseId)
+                ))
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 
@@ -333,7 +336,7 @@ public class BieRepository {
                 ASBIE.ASBIE_ID,
                 ASBIE.FROM_ABIE_ID,
                 ASBIE.TO_ASBIEP_ID,
-                ASCC_MANIFEST.ASCC_ID.as("based_ascc_id"),
+                ASCC_MANIFEST.ASCC_MANIFEST_ID.as("based_ascc_manifest_id"),
                 ASBIE.IS_USED.as("used"),
                 ASBIE.CARDINALITY_MIN,
                 ASBIE.CARDINALITY_MAX)
@@ -351,7 +354,7 @@ public class BieRepository {
                 BBIE.BBIE_ID,
                 BBIE.FROM_ABIE_ID,
                 BBIE.TO_BBIEP_ID,
-                BCC_MANIFEST.BCC_ID.as("based_bcc_id"),
+                BCC_MANIFEST.BCC_MANIFEST_ID.as("based_bcc_manifest_id"),
                 BBIE.IS_USED.as("used"),
                 BBIE.CARDINALITY_MIN,
                 BBIE.CARDINALITY_MAX)
@@ -364,13 +367,13 @@ public class BieRepository {
                 .fetchInto(BieEditBbie.class);
     }
 
-    public BigInteger getRoleOfAccIdByAsbiepId(BigInteger asbiepId) {
-        return dslContext.select(ACC_MANIFEST.ACC_ID)
+    public BigInteger getRoleOfAccManifestIdByAsbiepId(BigInteger asbiepId) {
+        return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ACC_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(BigInteger.class).orElse(null);
     }
 
     public BigInteger getRoleOfAccManifestIdByAsccpManifestId(BigInteger asccpManifestId) {
@@ -673,7 +676,7 @@ public class BieRepository {
                 .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                 .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieId))
                 .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(dtScManifestId))
-                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScRecord.getDtScId().toBigInteger())))
+                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScManifestId(dtScManifestId)))
                 .set(BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
                 .set(BBIE_SC.IS_USED, (byte) (dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
@@ -683,7 +686,7 @@ public class BieRepository {
                 .returning().fetchOne().getBbieScId().toBigInteger();
     }
 
-    public BigInteger getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
+    public BigInteger getDefaultDtScPriRestriIdByDtScManifestId(BigInteger dtScManifestId) {
         ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
         String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
                 .from(DT_SC)

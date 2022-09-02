@@ -13,16 +13,16 @@ public class ACC implements CoreComponent {
 
     private BigInteger accManifestId = BigInteger.ZERO;
     private BigInteger basedAccManifestId = BigInteger.ZERO;
-    private BigInteger accId = BigInteger.ZERO;
+    private String accId;
     private String guid;
     private String objectClassTerm;
     private String den;
     private String definition;
     private String definitionSource;
-    private BigInteger basedAccId = BigInteger.ZERO;
+    private String basedAccId;
     private String objectClassQualifier;
     private Integer oagisComponentType;
-    private BigInteger namespaceId = BigInteger.ZERO;
+    private String namespaceId;
     private String createdBy;
     private String ownerUserId;
     private String lastUpdatedBy;
@@ -37,7 +37,7 @@ public class ACC implements CoreComponent {
     private boolean deprecated;
     private boolean abstracted;
 
-    public BigInteger getId() {
+    public String getId() {
         return getAccId();
     }
 

@@ -13,16 +13,16 @@ public class CcAsccpNode extends CcNode implements SeqKeySupportable {
 
     private CcType type = CcType.ASCCP;
 
-    private BigInteger asccpId = BigInteger.ZERO;
-    private BigInteger asccId = BigInteger.ZERO;
-    private BigInteger roleOfAccId = BigInteger.ZERO;
+    private String asccpId;
+    private String asccId;
+    private String roleOfAccId;
     private int seqKey;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger asccManifestId = BigInteger.ZERO;
     private String asccpType;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return asccpId;
     }
 }

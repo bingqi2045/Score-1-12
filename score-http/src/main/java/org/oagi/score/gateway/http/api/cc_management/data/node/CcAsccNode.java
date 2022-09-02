@@ -10,7 +10,7 @@ import java.math.BigInteger;
 public class CcAsccNode extends CcNode {
 
     private int seqKey;
-    private BigInteger asccId = BigInteger.ZERO;
+    private String asccId;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger fromAccManifestId = BigInteger.ZERO;
     private BigInteger toAsccpManifestId = BigInteger.ZERO;
@@ -19,7 +19,7 @@ public class CcAsccNode extends CcNode {
     private boolean deprecated;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return asccId;
     }
 

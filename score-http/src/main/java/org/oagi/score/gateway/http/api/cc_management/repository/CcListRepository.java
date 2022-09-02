@@ -135,7 +135,7 @@ public class CcListRepository {
             CcList ccList = new CcList();
             ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
             ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
-            ccList.setId(row.getValue("id", ULong.class).toBigInteger());
+            ccList.setId(row.getValue("id", String.class));
             ccList.setGuid(row.getValue("guid", String.class));
             ccList.setDen(row.getValue("den", String.class));
             ccList.setDefinition(stripToNull(row.getValue("definition", String.class)));

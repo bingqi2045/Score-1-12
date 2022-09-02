@@ -157,12 +157,12 @@ public class BbieWriteRepository {
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getCodeListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
-                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setCodeListId(bbie.getCodeListId());
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getAgencyIdListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
                     bbieRecord.setCodeListId(null);
-                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                    bbieRecord.setAgencyIdListId(bbie.getAgencyIdListId());
                 }
             }
 
@@ -253,12 +253,12 @@ public class BbieWriteRepository {
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getCodeListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
-                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setCodeListId(bbie.getCodeListId());
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getAgencyIdListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
                     bbieRecord.setCodeListId(null);
-                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                    bbieRecord.setAgencyIdListId(bbie.getAgencyIdListId());
                 }
             }
 

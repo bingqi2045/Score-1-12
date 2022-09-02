@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class AgencyIdListValue {
 
-    private BigInteger agencyIdListValueId = BigInteger.ZERO;
+    private String agencyIdListValueId;
     private String value;
     private String name;
     private String definition;
-    private BigInteger ownerListId = BigInteger.ZERO;
+    private String ownerListId;
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class SummaryCcExt {
 
-    private BigInteger accId;
+    private String accId;
     private String guid;
     private String objectClassTerm;
     private CcState state;

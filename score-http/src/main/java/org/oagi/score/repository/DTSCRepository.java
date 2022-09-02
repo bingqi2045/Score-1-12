@@ -5,6 +5,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.DTSC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,13 +13,13 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class DTSCRepository implements ScoreRepository<DTSC, BigInteger> {
+public class DTSCRepository implements ScoreRepository<DTSC, String> {
 
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record12<ULong, ULong, String, String, String, String, String, ULong, Integer,
-            Integer, ULong, UInteger>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record12<ULong, String, String, String, String, String, String, String, Integer,
+            Integer, String, UInteger>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.DT_SC_MANIFEST.DT_SC_MANIFEST_ID,
                 Tables.DT_SC.DT_SC_ID,
@@ -51,12 +52,12 @@ public class DTSCRepository implements ScoreRepository<DTSC, BigInteger> {
     }
 
     @Override
-    public DTSC findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public DTSC findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(id)))
+                .where(Tables.DT_SC.DT_SC_ID.eq(id))
                 .fetchOptionalInto(DTSC.class).orElse(null);
     }
 }

@@ -8,7 +8,7 @@ import java.math.BigInteger;
 
 public class Acc extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger accId;
+    private String accId;
 
     private String guid;
 
@@ -36,20 +36,20 @@ public class Acc extends Auditable implements CoreComponent, Serializable {
 
     private boolean anAbstract;
 
-    private BigInteger prevAccId;
+    private String prevAccId;
 
-    private BigInteger nextAccId;
+    private String nextAccId;
 
-    public BigInteger getAccId() {
+    public String getAccId() {
         return accId;
     }
 
-    public void setAccId(BigInteger accId) {
+    public void setAccId(String accId) {
         this.accId = accId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getAccId();
     }
     
@@ -162,19 +162,19 @@ public class Acc extends Auditable implements CoreComponent, Serializable {
         this.anAbstract = anAbstract;
     }
 
-    public BigInteger getPrevAccId() {
+    public String getPrevAccId() {
         return prevAccId;
     }
 
-    public void setPrevAccId(BigInteger prevAccId) {
+    public void setPrevAccId(String prevAccId) {
         this.prevAccId = prevAccId;
     }
 
-    public BigInteger getNextAccId() {
+    public String getNextAccId() {
         return nextAccId;
     }
 
-    public void setNextAccId(BigInteger nextAccId) {
+    public void setNextAccId(String nextAccId) {
         this.nextAccId = nextAccId;
     }
 }

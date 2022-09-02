@@ -170,7 +170,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID
      * column cannot have a value at the same time.
      */
-    public void setCodeListId(ULong value) {
+    public void setCodeListId(String value) {
         set(7, value);
     }
 
@@ -187,8 +187,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID
      * column cannot have a value at the same time.
      */
-    public ULong getCodeListId() {
-        return (ULong) get(7);
+    public String getCodeListId() {
+        return (String) get(7);
     }
 
     /**
@@ -204,7 +204,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column
      * cannot have a value at the same time.
      */
-    public void setAgencyIdListId(ULong value) {
+    public void setAgencyIdListId(String value) {
         set(8, value);
     }
 
@@ -221,8 +221,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column
      * cannot have a value at the same time.
      */
-    public ULong getAgencyIdListId() {
-        return (ULong) get(8);
+    public String getAgencyIdListId() {
+        return (String) get(8);
     }
 
     /**
@@ -536,7 +536,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
+    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         setBbieScId(bbieScId);

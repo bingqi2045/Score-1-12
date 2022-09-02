@@ -48,7 +48,7 @@ public class CodeListService extends EventHandler {
     private CodeListWriteRepository codeListWriteRepository;
 
     private SelectOnConditionStep<Record22<
-            ULong, ULong, String, String, ULong,
+            ULong, String, String, String, ULong,
             String, String, ULong, String, String,
             String, LocalDateTime, String, String, String,
             Byte, String, Byte, String, String,
@@ -102,7 +102,7 @@ public class CodeListService extends EventHandler {
         }
 
         SelectOnConditionStep<Record22<
-                ULong, ULong, String, String, ULong,
+                ULong, String, String, String, ULong,
                 String, String, ULong, String, String,
                 String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
@@ -164,7 +164,7 @@ public class CodeListService extends EventHandler {
         }
 
         SelectConnectByStep<Record22<
-                ULong, ULong, String, String, ULong,
+                ULong, String, String, String, ULong,
                 String, String, ULong, String, String,
                 String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
@@ -200,7 +200,7 @@ public class CodeListService extends EventHandler {
 
 
         SelectWithTiesAfterOffsetStep<Record22<
-                ULong, ULong, String, String, ULong,
+                ULong, String, String, String, ULong,
                 String, String, ULong, String, String,
                 String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
@@ -362,7 +362,7 @@ public class CodeListService extends EventHandler {
     private void createCodeList(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                                 CodeListValue codeListValue) {
 
-        ULong codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
+        String codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
                 CODE_LIST_VALUE.CODE_LIST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.MEANING,
@@ -442,7 +442,7 @@ public class CodeListService extends EventHandler {
                 .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
                 .fetchOne();
 
-        ULong lastPublishedCodeListId = codeListRecord.getPrevCodeListId();
+        String lastPublishedCodeListId = codeListRecord.getPrevCodeListId();
         if (lastPublishedCodeListId == null) {
             // rev = 1 return null
             return null;
@@ -553,7 +553,7 @@ public class CodeListService extends EventHandler {
                 ).fetchStreamInto(CodeListValueManifestRecord.class)
                 .collect(Collectors.toMap(CodeListValueManifestRecord::getCodeListValueManifestId, Function.identity()));
 
-        Map<ULong, CodeListValueRecord> codeListValueRecordMap = dslContext.selectFrom(CODE_LIST_VALUE)
+        Map<String, CodeListValueRecord> codeListValueRecordMap = dslContext.selectFrom(CODE_LIST_VALUE)
                 .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.in(
                         codeListValueManifestRecordMap.values().stream().map(e -> e.getCodeListValueId()).collect(Collectors.toList())
                 )).fetchStreamInto(CodeListValueRecord.class)
@@ -575,7 +575,7 @@ public class CodeListService extends EventHandler {
                 CodeListValueRecord codeListValueRecord =
                         codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
 
-                ULong prevCodeListValueId = codeListValueRecord.getCodeListValueId();
+                String prevCodeListValueId = codeListValueRecord.getCodeListValueId();
 
                 codeListValueRecord.setCodeListValueId(null);
                 codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
@@ -624,10 +624,10 @@ public class CodeListService extends EventHandler {
                 );
             }
 
-            ULong prevCodeListValueId = codeListValueRecord.getCodeListValueId();
+            String prevCodeListValueId = codeListValueRecord.getCodeListValueId();
             boolean isUpdate = prevCodeListValueId != null;
 
-            codeListValueRecord.setCodeListValueId(null);
+            codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
             codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
@@ -656,9 +656,9 @@ public class CodeListService extends EventHandler {
             codeListValueRecord.setLastUpdatedBy(requesterId);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
-            codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
+            dslContext.insertInto(CODE_LIST_VALUE)
                     .set(codeListValueRecord)
-                    .returning().fetchOne();
+                    .execute();
 
             if (isUpdate) {
                 dslContext.update(CODE_LIST_VALUE)

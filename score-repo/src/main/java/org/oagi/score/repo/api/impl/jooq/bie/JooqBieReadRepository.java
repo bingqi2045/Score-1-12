@@ -225,9 +225,9 @@ public class JooqBieReadRepository
             bbie.setBdtPriRestriId((record.get(BBIE.BDT_PRI_RESTRI_ID) != null) ?
                     record.get(BBIE.BDT_PRI_RESTRI_ID).toBigInteger() : null);
             bbie.setCodeListId((record.get(BBIE.CODE_LIST_ID) != null) ?
-                    record.get(BBIE.CODE_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE.CODE_LIST_ID) : null);
             bbie.setAgencyIdListId((record.get(BBIE.AGENCY_ID_LIST_ID) != null) ?
-                    record.get(BBIE.AGENCY_ID_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE.AGENCY_ID_LIST_ID) : null);
             bbie.setCardinalityMin(record.get(BBIE.CARDINALITY_MIN));
             bbie.setCardinalityMax(record.get(BBIE.CARDINALITY_MAX));
             bbie.setDefaultValue(record.get(BBIE.DEFAULT_VALUE));
@@ -337,9 +337,9 @@ public class JooqBieReadRepository
             bbieSc.setDtScPriRestriId((record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID) != null) ?
                     record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID).toBigInteger() : null);
             bbieSc.setCodeListId((record.get(BBIE_SC.CODE_LIST_ID) != null) ?
-                    record.get(BBIE_SC.CODE_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.CODE_LIST_ID) : null);
             bbieSc.setAgencyIdListId((record.get(BBIE_SC.AGENCY_ID_LIST_ID) != null) ?
-                    record.get(BBIE_SC.AGENCY_ID_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.AGENCY_ID_LIST_ID) : null);
             bbieSc.setCardinalityMin(record.get(BBIE_SC.CARDINALITY_MIN));
             bbieSc.setCardinalityMax(record.get(BBIE_SC.CARDINALITY_MAX));
             bbieSc.setDefaultValue(record.get(BBIE_SC.DEFAULT_VALUE));

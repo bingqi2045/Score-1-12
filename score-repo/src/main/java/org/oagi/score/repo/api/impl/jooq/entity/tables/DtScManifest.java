@@ -66,7 +66,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     /**
      * The column <code>oagi.dt_sc_manifest.dt_sc_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtScManifestRecord, String> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.owner_dt_manifest_id</code>.
@@ -280,21 +280,21 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+    public Row9<ULong, String, String, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -73,6 +73,7 @@ public class DtWriteRepository {
                 .fetch();
 
         DtRecord bdt = new DtRecord();
+        bdt.setDtId(UUID.randomUUID().toString());
         bdt.setGuid(ScoreGuid.randomGuid());
         bdt.setDataTypeTerm(basedBdt.getDataTypeTerm());
         if (basedBdt.getQualifier_() != null) {
@@ -100,11 +101,9 @@ public class DtWriteRepository {
         bdt.setOwnerUserId(userId);
         bdt.setCreationTimestamp(timestamp);
         bdt.setLastUpdateTimestamp(timestamp);
-        bdt.setDtId(
-                dslContext.insertInto(DT)
-                        .set(bdt)
-                        .returning(DT.DT_ID).fetchOne().getDtId()
-        );
+        dslContext.insertInto(DT)
+                .set(bdt)
+                .execute();
 
         DtManifestRecord bdtManifest = new DtManifestRecord();
         bdtManifest.setDtId(bdt.getDtId());
@@ -116,7 +115,7 @@ public class DtWriteRepository {
 
         createBdtPriRestri(bdt.getDtId(), basedBdt.getDtId(), basedBdtManifest.getBasedDtManifestId() != null);
 
-        Map<ULong, ULong> basedScMap = new HashMap<>();
+        Map<String, String> basedScMap = new HashMap<>();
 
         dslContext.select(DT_SC.DT_SC_ID, DT_SC.BASED_DT_SC_ID)
                 .from(DT_SC)
@@ -134,6 +133,7 @@ public class DtWriteRepository {
             DtScRecord dtScRecord = new DtScRecord();
             DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
 
+            dtScRecord.setDtScId(UUID.randomUUID().toString());
             dtScRecord.setGuid(ScoreGuid.randomGuid());
             dtScRecord.setObjectClassTerm(basedDtSc.getObjectClassTerm());
             dtScRecord.setPropertyTerm(basedDtSc.getPropertyTerm());
@@ -142,7 +142,7 @@ public class DtWriteRepository {
             dtScRecord.setDefinitionSource(basedDtSc.getDefinitionSource());
             dtScRecord.setOwnerDtId(bdt.getDtId());
             if (basedBdt.getBasedDtId() == null && request.getSpecId().longValue() > 0) {
-                ULong cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
+                String cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
                 CdtScRefSpecRecord specRecord = dslContext.selectFrom(CDT_SC_REF_SPEC)
                         .where(and(CDT_SC_REF_SPEC.CDT_SC_ID.eq(cdtScId), CDT_SC_REF_SPEC.REF_SPEC_ID.eq(ULong.valueOf(request.getSpecId()))))
                         .fetchOne();
@@ -166,10 +166,9 @@ public class DtWriteRepository {
             dtScRecord.setOwnerUserId(userId);
             dtScRecord.setCreationTimestamp(timestamp);
             dtScRecord.setLastUpdateTimestamp(timestamp);
-            dtScRecord.setDtScId(
-                    dslContext.insertInto(DT_SC)
-                            .set(dtScRecord)
-                            .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId());
+            dslContext.insertInto(DT_SC)
+                    .set(dtScRecord)
+                    .execute();
 
             dtScManifestRecord.setReleaseId(basedBdtManifest.getReleaseId());
             dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
@@ -196,14 +195,14 @@ public class DtWriteRepository {
         return new CreateBdtRepositoryResponse(bdtManifest.getDtManifestId().toBigInteger());
     }
 
-    private ULong findCdtSc(ULong dtScId, Map<ULong, ULong> map) {
+    private String findCdtSc(String dtScId, Map<String, String> map) {
         if (map.get(dtScId) == null) {
             return dtScId;
         }
         return findCdtSc(map.get(dtScId), map);
     }
 
-    private void createBdtPriRestri(ULong dtId, ULong basedDtId, boolean isBdt) {
+    private void createBdtPriRestri(String dtId, String basedDtId, boolean isBdt) {
         if (isBdt) {
             dslContext.insertInto(BDT_PRI_RESTRI,
                     BDT_PRI_RESTRI.BDT_ID,
@@ -232,7 +231,7 @@ public class DtWriteRepository {
         }
     }
 
-    private void createBdtScPriRestri(ULong dtScId, ULong basedDtScId, boolean isBdt) {
+    private void createBdtScPriRestri(String dtScId, String basedDtScId, boolean isBdt) {
         // insert BDT_SC_PRI_RESTRI
         if (isBdt) {
             dslContext.insertInto(BDT_SC_PRI_RESTRI,
@@ -562,16 +561,16 @@ public class DtWriteRepository {
         }
     }
 
-    private void deleteDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> deleteList) {
+    private void deleteDerivedValueDomain(String dtId, List<BdtPriRestriRecord> deleteList) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
 
         List<String> cdtAwdPriXpsTypeMapIdList = deleteList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
                 .map(BdtPriRestriRecord::getCdtAwdPriXpsTypeMapId).collect(Collectors.toList());
 
-        List<ULong> codeListId = deleteList.stream().filter(e -> e.getCodeListId() != null)
+        List<String> codeListId = deleteList.stream().filter(e -> e.getCodeListId() != null)
                 .map(BdtPriRestriRecord::getCodeListId).collect(Collectors.toList());
 
-        List<ULong> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
+        List<String> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
         for (DtRecord dt : derivedDtList) {
@@ -617,7 +616,7 @@ public class DtWriteRepository {
     }
 
     private void updateDefaultValueDomainForDerivedDt(
-            ULong dtId, CcBdtPriRestri defaultValueDomain) {
+            String dtId, CcBdtPriRestri defaultValueDomain) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
         for (DtRecord derivedDt : derivedDtList) {
             for (BdtPriRestriRecord bdtPriRestriRecord : dslContext.selectFrom(BDT_PRI_RESTRI)
@@ -632,14 +631,14 @@ public class DtWriteRepository {
                     }
                 } else if (defaultValueDomain.getCodeListId() != null) {
                     if (bdtPriRestriRecord.getCodeListId() != null &&
-                        bdtPriRestriRecord.getCodeListId().toBigInteger().equals(defaultValueDomain.getCodeListId())) {
+                        bdtPriRestriRecord.getCodeListId().equals(defaultValueDomain.getCodeListId())) {
                         bdtPriRestriRecord.setIsDefault((byte) 1);
                     } else {
                         bdtPriRestriRecord.setIsDefault((byte) 0);
                     }
                 } else if (defaultValueDomain.getAgencyIdListId() != null) {
                     if (bdtPriRestriRecord.getAgencyIdListId() != null &&
-                        bdtPriRestriRecord.getAgencyIdListId().toBigInteger().equals(defaultValueDomain.getAgencyIdListId())) {
+                        bdtPriRestriRecord.getAgencyIdListId().equals(defaultValueDomain.getAgencyIdListId())) {
                         bdtPriRestriRecord.setIsDefault((byte) 1);
                     } else {
                         bdtPriRestriRecord.setIsDefault((byte) 0);
@@ -652,16 +651,16 @@ public class DtWriteRepository {
         }
     }
 
-    private void insertDerivedValueDomain(ULong dtId, List<BdtPriRestriRecord> insertList) {
+    private void insertDerivedValueDomain(String dtId, List<BdtPriRestriRecord> insertList) {
         List<DtRecord> derivedDtList = dslContext.selectFrom(DT).where(DT.BASED_DT_ID.eq(dtId)).fetch();
 
         List<String> cdtAwdPriXpsTypeMapIdList = insertList.stream().filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
                 .map(BdtPriRestriRecord::getCdtAwdPriXpsTypeMapId).collect(Collectors.toList());
 
-        List<ULong> codeListIdList = insertList.stream().filter(e -> e.getCodeListId() != null)
+        List<String> codeListIdList = insertList.stream().filter(e -> e.getCodeListId() != null)
                 .map(BdtPriRestriRecord::getCodeListId).collect(Collectors.toList());
 
-        List<ULong> agencyIdList = insertList.stream().filter(e -> e.getAgencyIdListId() != null)
+        List<String> agencyIdList = insertList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
         for (DtRecord dt : derivedDtList) {
@@ -677,7 +676,7 @@ public class DtWriteRepository {
                 }
             }
 
-            for (ULong codeListId : codeListIdList) {
+            for (String codeListId : codeListIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
                         BDT_PRI_RESTRI.CODE_LIST_ID.eq(codeListId)).fetchOne();
@@ -689,7 +688,7 @@ public class DtWriteRepository {
                 }
             }
 
-            for (ULong agencyId : agencyIdList) {
+            for (String agencyId : agencyIdList) {
                 BdtPriRestriRecord existRecord = dslContext.selectFrom(BDT_PRI_RESTRI).where(
                         and(BDT_PRI_RESTRI.BDT_ID.eq(dt.getDtId())),
                         BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(agencyId)).fetchOne();
@@ -705,7 +704,7 @@ public class DtWriteRepository {
         }
     }
 
-    private void updateBdtPriList(ULong dtId, List<CcBdtPriRestri> list) {
+    private void updateBdtPriList(String dtId, List<CcBdtPriRestri> list) {
         List<BdtPriRestriRecord> records = dslContext
                 .selectFrom(BDT_PRI_RESTRI)
                 .where(BDT_PRI_RESTRI.BDT_ID.eq(dtId)).fetch();
@@ -736,9 +735,9 @@ public class DtWriteRepository {
                 newBdtPriRestri.setIsDefault((byte) 0);
                 newBdtPriRestri.setBdtId(dtId);
                 if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
-                    newBdtPriRestri.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    newBdtPriRestri.setCodeListId(restri.getCodeListId());
                 } else if (restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
-                    newBdtPriRestri.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                    newBdtPriRestri.setAgencyIdListId(restri.getAgencyIdListId());
                 }
                 restri.setBdtPriRestriId(dslContext.insertInto(BDT_PRI_RESTRI)
                         .set(newBdtPriRestri)
@@ -757,12 +756,12 @@ public class DtWriteRepository {
                     bdtPriRestriRecord.setAgencyIdListId(null);
                 } else if (restri.getCodeListId() != null) {
                     bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(null);
-                    bdtPriRestriRecord.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    bdtPriRestriRecord.setCodeListId(restri.getCodeListId());
                     bdtPriRestriRecord.setAgencyIdListId(null);
                 } else if (restri.getAgencyIdListId() != null) {
                     bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(null);
                     bdtPriRestriRecord.setCodeListId(null);
-                    bdtPriRestriRecord.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                    bdtPriRestriRecord.setAgencyIdListId(restri.getAgencyIdListId());
                 }
 
                 bdtPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
@@ -774,12 +773,12 @@ public class DtWriteRepository {
                     restri.setAgencyIdListId(null);
                 } else if (bdtPriRestriRecord.getCodeListId() != null) {
                     restri.setCdtAwdPriXpsTypeMapId(null);
-                    restri.setCodeListId(bdtPriRestriRecord.getCodeListId().toBigInteger());
+                    restri.setCodeListId(bdtPriRestriRecord.getCodeListId());
                     restri.setAgencyIdListId(null);
                 } else if (bdtPriRestriRecord.getAgencyIdListId() != null) {
                     restri.setCdtAwdPriXpsTypeMapId(null);
                     restri.setCodeListId(null);
-                    restri.setAgencyIdListId(bdtPriRestriRecord.getAgencyIdListId().toBigInteger());
+                    restri.setAgencyIdListId(bdtPriRestriRecord.getAgencyIdListId());
                 }
             }
 
@@ -967,7 +966,7 @@ public class DtWriteRepository {
                     .fetch();
 
             if (!bdtScPriRestriRecords.isEmpty()) {
-                List<ULong> bdtScIdList = bdtScPriRestriRecords.stream().map(e -> e.getBdtScId()).collect(Collectors.toList());
+                List<String> bdtScIdList = bdtScPriRestriRecords.stream().map(e -> e.getBdtScId()).collect(Collectors.toList());
                 dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
                         .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.in(bdtScIdList))
                         .execute();
@@ -1143,7 +1142,7 @@ public class DtWriteRepository {
         DtRecord targetDtRecord = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
 
-        dtScRecord.setBasedDtScId(ULong.valueOf(dtScRecord.getDtScId().longValue()));
+        dtScRecord.setBasedDtScId(dtScRecord.getDtScId());
         dtScRecord.setDtScId(null);
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setOwnerDtId(targetDtRecord.getDtId());
@@ -1171,7 +1170,7 @@ public class DtWriteRepository {
                 .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
     }
 
-    private void insertBdtScPriRestriByRepresentationTerm(ULong bdtScId, String representationTerm) {
+    private void insertBdtScPriRestriByRepresentationTerm(String bdtScId, String representationTerm) {
         DtRecord cdtRecord = dslContext.selectFrom(DT)
                 .where(and(
                         DT.BASED_DT_ID.isNull(),
@@ -1268,6 +1267,7 @@ public class DtWriteRepository {
                 .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
 
         DtScRecord dtScRecord = new DtScRecord();
+        dtScRecord.setDtScId(UUID.randomUUID().toString());
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setObjectClassTerm(targetDtRecord.getDataTypeTerm());
         dtScRecord.setPropertyTerm(getUniquePropertyTerm());
@@ -1283,11 +1283,10 @@ public class DtWriteRepository {
         dtScRecord.setCreationTimestamp(request.getLocalDateTime());
         dtScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-        dtScRecord.setDtScId(
-                dslContext.insertInto(DT_SC)
-                        .set(dtScRecord)
-                        .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
-        );
+        dslContext.insertInto(DT_SC)
+                .set(dtScRecord)
+                .execute();
+
         insertBdtScPriRestriByRepresentationTerm(dtScRecord.getDtScId(), defaultRepresentationTerm);
 
         DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function17;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValueRecord;
@@ -55,10 +53,10 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
     /**
      * The column
-     * <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary
-     * key column.
+     * <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key column.");
+    public final TableField<AgencyIdListValueRecord, String> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.agency_id_list_value.guid</code>. A globally unique
@@ -96,7 +94,7 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * key to the agency identification list in the AGENCY_ID_LIST table this
      * value belongs to.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> OWNER_LIST_ID = createField(DSL.name("owner_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.");
+    public final TableField<AgencyIdListValueRecord, String> OWNER_LIST_ID = createField(DSL.name("owner_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.");
 
     /**
      * The column
@@ -105,7 +103,7 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * when the AGENCY_ID_LIST_VALUE is derived from the based
      * AGENCY_ID_LIST_VALUE.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> BASED_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("based_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.");
+    public final TableField<AgencyIdListValueRecord, String> BASED_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("based_agency_id_list_value_id"), SQLDataType.CHAR(36), this, "Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.");
 
     /**
      * The column <code>oagi.agency_id_list_value.is_deprecated</code>.
@@ -119,7 +117,7 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>.
      * This refers to a replacement if the record is deprecated.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("replacement_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<AgencyIdListValueRecord, String> REPLACEMENT_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("replacement_agency_id_list_value_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_value.created_by</code>. Foreign key
@@ -163,14 +161,14 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A
      * self-foreign key to indicate the previous history record.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> PREV_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("prev_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<AgencyIdListValueRecord, String> PREV_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("prev_agency_id_list_value_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column
      * <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A
      * self-foreign key to indicate the next history record.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> NEXT_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("next_agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<AgencyIdListValueRecord, String> NEXT_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("next_agency_id_list_value_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private AgencyIdListValue(Name alias, Table<AgencyIdListValueRecord> aliased) {
         this(alias, aliased, null);
@@ -208,11 +206,6 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<AgencyIdListValueRecord, ULong> getIdentity() {
-        return (Identity<AgencyIdListValueRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -370,21 +363,21 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, String, String, String, String, ULong, ULong, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+    public Row17<String, String, String, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String> fieldsRow() {
         return (Row17) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function17<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function17<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function17<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function17<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

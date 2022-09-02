@@ -70,17 +70,17 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     public final TableField<DtUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
+     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
+     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
 
     private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased) {
         this(alias, aliased, null);
@@ -213,21 +213,21 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row4<ULong, ULong, String, String> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super ULong, ? super ULong, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super ULong, ? super ULong, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

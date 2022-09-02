@@ -8,9 +8,9 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BccForBie extends TrackableImpl {
+public class BccForBie extends TrackableImpl<String> {
 
-    private BigInteger bccId;
+    private String bccId;
     private String guid;
     private String cardinalityMin;
     private String cardinalityMax;
@@ -21,7 +21,7 @@ public class BccForBie extends TrackableImpl {
     private String fromAccId;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return bccId;
     }
 

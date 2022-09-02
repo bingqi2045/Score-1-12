@@ -39,7 +39,7 @@ public class BDTSimpleContent extends AbstractBDTSimple {
     }
 
     @Override
-    public ULong getBdtId() {
+    public String getBdtId() {
         return dataType.getDtId();
     }
 

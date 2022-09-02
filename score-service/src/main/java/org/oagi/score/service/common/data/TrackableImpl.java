@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public abstract class TrackableImpl implements Trackable {
+public abstract class TrackableImpl<T> implements Trackable<T> {
 
     private String releaseId;
     private String releaseNum;

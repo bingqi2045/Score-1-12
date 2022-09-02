@@ -3,9 +3,9 @@ package org.oagi.score.service.common.data;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public interface Trackable extends Serializable {
+public interface Trackable<T> extends Serializable {
 
-    BigInteger getId();
+    T getId();
 
     String getReleaseId();
     String getReleaseNum();

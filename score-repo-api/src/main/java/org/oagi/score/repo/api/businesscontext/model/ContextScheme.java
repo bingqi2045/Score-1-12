@@ -13,7 +13,7 @@ public class ContextScheme extends Auditable {
 
     private String contextCategoryName;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
     private String codeListName;
 
@@ -59,11 +59,11 @@ public class ContextScheme extends Auditable {
         this.contextCategoryName = contextCategoryName;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 

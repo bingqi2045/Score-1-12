@@ -749,7 +749,7 @@ public class BusinessInformationEntityRepository {
     }
 
     public AsccpManifestRecord getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(BigInteger topLevelAsbiepId, String releaseId) {
-        BigInteger asccp_id = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
+        String asccpId = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(TOP_LEVEL_ASBIEP).on(and(
@@ -760,10 +760,10 @@ public class BusinessInformationEntityRepository {
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 ))
-                .fetchOptionalInto(BigInteger.class).orElse(null);
+                .fetchOptionalInto(String.class).orElse(null);
 
         return dslContext.selectFrom(ASCCP_MANIFEST)
-                .where(and(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccp_id)),
+                .where(and(ASCCP_MANIFEST.ASCCP_ID.eq(asccpId),
                         ASCCP_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }

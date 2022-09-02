@@ -140,7 +140,7 @@ public class CoreComponentGraphContext implements GraphContext {
     @AllArgsConstructor
     public class DtScManifest {
         private ULong dtScManifestId;
-        private ULong basedDtScId;
+        private String basedDtScId;
         private ULong ownerDtManifestId;
         private int cardinalityMin;
         private int cardinalityMax;

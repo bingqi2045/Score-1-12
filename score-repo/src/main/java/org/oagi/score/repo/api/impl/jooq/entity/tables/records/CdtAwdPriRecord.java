@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record4;
 import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 
 
@@ -19,7 +18,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
  * each of the CDT Content Component section/table in CCTS DTC3.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implements Record4<String, ULong, String, Byte> {
+public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implements Record4<String, String, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,7 +42,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
      * Setter for <code>oagi.cdt_awd_pri.cdt_id</code>. Foreign key pointing to
      * a CDT in the DT table.
      */
-    public void setCdtId(ULong value) {
+    public void setCdtId(String value) {
         set(1, value);
     }
 
@@ -51,8 +50,8 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
      * Getter for <code>oagi.cdt_awd_pri.cdt_id</code>. Foreign key pointing to
      * a CDT in the DT table.
      */
-    public ULong getCdtId() {
-        return (ULong) get(1);
+    public String getCdtId() {
+        return (String) get(1);
     }
 
     /**
@@ -103,12 +102,12 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<String, ULong, String, Byte> fieldsRow() {
+    public Row4<String, String, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<String, ULong, String, Byte> valuesRow() {
+    public Row4<String, String, String, Byte> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
@@ -118,7 +117,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return CdtAwdPri.CDT_AWD_PRI.CDT_ID;
     }
 
@@ -138,7 +137,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getCdtId();
     }
 
@@ -158,7 +157,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getCdtId();
     }
 
@@ -179,7 +178,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     @Override
-    public CdtAwdPriRecord value2(ULong value) {
+    public CdtAwdPriRecord value2(String value) {
         setCdtId(value);
         return this;
     }
@@ -197,7 +196,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     @Override
-    public CdtAwdPriRecord values(String value1, ULong value2, String value3, Byte value4) {
+    public CdtAwdPriRecord values(String value1, String value2, String value3, Byte value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -219,7 +218,7 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     /**
      * Create a detached, initialised CdtAwdPriRecord
      */
-    public CdtAwdPriRecord(String cdtAwdPriId, ULong cdtId, String cdtPriId, Byte isDefault) {
+    public CdtAwdPriRecord(String cdtAwdPriId, String cdtId, String cdtPriId, Byte isDefault) {
         super(CdtAwdPri.CDT_AWD_PRI);
 
         setCdtAwdPriId(cdtAwdPriId);

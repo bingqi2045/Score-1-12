@@ -11,10 +11,10 @@ import java.math.BigInteger;
 public class BdtPriRestri implements Serializable {
 
     private BigInteger bdtPriRestriId = BigInteger.ZERO;
-    private BigInteger bdtId = BigInteger.ZERO;
+    private String bdtId;
     private String cdtAwdPriXpsTypeMapId;
-    private BigInteger codeListId = BigInteger.ZERO;
-    private BigInteger agencyIdListId = BigInteger.ZERO;
+    private String codeListId;
+    private String agencyIdListId;
     private boolean defaulted;
 
     public boolean isDefault() {

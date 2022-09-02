@@ -6,6 +6,7 @@ import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCP;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BCCPRepository implements ScoreRepository<BCCP, BigInteger> {
+public class BCCPRepository implements ScoreRepository<BCCP, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -66,12 +67,12 @@ public class BCCPRepository implements ScoreRepository<BCCP, BigInteger> {
     }
 
     @Override
-    public BCCP findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BCCP findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BCCP.BCCP_ID.eq(id))
                 .fetchOptionalInto(BCCP.class).orElse(null);
     }
 }

@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record21;
 import org.jooq.Row21;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 
 
@@ -19,24 +18,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
  * An ASCCP specifies a role (or property) an ACC may play under another ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> {
+public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, String, Byte, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary
-     * database key of an ASCCP.
+     * Setter for <code>oagi.asccp.asccp_id</code>. Primary, internal database
+     * key.
      */
-    public void setAsccpId(ULong value) {
+    public void setAsccpId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp.asccp_id</code>. An internal, primary
-     * database key of an ASCCP.
+     * Getter for <code>oagi.asccp.asccp_id</code>. Primary, internal database
+     * key.
      */
-    public ULong getAsccpId() {
-        return (ULong) get(0);
+    public String getAsccpId() {
+        return (String) get(0);
     }
 
     /**
@@ -125,7 +124,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Setter for <code>oagi.asccp.role_of_acc_id</code>. The ACC from which
      * this ASCCP is created (ASCCP applies role to the ACC).
      */
-    public void setRoleOfAccId(ULong value) {
+    public void setRoleOfAccId(String value) {
         set(6, value);
     }
 
@@ -133,8 +132,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Getter for <code>oagi.asccp.role_of_acc_id</code>. The ACC from which
      * this ASCCP is created (ASCCP applies role to the ACC).
      */
-    public ULong getRoleOfAccId() {
-        return (ULong) get(6);
+    public String getRoleOfAccId() {
+        return (String) get(6);
     }
 
     /**
@@ -347,7 +346,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Setter for <code>oagi.asccp.replacement_asccp_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public void setReplacementAsccpId(ULong value) {
+    public void setReplacementAsccpId(String value) {
         set(17, value);
     }
 
@@ -355,8 +354,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Getter for <code>oagi.asccp.replacement_asccp_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public ULong getReplacementAsccpId() {
-        return (ULong) get(17);
+    public String getReplacementAsccpId() {
+        return (String) get(17);
     }
 
     /**
@@ -383,7 +382,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Setter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public void setPrevAsccpId(ULong value) {
+    public void setPrevAsccpId(String value) {
         set(19, value);
     }
 
@@ -391,15 +390,15 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Getter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public ULong getPrevAsccpId() {
-        return (ULong) get(19);
+    public String getPrevAsccpId() {
+        return (String) get(19);
     }
 
     /**
      * Setter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public void setNextAsccpId(ULong value) {
+    public void setNextAsccpId(String value) {
         set(20, value);
     }
 
@@ -407,8 +406,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * Getter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public ULong getNextAsccpId() {
-        return (ULong) get(20);
+    public String getNextAsccpId() {
+        return (String) get(20);
     }
 
     // -------------------------------------------------------------------------
@@ -416,7 +415,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -425,17 +424,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row21<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, String, Byte, String, String> fieldsRow() {
         return (Row21) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, ULong, Byte, ULong, ULong> valuesRow() {
+    public Row21<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, Byte, Byte, String, Byte, String, String> valuesRow() {
         return (Row21) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Asccp.ASCCP.ASCCP_ID;
     }
 
@@ -465,7 +464,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Asccp.ASCCP.ROLE_OF_ACC_ID;
     }
 
@@ -520,7 +519,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field18() {
+    public Field<String> field18() {
         return Asccp.ASCCP.REPLACEMENT_ASCCP_ID;
     }
 
@@ -530,17 +529,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<String> field20() {
         return Asccp.ASCCP.PREV_ASCCP_ID;
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<String> field21() {
         return Asccp.ASCCP.NEXT_ASCCP_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAsccpId();
     }
 
@@ -570,7 +569,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getRoleOfAccId();
     }
 
@@ -625,7 +624,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong component18() {
+    public String component18() {
         return getReplacementAsccpId();
     }
 
@@ -635,17 +634,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong component20() {
+    public String component20() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong component21() {
+    public String component21() {
         return getNextAsccpId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAsccpId();
     }
 
@@ -675,7 +674,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getRoleOfAccId();
     }
 
@@ -730,7 +729,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong value18() {
+    public String value18() {
         return getReplacementAsccpId();
     }
 
@@ -740,17 +739,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public ULong value20() {
+    public String value20() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong value21() {
+    public String value21() {
         return getNextAsccpId();
     }
 
     @Override
-    public AsccpRecord value1(ULong value) {
+    public AsccpRecord value1(String value) {
         setAsccpId(value);
         return this;
     }
@@ -786,7 +785,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord value7(ULong value) {
+    public AsccpRecord value7(String value) {
         setRoleOfAccId(value);
         return this;
     }
@@ -852,7 +851,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord value18(ULong value) {
+    public AsccpRecord value18(String value) {
         setReplacementAsccpId(value);
         return this;
     }
@@ -864,19 +863,19 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     @Override
-    public AsccpRecord value20(ULong value) {
+    public AsccpRecord value20(String value) {
         setPrevAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value21(ULong value) {
+    public AsccpRecord value21(String value) {
         setNextAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, String value14, String value15, Byte value16, Byte value17, ULong value18, Byte value19, ULong value20, ULong value21) {
+    public AsccpRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, String value14, String value15, Byte value16, Byte value17, String value18, Byte value19, String value20, String value21) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -915,7 +914,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, String namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(String asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, String roleOfAccId, String den, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, String namespaceId, Byte reusableIndicator, Byte isDeprecated, String replacementAsccpId, Byte isNillable, String prevAsccpId, String nextAsccpId) {
         super(Asccp.ASCCP);
 
         setAsccpId(asccpId);

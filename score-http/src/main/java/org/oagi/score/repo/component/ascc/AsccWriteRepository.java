@@ -177,6 +177,7 @@ public class AsccWriteRepository {
         }
 
         AsccRecord ascc = new AsccRecord();
+        ascc.setAsccId(UUID.randomUUID().toString());
         ascc.setGuid(ScoreGuid.randomGuid());
         ascc.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getDen());
         ascc.setCardinalityMin(request.getCardinalityMin());
@@ -191,11 +192,9 @@ public class AsccWriteRepository {
         ascc.setOwnerUserId(userId);
         ascc.setCreationTimestamp(timestamp);
         ascc.setLastUpdateTimestamp(timestamp);
-        ascc.setAsccId(
-                dslContext.insertInto(ASCC)
-                        .set(ascc)
-                        .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
-        );
+        dslContext.insertInto(ASCC)
+                .set(ascc)
+                .execute();
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());
@@ -520,7 +519,7 @@ public class AsccWriteRepository {
         targetAsccRecord.setPrevAsccId(null);
         targetAsccRecord.setNextAsccId(null);
         targetAsccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + asccpDen);
-        ULong asccId = dslContext.insertInto(ASCC).set(targetAsccRecord).returning().fetchOne().getAsccId();
+        String asccId = dslContext.insertInto(ASCC).set(targetAsccRecord).returning().fetchOne().getAsccId();
 
         targetAsccManifestRecord.setAsccManifestId(null);
         targetAsccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));

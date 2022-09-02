@@ -148,9 +148,9 @@ public class BbieScReadRepository {
             bbieSc.setBdtScPriRestriId((bbieScRecord.getDtScPriRestriId() != null) ?
                     bbieScRecord.getDtScPriRestriId().toBigInteger() : null);
             bbieSc.setCodeListId((bbieScRecord.getCodeListId() != null) ?
-                    bbieScRecord.getCodeListId().toBigInteger() : null);
+                    bbieScRecord.getCodeListId() : null);
             bbieSc.setAgencyIdListId((bbieScRecord.getAgencyIdListId() != null) ?
-                    bbieScRecord.getAgencyIdListId().toBigInteger() : null);
+                    bbieScRecord.getAgencyIdListId() : null);
         }
 
         return bbieSc;

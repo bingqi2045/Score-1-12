@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class CodeListValue {
 
     private BigInteger codeListValueId = BigInteger.ZERO;
-    private BigInteger codeListId = BigInteger.ZERO;
+    private String codeListId;
     private String value;
     private String meaning;
     private String definition;

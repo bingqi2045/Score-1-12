@@ -26,7 +26,7 @@ public class BdtRepository {
                 .fetchInto(DT.class);
     }
 
-    public List<BdtPriRestri> getBdtPriRestriListByBdtId(long bdtId) {
+    public List<BdtPriRestri> getBdtPriRestriListByBdtId(String bdtId) {
         return dslContext.select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 BDT_PRI_RESTRI.BDT_ID,
                 BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -34,11 +34,11 @@ public class BdtRepository {
                 BDT_PRI_RESTRI.AGENCY_ID_LIST_ID,
                 BDT_PRI_RESTRI.IS_DEFAULT)
                 .from(BDT_PRI_RESTRI)
-                .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId)))
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(bdtId))
                 .fetchInto(BdtPriRestri.class);
     }
 
-    public List<BdtScPriRestri> getBdtScPriRestriListByBdtId(long bdtScId) {
+    public List<BdtScPriRestri> getBdtScPriRestriListByBdtId(String bdtScId) {
         return dslContext.select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.BDT_SC_ID,
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
@@ -46,7 +46,7 @@ public class BdtRepository {
                 BDT_SC_PRI_RESTRI.CODE_LIST_ID,
                 BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID)
                 .from(BDT_SC_PRI_RESTRI)
-                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(bdtScId)))
+                .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(bdtScId))
                 .fetchInto(BdtScPriRestri.class);
     }
 }

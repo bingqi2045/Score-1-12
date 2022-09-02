@@ -9,7 +9,7 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 public class AvailableCodeList {
 
-    private BigInteger codeListId;
+    private String codeListId;
     private BigInteger codeListManifestId;
     private BigInteger basedCodeListManifestId;
     private String codeListName;

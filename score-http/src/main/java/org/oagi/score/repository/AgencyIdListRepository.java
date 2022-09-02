@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AgencyIdList;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class AgencyIdListRepository implements ScoreRepository<AgencyIdList, BigInteger> {
+public class AgencyIdListRepository implements ScoreRepository<AgencyIdList, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -27,8 +28,8 @@ public class AgencyIdListRepository implements ScoreRepository<AgencyIdList, Big
     }
 
     @Override
-    public AgencyIdList findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public AgencyIdList findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return dslContext.select(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID, Tables.AGENCY_ID_LIST.NAME,
@@ -36,7 +37,7 @@ public class AgencyIdListRepository implements ScoreRepository<AgencyIdList, Big
                 Tables.AGENCY_ID_LIST.GUID, Tables.AGENCY_ID_LIST.DEFINITION,
                 Tables.AGENCY_ID_LIST.DEFINITION_SOURCE, Tables.AGENCY_ID_LIST.REMARK,
                 Tables.AGENCY_ID_LIST.LIST_ID, Tables.AGENCY_ID_LIST.VERSION_ID).from(Tables.AGENCY_ID_LIST)
-                .where(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(id)))
+                .where(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(id))
                 .fetchOneInto(AgencyIdList.class);
     }
 

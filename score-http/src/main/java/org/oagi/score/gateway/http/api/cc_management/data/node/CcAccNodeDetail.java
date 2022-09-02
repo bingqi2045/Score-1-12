@@ -9,7 +9,7 @@ import java.math.BigInteger;
 @Data
 public class CcAccNodeDetail implements CcNodeDetail {
     private CcType type = CcType.ACC;
-    private BigInteger accId;
+    private String accId;
     private String guid;
     private String objectClassTerm;
     private String den;

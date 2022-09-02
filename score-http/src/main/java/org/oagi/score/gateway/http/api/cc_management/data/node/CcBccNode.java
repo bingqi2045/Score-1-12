@@ -11,7 +11,7 @@ import java.math.BigInteger;
 public class CcBccNode extends CcNode {
 
     private int seqKey;
-    private BigInteger bccId = BigInteger.ZERO;
+    private String bccId;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger fromAccManifestId = BigInteger.ZERO;
     private BigInteger toBccpManifestId = BigInteger.ZERO;
@@ -23,7 +23,7 @@ public class CcBccNode extends CcNode {
     private boolean deprecated;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return bccId;
     }
 }

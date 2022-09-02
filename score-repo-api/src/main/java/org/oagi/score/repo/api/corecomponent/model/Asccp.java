@@ -8,7 +8,7 @@ import java.math.BigInteger;
 
 public class Asccp extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger asccpId;
+    private String asccpId;
 
     private String guid;
 
@@ -34,20 +34,20 @@ public class Asccp extends Auditable implements CoreComponent, Serializable {
 
     private boolean nillable;
 
-    private BigInteger prevAsccpId;
+    private String prevAsccpId;
 
-    private BigInteger nextAsccpId;
+    private String nextAsccpId;
 
-    public BigInteger getAsccpId() {
+    public String getAsccpId() {
         return asccpId;
     }
 
-    public void setAsccpId(BigInteger asccpId) {
+    public void setAsccpId(String asccpId) {
         this.asccpId = asccpId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getAsccpId();
     }
 
@@ -148,19 +148,19 @@ public class Asccp extends Auditable implements CoreComponent, Serializable {
         this.nillable = nillable;
     }
 
-    public BigInteger getPrevAsccpId() {
+    public String getPrevAsccpId() {
         return prevAsccpId;
     }
 
-    public void setPrevAsccpId(BigInteger prevAsccpId) {
+    public void setPrevAsccpId(String prevAsccpId) {
         this.prevAsccpId = prevAsccpId;
     }
 
-    public BigInteger getNextAsccpId() {
+    public String getNextAsccpId() {
         return nextAsccpId;
     }
 
-    public void setNextAsccpId(BigInteger nextAsccpId) {
+    public void setNextAsccpId(String nextAsccpId) {
         this.nextAsccpId = nextAsccpId;
     }
 }

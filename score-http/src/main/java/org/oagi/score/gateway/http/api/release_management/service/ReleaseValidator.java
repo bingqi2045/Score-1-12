@@ -35,7 +35,7 @@ public class ReleaseValidator {
     private List<AccManifestRecord> accManifestRecords;
     private Map<ULong, AccManifestRecord> accManifestRecordMap;
     private List<AccRecord> accRecords;
-    private Map<ULong, AccRecord> accRecordMap;
+    private Map<String, AccRecord> accRecordMap;
 
     private List<AsccManifestRecord> asccManifestRecords;
     private List<AsccRecord> asccRecords;
@@ -48,27 +48,27 @@ public class ReleaseValidator {
     private List<AsccpManifestRecord> asccpManifestRecords;
     private Map<ULong, AsccpManifestRecord> asccpManifestRecordMap;
     private List<AsccpRecord> asccpRecords;
-    private Map<ULong, AsccpRecord> asccpRecordMap;
+    private Map<String, AsccpRecord> asccpRecordMap;
 
     private List<BccpManifestRecord> bccpManifestRecords;
     private Map<ULong, BccpManifestRecord> bccpManifestRecordMap;
     private List<BccpRecord> bccpRecords;
-    private Map<ULong, BccpRecord> bccpRecordMap;
+    private Map<String, BccpRecord> bccpRecordMap;
 
     private List<CodeListManifestRecord> codeListManifestRecords;
     private Map<ULong, CodeListManifestRecord> codeListManifestRecordMap;
     private List<CodeListRecord> codeListRecords;
-    private Map<ULong, CodeListRecord> codeListRecordMap;
+    private Map<String, CodeListRecord> codeListRecordMap;
 
     private List<AgencyIdListManifestRecord> agencyIdListManifestRecords;
     private Map<ULong, AgencyIdListManifestRecord> agencyIdListManifestRecordMap;
     private List<AgencyIdListRecord> agencyIdListRecords;
-    private Map<ULong, AgencyIdListRecord> agencyIdListRecordMap;
+    private Map<String, AgencyIdListRecord> agencyIdListRecordMap;
 
     private List<DtManifestRecord> dtManifestRecords;
     private Map<ULong, DtManifestRecord> dtManifestRecordMap;
     private List<DtRecord> dtRecords;
-    private Map<ULong, DtRecord> dtRecordMap;
+    private Map<String, DtRecord> dtRecordMap;
 
     public ReleaseValidator(DSLContext dslContext) {
         this.dslContext = dslContext;
@@ -237,7 +237,7 @@ public class ReleaseValidator {
 
     private void validateAcc(ReleaseValidationResponse response) {
         for (AccManifestRecord accManifestRecord : accManifestRecords) {
-            ULong accId = accManifestRecord.getAccId();
+            String accId = accManifestRecord.getAccId();
             AccRecord accRecord = accRecordMap.get(accId);
             CcState state = CcState.valueOf(accRecord.getState());
             if (state != CcState.Published && !assignedAccComponentManifestIds.contains(
@@ -333,7 +333,7 @@ public class ReleaseValidator {
 
     private void validateAsccp(ReleaseValidationResponse response) {
         for (AsccpManifestRecord asccpManifestRecord : asccpManifestRecords) {
-            ULong asccpId = asccpManifestRecord.getAsccpId();
+            String asccpId = asccpManifestRecord.getAsccpId();
             AsccpRecord asccpRecord = asccpRecordMap.get(asccpId);
             CcState state = CcState.valueOf(asccpRecord.getState());
             if (state != CcState.Published && !assignedAsccpComponentManifestIds.contains(
@@ -375,7 +375,7 @@ public class ReleaseValidator {
 
     private void validateBccp(ReleaseValidationResponse response) {
         for (BccpManifestRecord bccpManifestRecord : bccpManifestRecords) {
-            ULong bccpId = bccpManifestRecord.getBccpId();
+            String bccpId = bccpManifestRecord.getBccpId();
             BccpRecord bccpRecord = bccpRecordMap.get(bccpId);
             CcState state = CcState.valueOf(bccpRecord.getState());
             if (state != CcState.Published && !assignedBccpComponentManifestIds.contains(
@@ -391,7 +391,7 @@ public class ReleaseValidator {
 
     private void validateCodeList(ReleaseValidationResponse response) {
         for (CodeListManifestRecord codeListManifestRecord : codeListManifestRecords) {
-            ULong codeListId = codeListManifestRecord.getCodeListId();
+            String codeListId = codeListManifestRecord.getCodeListId();
             CodeListRecord codeListRecord = codeListRecordMap.get(codeListId);
             CcState state = CcState.valueOf(codeListRecord.getState());
             if (state != CcState.Published && !assignedCodeListComponentManifestIds.contains(
@@ -407,7 +407,7 @@ public class ReleaseValidator {
 
     private void validateAgencyIdList(ReleaseValidationResponse response) {
         for (AgencyIdListManifestRecord agencyIdListManifestRecord : agencyIdListManifestRecords) {
-            ULong agencyIdListId = agencyIdListManifestRecord.getAgencyIdListId();
+            String agencyIdListId = agencyIdListManifestRecord.getAgencyIdListId();
             AgencyIdListRecord agencyIdListRecord = agencyIdListRecordMap.get(agencyIdListId);
             CcState state = CcState.valueOf(agencyIdListRecord.getState());
             if (state != CcState.Published && !assignedAgencyIdListComponentManifestIds.contains(
@@ -423,7 +423,7 @@ public class ReleaseValidator {
 
     private void validateDt(ReleaseValidationResponse response) {
         for (DtManifestRecord dtManifestRecord : dtManifestRecords) {
-            ULong dtId = dtManifestRecord.getDtId();
+            String dtId = dtManifestRecord.getDtId();
             DtRecord dtRecord = dtRecordMap.get(dtId);
             CcState state = CcState.valueOf(dtRecord.getState());
             if (state != CcState.Published && !assignedDtComponentManifestIds.contains(

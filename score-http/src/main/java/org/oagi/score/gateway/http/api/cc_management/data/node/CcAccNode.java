@@ -11,7 +11,7 @@ import java.math.BigInteger;
 public class CcAccNode extends CcNode {
 
     private CcType type = CcType.ACC;
-    private BigInteger accId = BigInteger.ZERO;
+    private String accId;
     private String den;
     private String guid;
     private String objectClassTerm;
@@ -26,7 +26,7 @@ public class CcAccNode extends CcNode {
     private String accType;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return accId;
     }
 }

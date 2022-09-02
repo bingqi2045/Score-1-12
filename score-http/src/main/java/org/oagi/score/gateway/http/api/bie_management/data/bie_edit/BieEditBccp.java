@@ -8,7 +8,7 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditBccp extends TrackableImpl {
+public class BieEditBccp extends TrackableImpl<BigInteger> {
 
     private BigInteger bccpManifestId;
     private String guid;

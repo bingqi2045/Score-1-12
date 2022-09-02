@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -65,6 +66,7 @@ public class BccpWriteRepository {
                 .fetchOne();
 
         BccpRecord bccp = new BccpRecord();
+        bccp.setBccpId(UUID.randomUUID().toString());
         bccp.setGuid(ScoreGuid.randomGuid());
         bccp.setPropertyTerm(request.getInitialPropertyTerm());
         bccp.setRepresentationTerm(bdt.getDataTypeTerm());
@@ -80,11 +82,9 @@ public class BccpWriteRepository {
         bccp.setCreationTimestamp(timestamp);
         bccp.setLastUpdateTimestamp(timestamp);
 
-        bccp.setBccpId(
-                dslContext.insertInto(BCCP)
-                        .set(bccp)
-                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
-        );
+        dslContext.insertInto(BCCP)
+                .set(bccp)
+                .execute();
 
         BccpManifestRecord bccpManifest = new BccpManifestRecord();
         bccpManifest.setBccpId(bccp.getBccpId());
@@ -352,7 +352,7 @@ public class BccpWriteRepository {
 
         // update bccp record.
         ULong bdtManifestId = ULong.valueOf(request.getBdtManifestId());
-        Record2<ULong, String> result = dslContext.select(DT.DT_ID, DT.DATA_TYPE_TERM)
+        Record2<String, String> result = dslContext.select(DT.DT_ID, DT.DATA_TYPE_TERM)
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(bdtManifestId))
@@ -677,7 +677,7 @@ public class BccpWriteRepository {
 
         JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
 
-        ULong bdtId = serializer.getSnapshotId(snapshot.get("bdtId"));
+        String bdtId = serializer.getSnapshotString(snapshot.get("bdtId"));
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST).where(and(
                 DT_MANIFEST.DT_ID.eq(bdtId),
                 DT_MANIFEST.RELEASE_ID.eq(bccpManifestRecord.getReleaseId())

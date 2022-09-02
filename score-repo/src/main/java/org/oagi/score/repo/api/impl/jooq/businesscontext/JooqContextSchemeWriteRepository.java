@@ -113,7 +113,7 @@ public class JooqContextSchemeWriteRepository
             changedField.add(CTX_SCHEME.CTX_CATEGORY_ID);
         }
         if (request.getCodeListId() != null) {
-            record.setCodeListId(ULong.valueOf(request.getCodeListId()));
+            record.setCodeListId(request.getCodeListId());
             changedField.add(CTX_SCHEME.CODE_LIST_ID);
         }
         if (!StringUtils.equals(request.getSchemeId(), record.getSchemeId())) {

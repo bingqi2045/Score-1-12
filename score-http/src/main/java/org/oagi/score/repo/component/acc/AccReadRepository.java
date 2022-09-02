@@ -137,7 +137,7 @@ public class AccReadRepository {
                     ccList.setLastUpdateUser(e.get(appUserUpdater.LOGIN_ID));
                     ccList.setLastUpdateTimestamp(Date.from(e.getValue("last_update_timestamp", LocalDateTime.class)
                             .atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setId(e.get(ACC.ACC_ID).toBigInteger());
+                    ccList.setId(e.get(ACC.ACC_ID));
                     return  ccList;
                 });
     }

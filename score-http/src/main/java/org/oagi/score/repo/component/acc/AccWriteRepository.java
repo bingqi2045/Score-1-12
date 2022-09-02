@@ -70,6 +70,7 @@ public class AccWriteRepository {
         }
 
         AccRecord acc = new AccRecord();
+        acc.setAccId(UUID.randomUUID().toString());
         acc.setGuid(ScoreGuid.randomGuid());
         acc.setObjectClassTerm(request.getInitialObjectClassTerm());
         acc.setDen(acc.getObjectClassTerm() + ". Details");
@@ -89,11 +90,9 @@ public class AccWriteRepository {
         acc.setCreationTimestamp(timestamp);
         acc.setLastUpdateTimestamp(timestamp);
 
-        acc.setAccId(
-                dslContext.insertInto(ACC)
-                        .set(acc)
-                        .returning(ACC.ACC_ID).fetchOne().getAccId()
-        );
+        dslContext.insertInto(ACC)
+                .set(acc)
+                .execute();
 
         AccManifestRecord accManifest = new AccManifestRecord();
         accManifest.setAccId(acc.getAccId());
@@ -256,7 +255,7 @@ public class AccWriteRepository {
                     dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                             .from(ASCCP_MANIFEST)
                             .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
             nextAsccRecord.setState(CcState.WIP.name());
             nextAsccRecord.setCreatedBy(user.getAppUserId());
@@ -304,7 +303,7 @@ public class AccWriteRepository {
                     dslContext.select(BCCP_MANIFEST.BCCP_ID)
                             .from(BCCP_MANIFEST)
                             .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
             nextBccRecord.setState(CcState.WIP.name());
             nextBccRecord.setCreatedBy(user.getAppUserId());
@@ -700,7 +699,7 @@ public class AccWriteRepository {
                     dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                             .from(ASCCP_MANIFEST)
                             .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
 
             CcState prevState = CcState.valueOf(asccRecord.getState());
@@ -737,7 +736,7 @@ public class AccWriteRepository {
                     dslContext.select(BCCP_MANIFEST.BCCP_ID)
                             .from(BCCP_MANIFEST)
                             .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
 
             CcState prevState = CcState.valueOf(bccRecord.getState());
@@ -1438,7 +1437,7 @@ public class AccWriteRepository {
 
         JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
 
-        ULong basedAccId = serializer.getSnapshotId(snapshot.get("basedAccId"));
+        String basedAccId = serializer.getSnapshotString(snapshot.get("basedAccId"));
 
         if (basedAccId != null) {
             AccManifestRecord basedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST).where(and(

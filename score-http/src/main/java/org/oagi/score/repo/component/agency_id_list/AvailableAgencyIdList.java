@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class AvailableAgencyIdList {
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
     private BigInteger agencyIdListManifestId;
     private BigInteger basedAgencyIdListManifestId;
     private String agencyIdListName;

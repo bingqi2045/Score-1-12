@@ -21,10 +21,10 @@ public interface ValueDomainReadRepository {
     Map<BigInteger, BdtScPriRestri> getBdtScPriRestriMap(
             String releaseId) throws ScoreDataAccessException;
 
-    Map<BigInteger, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(
+    Map<String, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(
             String releaseId) throws ScoreDataAccessException;
 
-    Map<BigInteger, List<BdtScPriRestri>> getBdtScPriRestriBdtScIdMap(
+    Map<String, List<BdtScPriRestri>> getBdtScPriRestriBdtScIdMap(
             String releaseId) throws ScoreDataAccessException;
 
     List<AgencyIdList> getAgencyIdListList(

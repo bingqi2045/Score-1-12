@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record13;
 import org.jooq.Row13;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
 
 
@@ -20,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
  * context category.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> {
+public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -161,7 +160,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * key to the CODE_LIST table. It identifies the code list associated with
      * this context scheme.
      */
-    public void setCodeListId(ULong value) {
+    public void setCodeListId(String value) {
         set(8, value);
     }
 
@@ -170,8 +169,8 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
      * key to the CODE_LIST table. It identifies the code list associated with
      * this context scheme.
      */
-    public ULong getCodeListId() {
-        return (ULong) get(8);
+    public String getCodeListId() {
+        return (String) get(8);
     }
 
     /**
@@ -254,12 +253,12 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     @Override
-    public Row13<String, String, String, String, String, String, String, String, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row13) super.valuesRow();
     }
 
@@ -304,7 +303,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<String> field9() {
         return CtxScheme.CTX_SCHEME.CODE_LIST_ID;
     }
 
@@ -369,7 +368,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong component9() {
+    public String component9() {
         return getCodeListId();
     }
 
@@ -434,7 +433,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public ULong value9() {
+    public String value9() {
         return getCodeListId();
     }
 
@@ -507,7 +506,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord value9(ULong value) {
+    public CtxSchemeRecord value9(String value) {
         setCodeListId(value);
         return this;
     }
@@ -537,7 +536,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     @Override
-    public CtxSchemeRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, ULong value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
+    public CtxSchemeRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -568,7 +567,7 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     /**
      * Create a detached, initialised CtxSchemeRecord
      */
-    public CtxSchemeRecord(String ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, String ctxCategoryId, ULong codeListId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public CtxSchemeRecord(String ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, String ctxCategoryId, String codeListId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxScheme.CTX_SCHEME);
 
         setCtxSchemeId(ctxSchemeId);

@@ -6,12 +6,12 @@ import java.math.BigInteger;
 public class BdtScPriRestri implements Serializable {
 
     private BigInteger bdtScPriRestriId;
-    private BigInteger bdtScId;
+    private String bdtScId;
     private String xbtId;
     private String xbtName;
     private String cdtScAwdPriXpsTypeMapId;
-    private BigInteger codeListId;
-    private BigInteger agencyIdListId;
+    private String codeListId;
+    private String agencyIdListId;
     private boolean isDefault;
 
     public BigInteger getBdtScPriRestriId() {
@@ -22,11 +22,11 @@ public class BdtScPriRestri implements Serializable {
         this.bdtScPriRestriId = bdtScPriRestriId;
     }
 
-    public BigInteger getBdtScId() {
+    public String getBdtScId() {
         return bdtScId;
     }
 
-    public void setBdtScId(BigInteger bdtScId) {
+    public void setBdtScId(String bdtScId) {
         this.bdtScId = bdtScId;
     }
 
@@ -54,19 +54,19 @@ public class BdtScPriRestri implements Serializable {
         this.cdtScAwdPriXpsTypeMapId = cdtScAwdPriXpsTypeMapId;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public BigInteger getAgencyIdListId() {
+    public String getAgencyIdListId() {
         return agencyIdListId;
     }
 
-    public void setAgencyIdListId(BigInteger agencyIdListId) {
+    public void setAgencyIdListId(String agencyIdListId) {
         this.agencyIdListId = agencyIdListId;
     }
 

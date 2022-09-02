@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -51,7 +52,7 @@ public class AsccpWriteRepository {
     @Autowired
     private LogSerializer serializer;
 
-    private String objectClassTerm(ULong accId) {
+    private String objectClassTerm(String accId) {
         return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
                 .where(ACC.ACC_ID.eq(accId))
                 .fetchOneInto(String.class);
@@ -66,6 +67,7 @@ public class AsccpWriteRepository {
                 .fetchOne();
 
         AsccpRecord asccp = new AsccpRecord();
+        asccp.setAsccpId(UUID.randomUUID().toString());
         asccp.setGuid(ScoreGuid.randomGuid());
         asccp.setPropertyTerm(request.getInitialPropertyTerm());
         asccp.setRoleOfAccId(roleOfAccManifest.getAccId());
@@ -84,11 +86,9 @@ public class AsccpWriteRepository {
         asccp.setCreationTimestamp(timestamp);
         asccp.setLastUpdateTimestamp(timestamp);
 
-        asccp.setAsccpId(
-                dslContext.insertInto(ASCCP)
-                        .set(asccp)
-                        .returning(ASCCP.ASCCP_ID).fetchOne().getAsccpId()
-        );
+        dslContext.insertInto(ASCCP)
+                .set(asccp)
+                .execute();
 
         AsccpManifestRecord asccpManifest = new AsccpManifestRecord();
         asccpManifest.setAsccpId(asccp.getAsccpId());
@@ -422,10 +422,10 @@ public class AsccpWriteRepository {
 
         // update asccp record.
         ULong roleOfAccManifestId = ULong.valueOf(request.getRoleOfAccManifestId());
-        ULong roleOfAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
+        String roleOfAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
                 .from(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(roleOfAccManifestId))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
         asccpRecord.setRoleOfAccId(roleOfAccId);
         asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
@@ -788,7 +788,7 @@ public class AsccpWriteRepository {
 
         JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
 
-        ULong roleOfAccId = serializer.getSnapshotId(snapshot.get("roleOfAccId"));
+        String roleOfAccId = serializer.getSnapshotString(snapshot.get("roleOfAccId"));
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST).where(and(
                 ACC_MANIFEST.ACC_ID.eq(roleOfAccId),
                 ACC_MANIFEST.RELEASE_ID.eq(asccpManifestRecord.getReleaseId())

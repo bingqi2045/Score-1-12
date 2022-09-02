@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function17;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueRecord;
@@ -60,10 +58,10 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     }
 
     /**
-     * The column <code>oagi.code_list_value.code_list_value_id</code>.
-     * Internal, primary database key.
+     * The column <code>oagi.code_list_value.code_list_value_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<CodeListValueRecord, ULong> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CodeListValueRecord, String> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.code_list_value.guid</code>. A globally unique
@@ -76,14 +74,14 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * the CODE_LIST table. It indicates the code list this code value belonging
      * to.
      */
-    public final TableField<CodeListValueRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.");
+    public final TableField<CodeListValueRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.");
 
     /**
      * The column <code>oagi.code_list_value.based_code_list_value_id</code>.
      * Foreign key to the CODE_LIST_VALUE table itself. This column is used when
      * the CODE_LIST is derived from the based CODE_LIST.
      */
-    public final TableField<CodeListValueRecord, ULong> BASED_CODE_LIST_VALUE_ID = createField(DSL.name("based_code_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.");
+    public final TableField<CodeListValueRecord, String> BASED_CODE_LIST_VALUE_ID = createField(DSL.name("based_code_list_value_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.");
 
     /**
      * The column <code>oagi.code_list_value.value</code>. The code list value
@@ -124,7 +122,7 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * <code>oagi.code_list_value.replacement_code_list_value_id</code>. This
      * refers to a replacement if the record is deprecated.
      */
-    public final TableField<CodeListValueRecord, ULong> REPLACEMENT_CODE_LIST_VALUE_ID = createField(DSL.name("replacement_code_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<CodeListValueRecord, String> REPLACEMENT_CODE_LIST_VALUE_ID = createField(DSL.name("replacement_code_list_value_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list_value.created_by</code>. Foreign key to
@@ -166,13 +164,13 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * The column <code>oagi.code_list_value.prev_code_list_value_id</code>. A
      * self-foreign key to indicate the previous history record.
      */
-    public final TableField<CodeListValueRecord, ULong> PREV_CODE_LIST_VALUE_ID = createField(DSL.name("prev_code_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<CodeListValueRecord, String> PREV_CODE_LIST_VALUE_ID = createField(DSL.name("prev_code_list_value_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.code_list_value.next_code_list_value_id</code>. A
      * self-foreign key to indicate the next history record.
      */
-    public final TableField<CodeListValueRecord, ULong> NEXT_CODE_LIST_VALUE_ID = createField(DSL.name("next_code_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<CodeListValueRecord, String> NEXT_CODE_LIST_VALUE_ID = createField(DSL.name("next_code_list_value_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private CodeListValue(Name alias, Table<CodeListValueRecord> aliased) {
         this(alias, aliased, null);
@@ -210,11 +208,6 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CodeListValueRecord, ULong> getIdentity() {
-        return (Identity<CodeListValueRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -371,21 +364,21 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, String, String, String, String, Byte, ULong, String, String, String, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+    public Row17<String, String, String, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String> fieldsRow() {
         return (Row17) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function17<? super ULong, ? super String, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function17<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function17<? super ULong, ? super String, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function17<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

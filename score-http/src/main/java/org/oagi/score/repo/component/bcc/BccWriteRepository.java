@@ -150,6 +150,7 @@ public class BccWriteRepository {
         }
 
         BccRecord bcc = new BccRecord();
+        bcc.setBccId(UUID.randomUUID().toString());
         bcc.setGuid(ScoreGuid.randomGuid());
         bcc.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getDen());
         bcc.setCardinalityMin(0);
@@ -166,11 +167,9 @@ public class BccWriteRepository {
         bcc.setOwnerUserId(userId);
         bcc.setCreationTimestamp(timestamp);
         bcc.setLastUpdateTimestamp(timestamp);
-        bcc.setBccId(
-                dslContext.insertInto(BCC)
-                        .set(bcc)
-                        .returning(BCC.BCC_ID).fetchOne().getBccId()
-        );
+        dslContext.insertInto(BCC)
+                .set(bcc)
+                .execute();
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
@@ -520,7 +519,7 @@ public class BccWriteRepository {
         targetBccRecord.setPrevBccId(null);
         targetBccRecord.setNextBccId(null);
         targetBccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + bccpDen);
-        ULong bccId = dslContext.insertInto(BCC).set(targetBccRecord).returning().fetchOne().getBccId();
+        String bccId = dslContext.insertInto(BCC).set(targetBccRecord).returning().fetchOne().getBccId();
 
         targetBccManifestRecord.setBccManifestId(null);
         targetBccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));

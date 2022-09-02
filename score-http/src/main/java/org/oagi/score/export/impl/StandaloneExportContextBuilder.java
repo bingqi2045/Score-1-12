@@ -123,7 +123,7 @@ public class StandaloneExportContextBuilder {
         boolean isDefaultBDT = (dtModulePath != null) && dtModulePath.contains("BusinessDataType_1");
         BDTSimple bdtSimple;
         if (dtScList.isEmpty()) {
-            ULong bdtId = bdt.getDtId();
+            String bdtId = bdt.getDtId();
             List<BdtPriRestriRecord> bdtPriRestriList =
                     importedDataProvider.findBdtPriRestriListByDtId(bdtId);
             List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapList =

@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface CodeListReadRepository {
 
-    Map<BigInteger, CodeList> getCodeListMap(
+    Map<String, CodeList> getCodeListMapByReleaseId(
             String releaseId) throws ScoreDataAccessException;
 }

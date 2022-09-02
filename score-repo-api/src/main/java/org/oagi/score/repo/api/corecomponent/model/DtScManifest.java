@@ -11,7 +11,7 @@ public class DtScManifest implements CcManifest, Serializable {
 
     private String releaseId;
 
-    private BigInteger dtScId;
+    private String dtScId;
 
     private BigInteger ownerDtManifestId;
 
@@ -42,7 +42,7 @@ public class DtScManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getDtScId();
     }
 
@@ -50,11 +50,11 @@ public class DtScManifest implements CcManifest, Serializable {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtScId() {
+    public String getDtScId() {
         return dtScId;
     }
 
-    public void setDtScId(BigInteger dtScId) {
+    public void setDtScId(String dtScId) {
         this.dtScId = dtScId;
     }
 

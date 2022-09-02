@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccBizterm;
  * business term and ASCC. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> implements Record7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> {
+public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> implements Record7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,7 +60,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
      * Setter for <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the
      * associated ASCC
      */
-    public void setAsccId(ULong value) {
+    public void setAsccId(String value) {
         set(2, value);
     }
 
@@ -68,8 +68,8 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
      * Getter for <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the
      * associated ASCC
      */
-    public ULong getAsccId() {
-        return (ULong) get(2);
+    public String getAsccId() {
+        return (String) get(2);
     }
 
     /**
@@ -154,12 +154,12 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, ULong, ULong, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -174,7 +174,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return AsccBizterm.ASCC_BIZTERM.ASCC_ID;
     }
 
@@ -209,7 +209,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getAsccId();
     }
 
@@ -244,7 +244,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getAsccId();
     }
 
@@ -281,7 +281,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     }
 
     @Override
-    public AsccBiztermRecord value3(ULong value) {
+    public AsccBiztermRecord value3(String value) {
         setAsccId(value);
         return this;
     }
@@ -311,7 +311,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     }
 
     @Override
-    public AsccBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
+    public AsccBiztermRecord values(ULong value1, ULong value2, String value3, String value4, String value5, LocalDateTime value6, LocalDateTime value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -336,7 +336,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     /**
      * Create a detached, initialised AsccBiztermRecord
      */
-    public AsccBiztermRecord(ULong asccBiztermId, ULong businessTermId, ULong asccId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public AsccBiztermRecord(ULong asccBiztermId, ULong businessTermId, String asccId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(AsccBizterm.ASCC_BIZTERM);
 
         setAsccBiztermId(asccBiztermId);

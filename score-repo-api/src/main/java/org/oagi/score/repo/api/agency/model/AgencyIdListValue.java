@@ -13,6 +13,10 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private BigInteger basedAgencyIdListValueManifestId;
 
+    private String agencyIdListValueId;
+
+    private String basedAgencyIdListValueId;
+
     private String guid;
 
     private String value;
@@ -31,13 +35,13 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private boolean used;
 
-    private BigInteger prevAgencyIdListValueId;
+    private String prevAgencyIdListValueId;
 
-    private BigInteger nextAgencyIdListValueId;
+    private String nextAgencyIdListValueId;
 
     @Override
-    public BigInteger getId() {
-        return agencyIdListValueManifestId;
+    public String getId() {
+        return agencyIdListValueId;
     }
 
     public BigInteger getAgencyIdListValueManifestId() {
@@ -54,6 +58,22 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     public void setBasedAgencyIdListValueManifestId(BigInteger basedAgencyIdListValueManifestId) {
         this.basedAgencyIdListValueManifestId = basedAgencyIdListValueManifestId;
+    }
+
+    public String getAgencyIdListValueId() {
+        return agencyIdListValueId;
+    }
+
+    public void setAgencyIdListValueId(String agencyIdListValueId) {
+        this.agencyIdListValueId = agencyIdListValueId;
+    }
+
+    public String getBasedAgencyIdListValueId() {
+        return basedAgencyIdListValueId;
+    }
+
+    public void setBasedAgencyIdListValueId(String basedAgencyIdListValueId) {
+        this.basedAgencyIdListValueId = basedAgencyIdListValueId;
     }
 
     public String getGuid() {
@@ -128,19 +148,19 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
         this.used = used;
     }
 
-    public BigInteger getPrevAgencyIdListValueId() {
+    public String getPrevAgencyIdListValueId() {
         return prevAgencyIdListValueId;
     }
 
-    public void setPrevAgencyIdListValueId(BigInteger prevAgencyIdListValueId) {
+    public void setPrevAgencyIdListValueId(String prevAgencyIdListValueId) {
         this.prevAgencyIdListValueId = prevAgencyIdListValueId;
     }
 
-    public BigInteger getNextAgencyIdListValueId() {
+    public String getNextAgencyIdListValueId() {
         return nextAgencyIdListValueId;
     }
 
-    public void setNextAgencyIdListValueId(BigInteger nextAgencyIdListValueId) {
+    public void setNextAgencyIdListValueId(String nextAgencyIdListValueId) {
         this.nextAgencyIdListValueId = nextAgencyIdListValueId;
     }
 }

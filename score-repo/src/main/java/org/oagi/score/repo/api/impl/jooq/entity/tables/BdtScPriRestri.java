@@ -74,10 +74,9 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.bdt_sc_id</code>. Foreign key to
-     * the DT_SC table. This column should only refers to a DT_SC that belongs
-     * to a BDT (not CDT).
+     * the DT table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public final TableField<BdtScPriRestriRecord, ULong> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT_SC table. This column should only refers to a DT_SC that belongs to a BDT (not CDT).");
+    public final TableField<BdtScPriRestriRecord, String> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
 
     /**
      * The column
@@ -88,17 +87,16 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.code_list_id</code>. Foreign key
-     * to identify a code list. It allows for a primitive restriction based on a
-     * code list.
+     * to the CODE_LIST table.
      */
-    public final TableField<BdtScPriRestriRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to identify a code list. It allows for a primitive restriction based on a code list.");
+    public final TableField<BdtScPriRestriRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST table.");
 
     /**
-     * The column <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. Foreign
-     * key to identify an agency identification list. It allows for a primitive
-     * restriction based on such list of values.
+     * The column <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. This is
+     * a foreign key to the AGENCY_ID_LIST table. It is used in the case that
+     * the BDT content can be restricted to an agency identification.
      */
-    public final TableField<BdtScPriRestriRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to identify an agency identification list. It allows for a primitive restriction based on such list of values.");
+    public final TableField<BdtScPriRestriRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.is_default</code>. This column
@@ -250,21 +248,21 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, String, ULong, ULong, Byte> fieldsRow() {
+    public Row6<ULong, String, String, String, String, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

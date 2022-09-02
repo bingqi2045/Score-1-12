@@ -8,6 +8,6 @@ public interface CcManifest {
 
     String getReleaseId();
 
-    BigInteger getBasedCcId();
+    String getBasedCcId();
 
 }

@@ -144,7 +144,7 @@ public class AsccReadRepository {
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
         List<AccRecord> accList = dslContext.selectFrom(ACC).fetch();
-        Map<ULong, AccRecord> accMap = accList.stream().collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
+        Map<String, AccRecord> accMap = accList.stream().collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
         List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();

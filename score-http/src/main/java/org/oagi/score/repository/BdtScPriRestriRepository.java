@@ -18,7 +18,7 @@ public class BdtScPriRestriRepository implements ScoreRepository<BdtScPriRestri,
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record6<ULong, ULong, String, ULong, ULong, Byte>> getSelectJoinStep() {
+    private SelectJoinStep<Record6<ULong, String, String, String, String, Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID,

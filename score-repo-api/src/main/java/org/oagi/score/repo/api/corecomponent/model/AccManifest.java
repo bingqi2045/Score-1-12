@@ -11,7 +11,7 @@ public class AccManifest implements CcManifest, Serializable {
 
     private String releaseId;
 
-    private BigInteger accId;
+    private String accId;
 
     private BigInteger basedAccManifestId;
 
@@ -42,7 +42,7 @@ public class AccManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getAccId();
     }
 
@@ -50,11 +50,11 @@ public class AccManifest implements CcManifest, Serializable {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAccId() {
+    public String getAccId() {
         return accId;
     }
 
-    public void setAccId(BigInteger accId) {
+    public void setAccId(String accId) {
         this.accId = accId;
     }
 

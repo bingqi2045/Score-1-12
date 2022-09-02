@@ -16,23 +16,23 @@ public class CcDocumentImpl implements CcDocument {
     private CcPackage ccPackage;
 
     private Map<BigInteger, AccManifest> accManifestMap;
-    private Map<BigInteger, Acc> accMap;
+    private Map<String, Acc> accMap;
     private Map<BigInteger, AsccManifest> asccManifestMap;
-    private Map<BigInteger, Ascc> asccMap;
+    private Map<String, Ascc> asccMap;
     private Map<BigInteger, BccManifest> bccManifestMap;
-    private Map<BigInteger, Bcc> bccMap;
+    private Map<String, Bcc> bccMap;
     private Map<BigInteger, List<CcAssociationSequence>> sequenceMap;
     private Map<BigInteger, AsccpManifest> asccpManifestMap;
-    private Map<BigInteger, Asccp> asccpMap;
+    private Map<String, Asccp> asccpMap;
     private Map<BigInteger, BccpManifest> bccpManifestMap;
-    private Map<BigInteger, Bccp> bccpMap;
+    private Map<String, Bccp> bccpMap;
     private Map<BigInteger, DtManifest> dtManifestMap;
-    private Map<BigInteger, Dt> dtMap;
+    private Map<String, Dt> dtMap;
     private Map<BigInteger, DtScManifest> dtScManifestMap;
-    private Map<BigInteger, DtSc> dtScMap;
+    private Map<String, DtSc> dtScMap;
     private Map<BigInteger, List<DtScManifest>> dtScManifestByDtManifestMap;
-    private Map<BigInteger, List<BdtPriRestri>> bdtPriRestriByDtMap;
-    private Map<BigInteger, List<BdtScPriRestri>> bdtScPriRestriByDtScMap;
+    private Map<String, List<BdtPriRestri>> bdtPriRestriByDtMap;
+    private Map<String, List<BdtScPriRestri>> bdtScPriRestriByDtScMap;
 
     public CcDocumentImpl(CcPackage ccPackage) {
         this.accManifestMap = ccPackage.getAccManifestList().stream()

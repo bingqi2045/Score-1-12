@@ -11,16 +11,16 @@ import java.math.BigInteger;
 public class DTSC implements Serializable {
 
     private BigInteger dtScManifestId = BigInteger.ZERO;
-    private BigInteger dtScId = BigInteger.ZERO;
+    private String dtScId;
     private String guid;
     private String propertyTerm;
     private String representationTerm;
     private String definition;
     private String definitionSource;
-    private BigInteger ownerDtId = BigInteger.ZERO;
+    private String ownerDtId;
     private int cardinalityMin;
     private int cardinalityMax;
-    private BigInteger basedDtScId = BigInteger.ZERO;
+    private String basedDtScId;
     private int revisionNum;
 
     public String getDen() {

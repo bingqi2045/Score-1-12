@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ public class CodeListWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         CodeListRecord codeList = new CodeListRecord();
+        codeList.setCodeListId(UUID.randomUUID().toString());
         codeList.setGuid(ScoreGuid.randomGuid());
         codeList.setListId(ScoreGuid.randomGuid());
         codeList.setState(CcState.WIP.name());
@@ -123,11 +125,9 @@ public class CodeListWriteRepository {
             codeList.setBasedCodeListId(basedCodeListManifestRecord.getCodeListId());
         }
 
-        codeList.setCodeListId(
-                dslContext.insertInto(CODE_LIST)
-                        .set(codeList)
-                        .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getCodeListId()
-        );
+        dslContext.insertInto(CODE_LIST)
+                .set(codeList)
+                .execute();
 
         CodeListManifestRecord codeListManifest = new CodeListManifestRecord();
         codeListManifest.setCodeListId(codeList.getCodeListId());
@@ -217,10 +217,10 @@ public class CodeListWriteRepository {
 
         if (request.getAgencyIdListValueManifestId() != null) {
             ULong agencyIdListValueManifestId = ULong.valueOf(request.getAgencyIdListValueManifestId());
-            ULong agencyIdListValueId = dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
+            String agencyIdListValueId = dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
                     .from(AGENCY_ID_LIST_VALUE_MANIFEST)
                     .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(agencyIdListValueManifestId))
-                    .fetchOneInto(ULong.class);
+                    .fetchOneInto(String.class);
             codeListRecord.setAgencyIdListValueId(agencyIdListValueId);
             codeListManifestRecord.setAgencyIdListValueManifestId(agencyIdListValueManifestId);
         } else {
@@ -375,6 +375,7 @@ public class CodeListWriteRepository {
 
             CodeListValueRecord codeListValueRecord = new CodeListValueRecord();
 
+            codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
             codeListValueRecord.setGuid(ScoreGuid.randomGuid());
             codeListValueRecord.setMeaning(codeListValue.getMeaning());
@@ -388,12 +389,9 @@ public class CodeListWriteRepository {
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
             codeListValueRecord.setIsDeprecated((byte) (0));
 
-            codeListValueRecord.setCodeListValueId(
-                    dslContext.insertInto(CODE_LIST_VALUE)
-                            .set(codeListValueRecord)
-                            .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID)
-                            .fetchOne().getCodeListValueId()
-            );
+            dslContext.insertInto(CODE_LIST_VALUE)
+                    .set(codeListValueRecord)
+                    .execute();
 
             CodeListValueManifestRecord codeListValueManifestRecord = new CodeListValueManifestRecord();
 
@@ -458,7 +456,7 @@ public class CodeListWriteRepository {
             codeListValueRecordMapByValue.remove(codeListValue.getValue());
         }
 
-        Map<ULong, CodeListValueManifestRecord> codeListValueManifestRecordMapById =
+        Map<String, CodeListValueManifestRecord> codeListValueManifestRecordMapById =
                 codeListValueManifestRecordList.stream()
                         .collect(Collectors.toMap(CodeListValueManifestRecord::getCodeListValueId, Function.identity()));
 
@@ -657,8 +655,8 @@ public class CodeListWriteRepository {
 
         // #1094 keep update BIE's code list id
         updateBIECodeListId(codeListManifestRecord.getReleaseId(),
-                prevCodeListRecord.getCodeListId().toBigInteger(),
-                nextCodeListRecord.getCodeListId().toBigInteger());
+                prevCodeListRecord.getCodeListId(),
+                nextCodeListRecord.getCodeListId());
 
         return new ReviseCodeListRepositoryResponse(responseCodeListManifestId.toBigInteger());
     }
@@ -690,8 +688,8 @@ public class CodeListWriteRepository {
 
         // #1094 keep update BIE's code list id
         updateBIECodeListId(codeListManifestRecord.getReleaseId(),
-                codeListRecord.getCodeListId().toBigInteger(),
-                codeListRecord.getPrevCodeListId().toBigInteger());
+                codeListRecord.getCodeListId(),
+                codeListRecord.getPrevCodeListId());
 
         discardLogCodeListValues(codeListManifestRecord, codeListRecord);
 
@@ -708,27 +706,27 @@ public class CodeListWriteRepository {
         return new CancelRevisionCodeListRepositoryResponse(request.getCodeListManifestId());
     }
 
-    private void updateBIECodeListId(String releaseId, BigInteger prevCodeListId, BigInteger nextCodeListId) {
+    private void updateBIECodeListId(String releaseId, String prevCodeListId, String nextCodeListId) {
         dslContext.update(BBIE)
-                .set(BBIE.CODE_LIST_ID, ULong.valueOf(nextCodeListId))
+                .set(BBIE.CODE_LIST_ID, nextCodeListId)
                 .where(BBIE.BBIE_ID.in(
                         dslContext.select(BBIE.BBIE_ID)
                         .from(BBIE)
                         .join(TOP_LEVEL_ASBIEP)
                                 .on(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                         .where(and(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(releaseId),
-                                BBIE.CODE_LIST_ID.eq(ULong.valueOf(prevCodeListId))))))
+                                BBIE.CODE_LIST_ID.eq(prevCodeListId)))))
                 .execute();
 
         dslContext.update(BBIE_SC)
-                .set(BBIE_SC.CODE_LIST_ID, ULong.valueOf(nextCodeListId))
+                .set(BBIE_SC.CODE_LIST_ID, nextCodeListId)
                 .where(BBIE_SC.BBIE_SC_ID.in(
                         dslContext.select(BBIE_SC.BBIE_SC_ID)
                                 .from(BBIE_SC)
                                 .join(TOP_LEVEL_ASBIEP)
                                 .on(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                                 .where(and(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(releaseId),
-                                        BBIE_SC.CODE_LIST_ID.eq(ULong.valueOf(prevCodeListId))))))
+                                        BBIE_SC.CODE_LIST_ID.eq(prevCodeListId)))))
                 .execute();
 
     }

@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -135,15 +132,13 @@ public class CodeListUpliftingService {
                     dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
                             .from(AGENCY_ID_LIST_VALUE_MANIFEST)
                             .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(newCodeListManifest.getAgencyIdListValueManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
             newCodeList.setBasedCodeListId(targetBasedCodeListManifest.getCodeListId());
-            newCodeList.setCodeListId(
-                    dslContext.insertInto(CODE_LIST)
-                            .set(newCodeList)
-                            .returning(CODE_LIST.CODE_LIST_ID)
-                            .fetchOne().getCodeListId()
-            );
+            dslContext.insertInto(CODE_LIST)
+                    .set(newCodeList)
+                    .execute();
+            newCodeList.setCodeListId(newCodeList.getCodeListId());
 
             newCodeListManifest.setCodeListId(newCodeList.getCodeListId());
             newCodeListManifest.setBasedCodeListManifestId(targetBasedCodeListManifest.getCodeListManifestId());
@@ -221,14 +216,12 @@ public class CodeListUpliftingService {
                     dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
                             .from(AGENCY_ID_LIST_VALUE_MANIFEST)
                             .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(newCodeListManifest.getAgencyIdListValueManifestId()))
-                            .fetchOneInto(ULong.class)
+                            .fetchOneInto(String.class)
             );
-            newCodeList.setCodeListId(
-                    dslContext.insertInto(CODE_LIST)
-                            .set(newCodeList)
-                            .returning(CODE_LIST.CODE_LIST_ID)
-                            .fetchOne().getCodeListId()
-            );
+            dslContext.insertInto(CODE_LIST)
+                    .set(newCodeList)
+                    .execute();
+            newCodeList.setCodeListId(newCodeList.getCodeListId());
 
             newCodeListManifest.setCodeListId(newCodeList.getCodeListId());
             newCodeListManifest.setCodeListManifestId(
@@ -276,6 +269,7 @@ public class CodeListUpliftingService {
                                                   CodeListRecord newCodeList,
                                                   ScoreUser requester, LocalDateTime timestamp) {
         CodeListValueRecord newCodeListValue = new CodeListValueRecord();
+        newCodeListValue.setCodeListValueId(UUID.randomUUID().toString());
         newCodeListValue.setGuid(ScoreGuidUtils.randomGuid());
         newCodeListValue.setCodeListId(newCodeList.getCodeListId());
         newCodeListValue.setValue(codeListValue.getValue());
@@ -294,6 +288,7 @@ public class CodeListUpliftingService {
     private CodeListRecord copyCodeList(CodeListRecord codeList,
                                         ScoreUser requester, LocalDateTime timestamp) {
         CodeListRecord newCodeList = new CodeListRecord();
+        newCodeList.setCodeListId(UUID.randomUUID().toString());
         newCodeList.setGuid(ScoreGuidUtils.randomGuid());
         if (hasLength(codeList.getEnumTypeGuid())) {
             newCodeList.setEnumTypeGuid(ScoreGuidUtils.randomGuid());

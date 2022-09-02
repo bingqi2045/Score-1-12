@@ -168,12 +168,12 @@ public class CcListService {
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
                 .join(TOP_LEVEL_ASBIEP).on(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                 .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
-                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
                 .join(ASCCP.as("bie")).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID));
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
@@ -217,7 +217,7 @@ public class CcListService {
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID));
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));

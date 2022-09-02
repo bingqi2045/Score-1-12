@@ -11,7 +11,7 @@ public class AsccpManifest implements CcManifest, Serializable {
 
     private String releaseId;
 
-    private BigInteger asccpId;
+    private String asccpId;
 
     private BigInteger roleOfAccManifestId;
 
@@ -42,7 +42,7 @@ public class AsccpManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getAsccpId();
     }
 
@@ -50,11 +50,11 @@ public class AsccpManifest implements CcManifest, Serializable {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAsccpId() {
+    public String getAsccpId() {
         return asccpId;
     }
 
-    public void setAsccpId(BigInteger asccpId) {
+    public void setAsccpId(String asccpId) {
         this.asccpId = asccpId;
     }
 

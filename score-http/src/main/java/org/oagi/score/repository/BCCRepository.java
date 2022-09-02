@@ -7,6 +7,7 @@ import org.jooq.Table;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BCCRepository implements ScoreRepository<BCC, BigInteger> {
+public class BCCRepository implements ScoreRepository<BCC, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -74,12 +75,12 @@ public class BCCRepository implements ScoreRepository<BCC, BigInteger> {
     }
 
     @Override
-    public BCC findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BCC findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BCC.BCC_ID.eq(id))
                 .fetchOptionalInto(BCC.class).orElse(null);
     }
 }

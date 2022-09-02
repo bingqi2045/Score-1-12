@@ -13,14 +13,14 @@ public class ASCCP implements CoreComponent {
 
     private BigInteger asccpManifestId = BigInteger.ZERO;
     private BigInteger roleOfAccManifestId = BigInteger.ZERO;
-    private BigInteger asccpId = BigInteger.ZERO;
+    private String asccpId;
     private String guid;
     private String propertyTerm;
     private String den;
     private String definition;
     private String definitionSource;
-    private BigInteger roleOfAccId = BigInteger.ZERO;
-    private BigInteger namespaceId = BigInteger.ZERO;
+    private String roleOfAccId;
+    private String namespaceId;
     private String createdBy;
     private String ownerUserId;
     private String lastUpdatedBy;
@@ -36,7 +36,7 @@ public class ASCCP implements CoreComponent {
     private boolean deprecated;
     private boolean nillable;
 
-    public BigInteger getId() {
+    public String getId() {
         return getAsccpId();
     }
 

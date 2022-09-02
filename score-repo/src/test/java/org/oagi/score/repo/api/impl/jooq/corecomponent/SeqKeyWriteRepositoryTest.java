@@ -52,20 +52,21 @@ public class SeqKeyWriteRepositoryTest
 
     private BigInteger createTestBcc(String propertyTerm, String representationTerm) {
         BccRecord bccRecord = new BccRecord();
+        bccRecord.setBccId(UUID.randomUUID().toString());
         bccRecord.setGuid(UUID.randomUUID().toString().replace("-", ""));
         bccRecord.setCardinalityMin(0);
         bccRecord.setCardinalityMax(-1);
         bccRecord.setFromAccId(dslContext().select(ACC_MANIFEST.ACC_ID)
                 .from(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(allExtensionAccManifestId)))
-                .fetchOneInto(ULong.class));
+                .fetchOneInto(String.class));
         bccRecord.setToBccpId(dslContext().select(BCCP.BCCP_ID)
                 .from(BCCP)
                 .where(and(
                         BCCP.PROPERTY_TERM.eq(propertyTerm),
                         BCCP.REPRESENTATION_TERM.eq(representationTerm)
                 ))
-                .fetchOneInto(ULong.class));
+                .fetchOneInto(String.class));
         bccRecord.setEntityType(EntityType.Element.getValue());
         bccRecord.setDen("All Extension. " + propertyTerm + ". " + representationTerm);
         bccRecord.setIsDeprecated((byte) 0);
@@ -76,11 +77,10 @@ public class SeqKeyWriteRepositoryTest
         bccRecord.setCreationTimestamp(LocalDateTime.now());
         bccRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
-        BigInteger bccId = dslContext().insertInto(BCC)
+        dslContext().insertInto(BCC)
                 .set(bccRecord)
-                .returning(BCC.BCC_ID)
-                .fetchOne()
-                .getBccId().toBigInteger();
+                .execute();
+        String bccId = bccRecord.getBccId();
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setFromAccManifestId(ULong.valueOf(allExtensionAccManifestId));
@@ -92,7 +92,7 @@ public class SeqKeyWriteRepositoryTest
                 ))
                 .fetchOneInto(ULong.class));
         bccManifestRecord.setReleaseId(releaseId);
-        bccManifestRecord.setBccId(ULong.valueOf(bccId));
+        bccManifestRecord.setBccId(bccId);
 
         return dslContext().insertInto(BCC_MANIFEST)
                 .set(bccManifestRecord)

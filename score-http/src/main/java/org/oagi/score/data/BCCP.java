@@ -12,7 +12,7 @@ import java.util.Date;
 public class BCCP implements CoreComponent {
 
     private BigInteger bccpManifestId = BigInteger.ZERO;
-    private BigInteger bccpId = BigInteger.ZERO;
+    private String bccpId;
     private String guid;
     private String propertyTerm;
     private String representationTerm;
@@ -20,8 +20,8 @@ public class BCCP implements CoreComponent {
     private String definition;
     private String definitionSource;
     private String defaultValue;
-    private BigInteger bdtId = BigInteger.ZERO;
-    private BigInteger namespaceId = BigInteger.ZERO;
+    private String bdtId;
+    private String namespaceId;
     private String createdBy;
     private String ownerUserId;
     private String lastUpdatedBy;
@@ -36,7 +36,7 @@ public class BCCP implements CoreComponent {
     private boolean deprecated;
     private boolean nillable;
 
-    public BigInteger getId() {
+    public String getId() {
         return getBccpId();
     }
 

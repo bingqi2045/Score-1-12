@@ -51,8 +51,8 @@ public class BbieScNode {
         private String example;
 
         private BigInteger bdtScPriRestriId;
-        private BigInteger codeListId;
-        private BigInteger agencyIdListId;
+        private String codeListId;
+        private String agencyIdListId;
 
         public boolean isEmptyPrimitive() {
             return (bdtScPriRestriId == null && codeListId == null && agencyIdListId == null);

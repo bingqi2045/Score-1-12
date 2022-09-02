@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function22;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -63,10 +61,9 @@ public class Acc extends TableImpl<AccRecord> {
     }
 
     /**
-     * The column <code>oagi.acc.acc_id</code>. A internal, primary database key
-     * of an ACC.
+     * The column <code>oagi.acc.acc_id</code>. Primary, internal database key.
      */
-    public final TableField<AccRecord, ULong> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an ACC.");
+    public final TableField<AccRecord, String> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.acc.guid</code>. A globally unique identifier
@@ -114,7 +111,7 @@ public class Acc extends TableImpl<AccRecord> {
      * this ACC. In general CCS sense, a qualification can be a content
      * extension or restriction, but the current scope supports only extension.
      */
-    public final TableField<AccRecord, ULong> BASED_ACC_ID = createField(DSL.name("based_acc_id"), SQLDataType.BIGINTUNSIGNED, this, "BASED_ACC_ID is a foreign key to the ACC table itself. It represents the ACC that is qualified by this ACC. In general CCS sense, a qualification can be a content extension or restriction, but the current scope supports only extension.");
+    public final TableField<AccRecord, String> BASED_ACC_ID = createField(DSL.name("based_acc_id"), SQLDataType.CHAR(36), this, "BASED_ACC_ID is a foreign key to the ACC table itself. It represents the ACC that is qualified by this ACC. In general CCS sense, a qualification can be a content extension or restriction, but the current scope supports only extension.");
 
     /**
      * The column <code>oagi.acc.object_class_qualifier</code>. This column
@@ -206,7 +203,7 @@ public class Acc extends TableImpl<AccRecord> {
      * The column <code>oagi.acc.replacement_acc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<AccRecord, ULong> REPLACEMENT_ACC_ID = createField(DSL.name("replacement_acc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<AccRecord, String> REPLACEMENT_ACC_ID = createField(DSL.name("replacement_acc_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.acc.is_abstract</code>. This is the XML Schema
@@ -221,13 +218,13 @@ public class Acc extends TableImpl<AccRecord> {
      * The column <code>oagi.acc.prev_acc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<AccRecord, ULong> PREV_ACC_ID = createField(DSL.name("prev_acc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<AccRecord, String> PREV_ACC_ID = createField(DSL.name("prev_acc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.acc.next_acc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<AccRecord, ULong> NEXT_ACC_ID = createField(DSL.name("next_acc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<AccRecord, String> NEXT_ACC_ID = createField(DSL.name("next_acc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Acc(Name alias, Table<AccRecord> aliased) {
         this(alias, aliased, null);
@@ -270,11 +267,6 @@ public class Acc extends TableImpl<AccRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<AccRecord, ULong> getIdentity() {
-        return (Identity<AccRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -427,21 +419,21 @@ public class Acc extends TableImpl<AccRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, String, ULong, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+    public Row22<String, String, String, String, String, String, String, String, String, Integer, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, Byte, String, String> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

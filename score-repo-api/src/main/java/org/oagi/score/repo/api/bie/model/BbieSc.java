@@ -20,9 +20,9 @@ public class BbieSc extends Auditable {
 
     private BigInteger dtScPriRestriId;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
 
     private String defaultValue;
 
@@ -102,19 +102,19 @@ public class BbieSc extends Auditable {
         this.dtScPriRestriId = dtScPriRestriId;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public BigInteger getAgencyIdListId() {
+    public String getAgencyIdListId() {
         return agencyIdListId;
     }
 
-    public void setAgencyIdListId(BigInteger agencyIdListId) {
+    public void setAgencyIdListId(String agencyIdListId) {
         this.agencyIdListId = agencyIdListId;
     }
 

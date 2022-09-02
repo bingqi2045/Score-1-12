@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -22,7 +21,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -52,10 +50,9 @@ public class Bcc extends TableImpl<BccRecord> {
     }
 
     /**
-     * The column <code>oagi.bcc.bcc_id</code>. A internal, primary database key
-     * of an BCC.
+     * The column <code>oagi.bcc.bcc_id</code>. Primary, internal database key.
      */
-    public final TableField<BccRecord, ULong> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an BCC.");
+    public final TableField<BccRecord, String> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bcc.guid</code>. A globally unique identifier
@@ -82,9 +79,9 @@ public class Bcc extends TableImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.',
+     * BCCP_ID of the current record of a BCCP.
      */
-    public final TableField<BccRecord, ULong> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.',");
+    public final TableField<BccRecord, String> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.CHAR(36), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.");
 
     /**
      * The column <code>oagi.bcc.from_acc_id</code>. FROM_ACC_ID is a foreign
@@ -94,7 +91,7 @@ public class Bcc extends TableImpl<BccRecord> {
      * Note that for the BCC history records, this column always points to the
      * ACC_ID of the current record of an ACC.
      */
-    public final TableField<BccRecord, ULong> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.");
+    public final TableField<BccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.");
 
     /**
      * The column <code>oagi.bcc.seq_key</code>. @deprecated since 2.0.0. This
@@ -204,7 +201,7 @@ public class Bcc extends TableImpl<BccRecord> {
      * The column <code>oagi.bcc.replacement_bcc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<BccRecord, ULong> REPLACEMENT_BCC_ID = createField(DSL.name("replacement_bcc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<BccRecord, String> REPLACEMENT_BCC_ID = createField(DSL.name("replacement_bcc_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in
@@ -233,13 +230,13 @@ public class Bcc extends TableImpl<BccRecord> {
      * The column <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<BccRecord, ULong> PREV_BCC_ID = createField(DSL.name("prev_bcc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<BccRecord, String> PREV_BCC_ID = createField(DSL.name("prev_bcc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<BccRecord, ULong> NEXT_BCC_ID = createField(DSL.name("next_bcc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<BccRecord, String> NEXT_BCC_ID = createField(DSL.name("next_bcc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Bcc(Name alias, Table<BccRecord> aliased) {
         this(alias, aliased, null);
@@ -282,11 +279,6 @@ public class Bcc extends TableImpl<BccRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<BccRecord, ULong> getIdentity() {
-        return (Identity<BccRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -13,14 +13,14 @@ public class BCC implements CoreComponent {
 
     private BigInteger bccManifestId = BigInteger.ZERO;
     private BigInteger fromAccManifestId = BigInteger.ZERO;
-    private BigInteger bccId = BigInteger.ZERO;
+    private String bccId;
     private String guid;
     private int cardinalityMin;
     private int cardinalityMax;
     private int seqKey;
     private int entityType;
-    private BigInteger fromAccId = BigInteger.ZERO;
-    private BigInteger toBccpId = BigInteger.ZERO;
+    private String fromAccId;
+    private String toBccpId;
     private String den;
     private String definition;
     private String definitionSource;
@@ -41,7 +41,7 @@ public class BCC implements CoreComponent {
     private BigInteger prevSeqKeyId = BigInteger.ZERO;
     private BigInteger nextSeqKeyId = BigInteger.ZERO;
 
-    public BigInteger getId() {
+    public String getId() {
         return getBccId();
     }
 

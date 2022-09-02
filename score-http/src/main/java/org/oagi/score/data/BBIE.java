@@ -14,8 +14,8 @@ public class BBIE implements BIE, FacetRestrictionsAware {
     private BigInteger fromAbieId = BigInteger.ZERO;
     private BigInteger toBbiepId = BigInteger.ZERO;
     private BigInteger bdtPriRestriId = BigInteger.ZERO;
-    private BigInteger codeListId = BigInteger.ZERO;
-    private BigInteger agencyIdListId = BigInteger.ZERO;
+    private String codeListId;
+    private String agencyIdListId;
     private int cardinalityMin;
     private int cardinalityMax;
     private BigInteger minLength;

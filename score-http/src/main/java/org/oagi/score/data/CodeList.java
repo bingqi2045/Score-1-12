@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class CodeList {
 
-    private BigInteger codeListId = BigInteger.ZERO;
+    private String codeListId;
     private String guid;
     private String enumTypeGuid;
     private String name;

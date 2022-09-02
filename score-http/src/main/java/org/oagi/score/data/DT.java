@@ -11,14 +11,14 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DT implements CoreComponent {
 
-    private BigInteger dtId = BigInteger.ZERO;
+    private String dtId;
     private String guid;
     private int type;
     private String dataTypeTerm;
     private String representationTerm;
     private String qualifier;
     private String sixDigitId;
-    private BigInteger basedDtId = BigInteger.ZERO;
+    private String basedDtId;
     private String den;
     private String definition;
     private String definitionSource;
@@ -37,7 +37,7 @@ public class DT implements CoreComponent {
     private boolean deprecated;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getDtId();
     }
 

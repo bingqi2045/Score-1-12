@@ -13,7 +13,7 @@ public class UpdateContextSchemeRequest extends Request {
 
     private String contextCategoryId;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
     private String schemeId;
 
@@ -57,15 +57,15 @@ public class UpdateContextSchemeRequest extends Request {
         return this;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public UpdateContextSchemeRequest withCodeListId(BigInteger codeListId) {
+    public UpdateContextSchemeRequest withCodeListId(String codeListId) {
         this.setCodeListId(codeListId);
         return this;
     }

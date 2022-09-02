@@ -24,7 +24,7 @@ public class BBIESCRepository implements ScoreRepository<BBIESC, BigInteger> {
     private DSLContext dslContext;
 
     private SelectJoinStep<Record20<ULong, String, ULong, ULong, ULong,
-            ULong, ULong, Integer, Integer, ULong,
+            String, String, Integer, Integer, ULong,
             ULong, String, String, String, String,
             String, String, String, Byte, ULong>> getSelectJoinStep() {
         return dslContext.select(

@@ -24,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriRecord;
@@ -63,7 +62,7 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
      * The column <code>oagi.cdt_awd_pri.cdt_id</code>. Foreign key pointing to
      * a CDT in the DT table.
      */
-    public final TableField<CdtAwdPriRecord, ULong> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
+    public final TableField<CdtAwdPriRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to a CDT in the DT table.");
 
     /**
      * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key to the
@@ -193,21 +192,21 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<String, ULong, String, Byte> fieldsRow() {
+    public Row4<String, String, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super String, ? super ULong, ? super String, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super ULong, ? super String, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

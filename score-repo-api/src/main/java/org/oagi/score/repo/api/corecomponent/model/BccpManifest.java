@@ -11,7 +11,7 @@ public class BccpManifest implements CcManifest, Serializable {
 
     private String releaseId;
 
-    private BigInteger bccpId;
+    private String bccpId;
 
     private BigInteger bdtManifestId;
 
@@ -42,7 +42,7 @@ public class BccpManifest implements CcManifest, Serializable {
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getBccpId();
     }
 
@@ -50,11 +50,11 @@ public class BccpManifest implements CcManifest, Serializable {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getBccpId() {
+    public String getBccpId() {
         return bccpId;
     }
 
-    public void setBccpId(BigInteger bccpId) {
+    public void setBccpId(String bccpId) {
         this.bccpId = bccpId;
     }
 

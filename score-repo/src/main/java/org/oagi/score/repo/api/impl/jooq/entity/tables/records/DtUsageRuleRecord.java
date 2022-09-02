@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
  * both.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> implements Record4<ULong, ULong, ULong, ULong> {
+public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> implements Record4<ULong, ULong, String, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,37 +60,37 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     /**
-     * Setter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
+     * Setter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
-    public void setTargetDtId(ULong value) {
+    public void setTargetDtId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
+     * Getter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
-    public ULong getTargetDtId() {
-        return (ULong) get(2);
+    public String getTargetDtId() {
+        return (String) get(2);
     }
 
     /**
-     * Setter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
+     * Setter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public void setTargetDtScId(ULong value) {
+    public void setTargetDtScId(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
+     * Getter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public ULong getTargetDtScId() {
-        return (ULong) get(3);
+    public String getTargetDtScId() {
+        return (String) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -107,12 +107,12 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row4<ULong, ULong, String, String> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<ULong, ULong, ULong, ULong> valuesRow() {
+    public Row4<ULong, ULong, String, String> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
@@ -127,12 +127,12 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return DtUsageRule.DT_USAGE_RULE.TARGET_DT_ID;
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return DtUsageRule.DT_USAGE_RULE.TARGET_DT_SC_ID;
     }
 
@@ -147,12 +147,12 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getTargetDtId();
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getTargetDtScId();
     }
 
@@ -167,12 +167,12 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getTargetDtId();
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getTargetDtScId();
     }
 
@@ -189,19 +189,19 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     @Override
-    public DtUsageRuleRecord value3(ULong value) {
+    public DtUsageRuleRecord value3(String value) {
         setTargetDtId(value);
         return this;
     }
 
     @Override
-    public DtUsageRuleRecord value4(ULong value) {
+    public DtUsageRuleRecord value4(String value) {
         setTargetDtScId(value);
         return this;
     }
 
     @Override
-    public DtUsageRuleRecord values(ULong value1, ULong value2, ULong value3, ULong value4) {
+    public DtUsageRuleRecord values(ULong value1, ULong value2, String value3, String value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -223,7 +223,7 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     /**
      * Create a detached, initialised DtUsageRuleRecord
      */
-    public DtUsageRuleRecord(ULong dtUsageRuleId, ULong assignedUsageRuleId, ULong targetDtId, ULong targetDtScId) {
+    public DtUsageRuleRecord(ULong dtUsageRuleId, ULong assignedUsageRuleId, String targetDtId, String targetDtScId) {
         super(DtUsageRule.DT_USAGE_RULE);
 
         setDtUsageRuleId(dtUsageRuleId);

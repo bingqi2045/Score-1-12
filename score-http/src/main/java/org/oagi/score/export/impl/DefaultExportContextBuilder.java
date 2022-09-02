@@ -93,7 +93,7 @@ public class DefaultExportContextBuilder {
 
     private void createCodeLists(Map<String, SchemaModule> moduleMap) {
         List<CodeListRecord> codeLists = importedDataProvider.findCodeList();
-        Map<ULong, SchemaCodeList> schemaCodeListMap = new HashMap();
+        Map<String, SchemaCodeList> schemaCodeListMap = new HashMap();
         codeLists.forEach(codeList-> {
             SchemaCodeList schemaCodeList = new SchemaCodeList();
             schemaCodeList.setGuid(codeList.getGuid());
@@ -174,7 +174,7 @@ public class DefaultExportContextBuilder {
             boolean isDefaultBDT = schemaModule.getPath().contains("BusinessDataType_1");
             BDTSimple bdtSimple;
             if (dtScList.isEmpty()) {
-                ULong bdtId = bdt.getDtId();
+                String bdtId = bdt.getDtId();
                 List<BdtPriRestriRecord> bdtPriRestriList =
                         importedDataProvider.findBdtPriRestriListByDtId(bdtId);
                 List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapList =

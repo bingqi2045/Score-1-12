@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record4;
 import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 
 
@@ -19,7 +18,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
  * base (such SC is not defined in the CCTS data type catalog specification).
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<String, ULong, String, Byte> {
+public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<String, String, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,7 +42,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
      * Setter for <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key
      * pointing to the supplementary component (SC).
      */
-    public void setCdtScId(ULong value) {
+    public void setCdtScId(String value) {
         set(1, value);
     }
 
@@ -51,8 +50,8 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
      * Getter for <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key
      * pointing to the supplementary component (SC).
      */
-    public ULong getCdtScId() {
-        return (ULong) get(1);
+    public String getCdtScId() {
+        return (String) get(1);
     }
 
     /**
@@ -103,12 +102,12 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<String, ULong, String, Byte> fieldsRow() {
+    public Row4<String, String, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<String, ULong, String, Byte> valuesRow() {
+    public Row4<String, String, String, Byte> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
@@ -118,7 +117,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return CdtScAwdPri.CDT_SC_AWD_PRI.CDT_SC_ID;
     }
 
@@ -138,7 +137,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getCdtScId();
     }
 
@@ -158,7 +157,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getCdtScId();
     }
 
@@ -179,7 +178,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public CdtScAwdPriRecord value2(ULong value) {
+    public CdtScAwdPriRecord value2(String value) {
         setCdtScId(value);
         return this;
     }
@@ -197,7 +196,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     @Override
-    public CdtScAwdPriRecord values(String value1, ULong value2, String value3, Byte value4) {
+    public CdtScAwdPriRecord values(String value1, String value2, String value3, Byte value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -219,7 +218,7 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     /**
      * Create a detached, initialised CdtScAwdPriRecord
      */
-    public CdtScAwdPriRecord(String cdtScAwdPriId, ULong cdtScId, String cdtPriId, Byte isDefault) {
+    public CdtScAwdPriRecord(String cdtScAwdPriId, String cdtScId, String cdtPriId, Byte isDefault) {
         super(CdtScAwdPri.CDT_SC_AWD_PRI);
 
         setCdtScAwdPriId(cdtScAwdPriId);

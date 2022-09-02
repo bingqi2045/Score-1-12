@@ -173,9 +173,9 @@ public class BbieReadRepository {
             bbie.setBdtPriRestriId((bbieRecord.getBdtPriRestriId() != null) ?
                     bbieRecord.getBdtPriRestriId().toBigInteger() : null);
             bbie.setCodeListId((bbieRecord.getCodeListId() != null) ?
-                    bbieRecord.getCodeListId().toBigInteger() : null);
+                    bbieRecord.getCodeListId() : null);
             bbie.setAgencyIdListId((bbieRecord.getAgencyIdListId() != null) ?
-                    bbieRecord.getAgencyIdListId().toBigInteger() : null);
+                    bbieRecord.getAgencyIdListId() : null);
         }
 
         return bbie;

@@ -69,7 +69,7 @@ public class RepositoryInitializer implements InitializingBean {
                     e.update(CODE_LIST_VALUE.GUID);
                 });
 
-        Map<ULong, CodeListValueRecord> codeListValueRecordMapById = codeListValueRecords.stream()
+        Map<String, CodeListValueRecord> codeListValueRecordMapById = codeListValueRecords.stream()
                 .collect(Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
 
         codeListValueRecords.stream()
@@ -97,7 +97,7 @@ public class RepositoryInitializer implements InitializingBean {
                     e.update(AGENCY_ID_LIST_VALUE.GUID);
                 });
 
-        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMapById = agencyIdListValueRecords.stream()
+        Map<String, AgencyIdListValueRecord> agencyIdListValueRecordMapById = agencyIdListValueRecords.stream()
                 .collect(Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
 
         agencyIdListValueRecords.stream()

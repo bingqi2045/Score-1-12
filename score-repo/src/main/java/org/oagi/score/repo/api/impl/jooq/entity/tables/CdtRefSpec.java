@@ -60,7 +60,7 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
     /**
      * The column <code>oagi.cdt_ref_spec.cdt_id</code>.
      */
-    public final TableField<CdtRefSpecRecord, ULong> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CdtRefSpecRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.cdt_ref_spec.ref_spec_id</code>.
@@ -187,21 +187,21 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<ULong, String, ULong> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super ULong, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super String, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

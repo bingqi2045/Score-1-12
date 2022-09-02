@@ -10,9 +10,9 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditAscc extends TrackableImpl implements SeqKeySupportable, Cardinality {
+public class BieEditAscc extends TrackableImpl<String> implements SeqKeySupportable, Cardinality {
 
-    private BigInteger asccId;
+    private String asccId;
     private BigInteger asccManifestId;
     private String guid;
     private BigInteger fromAccManifestId;
@@ -23,7 +23,7 @@ public class BieEditAscc extends TrackableImpl implements SeqKeySupportable, Car
     private int cardinalityMax;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return asccId;
     }
 

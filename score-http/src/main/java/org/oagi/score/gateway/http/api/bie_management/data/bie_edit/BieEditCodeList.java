@@ -9,6 +9,8 @@ public class BieEditCodeList {
 
     private BigInteger codeListManifestId;
     private BigInteger basedCodeListManifestId;
+    private String codeListId;
+    private String basedCodeListId;
     private boolean isDefault;
     private String codeListName;
 

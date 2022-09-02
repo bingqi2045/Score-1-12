@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function2;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -23,7 +22,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentRecord;
@@ -55,7 +53,7 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
      * The column <code>oagi.blob_content.blob_content_id</code>. Primary,
      * internal database key.
      */
-    public final TableField<BlobContentRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BlobContentRecord, String> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.blob_content.content</code>. The Blob content of
@@ -99,11 +97,6 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BlobContentRecord, ULong> getIdentity() {
-        return (Identity<BlobContentRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -155,21 +148,21 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, byte[]> fieldsRow() {
+    public Row2<String, byte[]> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function2<? super ULong, ? super byte[], ? extends U> from) {
+    public <U> SelectField<U> mapping(Function2<? super String, ? super byte[], ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super byte[], ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super String, ? super byte[], ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

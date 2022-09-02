@@ -118,7 +118,7 @@ public class AgencyIdService {
     }
 
     public AgencyIdList getAgencyIdListDetail(ScoreUser user, BigInteger manifestId) {
-        AgencyIdList agencyIdList = scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdList(manifestId);
+        AgencyIdList agencyIdList = scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdListByAgencyIdListManifestId(manifestId);
         boolean isWorkingRelease = agencyIdList.getReleaseNum().equals("Working");
         agencyIdList.setAccess(
                 AccessPrivilege.toAccessPrivilege(sessionService.getAppUserByUsername(user.getUserId()),

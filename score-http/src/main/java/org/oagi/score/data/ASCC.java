@@ -14,13 +14,13 @@ public class ASCC implements CoreComponent {
     private BigInteger asccManifestId = BigInteger.ZERO;
     private BigInteger fromAccManifestId = BigInteger.ZERO;
     private BigInteger toAsccpManifestId = BigInteger.ZERO;
-    private BigInteger asccId = BigInteger.ZERO;
+    private String asccId;
     private String guid;
     private int cardinalityMin;
     private int cardinalityMax;
     private int seqKey;
-    private BigInteger fromAccId = BigInteger.ZERO;
-    private BigInteger toAsccpId = BigInteger.ZERO;
+    private String fromAccId;
+    private String toAsccpId;
     private String den;
     private String definition;
     private String definitionSource;
@@ -40,7 +40,7 @@ public class ASCC implements CoreComponent {
     private BigInteger prevSeqKeyId = BigInteger.ZERO;
     private BigInteger nextSeqKeyId = BigInteger.ZERO;
 
-    public BigInteger getId() {
+    public String getId() {
         return getAsccId();
     }
 

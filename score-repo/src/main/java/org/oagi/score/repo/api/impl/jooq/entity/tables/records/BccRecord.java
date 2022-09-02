@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
 
 
@@ -22,19 +21,17 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key
-     * of an BCC.
+     * Setter for <code>oagi.bcc.bcc_id</code>. Primary, internal database key.
      */
-    public void setBccId(ULong value) {
+    public void setBccId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key
-     * of an BCC.
+     * Getter for <code>oagi.bcc.bcc_id</code>. Primary, internal database key.
      */
-    public ULong getBccId() {
-        return (ULong) get(0);
+    public String getBccId() {
+        return (String) get(0);
     }
 
     /**
@@ -93,9 +90,9 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.',
+     * BCCP_ID of the current record of a BCCP.
      */
-    public void setToBccpId(ULong value) {
+    public void setToBccpId(String value) {
         set(4, value);
     }
 
@@ -105,10 +102,10 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.',
+     * BCCP_ID of the current record of a BCCP.
      */
-    public ULong getToBccpId() {
-        return (ULong) get(4);
+    public String getToBccpId() {
+        return (String) get(4);
     }
 
     /**
@@ -119,7 +116,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Note that for the BCC history records, this column always points to the
      * ACC_ID of the current record of an ACC.
      */
-    public void setFromAccId(ULong value) {
+    public void setFromAccId(String value) {
         set(5, value);
     }
 
@@ -131,8 +128,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Note that for the BCC history records, this column always points to the
      * ACC_ID of the current record of an ACC.
      */
-    public ULong getFromAccId() {
-        return (ULong) get(5);
+    public String getFromAccId() {
+        return (String) get(5);
     }
 
     /**
@@ -395,7 +392,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Setter for <code>oagi.bcc.replacement_bcc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public void setReplacementBccId(ULong value) {
+    public void setReplacementBccId(String value) {
         set(18, value);
     }
 
@@ -403,8 +400,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Getter for <code>oagi.bcc.replacement_bcc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public ULong getReplacementBccId() {
-        return (ULong) get(18);
+    public String getReplacementBccId() {
+        return (String) get(18);
     }
 
     /**
@@ -469,7 +466,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Setter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public void setPrevBccId(ULong value) {
+    public void setPrevBccId(String value) {
         set(22, value);
     }
 
@@ -477,15 +474,15 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Getter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public ULong getPrevBccId() {
-        return (ULong) get(22);
+    public String getPrevBccId() {
+        return (String) get(22);
     }
 
     /**
      * Setter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public void setNextBccId(ULong value) {
+    public void setNextBccId(String value) {
         set(23, value);
     }
 
@@ -493,8 +490,8 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * Getter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public ULong getNextBccId() {
-        return (ULong) get(23);
+    public String getNextBccId() {
+        return (String) get(23);
     }
 
     // -------------------------------------------------------------------------
@@ -502,7 +499,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -520,7 +517,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(String bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, String toBccpId, String fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, String replacementBccId, Byte isNillable, String defaultValue, String fixedValue, String prevBccId, String nextBccId) {
         super(Bcc.BCC);
 
         setBccId(bccId);

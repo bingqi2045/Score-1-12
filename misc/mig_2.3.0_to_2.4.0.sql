@@ -2023,6 +2023,851 @@ ALTER TABLE `module_xbt_manifest`
     ADD CONSTRAINT `module_xbt_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`),
     ADD CONSTRAINT `module_xbt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`);
 
+-- ----------------------------------------------------------
+-- Change `acc_id`, `ascc_id`, `bcc_id`, `blob_content_id` --
+--        `asccp_id`, `bccp_id`, `dt_id`, `dt_sc_id`,      --
+--        `code_list_id`, `agency_id_list_id` TO UUID      --
+-- ----------------------------------------------------------
+ALTER TABLE `acc` ADD COLUMN `acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `acc_id`;
+CALL update_uuid('acc');
+
+ALTER TABLE `ascc` ADD COLUMN `ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ascc_id`;
+CALL update_uuid('ascc');
+
+ALTER TABLE `bcc` ADD COLUMN `bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bcc_id`;
+CALL update_uuid('bcc');
+
+ALTER TABLE `asccp` ADD COLUMN `asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `asccp_id`;
+CALL update_uuid('asccp');
+
+ALTER TABLE `bccp` ADD COLUMN `bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bccp_id`;
+CALL update_uuid('bccp');
+
+ALTER TABLE `blob_content` ADD COLUMN `blob_content_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `blob_content_id`;
+CALL update_uuid('blob_content');
+
+ALTER TABLE `dt` ADD COLUMN `dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `dt_id`;
+CALL update_uuid('dt');
+
+ALTER TABLE `dt_sc` ADD COLUMN `dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `dt_sc_id`;
+CALL update_uuid('dt_sc');
+
+ALTER TABLE `code_list` ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `code_list_id`;
+CALL update_uuid('code_list');
+
+ALTER TABLE `code_list_value` ADD COLUMN `code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `code_list_value_id`;
+CALL update_uuid('code_list_value');
+
+ALTER TABLE `agency_id_list` ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `agency_id_list_id`;
+CALL update_uuid('agency_id_list');
+
+ALTER TABLE `agency_id_list_value` ADD COLUMN `agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `agency_id_list_value_id`;
+CALL update_uuid('agency_id_list_value');
+
+ALTER TABLE `acc`
+    ADD COLUMN `based_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'BASED_ACC_ID is a foreign key to the ACC table itself. It represents the ACC that is qualified by this ACC. In general CCS sense, a qualification can be a content extension or restriction, but the current scope supports only extension.' AFTER `based_acc_id`,
+    ADD COLUMN `replacement_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_acc_id`,
+    ADD COLUMN `prev_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_acc_id`,
+    ADD COLUMN `next_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_acc_id`;
+UPDATE `acc` AS tmp, `acc` SET tmp.`based_acc_uuid` = `acc`.`acc_uuid`
+WHERE tmp.`based_acc_id` = `acc`.`acc_id`;
+UPDATE `acc` AS tmp, `acc` SET tmp.`replacement_acc_uuid` = `acc`.`acc_uuid`
+WHERE tmp.`replacement_acc_id` = `acc`.`acc_id`;
+UPDATE `acc` AS tmp, `acc` SET tmp.`prev_acc_uuid` = `acc`.`acc_uuid`
+WHERE tmp.`prev_acc_id` = `acc`.`acc_id`;
+UPDATE `acc` AS tmp, `acc` SET tmp.`next_acc_uuid` = `acc`.`acc_uuid`
+WHERE tmp.`next_acc_id` = `acc`.`acc_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `acc_id`;
+UPDATE `acc_manifest`, `acc` SET `acc_manifest`.`acc_uuid` = `acc`.`acc_uuid`
+WHERE `acc_manifest`.`acc_id` = `acc`.`acc_id`;
+
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the identification of the agency or organization which developed and/or maintains the list. Theoretically, this can be modeled as a self-reference foreign key, but it is not implemented at this point.' AFTER `agency_id_list_value_id`,
+    ADD COLUMN `based_agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.' AFTER `based_agency_id_list_id`,
+    ADD COLUMN `replacement_agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_agency_id_list_id`,
+    ADD COLUMN `prev_agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_agency_id_list_id`,
+    ADD COLUMN `next_agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_agency_id_list_id`;
+UPDATE `agency_id_list`, `agency_id_list_value` SET `agency_id_list`.`agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE `agency_id_list`.`agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+UPDATE `agency_id_list` AS tmp, `agency_id_list` SET tmp.`based_agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE tmp.`based_agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+UPDATE `agency_id_list` AS tmp, `agency_id_list` SET tmp.`replacement_agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE tmp.`replacement_agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+UPDATE `agency_id_list` AS tmp, `agency_id_list` SET tmp.`prev_agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE tmp.`prev_agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+UPDATE `agency_id_list` AS tmp, `agency_id_list` SET tmp.`next_agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE tmp.`next_agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `agency_id_list_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list` SET `agency_id_list_manifest`.`agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `agency_id_list_manifest`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `agency_id_list_value`
+    ADD COLUMN `owner_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.' AFTER `owner_list_id`,
+    ADD COLUMN `based_agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.' AFTER `based_agency_id_list_value_id`,
+    ADD COLUMN `replacement_agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_agency_id_list_value_id`,
+    ADD COLUMN `prev_agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_agency_id_list_value_id`,
+    ADD COLUMN `next_agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_agency_id_list_value_id`;
+UPDATE `agency_id_list_value`, `agency_id_list` SET `agency_id_list_value`.`owner_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `agency_id_list_value`.`owner_list_id` = `agency_id_list`.`agency_id_list_id`;
+UPDATE `agency_id_list_value` AS tmp, `agency_id_list_value` SET tmp.`based_agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE tmp.`based_agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+UPDATE `agency_id_list_value` AS tmp, `agency_id_list_value` SET tmp.`replacement_agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE tmp.`replacement_agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+UPDATE `agency_id_list_value` AS tmp, `agency_id_list_value` SET tmp.`prev_agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE tmp.`prev_agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+UPDATE `agency_id_list_value` AS tmp, `agency_id_list_value` SET tmp.`next_agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE tmp.`next_agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `agency_id_list_value_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_value` SET `agency_id_list_value_manifest`.`agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE `agency_id_list_value_manifest`.`agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+
+ALTER TABLE `ascc`
+    ADD COLUMN `from_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.' AFTER `from_acc_id`,
+    ADD COLUMN `to_asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.' AFTER `to_asccp_id`,
+    ADD COLUMN `replacement_ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_ascc_id`,
+    ADD COLUMN `prev_ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_ascc_id`,
+    ADD COLUMN `next_ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_ascc_id`;
+UPDATE `acc`, `ascc` SET `ascc`.`from_acc_uuid` = `acc`.`acc_uuid`
+WHERE `ascc`.`from_acc_id` = `acc`.`acc_id`;
+UPDATE `asccp`, `ascc` SET `ascc`.`to_asccp_uuid` = `asccp`.`asccp_uuid`
+WHERE `ascc`.`to_asccp_id` = `asccp`.`asccp_id`;
+UPDATE `ascc` AS tmp, `ascc` SET tmp.`replacement_ascc_uuid` = `ascc`.`ascc_uuid`
+WHERE tmp.`replacement_ascc_id` = `ascc`.`ascc_id`;
+UPDATE `ascc` AS tmp, `ascc` SET tmp.`prev_ascc_uuid` = `ascc`.`ascc_uuid`
+WHERE tmp.`prev_ascc_id` = `ascc`.`ascc_id`;
+UPDATE `ascc` AS tmp, `ascc` SET tmp.`next_ascc_uuid` = `ascc`.`ascc_uuid`
+WHERE tmp.`next_ascc_id` = `ascc`.`ascc_id`;
+
+ALTER TABLE `ascc_bizterm` ADD COLUMN `ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated ASCC' AFTER `ascc_id`;
+UPDATE `ascc_bizterm`, `ascc` SET `ascc_bizterm`.`ascc_uuid` = `ascc`.`ascc_uuid`
+WHERE `ascc_bizterm`.`ascc_id` = `ascc`.`ascc_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `ascc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `ascc_id`;
+UPDATE `ascc_manifest`, `ascc` SET `ascc_manifest`.`ascc_uuid` = `ascc`.`ascc_uuid`
+WHERE `ascc_manifest`.`ascc_id` = `ascc`.`ascc_id`;
+
+ALTER TABLE `asccp`
+    ADD COLUMN `role_of_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The ACC from which this ASCCP is created (ASCCP applies role to the ACC).' AFTER `role_of_acc_id`,
+    ADD COLUMN `replacement_asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_asccp_id`,
+    ADD COLUMN `prev_asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_asccp_id`,
+    ADD COLUMN `next_asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_asccp_id`;
+UPDATE `asccp`, `acc` SET `asccp`.`role_of_acc_uuid` = `acc`.`acc_uuid`
+WHERE `asccp`.`role_of_acc_id` = `acc`.`acc_id`;
+UPDATE `asccp` AS tmp, `asccp` SET tmp.`replacement_asccp_uuid` = `asccp`.`asccp_uuid`
+WHERE tmp.`replacement_asccp_id` = `asccp`.`asccp_id`;
+UPDATE `asccp` AS tmp, `asccp` SET tmp.`prev_asccp_uuid` = `asccp`.`asccp_uuid`
+WHERE tmp.`prev_asccp_id` = `asccp`.`asccp_id`;
+UPDATE `asccp` AS tmp, `asccp` SET tmp.`next_asccp_uuid` = `asccp`.`asccp_uuid`
+WHERE tmp.`next_asccp_id` = `asccp`.`asccp_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `asccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `asccp_id`;
+UPDATE `asccp_manifest`, `asccp` SET `asccp_manifest`.`asccp_uuid` = `asccp`.`asccp_uuid`
+WHERE `asccp_manifest`.`asccp_id` = `asccp`.`asccp_id`;
+
+ALTER TABLE `bbie`
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the BDT_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.' AFTER `code_list_id`,
+    ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.' AFTER `agency_id_list_id`;
+UPDATE `bbie`, `code_list` SET `bbie`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `bbie`.`code_list_id` = `code_list`.`code_list_id`;
+UPDATE `bbie`, `agency_id_list` SET `bbie`.`agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `bbie`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `bbie_sc`
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.\n\nThis column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.' AFTER `code_list_id`,
+    ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. If a agency ID list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned Agency ID list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be an Agency ID list. So this column is typically used only when the user wants to assign another Agency ID list different from the one permissible by the CC model.\n\nThis column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have a value at the same time.' AFTER `agency_id_list_id`;
+UPDATE `bbie_sc`, `code_list` SET `bbie_sc`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `bbie_sc`.`code_list_id` = `code_list`.`code_list_id`;
+UPDATE `bbie_sc`, `agency_id_list` SET `bbie_sc`.`agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `bbie_sc`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `bcc`
+    ADD COLUMN `from_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.' AFTER `from_acc_id`,
+    ADD COLUMN `to_bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.' AFTER `to_bccp_id`,
+    ADD COLUMN `replacement_bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_bcc_id`,
+    ADD COLUMN `prev_bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_bcc_id`,
+    ADD COLUMN `next_bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_bcc_id`;
+UPDATE `acc`, `bcc` SET `bcc`.`from_acc_uuid` = `acc`.`acc_uuid`
+WHERE `bcc`.`from_acc_id` = `acc`.`acc_id`;
+UPDATE `bccp`, `bcc` SET `bcc`.`to_bccp_uuid` = `bccp`.`bccp_uuid`
+WHERE `bcc`.`to_bccp_id` = `bccp`.`bccp_id`;
+UPDATE `bcc` AS tmp, `bcc` SET tmp.`replacement_bcc_uuid` = `bcc`.`bcc_uuid`
+WHERE tmp.`replacement_bcc_id` = `bcc`.`bcc_id`;
+UPDATE `bcc` AS tmp, `bcc` SET tmp.`prev_bcc_uuid` = `bcc`.`bcc_uuid`
+WHERE tmp.`prev_bcc_id` = `bcc`.`bcc_id`;
+UPDATE `bcc` AS tmp, `bcc` SET tmp.`next_bcc_uuid` = `bcc`.`bcc_uuid`
+WHERE tmp.`next_bcc_id` = `bcc`.`bcc_id`;
+
+ALTER TABLE `bcc_bizterm` ADD COLUMN `bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated BCC' AFTER `bcc_id`;
+UPDATE `bcc_bizterm`, `bcc` SET `bcc_bizterm`.`bcc_uuid` = `bcc`.`bcc_uuid`
+WHERE `bcc_bizterm`.`bcc_id` = `bcc`.`bcc_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `bcc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `bcc_id`;
+UPDATE `bcc_manifest`, `bcc` SET `bcc_manifest`.`bcc_uuid` = `bcc`.`bcc_uuid`
+WHERE `bcc_manifest`.`bcc_id` = `bcc`.`bcc_id`;
+
+ALTER TABLE `bccp`
+    ADD COLUMN `bdt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.' AFTER `bdt_id`,
+    ADD COLUMN `replacement_bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_bccp_id`,
+    ADD COLUMN `prev_bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_bccp_id`,
+    ADD COLUMN `next_bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_bccp_id`;
+UPDATE `bccp`, `dt` SET `bccp`.`bdt_uuid` = `dt`.`dt_uuid`
+WHERE `bccp`.`bdt_id` = `dt`.`dt_id`;
+UPDATE `bccp` AS tmp, `bccp` SET tmp.`replacement_bccp_uuid` = `bccp`.`bccp_uuid`
+WHERE tmp.`replacement_bccp_id` = `bccp`.`bccp_id`;
+UPDATE `bccp` AS tmp, `bccp` SET tmp.`prev_bccp_uuid` = `bccp`.`bccp_uuid`
+WHERE tmp.`prev_bccp_id` = `bccp`.`bccp_id`;
+UPDATE `bccp` AS tmp, `bccp` SET tmp.`next_bccp_uuid` = `bccp`.`bccp_uuid`
+WHERE tmp.`next_bccp_id` = `bccp`.`bccp_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `bccp_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `bccp_id`;
+UPDATE `bccp_manifest`, `bccp` SET `bccp_manifest`.`bccp_uuid` = `bccp`.`bccp_uuid`
+WHERE `bccp_manifest`.`bccp_id` = `bccp`.`bccp_id`;
+
+ALTER TABLE `bdt_pri_restri`
+    ADD COLUMN `bdt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).' AFTER `bdt_id`,
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.' AFTER `code_list_id`,
+    ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.' AFTER `agency_id_list_id`;
+UPDATE `bdt_pri_restri`, `dt` SET `bdt_pri_restri`.`bdt_uuid` = `dt`.`dt_uuid`
+WHERE `bdt_pri_restri`.`bdt_id` = `dt`.`dt_id`;
+UPDATE `bdt_pri_restri`, `code_list` SET `bdt_pri_restri`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `bdt_pri_restri`.`code_list_id` = `code_list`.`code_list_id`;
+UPDATE `bdt_pri_restri`, `agency_id_list` SET `bdt_pri_restri`.`agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `bdt_pri_restri`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `bdt_sc_pri_restri`
+    ADD COLUMN `bdt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).' AFTER `bdt_sc_id`,
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.' AFTER `code_list_id`,
+    ADD COLUMN `agency_id_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.' AFTER `agency_id_list_id`;
+UPDATE `bdt_sc_pri_restri`, `dt_sc` SET `bdt_sc_pri_restri`.`bdt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE `bdt_sc_pri_restri`.`bdt_sc_id` = `dt_sc`.`dt_sc_id`;
+UPDATE `bdt_sc_pri_restri`, `code_list` SET `bdt_sc_pri_restri`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `bdt_sc_pri_restri`.`code_list_id` = `code_list`.`code_list_id`;
+UPDATE `bdt_sc_pri_restri`, `agency_id_list` SET `bdt_sc_pri_restri`.`agency_id_list_uuid` = `agency_id_list`.`agency_id_list_uuid`
+WHERE `bdt_sc_pri_restri`.`agency_id_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+ALTER TABLE `bie_user_ext_revision`
+    ADD COLUMN `ext_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).' AFTER `ext_acc_id`,
+    ADD COLUMN `user_ext_acc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).' AFTER `user_ext_acc_id`;
+UPDATE `bie_user_ext_revision`, `acc` SET `bie_user_ext_revision`.`ext_acc_uuid` = `acc`.`acc_uuid`
+WHERE `bie_user_ext_revision`.`ext_acc_id` = `acc`.`acc_id`;
+UPDATE `bie_user_ext_revision`, `acc` SET `bie_user_ext_revision`.`user_ext_acc_uuid` = `acc`.`acc_uuid`
+WHERE `bie_user_ext_revision`.`user_ext_acc_id` = `acc`.`acc_id`;
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `blob_content_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `blob_content_id`;
+UPDATE `blob_content_manifest`, `blob_content` SET `blob_content_manifest`.`blob_content_uuid` = `blob_content`.`blob_content_uuid`
+WHERE `blob_content_manifest`.`blob_content_id` = `blob_content`.`blob_content_id`;
+
+ALTER TABLE `cdt_awd_pri`
+    ADD COLUMN `cdt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to a CDT in the DT table.' AFTER `cdt_id`;
+UPDATE `cdt_awd_pri`, `dt` SET `cdt_awd_pri`.`cdt_uuid` = `dt`.`dt_uuid`
+WHERE `cdt_awd_pri`.`cdt_id` = `dt`.`dt_id`;
+
+ALTER TABLE `cdt_ref_spec`
+    ADD COLUMN `cdt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cdt_id`;
+UPDATE `cdt_ref_spec`, `dt` SET `cdt_ref_spec`.`cdt_uuid` = `dt`.`dt_uuid`
+WHERE `cdt_ref_spec`.`cdt_id` = `dt`.`dt_id`;
+
+ALTER TABLE `cdt_sc_awd_pri`
+    ADD COLUMN `cdt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the supplementary component (SC).' AFTER `cdt_sc_id`;
+UPDATE `cdt_sc_awd_pri`, `dt_sc` SET `cdt_sc_awd_pri`.`cdt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE `cdt_sc_awd_pri`.`cdt_sc_id` = `dt_sc`.`dt_sc_id`;
+
+ALTER TABLE `cdt_sc_ref_spec`
+    ADD COLUMN `cdt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cdt_sc_id`;
+UPDATE `cdt_sc_ref_spec`, `dt_sc` SET `cdt_sc_ref_spec`.`cdt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE `cdt_sc_ref_spec`.`cdt_sc_id` = `dt_sc`.`dt_sc_id`;
+
+ALTER TABLE `code_list`
+    ADD COLUMN `agency_id_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.' AFTER `agency_id_list_value_id`,
+    ADD COLUMN `based_code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.' AFTER `based_code_list_id`,
+    ADD COLUMN `replacement_code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_code_list_id`,
+    ADD COLUMN `prev_code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_code_list_id`,
+    ADD COLUMN `next_code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_code_list_id`;
+UPDATE `code_list`, `agency_id_list_value` SET `code_list`.`agency_id_list_value_uuid` = `agency_id_list_value`.`agency_id_list_value_uuid`
+WHERE `code_list`.`agency_id_list_value_id` = `agency_id_list_value`.`agency_id_list_value_id`;
+UPDATE `code_list` AS tmp, `code_list` SET tmp.`based_code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE tmp.`based_code_list_id` = `code_list`.`code_list_id`;
+UPDATE `code_list` AS tmp, `code_list` SET tmp.`replacement_code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE tmp.`replacement_code_list_id` = `code_list`.`code_list_id`;
+UPDATE `code_list` AS tmp, `code_list` SET tmp.`prev_code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE tmp.`prev_code_list_id` = `code_list`.`code_list_id`;
+UPDATE `code_list` AS tmp, `code_list` SET tmp.`next_code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE tmp.`next_code_list_id` = `code_list`.`code_list_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `code_list_id`;
+UPDATE `code_list_manifest`, `code_list` SET `code_list_manifest`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `code_list_manifest`.`code_list_id` = `code_list`.`code_list_id`;
+
+ALTER TABLE `code_list_value`
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.' AFTER `code_list_id`,
+    ADD COLUMN `based_code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.' AFTER `based_code_list_value_id`,
+    ADD COLUMN `replacement_code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_code_list_value_id`,
+    ADD COLUMN `prev_code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_code_list_value_id`,
+    ADD COLUMN `next_code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_code_list_value_id`;
+UPDATE `code_list_value`, `code_list` SET `code_list_value`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `code_list_value`.`code_list_id` = `code_list`.`code_list_id`;
+UPDATE `code_list_value` AS tmp, `code_list_value` SET tmp.`based_code_list_value_uuid` = `code_list_value`.`code_list_value_uuid`
+WHERE tmp.`based_code_list_value_id` = `code_list_value`.`code_list_value_id`;
+UPDATE `code_list_value` AS tmp, `code_list_value` SET tmp.`replacement_code_list_value_uuid` = `code_list_value`.`code_list_value_uuid`
+WHERE tmp.`replacement_code_list_value_id` = `code_list_value`.`code_list_value_id`;
+UPDATE `code_list_value` AS tmp, `code_list_value` SET tmp.`prev_code_list_value_uuid` = `code_list_value`.`code_list_value_uuid`
+WHERE tmp.`prev_code_list_value_id` = `code_list_value`.`code_list_value_id`;
+UPDATE `code_list_value` AS tmp, `code_list_value` SET tmp.`next_code_list_value_uuid` = `code_list_value`.`code_list_value_uuid`
+WHERE tmp.`next_code_list_value_id` = `code_list_value`.`code_list_value_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `code_list_value_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `code_list_value_id`;
+UPDATE `code_list_value_manifest`, `code_list_value` SET `code_list_value_manifest`.`code_list_value_uuid` = `code_list_value`.`code_list_value_uuid`
+WHERE `code_list_value_manifest`.`code_list_value_id` = `code_list_value`.`code_list_value_id`;
+
+ALTER TABLE `ctx_scheme`
+    ADD COLUMN `code_list_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.' AFTER `code_list_id`;
+UPDATE `ctx_scheme`, `code_list` SET `ctx_scheme`.`code_list_uuid` = `code_list`.`code_list_uuid`
+WHERE `ctx_scheme`.`code_list_id` = `code_list`.`code_list_id`;
+
+ALTER TABLE `dt`
+    ADD COLUMN `based_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.' AFTER `based_dt_id`,
+    ADD COLUMN `replacement_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_dt_id`,
+    ADD COLUMN `prev_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_dt_id`,
+    ADD COLUMN `next_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_dt_id`;
+UPDATE `dt` AS tmp, `dt` SET tmp.`based_dt_uuid` = `dt`.`dt_uuid`
+WHERE tmp.`based_dt_id` = `dt`.`dt_id`;
+UPDATE `dt` AS tmp, `dt` SET tmp.`replacement_dt_uuid` = `dt`.`dt_uuid`
+WHERE tmp.`replacement_dt_id` = `dt`.`dt_id`;
+UPDATE `dt` AS tmp, `dt` SET tmp.`prev_dt_uuid` = `dt`.`dt_uuid`
+WHERE tmp.`prev_dt_id` = `dt`.`dt_id`;
+UPDATE `dt` AS tmp, `dt` SET tmp.`next_dt_uuid` = `dt`.`dt_uuid`
+WHERE tmp.`next_dt_id` = `dt`.`dt_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `dt_id`;
+UPDATE `dt_manifest`, `dt` SET `dt_manifest`.`dt_uuid` = `dt`.`dt_uuid`
+WHERE `dt_manifest`.`dt_id` = `dt`.`dt_id`;
+
+ALTER TABLE `dt_sc`
+    ADD COLUMN `owner_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.' AFTER `owner_dt_id`,
+    ADD COLUMN `based_dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.' AFTER `based_dt_sc_id`,
+    ADD COLUMN `replacement_dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `replacement_dt_sc_id`,
+    ADD COLUMN `prev_dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.' AFTER `prev_dt_sc_id`,
+    ADD COLUMN `next_dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.' AFTER `next_dt_sc_id`;
+UPDATE `dt_sc`, `dt` SET `dt_sc`.`owner_dt_uuid` = `dt`.`dt_uuid`
+WHERE `dt_sc`.`owner_dt_id` = `dt`.`dt_id`;
+UPDATE `dt_sc` AS tmp, `dt_sc` SET tmp.`based_dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE tmp.`based_dt_sc_id` = `dt_sc`.`dt_sc_id`;
+UPDATE `dt_sc` AS tmp, `dt_sc` SET tmp.`replacement_dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE tmp.`replacement_dt_sc_id` = `dt_sc`.`dt_sc_id`;
+UPDATE `dt_sc` AS tmp, `dt_sc` SET tmp.`prev_dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE tmp.`prev_dt_sc_id` = `dt_sc`.`dt_sc_id`;
+UPDATE `dt_sc` AS tmp, `dt_sc` SET tmp.`next_dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE tmp.`next_dt_sc_id` = `dt_sc`.`dt_sc_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `dt_sc_id`;
+UPDATE `dt_sc_manifest`, `dt_sc` SET `dt_sc_manifest`.`dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE `dt_sc_manifest`.`dt_sc_id` = `dt_sc`.`dt_sc_id`;
+
+ALTER TABLE `dt_usage_rule`
+    ADD COLUMN `target_dt_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.' AFTER `target_dt_id`,
+    ADD COLUMN `target_dt_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.' AFTER `target_dt_sc_id`;
+UPDATE `dt_usage_rule`, `dt` SET `dt_usage_rule`.`target_dt_uuid` = `dt`.`dt_uuid`
+WHERE `dt_usage_rule`.`target_dt_id` = `dt`.`dt_id`;
+UPDATE `dt_usage_rule`, `dt_sc` SET `dt_usage_rule`.`target_dt_sc_uuid` = `dt_sc`.`dt_sc_uuid`
+WHERE `dt_usage_rule`.`target_dt_sc_id` = `dt_sc`.`dt_sc_id`;
+
+-- Drop old columns
+ALTER TABLE `acc`
+    DROP FOREIGN KEY `acc_based_acc_id_fk`,
+    DROP FOREIGN KEY `acc_replacement_acc_id_fk`,
+    DROP FOREIGN KEY `acc_prev_acc_id_fk`,
+    DROP FOREIGN KEY `acc_next_acc_id_fk`;
+ALTER TABLE `acc`
+    DROP COLUMN `based_acc_id`,
+    DROP COLUMN `replacement_acc_id`,
+    DROP COLUMN `prev_acc_id`,
+    DROP COLUMN `next_acc_id`;
+
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_acc_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `acc_id`;
+
+ALTER TABLE `agency_id_list`
+    DROP FOREIGN KEY `agency_id_list_agency_id_list_value_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_based_agency_id_list_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_replacement_agency_id_list_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_prev_agency_id_list_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_next_agency_id_list_id_fk`;
+ALTER TABLE `agency_id_list`
+    DROP COLUMN `agency_id_list_value_id`,
+    DROP COLUMN `based_agency_id_list_id`,
+    DROP COLUMN `replacement_agency_id_list_id`,
+    DROP COLUMN `prev_agency_id_list_id`,
+    DROP COLUMN `next_agency_id_list_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_agency_id_list_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `agency_id_list_id`;
+
+ALTER TABLE `agency_id_list_value`
+    DROP FOREIGN KEY `agency_id_list_value_owner_list_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_value_based_agency_id_list_value_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_value_replacement_agency_id_list_value_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_value_prev_agency_id_list_value_id_fk`,
+    DROP FOREIGN KEY `agency_id_list_value_next_agency_id_list_value_id_fk`;
+ALTER TABLE `agency_id_list_value`
+    DROP COLUMN `owner_list_id`,
+    DROP COLUMN `based_agency_id_list_value_id`,
+    DROP COLUMN `replacement_agency_id_list_value_id`,
+    DROP COLUMN `prev_agency_id_list_value_id`,
+    DROP COLUMN `next_agency_id_list_value_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_agency_id_list_value_id_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `agency_id_list_value_id`;
+
+ALTER TABLE `ascc`
+    DROP FOREIGN KEY `ascc_from_acc_id_fk`,
+    DROP FOREIGN KEY `ascc_to_asccp_id_fk`,
+    DROP FOREIGN KEY `ascc_replacement_ascc_id_fk`,
+    DROP FOREIGN KEY `ascc_prev_ascc_id_fk`,
+    DROP FOREIGN KEY `ascc_next_ascc_id_fk`;
+ALTER TABLE `ascc`
+    DROP COLUMN `from_acc_id`,
+    DROP COLUMN `to_asccp_id`,
+    DROP COLUMN `replacement_ascc_id`,
+    DROP COLUMN `prev_ascc_id`,
+    DROP COLUMN `next_ascc_id`;
+
+ALTER TABLE `ascc_bizterm` DROP FOREIGN KEY `ascc_bizterm_ascc_fk`;
+ALTER TABLE `ascc_bizterm` DROP COLUMN `ascc_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_ascc_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `ascc_id`;
+
+ALTER TABLE `asccp`
+    DROP FOREIGN KEY `asccp_role_of_acc_id_fk`,
+    DROP FOREIGN KEY `asccp_replacement_asccp_id_fk`,
+    DROP FOREIGN KEY `asccp_prev_asccp_id_fk`,
+    DROP FOREIGN KEY `asccp_next_asccp_id_fk`;
+ALTER TABLE `asccp`
+    DROP COLUMN `role_of_acc_id`,
+    DROP COLUMN `replacement_asccp_id`,
+    DROP COLUMN `prev_asccp_id`,
+    DROP COLUMN `next_asccp_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_asccp_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `asccp_id`;
+
+ALTER TABLE `bbie`
+    DROP FOREIGN KEY `bbie_code_list_id_fk`,
+    DROP FOREIGN KEY `bbie_agency_id_list_id_fk`;
+ALTER TABLE `bbie`
+    DROP COLUMN `code_list_id`,
+    DROP COLUMN `agency_id_list_id`;
+
+ALTER TABLE `bbie_sc`
+    DROP FOREIGN KEY `bbie_sc_code_list_id_fk`,
+    DROP FOREIGN KEY `bbie_sc_agency_id_list_id_fk`;
+ALTER TABLE `bbie_sc`
+    DROP COLUMN `code_list_id`,
+    DROP COLUMN `agency_id_list_id`;
+
+ALTER TABLE `bcc`
+    DROP FOREIGN KEY `bcc_from_acc_id_fk`,
+    DROP FOREIGN KEY `bcc_to_bccp_id_fk`,
+    DROP FOREIGN KEY `bcc_replacement_bcc_id_fk`,
+    DROP FOREIGN KEY `bcc_prev_bcc_id_fk`,
+    DROP FOREIGN KEY `bcc_next_bcc_id_fk`;
+ALTER TABLE `bcc`
+    DROP COLUMN `from_acc_id`,
+    DROP COLUMN `to_bccp_id`,
+    DROP COLUMN `replacement_bcc_id`,
+    DROP COLUMN `prev_bcc_id`,
+    DROP COLUMN `next_bcc_id`;
+
+ALTER TABLE `bcc_bizterm` DROP FOREIGN KEY `bcc_bizterm_bcc_fk`;
+ALTER TABLE `bcc_bizterm` DROP COLUMN `bcc_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_bcc_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `bcc_id`;
+
+ALTER TABLE `bccp`
+    DROP FOREIGN KEY `bccp_bdt_id_fk`,
+    DROP FOREIGN KEY `bccp_replacement_bccp_id_fk`,
+    DROP FOREIGN KEY `bccp_prev_bccp_id_fk`,
+    DROP FOREIGN KEY `bccp_next_bccp_id_fk`;
+ALTER TABLE `bccp`
+    DROP COLUMN `bdt_id`,
+    DROP COLUMN `replacement_bccp_id`,
+    DROP COLUMN `prev_bccp_id`,
+    DROP COLUMN `next_bccp_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_bccp_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `bccp_id`;
+
+ALTER TABLE `bdt_pri_restri`
+    DROP FOREIGN KEY `bdt_pri_restri_bdt_id_fk`,
+    DROP FOREIGN KEY `bdt_pri_restri_code_list_id_fk`,
+    DROP FOREIGN KEY `bdt_pri_restri_agency_id_list_id_fk`;
+ALTER TABLE `bdt_pri_restri`
+    DROP COLUMN `bdt_id`,
+    DROP COLUMN `code_list_id`,
+    DROP COLUMN `agency_id_list_id`;
+
+ALTER TABLE `bdt_sc_pri_restri`
+    DROP FOREIGN KEY `bdt_sc_pri_restri_bdt_sc_id_fk`,
+    DROP FOREIGN KEY `bdt_sc_pri_restri_code_list_id_fk`,
+    DROP FOREIGN KEY `bdt_sc_pri_restri_agency_id_list_id_fk`;
+ALTER TABLE `bdt_sc_pri_restri`
+    DROP COLUMN `bdt_sc_id`,
+    DROP COLUMN `code_list_id`,
+    DROP COLUMN `agency_id_list_id`;
+
+ALTER TABLE `bie_user_ext_revision`
+    DROP FOREIGN KEY `bie_user_ext_revision_ext_acc_id_fk`,
+    DROP FOREIGN KEY `bie_user_ext_revision_user_ext_acc_id_fk`;
+ALTER TABLE `bie_user_ext_revision`
+    DROP COLUMN `ext_acc_id`,
+    DROP COLUMN `user_ext_acc_id`;
+
+ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_blob_content_id_fk`;
+ALTER TABLE `blob_content_manifest` DROP COLUMN `blob_content_id`;
+
+ALTER TABLE `cdt_awd_pri` DROP FOREIGN KEY `cdt_awd_pri_cdt_id_fk`;
+ALTER TABLE `cdt_awd_pri` DROP COLUMN `cdt_id`;
+
+ALTER TABLE `cdt_ref_spec` DROP FOREIGN KEY `cdt_ref_spec_cdt_id_fk`;
+ALTER TABLE `cdt_ref_spec` DROP COLUMN `cdt_id`;
+
+ALTER TABLE `cdt_sc_awd_pri` DROP FOREIGN KEY `cdt_sc_awd_pri_cdt_sc_id_fk`;
+ALTER TABLE `cdt_sc_awd_pri` DROP COLUMN `cdt_sc_id`;
+
+ALTER TABLE `cdt_sc_ref_spec` DROP FOREIGN KEY `cdt_sc_ref_spec_cdt_sc_id_fk`;
+ALTER TABLE `cdt_sc_ref_spec` DROP COLUMN `cdt_sc_id`;
+
+ALTER TABLE `code_list`
+    DROP FOREIGN KEY `code_list_agency_id_list_value_id_fk`,
+    DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
+    DROP FOREIGN KEY `code_list_replacement_code_list_id_fk`,
+    DROP FOREIGN KEY `code_list_prev_code_list_id_fk`,
+    DROP FOREIGN KEY `code_list_next_code_list_id_fk`;
+ALTER TABLE `code_list`
+    DROP COLUMN `agency_id_list_value_id`,
+    DROP COLUMN `based_code_list_id`,
+    DROP COLUMN `replacement_code_list_id`,
+    DROP COLUMN `prev_code_list_id`,
+    DROP COLUMN `next_code_list_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_code_list_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `code_list_id`;
+
+ALTER TABLE `code_list_value`
+    DROP FOREIGN KEY `code_list_value_code_list_id_fk`,
+    DROP FOREIGN KEY `code_list_value_based_code_list_value_id_fk`,
+    DROP FOREIGN KEY `code_list_value_replacement_code_list_value_id_fk`,
+    DROP FOREIGN KEY `code_list_value_prev_code_list_value_id_fk`,
+    DROP FOREIGN KEY `code_list_value_next_code_list_value_id_fk`;
+ALTER TABLE `code_list_value`
+    DROP COLUMN `code_list_id`,
+    DROP COLUMN `based_code_list_value_id`,
+    DROP COLUMN `replacement_code_list_value_id`,
+    DROP COLUMN `prev_code_list_value_id`,
+    DROP COLUMN `next_code_list_value_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_code_list_value_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `code_list_value_id`;
+
+ALTER TABLE `ctx_scheme` DROP FOREIGN KEY `ctx_scheme_code_list_id_fk`;
+ALTER TABLE `ctx_scheme` DROP COLUMN `code_list_id`;
+
+ALTER TABLE `dt`
+    DROP FOREIGN KEY `dt_based_dt_id_fk`,
+    DROP FOREIGN KEY `dt_replacement_dt_id_fk`,
+    DROP FOREIGN KEY `dt_prev_dt_id_fk`,
+    DROP FOREIGN KEY `dt_next_dt_id_fk`;
+ALTER TABLE `dt`
+    DROP COLUMN `based_dt_id`,
+    DROP COLUMN `replacement_dt_id`,
+    DROP COLUMN `prev_dt_id`,
+    DROP COLUMN `next_dt_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_dt_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `dt_id`;
+
+ALTER TABLE `dt_sc`
+    DROP FOREIGN KEY `dt_sc_owner_dt_id_fk`,
+    DROP FOREIGN KEY `dt_sc_based_dt_sc_id_fk`,
+    DROP FOREIGN KEY `dt_sc_replacement_dt_sc_id_fk`,
+    DROP FOREIGN KEY `dt_sc_prev_dt_sc_id_fk`,
+    DROP FOREIGN KEY `dt_sc_next_dt_sc_id_fk`;
+ALTER TABLE `dt_sc`
+    DROP COLUMN `owner_dt_id`,
+    DROP COLUMN `based_dt_sc_id`,
+    DROP COLUMN `replacement_dt_sc_id`,
+    DROP COLUMN `prev_dt_sc_id`,
+    DROP COLUMN `next_dt_sc_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_manifest_dt_sc_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `dt_sc_id`;
+
+ALTER TABLE `dt_usage_rule`
+    DROP FOREIGN KEY `dt_usage_rule_target_dt_id_fk`,
+    DROP FOREIGN KEY `dt_usage_rule_target_dt_sc_id_fk`;
+ALTER TABLE `dt_usage_rule`
+    DROP COLUMN `target_dt_id`,
+    DROP COLUMN `target_dt_sc_id`;
+
+ALTER TABLE `acc` DROP COLUMN `acc_id`;
+ALTER TABLE `ascc` DROP COLUMN `ascc_id`;
+ALTER TABLE `bcc` DROP COLUMN `bcc_id`;
+ALTER TABLE `asccp` DROP COLUMN `asccp_id`;
+ALTER TABLE `bccp` DROP COLUMN `bccp_id`;
+ALTER TABLE `blob_content` DROP COLUMN `blob_content_id`;
+ALTER TABLE `dt` DROP COLUMN `dt_id`;
+ALTER TABLE `dt_sc` DROP COLUMN `dt_sc_id`;
+ALTER TABLE `code_list` DROP COLUMN `code_list_id`;
+ALTER TABLE `code_list_value` DROP COLUMN `code_list_value_id`;
+ALTER TABLE `agency_id_list` DROP COLUMN `agency_id_list_id`;
+ALTER TABLE `agency_id_list_value` DROP COLUMN `agency_id_list_value_id`;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `acc` CHANGE `acc_uuid` `acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ascc` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bcc` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asccp` CHANGE `asccp_uuid` `asccp_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bccp` CHANGE `bccp_uuid` `bccp_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `blob_content` CHANGE `blob_content_uuid` `blob_content_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt` CHANGE `dt_uuid` `dt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt_sc` CHANGE `dt_sc_uuid` `dt_sc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `code_list` CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `code_list_value` CHANGE `code_list_value_uuid` `code_list_value_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `agency_id_list` CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `agency_id_list_value` CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `acc`
+    CHANGE `based_acc_uuid` `based_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'BASED_ACC_ID is a foreign key to the ACC table itself. It represents the ACC that is qualified by this ACC. In general CCS sense, a qualification can be a content extension or restriction, but the current scope supports only extension.',
+    CHANGE `replacement_acc_uuid` `replacement_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_acc_uuid` `prev_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_acc_uuid` `next_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `acc_manifest` CHANGE `acc_uuid` `acc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list`
+    CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the identification of the agency or organization which developed and/or maintains the list. Theoretically, this can be modeled as a self-reference foreign key, but it is not implemented at this point.',
+    CHANGE `based_agency_id_list_uuid` `based_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.',
+    CHANGE `replacement_agency_id_list_uuid` `replacement_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_agency_id_list_uuid` `prev_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_agency_id_list_uuid` `next_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_value`
+    CHANGE `owner_list_uuid` `owner_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.',
+    CHANGE `based_agency_id_list_value_uuid` `based_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.',
+    CHANGE `replacement_agency_id_list_value_uuid` `replacement_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_agency_id_list_value_uuid` `prev_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_agency_id_list_value_uuid` `next_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `ascc`
+    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.',
+    CHANGE `to_asccp_uuid` `to_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.',
+    CHANGE `replacement_ascc_uuid` `replacement_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_ascc_uuid` `prev_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_ascc_uuid` `next_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `ascc_bizterm` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated ASCC';
+ALTER TABLE `ascc_manifest` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asccp`
+    CHANGE `role_of_acc_uuid` `role_of_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The ACC from which this ASCCP is created (ASCCP applies role to the ACC).',
+    CHANGE `replacement_asccp_uuid` `replacement_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_asccp_uuid` `prev_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_asccp_uuid` `next_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `asccp_manifest` CHANGE `asccp_uuid` `asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bbie`
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the BDT_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.',
+    CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
+ALTER TABLE `bbie_sc`
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.\n\nThis column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.',
+    CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. If a agency ID list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned Agency ID list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be an Agency ID list. So this column is typically used only when the user wants to assign another Agency ID list different from the one permissible by the CC model.\n\nThis column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have a value at the same time.';
+ALTER TABLE `bcc`
+    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.',
+    CHANGE `to_bccp_uuid` `to_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.',
+    CHANGE `replacement_bcc_uuid` `replacement_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_bcc_uuid` `prev_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_bcc_uuid` `next_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `bcc_bizterm` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated BCC';
+ALTER TABLE `bcc_manifest` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bccp`
+    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.',
+    CHANGE `replacement_bccp_uuid` `replacement_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_bccp_uuid` `prev_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_bccp_uuid` `next_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `bccp_manifest` CHANGE `bccp_uuid` `bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bdt_pri_restri`
+    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.',
+    CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
+ALTER TABLE `bdt_sc_pri_restri`
+    CHANGE `bdt_sc_uuid` `bdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.',
+    CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
+ALTER TABLE `bie_user_ext_revision`
+    CHANGE `ext_acc_uuid` `ext_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).',
+    CHANGE `user_ext_acc_uuid` `user_ext_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).';
+ALTER TABLE `blob_content_manifest` CHANGE `blob_content_uuid` `blob_content_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `cdt_awd_pri`
+    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to a CDT in the DT table.';
+ALTER TABLE `cdt_ref_spec`
+    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `cdt_sc_awd_pri`
+    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the supplementary component (SC).';
+ALTER TABLE `cdt_sc_ref_spec`
+    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list`
+    CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.',
+    CHANGE `based_code_list_uuid` `based_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.',
+    CHANGE `replacement_code_list_uuid` `replacement_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_code_list_uuid` `prev_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_code_list_uuid` `next_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `code_list_manifest` CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_value`
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.',
+    CHANGE `based_code_list_value_uuid` `based_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.',
+    CHANGE `replacement_code_list_value_uuid` `replacement_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_code_list_value_uuid` `prev_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_code_list_value_uuid` `next_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_uuid` `code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `ctx_scheme`
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.';
+ALTER TABLE `dt`
+    CHANGE `based_dt_uuid` `based_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.',
+    CHANGE `replacement_dt_uuid` `replacement_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_dt_uuid` `prev_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_dt_uuid` `next_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `dt_manifest` CHANGE `dt_uuid` `dt_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_sc`
+    CHANGE `owner_dt_uuid` `owner_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table indicating the data type, to which this supplementary component belongs.',
+    CHANGE `based_dt_sc_uuid` `based_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.',
+    CHANGE `replacement_dt_sc_uuid` `replacement_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
+    CHANGE `prev_dt_sc_uuid` `prev_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    CHANGE `next_dt_sc_uuid` `next_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
+ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_uuid` `dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_usage_rule`
+    CHANGE `target_dt_uuid` `target_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.',
+    CHANGE `target_dt_sc_uuid` `target_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.';
+
+-- Add foreign key constraints
+ALTER TABLE `acc` ADD PRIMARY KEY (`acc_id`);
+ALTER TABLE `ascc` ADD PRIMARY KEY (`ascc_id`);
+ALTER TABLE `bcc` ADD PRIMARY KEY (`bcc_id`);
+ALTER TABLE `asccp` ADD PRIMARY KEY (`asccp_id`);
+ALTER TABLE `bccp` ADD PRIMARY KEY (`bccp_id`);
+ALTER TABLE `blob_content` ADD PRIMARY KEY (`blob_content_id`);
+ALTER TABLE `dt` ADD PRIMARY KEY (`dt_id`);
+ALTER TABLE `dt_sc` ADD PRIMARY KEY (`dt_sc_id`);
+ALTER TABLE `code_list` ADD PRIMARY KEY (`code_list_id`);
+ALTER TABLE `code_list_value` ADD PRIMARY KEY (`code_list_value_id`);
+ALTER TABLE `agency_id_list` ADD PRIMARY KEY (`agency_id_list_id`);
+ALTER TABLE `agency_id_list_value` ADD PRIMARY KEY (`agency_id_list_value_id`);
+
+ALTER TABLE `acc`
+    ADD CONSTRAINT `acc_based_acc_id_fk` FOREIGN KEY (`based_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `acc_replacement_acc_id_fk` FOREIGN KEY (`replacement_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `acc_prev_acc_id_fk` FOREIGN KEY (`prev_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_acc_id_fk` FOREIGN KEY (`acc_id`) REFERENCES `acc` (`acc_id`);
+ALTER TABLE `agency_id_list`
+    ADD CONSTRAINT `agency_id_list_agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `agency_id_list_based_agency_id_list_id_fk` FOREIGN KEY (`based_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_replacement_agency_id_list_id_fk` FOREIGN KEY (`replacement_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_prev_agency_id_list_id_fk` FOREIGN KEY (`prev_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_next_agency_id_list_id_fk` FOREIGN KEY (`next_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `agency_id_list_value`
+    ADD CONSTRAINT `agency_id_list_value_owner_list_id_fk` FOREIGN KEY (`owner_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_value_based_agency_id_list_value_id_fk` FOREIGN KEY (`based_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `agency_id_list_value_replacement_agency_id_list_value_id_fk` FOREIGN KEY (`replacement_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `agency_id_list_value_prev_agency_id_list_value_id_fk` FOREIGN KEY (`prev_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `agency_id_list_value_next_agency_id_list_value_id_fk` FOREIGN KEY (`next_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+ALTER TABLE `ascc`
+    ADD CONSTRAINT `ascc_from_acc_id_fk` FOREIGN KEY (`from_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `ascc_to_asccp_id_fk` FOREIGN KEY (`to_asccp_id`) REFERENCES `asccp` (`asccp_id`),
+    ADD CONSTRAINT `ascc_replacement_ascc_id_fk` FOREIGN KEY (`replacement_ascc_id`) REFERENCES `ascc` (`ascc_id`),
+    ADD CONSTRAINT `ascc_prev_ascc_id_fk` FOREIGN KEY (`prev_ascc_id`) REFERENCES `ascc` (`ascc_id`),
+    ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`);
+ALTER TABLE `ascc_bizterm` ADD CONSTRAINT `ascc_bizterm_ascc_id_fk` FOREIGN KEY (`ascc_id`) REFERENCES `ascc` (`ascc_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_ascc_id_fk` FOREIGN KEY (`ascc_id`) REFERENCES `ascc` (`ascc_id`);
+ALTER TABLE `asccp`
+    ADD CONSTRAINT `asccp_role_of_acc_id_fk` FOREIGN KEY (`role_of_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `asccp_replacement_asccp_id_fk` FOREIGN KEY (`replacement_asccp_id`) REFERENCES `asccp` (`asccp_id`),
+    ADD CONSTRAINT `asccp_prev_asccp_id_fk` FOREIGN KEY (`prev_asccp_id`) REFERENCES `asccp` (`asccp_id`),
+    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_asccp_id_fk` FOREIGN KEY (`asccp_id`) REFERENCES `asccp` (`asccp_id`);
+ALTER TABLE `bbie`
+    ADD CONSTRAINT `bbie_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `bbie_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `bbie_sc`
+    ADD CONSTRAINT `bbie_sc_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `bbie_sc_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `bcc`
+    ADD CONSTRAINT `bcc_from_acc_id_fk` FOREIGN KEY (`from_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `bcc_to_bccp_id_fk` FOREIGN KEY (`to_bccp_id`) REFERENCES `bccp` (`bccp_id`),
+    ADD CONSTRAINT `bcc_replacement_bcc_id_fk` FOREIGN KEY (`replacement_bcc_id`) REFERENCES `bcc` (`bcc_id`),
+    ADD CONSTRAINT `bcc_prev_bcc_id_fk` FOREIGN KEY (`prev_bcc_id`) REFERENCES `bcc` (`bcc_id`),
+    ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`);
+ALTER TABLE `bcc_bizterm` ADD CONSTRAINT `bcc_bizterm_bcc_id_fk` FOREIGN KEY (`bcc_id`) REFERENCES `bcc` (`bcc_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_bcc_id_fk` FOREIGN KEY (`bcc_id`) REFERENCES `bcc` (`bcc_id`);
+ALTER TABLE `bccp`
+    ADD CONSTRAINT `bccp_bdt_id_fk` FOREIGN KEY (`bdt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `bccp_replacement_bccp_id_fk` FOREIGN KEY (`replacement_bccp_id`) REFERENCES `bccp` (`bccp_id`),
+    ADD CONSTRAINT `bccp_prev_bccp_id_fk` FOREIGN KEY (`prev_bccp_id`) REFERENCES `bccp` (`bccp_id`),
+    ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_bccp_id_fk` FOREIGN KEY (`bccp_id`) REFERENCES `bccp` (`bccp_id`);
+ALTER TABLE `bdt_pri_restri`
+    ADD CONSTRAINT `bdt_pri_restri_bdt_id_fk` FOREIGN KEY (`bdt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `bdt_pri_restri_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `bdt_pri_restri_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `bdt_sc_pri_restri`
+    ADD CONSTRAINT `bdt_sc_pri_restri_bdt_sc_id_fk` FOREIGN KEY (`bdt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+    ADD CONSTRAINT `bdt_sc_pri_restri_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `bdt_sc_pri_restri_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+ALTER TABLE `bie_user_ext_revision`
+    ADD CONSTRAINT `bie_user_ext_revision_ext_acc_id_fk` FOREIGN KEY (`ext_acc_id`) REFERENCES `acc` (`acc_id`),
+    ADD CONSTRAINT `bie_user_ext_revision_user_ext_acc_id_fk` FOREIGN KEY (`user_ext_acc_id`) REFERENCES `acc` (`acc_id`);
+ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_blob_content_id_fk` FOREIGN KEY (`blob_content_id`) REFERENCES `blob_content` (`blob_content_id`);
+ALTER TABLE `cdt_awd_pri`
+    ADD CONSTRAINT `cdt_awd_pri_cdt_id_fk` FOREIGN KEY (`cdt_id`) REFERENCES `dt` (`dt_id`);
+ALTER TABLE `cdt_ref_spec`
+    ADD CONSTRAINT `cdt_ref_spec_cdt_id_fk` FOREIGN KEY (`cdt_id`) REFERENCES `dt` (`dt_id`);
+ALTER TABLE `cdt_sc_awd_pri`
+    ADD CONSTRAINT `cdt_sc_awd_pri_cdt_sc_id_fk` FOREIGN KEY (`cdt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+ALTER TABLE `cdt_sc_ref_spec`
+    ADD CONSTRAINT `cdt_sc_ref_spec_cdt_sc_id_fk` FOREIGN KEY (`cdt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+ALTER TABLE `code_list`
+    ADD CONSTRAINT `code_list_agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `code_list_based_code_list_id_fk` FOREIGN KEY (`based_code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_replacement_code_list_id_fk` FOREIGN KEY (`replacement_code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_prev_code_list_id_fk` FOREIGN KEY (`prev_code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`);
+ALTER TABLE `code_list_value`
+    ADD CONSTRAINT `code_list_value_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_value_based_code_list_value_id_fk` FOREIGN KEY (`based_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
+    ADD CONSTRAINT `code_list_value_replacement_code_list_value_id_fk` FOREIGN KEY (`replacement_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
+    ADD CONSTRAINT `code_list_value_prev_code_list_value_id_fk` FOREIGN KEY (`prev_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
+    ADD CONSTRAINT `code_list_value_next_code_list_value_id_fk` FOREIGN KEY (`next_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_code_list_value_id_fk` FOREIGN KEY (`code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`);
+ALTER TABLE `ctx_scheme`
+    ADD CONSTRAINT `ctx_scheme_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`);
+ALTER TABLE `dt`
+    ADD CONSTRAINT `dt_based_dt_id_fk` FOREIGN KEY (`based_dt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `dt_replacement_dt_id_fk` FOREIGN KEY (`replacement_dt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `dt_prev_dt_id_fk` FOREIGN KEY (`prev_dt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_dt_id_fk` FOREIGN KEY (`dt_id`) REFERENCES `dt` (`dt_id`);
+ALTER TABLE `dt_sc`
+    ADD CONSTRAINT `dt_sc_owner_dt_id_fk` FOREIGN KEY (`owner_dt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `dt_sc_based_dt_sc_id_fk` FOREIGN KEY (`based_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+    ADD CONSTRAINT `dt_sc_replacement_dt_sc_id_fk` FOREIGN KEY (`replacement_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+    ADD CONSTRAINT `dt_sc_prev_dt_sc_id_fk` FOREIGN KEY (`prev_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+    ADD CONSTRAINT `dt_sc_next_dt_sc_id_fk` FOREIGN KEY (`next_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_dt_sc_id_fk` FOREIGN KEY (`dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+ALTER TABLE `dt_usage_rule`
+    ADD CONSTRAINT `dt_usage_rule_target_dt_id_fk` FOREIGN KEY (`target_dt_id`) REFERENCES `dt` (`dt_id`),
+    ADD CONSTRAINT `dt_usage_rule_target_dt_sc_id_fk` FOREIGN KEY (`target_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
+
 -- --------------------------
 -- Change `xbt_id` TO UUID --
 -- --------------------------

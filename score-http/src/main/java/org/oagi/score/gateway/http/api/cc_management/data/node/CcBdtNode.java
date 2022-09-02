@@ -12,17 +12,17 @@ public class CcBdtNode extends CcNode {
 
     private CcType type = CcType.DT;
 
-    private BigInteger bdtId = BigInteger.ZERO;
+    private String bdtId;
 
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger bccManifestId = BigInteger.ZERO;
     private BigInteger basedManifestId;
     private String den;
-    private BigInteger prevBccpId;
-    private BigInteger nextBccpId;
+    private String prevBccpId;
+    private String nextBccpId;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return bdtId;
     }
 }

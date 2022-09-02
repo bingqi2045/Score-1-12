@@ -131,28 +131,28 @@ public class GenerationContext implements InitializingBean {
     @Autowired
     private ReleaseRepository releaseRepository;
     // Prepared Datas
-    private Map<BigInteger, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<String, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
     private Map<BigInteger, BdtPriRestri> findBdtPriRestriMap;
     private Map<String, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
-    private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<String, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
     private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriMap;
     private Map<String, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
     private Map<String, Xbt> findXbtMap;
-    private Map<BigInteger, CodeList> findCodeListMap;
-    private Map<BigInteger, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
+    private Map<String, CodeList> findCodeListMap;
+    private Map<String, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
     private Map<BigInteger, ACC> findACCMap;
     private Map<BigInteger, BCC> findBCCMap;
     private Map<BigInteger, BCCP> findBCCPMap;
     private Map<BigInteger, List<BCC>> findBCCByFromAccIdMap;
-    private Map<BigInteger, BCCP> findBccpByBccpIdMap;
+    private Map<String, BCCP> findBccpByBccpIdMap;
     private Map<BigInteger, ASCC> findASCCMap;
     private Map<BigInteger, List<ASCC>> findASCCByFromAccIdMap;
     private Map<BigInteger, ASCCP> findASCCPMap;
-    private Map<BigInteger, DT> findDTMap;
+    private Map<String, DT> findDTMap;
     private Map<BigInteger, DTSC> findDtScMap;
-    private Map<BigInteger, AgencyIdList> findAgencyIdListMap;
-    private Map<BigInteger, AgencyIdListValue> findAgencyIdListValueMap;
-    private Map<BigInteger, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
+    private Map<String, AgencyIdList> findAgencyIdListMap;
+    private Map<String, AgencyIdListValue> findAgencyIdListValueMap;
+    private Map<String, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
     private Map<BigInteger, ABIE> findAbieMap;
     private Map<BigInteger, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
     private Map<BigInteger, List<BBIESC>>
@@ -352,8 +352,8 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toMap(e -> e.getCtxCategoryId(), Function.identity()));
     }
 
-    public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(BigInteger bdtId) {
-        return (bdtId != null && bdtId.longValue() > 0L) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
+    public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(String bdtId) {
+        return StringUtils.hasLength(bdtId) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
     }
 
     public BdtPriRestri findBdtPriRestri(BigInteger bdtPriRestriId) {
@@ -365,8 +365,8 @@ public class GenerationContext implements InitializingBean {
                 findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId) : null;
     }
 
-    public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(BigInteger bdtScId) {
-        return (bdtScId != null && bdtScId.longValue() > 0L) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
+    public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(String bdtScId) {
+        return StringUtils.hasLength(bdtScId) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
     }
 
     public BdtScPriRestri findBdtScPriRestri(BigInteger bdtScPriRestriId) {
@@ -382,11 +382,11 @@ public class GenerationContext implements InitializingBean {
         return (StringUtils.hasLength(xbtId)) ? findXbtMap.get(xbtId) : null;
     }
 
-    public CodeList findCodeList(BigInteger codeListId) {
-        return (codeListId != null && codeListId.longValue() > 0L) ? findCodeListMap.get(codeListId) : null;
+    public CodeList findCodeList(String codeListId) {
+        return StringUtils.hasLength(codeListId) ? findCodeListMap.get(codeListId) : null;
     }
 
-    public List<CodeListValue> findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(BigInteger codeListId) {
+    public List<CodeListValue> findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(String codeListId) {
         return findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap.containsKey(codeListId) ?
                 findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap.get(codeListId) :
                 Collections.emptyList();
@@ -412,23 +412,23 @@ public class GenerationContext implements InitializingBean {
         return (asccpManifestId != null && asccpManifestId.longValue() > 0L) ? findASCCPMap.get(asccpManifestId) : null;
     }
 
-    public DT findDT(BigInteger dtId) {
-        return (dtId != null && dtId.longValue() > 0L) ? findDTMap.get(dtId) : null;
+    public DT findDT(String dtId) {
+        return StringUtils.hasLength(dtId) ? findDTMap.get(dtId) : null;
     }
 
     public DTSC findDtSc(BigInteger dtScManifestId) {
         return (dtScManifestId != null && dtScManifestId.longValue() > 0L) ? findDtScMap.get(dtScManifestId) : null;
     }
 
-    public AgencyIdList findAgencyIdList(BigInteger agencyIdListId) {
-        return (agencyIdListId != null && agencyIdListId.longValue() > 0L) ? findAgencyIdListMap.get(agencyIdListId) : null;
+    public AgencyIdList findAgencyIdList(String agencyIdListId) {
+        return StringUtils.hasLength(agencyIdListId) ? findAgencyIdListMap.get(agencyIdListId) : null;
     }
 
-    public AgencyIdListValue findAgencyIdListValue(BigInteger agencyIdListValueId) {
-        return (agencyIdListValueId != null && agencyIdListValueId.longValue() > 0L) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
+    public AgencyIdListValue findAgencyIdListValue(String agencyIdListValueId) {
+        return StringUtils.hasLength(agencyIdListValueId) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
     }
 
-    public List<AgencyIdListValue> findAgencyIdListValueByOwnerListId(BigInteger ownerListId) {
+    public List<AgencyIdListValue> findAgencyIdListValueByOwnerListId(String ownerListId) {
         return findAgencyIdListValueByOwnerListIdMap.containsKey(ownerListId) ?
                 findAgencyIdListValueByOwnerListIdMap.get(ownerListId) :
                 Collections.emptyList();
