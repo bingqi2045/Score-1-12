@@ -138,7 +138,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         StringBuilder pathName = new StringBuilder();
         pathName.append("/");
 
-        BigInteger bizCtxId = option.getBizCtxIds().get(topLevelAsbiep.getTopLevelAsbiepId());
+        String bizCtxId = option.getBizCtxIds().get(topLevelAsbiep.getTopLevelAsbiepId());
         BizCtx bizCtx = generationContext.findBusinessContexts(topLevelAsbiep).stream()
                 .filter(e -> e.getBizCtxId().equals(bizCtxId))
                 .findAny().orElse(null);

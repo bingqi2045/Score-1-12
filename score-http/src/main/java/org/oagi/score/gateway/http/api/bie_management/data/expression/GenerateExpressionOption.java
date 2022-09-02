@@ -10,7 +10,7 @@ import java.util.Map;
 public class GenerateExpressionOption {
 
     private Map<BigInteger, String> filenames = Collections.emptyMap();
-    private Map<BigInteger, BigInteger> bizCtxIds = Collections.emptyMap();
+    private Map<BigInteger, String> bizCtxIds = Collections.emptyMap();
     private boolean bieDefinition = true;
     private boolean bieGuid;
     private boolean bieCctsMetaData;

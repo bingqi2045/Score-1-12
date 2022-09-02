@@ -8,7 +8,7 @@ import java.math.BigInteger;
 @Data
 public class ContextCategory implements Serializable {
 
-    private BigInteger ctxCategoryId = BigInteger.ZERO;
+    private String ctxCategoryId;
     private String guid;
     private String name;
     private String description;

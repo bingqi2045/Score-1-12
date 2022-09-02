@@ -9,14 +9,14 @@ import java.util.Date;
 @Data
 public class ContextScheme implements Serializable {
 
-    private BigInteger ctxSchemeId = BigInteger.ZERO;
+    private String ctxSchemeId;
     private String guid;
     private String schemeId;
     private String schemeName;
     private String description;
     private String schemeAgencyId;
     private String schemeVersionId;
-    private BigInteger ctxCategoryId = BigInteger.ZERO;
+    private String ctxCategoryId;
     private String createdBy;
     private String lastUpdatedBy;
     private Date creationTimestamp;

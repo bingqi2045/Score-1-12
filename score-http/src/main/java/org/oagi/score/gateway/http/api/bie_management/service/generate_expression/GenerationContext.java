@@ -166,8 +166,8 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, List<BbieBizterm>> findBbieBiztermByBbieIdMap;
 
     private Map<String, Release> findReleaseMap;
-    private Map<BigInteger, ContextScheme> findContextSchemeMap;
-    private Map<BigInteger, ContextCategory> findContextCategoryMap;
+    private Map<String, ContextScheme> findContextSchemeMap;
+    private Map<String, ContextCategory> findContextCategoryMap;
 
     @Data
     @AllArgsConstructor
@@ -246,7 +246,7 @@ public class GenerationContext implements InitializingBean {
 
         List<Xbt> xbtList = xbtRepository.findAll();
         findXbtMap = xbtList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
+                .filter(e -> e.getReleaseId().equals(releaseId))
                 .collect(Collectors.toMap(e -> e.getXbtId(), Function.identity()));
 
         List<CodeList> codeLists = codeListRepository.findAll();
@@ -285,7 +285,7 @@ public class GenerationContext implements InitializingBean {
 
         List<DT> dataTypeList = dataTypeRepository.findAll();
         findDTMap = dataTypeList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
+                .filter(e -> e.getReleaseId().equals(releaseId))
                 .collect(Collectors.toMap(e -> e.getDtId(), Function.identity()));
 
         List<DTSC> dtScList = dtScRepository.findAllByReleaseId(releaseId);
@@ -767,12 +767,12 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toList());
     }
 
-    public ContextScheme findContextScheme(BigInteger ctxSchemeId) {
-        return (ctxSchemeId != null && ctxSchemeId.longValue() > 0L) ? findContextSchemeMap.get(ctxSchemeId) : null;
+    public ContextScheme findContextScheme(String ctxSchemeId) {
+        return StringUtils.hasLength(ctxSchemeId) ? findContextSchemeMap.get(ctxSchemeId) : null;
     }
 
-    public ContextCategory findContextCategory(BigInteger ctxCategoryId) {
-        return (ctxCategoryId != null && ctxCategoryId.longValue() > 0L) ? findContextCategoryMap.get(ctxCategoryId) : null;
+    public ContextCategory findContextCategory(String ctxCategoryId) {
+        return StringUtils.hasLength(ctxCategoryId) ? findContextCategoryMap.get(ctxCategoryId) : null;
     }
 
     public AgencyIdList findAgencyIdList(ContextScheme contextScheme) {
