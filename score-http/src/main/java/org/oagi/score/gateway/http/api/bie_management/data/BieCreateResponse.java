@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class BieCreateResponse {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
 }

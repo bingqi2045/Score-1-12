@@ -143,11 +143,11 @@ public class BieEditService implements InitializingBean {
         return getTreeController(user, node.getTopLevelAsbiepId(), node.isDerived(), node.isLocked());
     }
 
-    private BieEditTreeController getTreeController(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    private BieEditTreeController getTreeController(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         return getTreeController(user, topLevelAsbiepId, false, false);
     }
 
-    private BieEditTreeController getTreeController(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    private BieEditTreeController getTreeController(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                                     boolean isDerived, boolean isLocked) {
         DefaultBieEditTreeController bieEditTreeController =
                 applicationContext.getBean(DefaultBieEditTreeController.class);
@@ -162,7 +162,7 @@ public class BieEditService implements InitializingBean {
     }
 
     @Transactional
-    public BieEditAbieNode getRootNode(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public BieEditAbieNode getRootNode(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         BieEditTreeController treeController = getTreeController(user, topLevelAsbiepId);
         return treeController.getRootNode(topLevelAsbiepId);
     }
@@ -190,14 +190,14 @@ public class BieEditService implements InitializingBean {
         return treeController.getDetail(node);
     }
 
-    public boolean hasReuseBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public boolean hasReuseBie(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         BieReadRepository bieReadRepository = scoreRepositoryFactory.createBieReadRepository();
         return !bieReadRepository.getReuseBieList(new GetReuseBieListRequest(sessionService.asScoreUser(user))
                         .withTopLevelAsbiepId(topLevelAsbiepId, true))
                         .getTopLevelAsbiepList().isEmpty();
     }
 
-    private void ensureReusingRelationships(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BieState state) {
+    private void ensureReusingRelationships(AuthenticatedPrincipal user, String topLevelAsbiepId, BieState state) {
         // Issue #1010
         BieReadRepository bieReadRepository = scoreRepositoryFactory.createBieReadRepository();
         StringBuilder failureMessageBody = new StringBuilder();
@@ -211,7 +211,7 @@ public class BieEditService implements InitializingBean {
             reusingTopLevelAsbiepList = reusingTopLevelAsbiepList.stream()
                     .filter(e -> e.getState().getLevel() > state.getLevel()).collect(Collectors.toList());
             if (!reusingTopLevelAsbiepList.isEmpty()) {
-                Record source = bieService.selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+                Record source = bieService.selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(topLevelAsbiepId);
                 failureMessageBody = failureMessageBody.append("\n---\n[**")
                         .append(source.get(ASCCP.PROPERTY_TERM))
                         .append("**](")
@@ -244,7 +244,7 @@ public class BieEditService implements InitializingBean {
                     .filter(e -> e.getState().getLevel() < state.getLevel()).collect(Collectors.toList());
 
             if (!reusedTopLevelAsbiepList.isEmpty()) {
-                Record source = bieService.selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+                Record source = bieService.selectAsccpPropertyTermAndAsbiepGuidByTopLevelAsbiepId(topLevelAsbiepId);
                 failureMessageBody = failureMessageBody.append("\n---\n[**")
                         .append(source.get(ASCCP.PROPERTY_TERM))
                         .append("**](")
@@ -284,7 +284,7 @@ public class BieEditService implements InitializingBean {
     }
 
     @Transactional
-    public void updateState(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BieState state) {
+    public void updateState(AuthenticatedPrincipal user, String topLevelAsbiepId, BieState state) {
         ensureReusingRelationships(user, topLevelAsbiepId, state);
 
         BieEditTreeController treeController = getTreeController(user, topLevelAsbiepId);
@@ -466,7 +466,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private AbieReadRepository abieReadRepository;
 
-    public AbieNode getAbieDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public AbieNode getAbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                   BigInteger accManifestId, String hashPath) {
         return abieReadRepository.getAbieNode(topLevelAsbiepId, accManifestId, hashPath);
     }
@@ -474,7 +474,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private AsbieReadRepository asbieReadRepository;
 
-    public AsbieNode getAsbieDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public AsbieNode getAsbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                     BigInteger asccManifestId, String hashPath) {
         return asbieReadRepository.getAsbieNode(topLevelAsbiepId, asccManifestId, hashPath);
     }
@@ -482,7 +482,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private BbieReadRepository bbieReadRepository;
 
-    public BbieNode getBbieDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public BbieNode getBbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                   BigInteger bccManifestId, String hashPath) {
         return bbieReadRepository.getBbieNode(topLevelAsbiepId, bccManifestId, hashPath);
     }
@@ -490,7 +490,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private AsbiepReadRepository asbiepReadRepository;
 
-    public AsbiepNode getAsbiepDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public AsbiepNode getAsbiepDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                       BigInteger asccpManifestId, String hashPath) {
         return asbiepReadRepository.getAsbiepNode(topLevelAsbiepId, asccpManifestId, hashPath);
     }
@@ -498,7 +498,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private BbiepReadRepository bbiepReadRepository;
 
-    public BbiepNode getBbiepDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public BbiepNode getBbiepDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                     BigInteger bccpManifestId, String hashPath) {
         return bbiepReadRepository.getBbiepNode(topLevelAsbiepId, bccpManifestId, hashPath);
     }
@@ -506,7 +506,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private BbieScReadRepository bbieScReadRepository;
 
-    public BbieScNode getBbieScDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public BbieScNode getBbieScDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                       BigInteger dtScManifestId, String hashPath) {
         return bbieScReadRepository.getBbieScNode(topLevelAsbiepId, dtScManifestId, hashPath);
     }
@@ -514,12 +514,12 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private BdtReadRepository bdtReadRepository;
 
-    public BdtNode getBdtDetail(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId,
+    public BdtNode getBdtDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
                                 BigInteger dtManifestId) {
         return bdtReadRepository.getBdtNode(topLevelAsbiepId, dtManifestId);
     }
 
-    public List<BieEditUsed> getBieUsedList(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public List<BieEditUsed> getBieUsedList(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         List<BieEditUsed> usedList = new ArrayList();
 
         asbieReadRepository.getBieRefList(topLevelAsbiepId).stream()
@@ -537,7 +537,7 @@ public class BieEditService implements InitializingBean {
         return usedList;
     }
 
-    public List<BieEditRef> getBieRefList(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public List<BieEditRef> getBieRefList(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         return asbieReadRepository.getBieRefList(topLevelAsbiepId);
     }
 
@@ -547,7 +547,7 @@ public class BieEditService implements InitializingBean {
     private BdtPriRestriReadRepository bdtPriRestriReadRepository;
 
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
         return bdtPriRestriReadRepository.availableBdtPriRestriListByBccpManifestId(bccpManifestId);
     }
 
@@ -555,7 +555,7 @@ public class BieEditService implements InitializingBean {
     private BdtScPriRestriReadRepository bdtScPriRestriReadRepository;
 
     public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
         return bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bdtScManifestId);
     }
 
@@ -563,7 +563,7 @@ public class BieEditService implements InitializingBean {
     private CodeListReadRepository codeListReadRepository;
 
     public List<AvailableCodeList> availableCodeListListByBccpManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
@@ -573,7 +573,7 @@ public class BieEditService implements InitializingBean {
     }
 
     public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
@@ -586,12 +586,12 @@ public class BieEditService implements InitializingBean {
     private AgencyIdListReadRepository agencyIdListReadRepository;
 
     public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
         return agencyIdListReadRepository.availableAgencyIdListByBccpManifestId(bccpManifestId);
     }
 
     public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
-            AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
         return agencyIdListReadRepository.availableAgencyIdListByBdtScManifestId(bdtScManifestId);
     }
 
@@ -602,7 +602,7 @@ public class BieEditService implements InitializingBean {
         AppUser requester = sessionService.getAppUserByUsername(user);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId()))
                 .fetchOne();
 
         AppUserRecord bieOwnerRecord = dslContext.selectFrom(APP_USER)
@@ -626,7 +626,7 @@ public class BieEditService implements InitializingBean {
                         ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepRecord.getTopLevelAsbiepId())
                 ))
                 .fetchOne();
-        ULong prevToAsbiepId = asbieRecord.getToAsbiepId();
+        String prevToAsbiepId = asbieRecord.getToAsbiepId();
 
         ULong ownerTopLevelAsbiepOfToAsbiep =
                 dslContext.select(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
@@ -639,10 +639,10 @@ public class BieEditService implements InitializingBean {
             throw new IllegalArgumentException("Target BIE already has reused BIE.");
         }
 
-        ULong reuseAsbiepId = dslContext.select(TOP_LEVEL_ASBIEP.ASBIEP_ID)
+        String reuseAsbiepId = dslContext.select(TOP_LEVEL_ASBIEP.ASBIEP_ID)
                 .from(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getReuseTopLevelAsbiepId())))
-                .fetchOneInto(ULong.class);
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getReuseTopLevelAsbiepId()))
+                .fetchOneInto(String.class);
 
         asbieRecord.setToAsbiepId(reuseAsbiepId);
         asbieRecord.setLastUpdatedBy(requester.getAppUserId());
@@ -658,7 +658,7 @@ public class BieEditService implements InitializingBean {
                 .execute();
 
         PurgeBieEvent event = new PurgeBieEvent(
-                asbieRecord.getOwnerTopLevelAsbiepId().toBigInteger());
+                asbieRecord.getOwnerTopLevelAsbiepId());
         /*
          * Message Publishing
          */
@@ -672,7 +672,7 @@ public class BieEditService implements InitializingBean {
      */
     @Transactional
     public void onPurgeBieEventReceived(PurgeBieEvent purgeBieEvent) {
-        ULong topLevelAsbiepId = ULong.valueOf(purgeBieEvent.getTopLevelAsbiepId());
+        String topLevelAsbiepId = purgeBieEvent.getTopLevelAsbiepId();
 
         while (true) {
             List<ULong> unreferencedAbieList = dslContext.select(ABIE.ABIE_ID)
@@ -693,7 +693,7 @@ public class BieEditService implements InitializingBean {
                 break;
             }
 
-            List<Record2<ULong, ULong>> unreferencedAsbieList = dslContext.select(ASBIE.ASBIE_ID, ASBIE.TO_ASBIEP_ID)
+            List<Record2<String, String>> unreferencedAsbieList = dslContext.select(ASBIE.ASBIE_ID, ASBIE.TO_ASBIEP_ID)
                     .from(ASBIE)
                     .where(and(
                             ASBIE.FROM_ABIE_ID.in(unreferencedAbieList),
@@ -718,7 +718,7 @@ public class BieEditService implements InitializingBean {
                         .execute();
             }
 
-            List<Record2<ULong, ULong>> unreferencedBbieList = dslContext.select(BBIE.BBIE_ID, BBIE.TO_BBIEP_ID)
+            List<Record2<String, String>> unreferencedBbieList = dslContext.select(BBIE.BBIE_ID, BBIE.TO_BBIEP_ID)
                     .from(BBIE)
                     .where(and(
                             BBIE.FROM_ABIE_ID.in(unreferencedAbieList),
@@ -763,7 +763,7 @@ public class BieEditService implements InitializingBean {
 
         AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
                 .where(and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
-                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId()))))
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId())))
                 .fetchOne();
 
         if (asbieRecord == null) {
@@ -806,7 +806,7 @@ public class BieEditService implements InitializingBean {
         AppUser requester = sessionService.getAppUserByUsername(user);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId()))
                 .fetchOne();
 
         if (!topLevelAsbiepRecord.getOwnerUserId().equals(requester.getAppUserId())) {

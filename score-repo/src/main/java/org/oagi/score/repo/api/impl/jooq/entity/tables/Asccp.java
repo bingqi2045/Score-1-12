@@ -94,7 +94,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.role_of_acc_id</code>. The ACC from which
      * this ASCCP is created (ASCCP applies role to the ACC).
      */
-    public final TableField<AsccpRecord, String> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.CHAR(36), this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
+    public final TableField<AsccpRecord, String> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
 
     /**
      * The column <code>oagi.asccp.den</code>. The dictionary entry name of the

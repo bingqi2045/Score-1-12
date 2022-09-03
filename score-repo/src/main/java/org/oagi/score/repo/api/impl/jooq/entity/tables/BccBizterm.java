@@ -70,7 +70,7 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
      * The column <code>oagi.bcc_bizterm.bcc_id</code>. An internal ID of the
      * associated BCC
      */
-    public final TableField<BccBiztermRecord, String> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.CHAR(36), this, "An internal ID of the associated BCC");
+    public final TableField<BccBiztermRecord, String> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated BCC");
 
     /**
      * The column <code>oagi.bcc_bizterm.created_by</code>. A foreign key

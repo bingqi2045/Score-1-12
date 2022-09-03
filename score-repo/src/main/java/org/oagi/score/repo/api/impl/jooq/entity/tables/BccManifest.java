@@ -66,7 +66,7 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     /**
      * The column <code>oagi.bcc_manifest.bcc_id</code>.
      */
-    public final TableField<BccManifestRecord, String> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<BccManifestRecord, String> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.bcc_manifest.seq_key_id</code>.

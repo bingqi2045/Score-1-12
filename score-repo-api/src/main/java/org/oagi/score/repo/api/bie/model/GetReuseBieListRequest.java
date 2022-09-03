@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class GetReuseBieListRequest extends Request {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private boolean reusedBie;
 
@@ -15,16 +15,16 @@ public class GetReuseBieListRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
-    public void setTopLevelAsbiepId(BigInteger topLevelAsbiepId, boolean reusedBie) {
+    public void setTopLevelAsbiepId(String topLevelAsbiepId, boolean reusedBie) {
         this.topLevelAsbiepId = topLevelAsbiepId;
         this.reusedBie = reusedBie;
     }
 
-    public GetReuseBieListRequest withTopLevelAsbiepId(BigInteger topLevelAsbiepId, boolean reusedBie) {
+    public GetReuseBieListRequest withTopLevelAsbiepId(String topLevelAsbiepId, boolean reusedBie) {
         setTopLevelAsbiepId(topLevelAsbiepId, reusedBie);
         return this;
     }

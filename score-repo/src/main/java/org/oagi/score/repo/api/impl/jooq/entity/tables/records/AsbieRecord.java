@@ -21,24 +21,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
  * ASBIEP. It is a contextualization of an ASCC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
+public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database
-     * key of an ASBIE.
+     * Setter for <code>oagi.asbie.asbie_id</code>. Primary, internal database
+     * key.
      */
-    public void setAsbieId(ULong value) {
+    public void setAsbieId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie.asbie_id</code>. A internal, primary database
-     * key of an ASBIE.
+     * Getter for <code>oagi.asbie.asbie_id</code>. Primary, internal database
+     * key.
      */
-    public ULong getAsbieId() {
-        return (ULong) get(0);
+    public String getAsbieId() {
+        return (String) get(0);
     }
 
     /**
@@ -114,7 +114,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an
      * SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
-    public void setFromAbieId(ULong value) {
+    public void setFromAbieId(String value) {
         set(5, value);
     }
 
@@ -125,8 +125,8 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an
      * SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
-    public ULong getFromAbieId() {
-        return (ULong) get(5);
+    public String getFromAbieId() {
+        return (String) get(5);
     }
 
     /**
@@ -136,7 +136,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is
      * different after joining ASBIE and ASBIEP tables
      */
-    public void setToAsbiepId(ULong value) {
+    public void setToAsbiepId(String value) {
         set(6, value);
     }
 
@@ -147,8 +147,8 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is
      * different after joining ASBIE and ASBIEP tables
      */
-    public ULong getToAsbiepId() {
-        return (ULong) get(6);
+    public String getToAsbiepId() {
+        return (String) get(6);
     }
 
     /**
@@ -365,7 +365,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * Setter for <code>oagi.asbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAsbiepId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(String value) {
         set(18, value);
     }
 
@@ -373,8 +373,8 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * Getter for <code>oagi.asbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAsbiepId() {
-        return (ULong) get(18);
+    public String getOwnerTopLevelAsbiepId() {
+        return (String) get(18);
     }
 
     // -------------------------------------------------------------------------
@@ -382,7 +382,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -391,17 +391,17 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> valuesRow() {
+    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> valuesRow() {
         return (Row19) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Asbie.ASBIE.ASBIE_ID;
     }
 
@@ -426,12 +426,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return Asbie.ASBIE.FROM_ABIE_ID;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Asbie.ASBIE.TO_ASBIEP_ID;
     }
 
@@ -491,12 +491,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<String> field19() {
         return Asbie.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAsbieId();
     }
 
@@ -521,12 +521,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getFromAbieId();
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getToAsbiepId();
     }
 
@@ -586,12 +586,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong component19() {
+    public String component19() {
         return getOwnerTopLevelAsbiepId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAsbieId();
     }
 
@@ -616,12 +616,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getFromAbieId();
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getToAsbiepId();
     }
 
@@ -681,12 +681,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong value19() {
+    public String value19() {
         return getOwnerTopLevelAsbiepId();
     }
 
     @Override
-    public AsbieRecord value1(ULong value) {
+    public AsbieRecord value1(String value) {
         setAsbieId(value);
         return this;
     }
@@ -716,13 +716,13 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord value6(ULong value) {
+    public AsbieRecord value6(String value) {
         setFromAbieId(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value7(ULong value) {
+    public AsbieRecord value7(String value) {
         setToAsbiepId(value);
         return this;
     }
@@ -794,13 +794,13 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord value19(ULong value) {
+    public AsbieRecord value19(String value) {
         setOwnerTopLevelAsbiepId(value);
         return this;
     }
 
     @Override
-    public AsbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, ULong value7, String value8, Integer value9, Integer value10, Byte value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, ULong value19) {
+    public AsbieRecord values(String value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, Integer value9, Integer value10, Byte value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, String value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -837,7 +837,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
+    public AsbieRecord(String asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, String fromAbieId, String toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
         super(Asbie.ASBIE);
 
         setAsbieId(asbieId);

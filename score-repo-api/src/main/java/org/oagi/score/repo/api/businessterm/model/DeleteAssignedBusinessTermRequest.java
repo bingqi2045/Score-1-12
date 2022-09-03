@@ -20,14 +20,14 @@ public class DeleteAssignedBusinessTermRequest extends Request {
         return assignedBtList;
     }
 
-    public void setBusinessTermId(BieToAssign assignedBtId) {
-        if (assignedBtId != null) {
-            this.assignedBtList = Arrays.asList(assignedBtId);
+    public void setBusinessTermId(BieToAssign assignedBizTermId) {
+        if (assignedBizTermId != null) {
+            this.assignedBtList = Arrays.asList(assignedBizTermId);
         }
     }
 
-    public DeleteAssignedBusinessTermRequest withAssignedBtId(BieToAssign assignedBtId) {
-        this.setBusinessTermId(assignedBtId);
+    public DeleteAssignedBusinessTermRequest withassignedBizTermId(BieToAssign assignedBizTermId) {
+        this.setBusinessTermId(assignedBizTermId);
         return this;
     }
 
@@ -37,8 +37,8 @@ public class DeleteAssignedBusinessTermRequest extends Request {
         }
     }
 
-    public DeleteAssignedBusinessTermRequest withAssignedBtList(List<BieToAssign> assignedBtId) {
-        this.setAssignedBtList(assignedBtId);
+    public DeleteAssignedBusinessTermRequest withAssignedBtList(List<BieToAssign> assignedBizTermId) {
+        this.setAssignedBtList(assignedBizTermId);
         return this;
     }
 

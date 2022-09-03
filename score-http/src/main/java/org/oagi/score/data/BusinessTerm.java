@@ -9,7 +9,7 @@ import java.util.Date;
 public class BusinessTerm {
 
     private BigInteger bieBiztermId = BigInteger.ZERO;
-    private BigInteger bieId = BigInteger.ZERO;
+    private String bieId;
     private String primaryIndicator;
     private String typeCode;
     private String businessTerm;

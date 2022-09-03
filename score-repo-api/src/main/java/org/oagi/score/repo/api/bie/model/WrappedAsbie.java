@@ -10,7 +10,7 @@ public class WrappedAsbie {
 
     private WrappedAsbiep toAsbiep;
 
-    private BigInteger refTopLevelAsbiepId;
+    private String refTopLevelAsbiepId;
 
     public Abie getFromAbie() {
         return fromAbie;
@@ -36,11 +36,11 @@ public class WrappedAsbie {
         this.toAsbiep = toAsbiep;
     }
 
-    public BigInteger getRefTopLevelAsbiepId() {
+    public String getRefTopLevelAsbiepId() {
         return refTopLevelAsbiepId;
     }
 
-    public void setRefTopLevelAsbiepId(BigInteger refTopLevelAsbiepId) {
+    public void setRefTopLevelAsbiepId(String refTopLevelAsbiepId) {
         this.refTopLevelAsbiepId = refTopLevelAsbiepId;
     }
 }

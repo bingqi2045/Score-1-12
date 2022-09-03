@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 public class BbieSc extends Auditable {
 
-    private BigInteger bbieScId;
+    private String bbieScId;
 
     private String guid;
 
@@ -16,7 +16,7 @@ public class BbieSc extends Auditable {
 
     private String hashPath;
 
-    private BigInteger bbieId;
+    private String bbieId;
 
     private BigInteger dtScPriRestriId;
 
@@ -44,13 +44,13 @@ public class BbieSc extends Auditable {
 
     private boolean used;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getBbieScId() {
+    public String getBbieScId() {
         return bbieScId;
     }
 
-    public void setBbieScId(BigInteger bbieScId) {
+    public void setBbieScId(String bbieScId) {
         this.bbieScId = bbieScId;
     }
 
@@ -86,11 +86,11 @@ public class BbieSc extends Auditable {
         this.hashPath = hashPath;
     }
 
-    public BigInteger getBbieId() {
+    public String getBbieId() {
         return bbieId;
     }
 
-    public void setBbieId(BigInteger bbieId) {
+    public void setBbieId(String bbieId) {
         this.bbieId = bbieId;
     }
 
@@ -198,11 +198,11 @@ public class BbieSc extends Auditable {
         this.used = used;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class BBIEP implements BIE {
 
-    private BigInteger bbiepId = BigInteger.ZERO;
+    private String bbiepId;
     private String guid;
     private BigInteger basedBccpManifestId = BigInteger.ZERO;
     private String definition;
@@ -18,5 +18,5 @@ public class BBIEP implements BIE {
     private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

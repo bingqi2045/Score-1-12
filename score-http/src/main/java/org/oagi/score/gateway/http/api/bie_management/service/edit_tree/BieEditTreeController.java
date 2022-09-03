@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface BieEditTreeController {
 
-    BieEditAbieNode getRootNode(BigInteger topLevelAsbiepId);
+    BieEditAbieNode getRootNode(String topLevelAsbiepId);
 
     List<BieEditNode> getDescendants(AuthenticatedPrincipal user, BieEditNode node, boolean hideUnused);
 

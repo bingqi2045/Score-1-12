@@ -26,7 +26,7 @@ public class TopLevelAsbiepWriteRepository {
         String requesterId = user.getAppUserId();
 
         TopLevelAsbiepRecord record = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId()))
                 .fetchOptional().orElse(null);
 
         if (record == null) {

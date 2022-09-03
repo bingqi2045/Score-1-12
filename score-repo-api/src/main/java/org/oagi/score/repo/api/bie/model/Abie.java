@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Abie implements Serializable {
 
-    private BigInteger abieId;
+    private String abieId;
 
     private String guid;
 
@@ -22,13 +22,13 @@ public class Abie implements Serializable {
 
     private String bizTerm;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getAbieId() {
+    public String getAbieId() {
         return abieId;
     }
 
-    public void setAbieId(BigInteger abieId) {
+    public void setAbieId(String abieId) {
         this.abieId = abieId;
     }
 
@@ -88,11 +88,11 @@ public class Abie implements Serializable {
         this.bizTerm = bizTerm;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 

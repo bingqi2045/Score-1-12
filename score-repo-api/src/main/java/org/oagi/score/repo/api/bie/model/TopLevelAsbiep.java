@@ -8,11 +8,11 @@ import java.math.BigInteger;
 
 public class TopLevelAsbiep extends Auditable implements Serializable {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private ScoreUser owner;
 
-    private BigInteger asbiepId;
+    private String asbiepId;
 
     private String releaseId;
 
@@ -26,11 +26,11 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
 
     private String version;
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
-    public void setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public void setTopLevelAsbiepId(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
     }
 
@@ -42,11 +42,11 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
         this.owner = owner;
     }
 
-    public BigInteger getAsbiepId() {
+    public String getAsbiepId() {
         return asbiepId;
     }
 
-    public void setAsbiepId(BigInteger asbiepId) {
+    public void setAsbiepId(String asbiepId) {
         this.asbiepId = asbiepId;
     }
 

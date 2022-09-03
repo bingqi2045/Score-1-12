@@ -8,10 +8,10 @@ import java.util.Date;
 @Data
 public class ASBIE implements BIE {
 
-    private BigInteger asbieId = BigInteger.ZERO;
+    private String asbieId;
     private String guid;
-    private BigInteger fromAbieId = BigInteger.ZERO;
-    private BigInteger toAsbiepId = BigInteger.ZERO;
+    private String fromAbieId;
+    private String toAsbiepId;
     private BigInteger basedAsccManifestId = BigInteger.ZERO;
     private String definition;
     private int cardinalityMin;
@@ -24,5 +24,5 @@ public class ASBIE implements BIE {
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class BieEditNode {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String releaseId;
 
     private String type;

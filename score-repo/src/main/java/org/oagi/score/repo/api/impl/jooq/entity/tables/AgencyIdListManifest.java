@@ -67,7 +67,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     /**
      * The column <code>oagi.agency_id_list_manifest.agency_id_list_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column

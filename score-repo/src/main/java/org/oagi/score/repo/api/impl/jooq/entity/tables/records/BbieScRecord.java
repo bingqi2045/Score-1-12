@@ -24,19 +24,19 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary
-     * database key of a BBIE_SC.
+     * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. Primary, internal
+     * database key.
      */
-    public void setBbieScId(ULong value) {
+    public void setBbieScId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary
-     * database key of a BBIE_SC.
+     * Getter for <code>oagi.bbie_sc.bbie_sc_id</code>. Primary, internal
+     * database key.
      */
-    public ULong getBbieScId() {
-        return (ULong) get(0);
+    public String getBbieScId() {
+        return (String) get(0);
     }
 
     /**
@@ -109,7 +109,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Setter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC
      * applies to.
      */
-    public void setBbieId(ULong value) {
+    public void setBbieId(String value) {
         set(5, value);
     }
 
@@ -117,8 +117,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Getter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC
      * applies to.
      */
-    public ULong getBbieId() {
-        return (ULong) get(5);
+    public String getBbieId() {
+        return (String) get(5);
     }
 
     /**
@@ -501,7 +501,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Setter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAsbiepId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(String value) {
         set(25, value);
     }
 
@@ -509,8 +509,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Getter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAsbiepId() {
-        return (ULong) get(25);
+    public String getOwnerTopLevelAsbiepId() {
+        return (String) get(25);
     }
 
     // -------------------------------------------------------------------------
@@ -518,7 +518,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -536,7 +536,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
+    public BbieScRecord(String bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, String bbieId, ULong dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         setBbieScId(bbieScId);

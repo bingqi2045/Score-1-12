@@ -81,7 +81,7 @@ public class Bcc extends TableImpl<BccRecord> {
      * Note that for the BCC history records, this column always points to the
      * BCCP_ID of the current record of a BCCP.
      */
-    public final TableField<BccRecord, String> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.CHAR(36), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.");
+    public final TableField<BccRecord, String> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.");
 
     /**
      * The column <code>oagi.bcc.from_acc_id</code>. FROM_ACC_ID is a foreign
@@ -91,7 +91,7 @@ public class Bcc extends TableImpl<BccRecord> {
      * Note that for the BCC history records, this column always points to the
      * ACC_ID of the current record of an ACC.
      */
-    public final TableField<BccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.");
+    public final TableField<BccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.");
 
     /**
      * The column <code>oagi.bcc.seq_key</code>. @deprecated since 2.0.0. This

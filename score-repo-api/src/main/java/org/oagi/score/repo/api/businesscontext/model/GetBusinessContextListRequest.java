@@ -11,7 +11,7 @@ import java.util.Collections;
 public class GetBusinessContextListRequest extends PaginationRequest<BusinessContext> {
 
     private Collection<String> businessContextIdList;
-    private Collection<BigInteger> topLevelAsbiepIdList;
+    private Collection<String> topLevelAsbiepIdList;
     private String name;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
@@ -34,15 +34,15 @@ public class GetBusinessContextListRequest extends PaginationRequest<BusinessCon
         return this;
     }
 
-    public Collection<BigInteger> getTopLevelAsbiepIdList() {
+    public Collection<String> getTopLevelAsbiepIdList() {
         return (topLevelAsbiepIdList == null) ? Collections.emptyList() : topLevelAsbiepIdList;
     }
 
-    public void setTopLevelAsbiepIdList(Collection<BigInteger> topLevelAsbiepIdList) {
+    public void setTopLevelAsbiepIdList(Collection<String> topLevelAsbiepIdList) {
         this.topLevelAsbiepIdList = topLevelAsbiepIdList;
     }
 
-    public GetBusinessContextListRequest withTopLevelAsbiepIdList(Collection<BigInteger> topLevelAsbiepIdList) {
+    public GetBusinessContextListRequest withTopLevelAsbiepIdList(Collection<String> topLevelAsbiepIdList) {
         this.setTopLevelAsbiepIdList(topLevelAsbiepIdList);
         return this;
     }

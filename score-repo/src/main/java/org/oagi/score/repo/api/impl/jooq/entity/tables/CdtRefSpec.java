@@ -60,7 +60,7 @@ public class CdtRefSpec extends TableImpl<CdtRefSpecRecord> {
     /**
      * The column <code>oagi.cdt_ref_spec.cdt_id</code>.
      */
-    public final TableField<CdtRefSpecRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<CdtRefSpecRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.cdt_ref_spec.ref_spec_id</code>.

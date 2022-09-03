@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class Bbie implements BieAssociation {
 
-    private BigInteger bbieId;
+    private String bbieId;
 
     private String guid;
 
@@ -14,9 +14,9 @@ public class Bbie implements BieAssociation {
 
     private String hashPath;
 
-    private BigInteger fromAbieId;
+    private String fromAbieId;
 
-    private BigInteger toBbiepId;
+    private String toBbiepId;
 
     private BigInteger bdtPriRestriId;
 
@@ -42,13 +42,13 @@ public class Bbie implements BieAssociation {
 
     private boolean used;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getBbieId() {
+    public String getBbieId() {
         return bbieId;
     }
 
-    public void setBbieId(BigInteger bbieId) {
+    public void setBbieId(String bbieId) {
         this.bbieId = bbieId;
     }
 
@@ -84,19 +84,19 @@ public class Bbie implements BieAssociation {
         this.hashPath = hashPath;
     }
 
-    public BigInteger getFromAbieId() {
+    public String getFromAbieId() {
         return fromAbieId;
     }
 
-    public void setFromAbieId(BigInteger fromAbieId) {
+    public void setFromAbieId(String fromAbieId) {
         this.fromAbieId = fromAbieId;
     }
 
-    public BigInteger getToBbiepId() {
+    public String getToBbiepId() {
         return toBbiepId;
     }
 
-    public void setToBbiepId(BigInteger toBbiepId) {
+    public void setToBbiepId(String toBbiepId) {
         this.toBbiepId = toBbiepId;
     }
 
@@ -196,11 +196,11 @@ public class Bbie implements BieAssociation {
         this.used = used;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 

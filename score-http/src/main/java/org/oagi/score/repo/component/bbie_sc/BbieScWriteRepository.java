@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -42,7 +43,7 @@ public class BbieScWriteRepository {
 
     public BbieScNode.BbieSc upsertBbieSc(UpsertBbieScRequest request) {
         BbieScNode.BbieSc bbieSc = request.getBbieSc();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = bbieSc.getHashPath();
         BbieScRecord bbieScRecord = dslContext.selectFrom(BBIE_SC)
                 .where(and(
@@ -56,6 +57,7 @@ public class BbieScWriteRepository {
 
         if (bbieScRecord == null) {
             bbieScRecord = new BbieScRecord();
+            bbieScRecord.setBbieScId(UUID.randomUUID().toString());
             bbieScRecord.setGuid(ScoreGuid.randomGuid());
             bbieScRecord.setBasedDtScManifestId(ULong.valueOf(bbieSc.getBasedDtScManifestId()));
             bbieScRecord.setPath(bbieSc.getPath());
@@ -66,7 +68,7 @@ public class BbieScWriteRepository {
                             BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIE.HASH_PATH.eq(bbieSc.getBbieHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
 
             if (bbieSc.getUsed() != null){
                 bbieScRecord.setIsUsed((byte) (bbieSc.getUsed() ? 1 : 0));
@@ -161,12 +163,9 @@ public class BbieScWriteRepository {
             bbieScRecord.setCreationTimestamp(request.getLocalDateTime());
             bbieScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbieScRecord.setBbieScId(
-                    dslContext.insertInto(BBIE_SC)
-                            .set(bbieScRecord)
-                            .returning(BBIE_SC.BBIE_SC_ID)
-                            .fetchOne().getBbieScId()
-            );
+            dslContext.insertInto(BBIE_SC)
+                    .set(bbieScRecord)
+                    .execute();
         } else {
             if (bbieSc.getUsed() != null) {
                 bbieScRecord.setIsUsed((byte) (bbieSc.getUsed() ? 1 : 0));

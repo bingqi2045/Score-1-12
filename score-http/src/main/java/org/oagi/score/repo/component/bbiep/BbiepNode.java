@@ -41,7 +41,7 @@ public class BbiepNode {
         private String hashPath;
         private BigInteger basedBccpManifestId;
 
-        private BigInteger bbiepId;
+        private String bbiepId;
         private String guid;
         private String remark;
         private String bizTerm;

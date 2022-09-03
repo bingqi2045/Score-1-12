@@ -8,9 +8,9 @@ import java.math.BigInteger;
 @Data
 public class BieEditBbie implements Cardinality {
 
-    private BigInteger bbieId;
-    private BigInteger fromAbieId;
-    private BigInteger toBbiepId;
+    private String bbieId;
+    private String fromAbieId;
+    private String toBbiepId;
     private BigInteger basedBccManifestId;
     private boolean used;
 

@@ -6,11 +6,11 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
-public class BbieBizterm {
+public class BbieBizTerm {
 
     private BigInteger bbieBiztermId = BigInteger.ZERO;
     private BigInteger bccBiztermId = BigInteger.ZERO;
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieId;
     private String primaryIndicator;
     private String typeCode;
     private BigInteger businessTermId = BigInteger.ZERO;

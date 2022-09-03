@@ -148,9 +148,9 @@ public class BieUpliftingService {
         private String currentSourcePath;
         private String currentTargetPath;
 
-        private Map<BigInteger, List<Association>> abieSourceAssociationsMap = new HashMap();
-        private Map<BigInteger, List<Association>> abieTargetAssociationsMap = new HashMap();
-        private Map<BigInteger, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
+        private Map<String, List<Association>> abieSourceAssociationsMap = new HashMap();
+        private Map<String, List<Association>> abieTargetAssociationsMap = new HashMap();
+        private Map<String, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
 
         BieDiff(BieDocument sourceBieDocument, CcDocument targetCcDocument,
                 BigInteger targetAsccpManifestId) {
@@ -449,9 +449,9 @@ public class BieUpliftingService {
         private String currentSourcePath;
         private String currentTargetPath;
 
-        private Map<BigInteger, List<Association>> abieSourceAssociationsMap = new HashMap();
-        private Map<BigInteger, List<Association>> abieTargetAssociationsMap = new HashMap();
-        private Map<BigInteger, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
+        private Map<String, List<Association>> abieSourceAssociationsMap = new HashMap();
+        private Map<String, List<Association>> abieTargetAssociationsMap = new HashMap();
+        private Map<String, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
 
         private List<CodeList> sourceCodeListList;
         private List<CodeList> targetCodeListList;
@@ -465,15 +465,15 @@ public class BieUpliftingService {
         private Map<BigInteger, BdtScPriRestri> sourceBdtScPriRestriMap = new HashMap();
         private Map<String, List<BdtScPriRestri>> targetBdtScPriRestriBdtScIdMap = new HashMap();
 
-        private Map<BigInteger, WrappedAsbiep> asbiepMap;
-        private Map<BigInteger, WrappedAsbiep> roleOfAbieToAsbiepMap;
-        private Map<BigInteger, Abie> abieIdToAbieMap;
-        private Map<BigInteger, List<WrappedAsbie>> toAsbiepToAsbieMap;
-        private Map<BigInteger, WrappedBbie> toBbiepToBbieMap;
-        private Map<BigInteger, Bbie> bbieMap;
+        private Map<String, WrappedAsbiep> asbiepMap;
+        private Map<String, WrappedAsbiep> roleOfAbieToAsbiepMap;
+        private Map<String, Abie> abieIdToAbieMap;
+        private Map<String, List<WrappedAsbie>> toAsbiepToAsbieMap;
+        private Map<String, WrappedBbie> toBbiepToBbieMap;
+        private Map<String, Bbie> bbieMap;
         private List<WrappedBbieSc> bbieScList;
 
-        private BigInteger targetTopLevelAsbiepId;
+        private String targetTopLevelAsbiepId;
 
         BieUpliftingHandler(ScoreUser requester, List<String> bizCtxIds,
                             BieUpliftingCustomMappingTable customMappingTable,
@@ -515,7 +515,7 @@ public class BieUpliftingService {
             this.targetAgencyIdListList = targetAgencyIdListList;
         }
 
-        public BigInteger uplift() {
+        public String uplift() {
             this.sourceBieDocument.accept(this);
             return targetTopLevelAsbiepId;
         }
@@ -1368,7 +1368,7 @@ public class BieUpliftingService {
                         sourceBdtPriRestriMap, targetBdtPriRestriBdtIdMap,
                         sourceBdtScPriRestriMap, targetBdtScPriRestriBdtScIdMap,
                         sourceAgencyIdListList, targetAgencyIdListList);
-        BigInteger targetTopLevelAsbiepId = upliftingHandler.uplift();
+        String targetTopLevelAsbiepId = upliftingHandler.uplift();
 
         UpliftBieResponse response = new UpliftBieResponse();
         response.setTopLevelAsbiepId(targetTopLevelAsbiepId);

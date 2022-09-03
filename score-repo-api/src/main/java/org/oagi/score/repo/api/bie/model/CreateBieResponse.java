@@ -6,13 +6,13 @@ import java.math.BigInteger;
 
 public class CreateBieResponse extends Response {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
-    public CreateBieResponse(BigInteger topLevelAsbiepId) {
+    public CreateBieResponse(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 

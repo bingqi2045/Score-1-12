@@ -8,6 +8,6 @@ import java.math.BigInteger;
 public class CreateBieFromExistingBieRequest {
 
     private String asbieHashPath;
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private BigInteger asccpManifestId;
 }

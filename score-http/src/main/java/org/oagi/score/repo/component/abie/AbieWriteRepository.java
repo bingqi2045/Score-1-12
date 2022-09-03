@@ -9,6 +9,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AbieRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ABIE;
@@ -27,7 +29,7 @@ public class AbieWriteRepository {
 
     public AbieNode.Abie upsertAbie(UpsertAbieRequest request) {
         AbieNode.Abie abie = request.getAbie();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = abie.getHashPath();
         AbieRecord abieRecord = dslContext.selectFrom(ABIE)
                 .where(and(
@@ -41,6 +43,7 @@ public class AbieWriteRepository {
 
         if (abieRecord == null) {
             abieRecord = new AbieRecord();
+            abieRecord.setAbieId(UUID.randomUUID().toString());
             abieRecord.setGuid(ScoreGuid.randomGuid());
             abieRecord.setBasedAccManifestId(ULong.valueOf(abie.getBasedAccManifestId()));
             abieRecord.setPath(abie.getPath());
@@ -57,12 +60,9 @@ public class AbieWriteRepository {
             abieRecord.setCreationTimestamp(request.getLocalDateTime());
             abieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            abieRecord.setAbieId(
-                    dslContext.insertInto(ABIE)
-                            .set(abieRecord)
-                            .returning(ABIE.ABIE_ID)
-                            .fetchOne().getAbieId()
-            );
+            dslContext.insertInto(ABIE)
+                    .set(abieRecord)
+                    .execute();
         } else {
             if (abie.getDefinition() != null) {
                 abieRecord.setDefinition(emptyToNull(abie.getDefinition()));

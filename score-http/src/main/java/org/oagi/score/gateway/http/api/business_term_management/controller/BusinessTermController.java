@@ -63,7 +63,7 @@ public class BusinessTermController {
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
             @RequestParam(name = "pageSize") int pageSize
-            ) {
+    ) {
 
         GetBusinessTermListRequest request = new GetBusinessTermListRequest(
                 authenticationService.asScoreUser(requester));
@@ -85,11 +85,10 @@ public class BusinessTermController {
             calendar.add(Calendar.DATE, 1);
             request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
         }
-        if(searchByCC && byAssignedBieIds != null && byAssignedBieTypes != null) {
-            List<BigInteger> byAssignedBieIdList = Arrays.stream(byAssignedBieIds.split(","))
-                    .map(id -> new BigInteger(id)).collect(Collectors.toList());
+        if (searchByCC && byAssignedBieIds != null && byAssignedBieTypes != null) {
+            List<String> byAssignedBieIdList = Arrays.stream(byAssignedBieIds.split(",")).collect(Collectors.toList());
             List<String> byAssignedBieTypeList = Arrays.asList(byAssignedBieTypes.split(","));
-            if(byAssignedBieIdList.size() == byAssignedBieTypeList.size()) {
+            if (byAssignedBieIdList.size() == byAssignedBieTypeList.size()) {
                 List<BieToAssign> byAssignedBies = IntStream
                         .range(0, byAssignedBieIdList.size())
                         .mapToObj(index -> new BieToAssign(byAssignedBieIdList.get(index), byAssignedBieTypeList.get(index)))
@@ -137,7 +136,7 @@ public class BusinessTermController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<AssignedBusinessTermListRecord> getAssignedBusinessTermList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @RequestParam(name = "bieId", required = false) Optional<BigInteger> bieId,
+            @RequestParam(name = "bieId", required = false) Optional<String> bieId,
             @RequestParam(name = "bieDen", required = false) String bieDen,
             @RequestParam(name = "bieTypes", required = false) String bieTypes,
             @RequestParam(name = "businessTerm", required = false) String term,
@@ -288,7 +287,7 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessTermId) throws ScoreDataAccessException  {
+            @PathVariable("id") BigInteger businessTermId) throws ScoreDataAccessException {
 
         DeleteBusinessTermRequest request =
                 new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
@@ -377,10 +376,10 @@ public class BusinessTermController {
     public AssignedBusinessTerm getAssignedBusinessTerm(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @PathVariable("type") String bieType,
-            @PathVariable("id") BigInteger assignedBtId) {
+            @PathVariable("id") BigInteger assignedBizTermId) {
         GetAssignedBusinessTermRequest request = new GetAssignedBusinessTermRequest(
                 authenticationService.asScoreUser(requester))
-                .withAssignedBtId(assignedBtId)
+                .withAssignedBizTermId(assignedBizTermId)
                 .withBieType(bieType);
 
         return businessTermService.getBusinessTermAssignment(request);
@@ -389,13 +388,13 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.POST)
     public ResponseEntity updateAssignment(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger assignedBtId,
+            @PathVariable("id") BigInteger assignedBizTermId,
             @PathVariable("type") String bieType,
             @RequestBody AssignedBusinessTerm assignedBusinessTerm) {
 
         UpdateBusinessTermAssignmentRequest request =
                 new UpdateBusinessTermAssignmentRequest(authenticationService.asScoreUser(requester))
-                        .withAssignedBtId(assignedBtId);
+                        .withAssignedBizTermId(assignedBizTermId);
         request.setBieType(bieType);
         request.setBieId(assignedBusinessTerm.getBieId());
         request.setTypeCode(assignedBusinessTerm.getTypeCode());
@@ -404,7 +403,7 @@ public class BusinessTermController {
         UpdateBusinessTermAssignmentResponse response =
                 businessTermService.updateBusinessTermAssignment(request);
 
-        if (response.getAssignedBtId() != null) {
+        if (response.getAssignedBizTermId() != null) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.badRequest().build();
@@ -414,10 +413,10 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAssignment(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger assignedBtId,
+            @PathVariable("id") String assignedBizTermId,
             @PathVariable("type") String bieType) {
 
-        BieToAssign assToDelete = new BieToAssign(assignedBtId, bieType);
+        BieToAssign assToDelete = new BieToAssign(assignedBizTermId, bieType);
         DeleteAssignedBusinessTermRequest request =
                 new DeleteAssignedBusinessTermRequest(authenticationService.asScoreUser(requester))
                         .withAssignedBtList(Arrays.asList(assToDelete));

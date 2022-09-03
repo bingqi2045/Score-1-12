@@ -73,35 +73,35 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
      * to the ABIE table indicating the ABIE, to which the usage rule is
      * applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ABIE_ID = createField(DSL.name("target_abie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, String> TARGET_ABIE_ID = createField(DSL.name("target_abie_id"), SQLDataType.CHAR(36), this, "Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_asbie_id</code>. Foreign key
      * to the ASBIE table indicating the ASBIE, to which the usage rule is
      * applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIE_ID = createField(DSL.name("target_asbie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, String> TARGET_ASBIE_ID = createField(DSL.name("target_asbie_id"), SQLDataType.CHAR(36), this, "Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_asbiep_id</code>. Foreign key
      * to the ASBIEP table indicating the ASBIEP, to which the usage rule is
      * applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIEP_ID = createField(DSL.name("target_asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, String> TARGET_ASBIEP_ID = createField(DSL.name("target_asbiep_id"), SQLDataType.CHAR(36), this, "Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_bbie_id</code>. Foreign key
      * to the BBIE table indicating the BBIE, to which the usage rule is
      * applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIE_ID = createField(DSL.name("target_bbie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, String> TARGET_BBIE_ID = createField(DSL.name("target_bbie_id"), SQLDataType.CHAR(36), this, "Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_bbiep_id</code>. Foreign key
      * to the BBIEP table indicating the ABIEP, to which the usage rule is
      * applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIEP_ID = createField(DSL.name("target_bbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, String> TARGET_BBIEP_ID = createField(DSL.name("target_bbiep_id"), SQLDataType.CHAR(36), this, "Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.");
 
     private BieUsageRule(Name alias, Table<BieUsageRuleRecord> aliased) {
         this(alias, aliased, null);
@@ -267,21 +267,21 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row7<ULong, ULong, String, String, String, String, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

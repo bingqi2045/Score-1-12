@@ -10,9 +10,9 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBbiepNode extends BieEditNode {
 
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieId;
     private BigInteger bccManifestId = BigInteger.ZERO;
-    private BigInteger bbiepId = BigInteger.ZERO;
+    private String bbiepId;
     private BigInteger bccpManifestId = BigInteger.ZERO;
     private BigInteger bdtManifestId = BigInteger.ZERO;
     private boolean attribute;

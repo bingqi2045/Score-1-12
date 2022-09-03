@@ -74,7 +74,7 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * the CODE_LIST table. It indicates the code list this code value belonging
      * to.
      */
-    public final TableField<CodeListValueRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.");
+    public final TableField<CodeListValueRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.");
 
     /**
      * The column <code>oagi.code_list_value.based_code_list_value_id</code>.

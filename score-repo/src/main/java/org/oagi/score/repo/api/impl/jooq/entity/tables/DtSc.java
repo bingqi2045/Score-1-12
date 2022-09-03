@@ -103,7 +103,7 @@ public class DtSc extends TableImpl<DtScRecord> {
      * table indicating the data type, to which this supplementary component
      * belongs.
      */
-    public final TableField<DtScRecord, String> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT table indicating the data type, to which this supplementary component belongs.");
+    public final TableField<DtScRecord, String> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table indicating the data type, to which this supplementary component belongs.");
 
     /**
      * The column <code>oagi.dt_sc.cardinality_min</code>. The minimum

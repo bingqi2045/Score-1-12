@@ -67,7 +67,7 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     /**
      * The column <code>oagi.code_list_value_manifest.code_list_value_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, String> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<CodeListValueManifestRecord, String> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column

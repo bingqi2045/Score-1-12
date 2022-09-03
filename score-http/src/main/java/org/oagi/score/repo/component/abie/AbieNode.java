@@ -30,7 +30,7 @@ public class AbieNode {
         private String hashPath;
         private BigInteger basedAccManifestId;
 
-        private BigInteger abieId;
+        private String abieId;
         private String guid;
         private String version;
         private BigInteger clientId;

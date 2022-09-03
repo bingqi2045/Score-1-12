@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class ABIE implements BIE {
 
-    private BigInteger abieId = BigInteger.ZERO;
+    private String abieId;
     private String guid;
     private BigInteger basedAccManifestId = BigInteger.ZERO;
     private String definition;
@@ -22,6 +22,6 @@ public class ABIE implements BIE {
     private String status;
     private String remark;
     private String bizTerm;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 
 }

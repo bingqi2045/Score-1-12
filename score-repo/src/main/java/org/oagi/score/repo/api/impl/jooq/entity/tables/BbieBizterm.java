@@ -13,7 +13,6 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
 import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -28,7 +27,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieBiztermRecord;
@@ -72,7 +70,7 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
      * The column <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
      * associated BBIE
      */
-    public final TableField<BbieBiztermRecord, ULong> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the associated BBIE");
+    public final TableField<BbieBiztermRecord, String> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated BBIE");
 
     /**
      * The column <code>oagi.bbie_bizterm.primary_indicator</code>. The
@@ -151,11 +149,6 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BBIE_BIZTERM_ASBIE_BIZTERM_ASBIE_FK);
-    }
-
-    @Override
     public Identity<BbieBiztermRecord, ULong> getIdentity() {
         return (Identity<BbieBiztermRecord, ULong>) super.getIdentity();
     }
@@ -167,7 +160,7 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
 
     @Override
     public List<ForeignKey<BbieBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_FK, Keys.BBIE_BIZTERM_BBIE_FK, Keys.BBIE_BIZTERM_CREATED_BY_FK, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_FK, Keys.BBIE_BIZTERM_BBIE_ID_FK, Keys.BBIE_BIZTERM_CREATED_BY_FK, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient BccBizterm _bccBizterm;
@@ -190,7 +183,7 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
      */
     public Bbie bbie() {
         if (_bbie == null)
-            _bbie = new Bbie(this, Keys.BBIE_BIZTERM_BBIE_FK);
+            _bbie = new Bbie(this, Keys.BBIE_BIZTERM_BBIE_ID_FK);
 
         return _bbie;
     }
@@ -261,21 +254,21 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

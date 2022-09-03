@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class ResetDetailBIERequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String bieType;
     private String path;
 }

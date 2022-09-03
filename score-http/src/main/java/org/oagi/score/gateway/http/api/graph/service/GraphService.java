@@ -128,13 +128,13 @@ public class GraphService {
         return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(dtManifest), false);
     }
 
-    public Graph getBieGraph(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public Graph getBieGraph(AuthenticatedPrincipal user, String topLevelAsbiepId) {
         boolean excludeUEG = sessionService.getAppUserByUsername(user).isDeveloper();
         BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAsbiepId(topLevelAsbiepId);
         return getAsccpGraph(asccpManifestId, excludeUEG);
     }
 
-    public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, String targetReleaseId) {
+    public AsccpManifestRecord getUpliftBie(AuthenticatedPrincipal user, String topLevelAsbiepId, String targetReleaseId) {
         return bieRepository.getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(topLevelAsbiepId, targetReleaseId);
     }
 

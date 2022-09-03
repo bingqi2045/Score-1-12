@@ -7,8 +7,8 @@ import java.math.BigInteger;
 @Data
 public class BieEditBbieSc {
 
-    private BigInteger bbieScManifestId = BigInteger.ZERO;
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieScId;
+    private String bbieId;
     private BigInteger dtScManifestId = BigInteger.ZERO;
     private boolean used;
 

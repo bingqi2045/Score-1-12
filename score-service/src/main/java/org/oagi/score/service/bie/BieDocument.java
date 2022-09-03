@@ -17,11 +17,11 @@ public interface BieDocument {
 
     Asbiep getAsbiep(Asbie asbie);
 
-    Bbie getBbie(BigInteger bbieId);
+    Bbie getBbie(String bbieId);
 
     Bbiep getBbiep(Bbie bbie);
 
-    BbieSc getBbieSc(BigInteger bbieScId);
+    BbieSc getBbieSc(String bbieScId);
 
     List<BbieSc> getBbieScList(Bbie bbie);
 

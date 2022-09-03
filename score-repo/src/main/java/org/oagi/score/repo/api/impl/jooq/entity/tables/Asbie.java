@@ -13,7 +13,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function19;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -58,10 +57,10 @@ public class Asbie extends TableImpl<AsbieRecord> {
     }
 
     /**
-     * The column <code>oagi.asbie.asbie_id</code>. A internal, primary database
-     * key of an ASBIE.
+     * The column <code>oagi.asbie.asbie_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<AsbieRecord, ULong> ASBIE_ID = createField(DSL.name("asbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an ASBIE.");
+    public final TableField<AsbieRecord, String> ASBIE_ID = createField(DSL.name("asbie_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.asbie.guid</code>. A globally unique identifier
@@ -95,7 +94,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an
      * SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
-    public final TableField<AsbieRecord, ULong> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.");
+    public final TableField<AsbieRecord, String> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.");
 
     /**
      * The column <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the
@@ -104,7 +103,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is
      * different after joining ASBIE and ASBIEP tables
      */
-    public final TableField<AsbieRecord, ULong> TO_ASBIEP_ID = createField(DSL.name("to_asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables");
+    public final TableField<AsbieRecord, String> TO_ASBIEP_ID = createField(DSL.name("to_asbiep_id"), SQLDataType.CHAR(36), this, "A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables");
 
     /**
      * The column <code>oagi.asbie.definition</code>. Definition to override the
@@ -193,7 +192,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * The column <code>oagi.asbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<AsbieRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<AsbieRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private Asbie(Name alias, Table<AsbieRecord> aliased) {
         this(alias, aliased, null);
@@ -236,11 +235,6 @@ public class Asbie extends TableImpl<AsbieRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ASBIE_ASBIE_HASH_PATH_K, Indexes.ASBIE_ASBIE_PATH_K);
-    }
-
-    @Override
-    public Identity<AsbieRecord, ULong> getIdentity() {
-        return (Identity<AsbieRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -367,21 +361,21 @@ public class Asbie extends TableImpl<AsbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function19<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

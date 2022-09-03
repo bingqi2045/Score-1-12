@@ -16,7 +16,7 @@ public class BieReuseReport {
     private String path;
     private String displayPath;
 
-    private BigInteger reusedTopLevelAsbiepId;
+    private String reusedTopLevelAsbiepId;
     private String reusedState;
     private String reusedPropertyTerm;
     private String reusedGuid;

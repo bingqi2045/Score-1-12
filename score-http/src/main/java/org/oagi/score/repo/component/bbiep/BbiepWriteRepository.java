@@ -9,6 +9,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIEP;
@@ -27,7 +29,7 @@ public class BbiepWriteRepository {
 
     public BbiepNode.Bbiep upsertBbiep(UpsertBbiepRequest request) {
         BbiepNode.Bbiep bbiep = request.getBbiep();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = bbiep.getHashPath();
         BbiepRecord bbiepRecord = dslContext.selectFrom(BBIEP)
                 .where(and(
@@ -41,6 +43,7 @@ public class BbiepWriteRepository {
 
         if (bbiepRecord == null) {
             bbiepRecord = new BbiepRecord();
+            bbiepRecord.setBbiepId(UUID.randomUUID().toString());
             bbiepRecord.setGuid(ScoreGuid.randomGuid());
             bbiepRecord.setBasedBccpManifestId(ULong.valueOf(bbiep.getBasedBccpManifestId()));
             bbiepRecord.setPath(bbiep.getPath());
@@ -57,12 +60,9 @@ public class BbiepWriteRepository {
             bbiepRecord.setCreationTimestamp(request.getLocalDateTime());
             bbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbiepRecord.setBbiepId(
-                    dslContext.insertInto(BBIEP)
-                            .set(bbiepRecord)
-                            .returning(BBIEP.BBIEP_ID)
-                            .fetchOne().getBbiepId()
-            );
+            dslContext.insertInto(BBIEP)
+                    .set(bbiepRecord)
+                    .execute();
         } else {
             if (bbiep.getDefinition() != null) {
                 bbiepRecord.setDefinition(emptyToNull(bbiep.getDefinition()));

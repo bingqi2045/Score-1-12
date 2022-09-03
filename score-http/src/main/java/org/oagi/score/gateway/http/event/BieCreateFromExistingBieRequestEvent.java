@@ -14,9 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class BieCreateFromExistingBieRequestEvent implements Event {
 
-    private BigInteger sourceTopLevelAsbiepId;
-    private BigInteger targetTopLevelAsbiepId;
-    private BigInteger asbiepId;
+    private String sourceTopLevelAsbiepId;
+    private String targetTopLevelAsbiepId;
+    private String asbiepId;
     private List<String> bizCtxIds = Collections.emptyList();
     private String userId;
 

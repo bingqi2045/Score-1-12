@@ -7,8 +7,8 @@ import java.math.BigInteger;
 @Data
 public class ReuseBIERequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private BigInteger asccpManifestId;
     private String asbieHashPath;
-    private BigInteger reuseTopLevelAsbiepId;
+    private String reuseTopLevelAsbiepId;
 }

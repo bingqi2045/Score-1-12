@@ -38,7 +38,7 @@ public class BusinessContextController {
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "businessContextIdList", required = false) String businessContextIdList,
-            @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId,
+            @RequestParam(name = "topLevelAsbiepId", required = false) String topLevelAsbiepId,
             @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -178,7 +178,7 @@ public class BusinessContextController {
     public ResponseEntity assign(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @PathVariable("id") String businessContextId,
-            @RequestParam(name = "topLevelAsbiepId", required = true) BigInteger topLevelAsbiepId) {
+            @RequestParam(name = "topLevelAsbiepId", required = true) String topLevelAsbiepId) {
 
         businessContextService.assign(businessContextId, topLevelAsbiepId);
         return ResponseEntity.noContent().build();
@@ -188,7 +188,7 @@ public class BusinessContextController {
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @PathVariable("id") String businessContextId,
-            @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId) {
+            @RequestParam(name = "topLevelAsbiepId", required = false) String topLevelAsbiepId) {
 
         if (topLevelAsbiepId != null) {
             businessContextService.dismiss(businessContextId, topLevelAsbiepId);

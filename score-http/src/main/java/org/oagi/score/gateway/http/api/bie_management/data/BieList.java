@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class BieList {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String den;
     private String propertyTerm;
     private String guid;

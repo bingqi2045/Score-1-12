@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
  * component/ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, ULong, String, String, Byte, ULong> {
+public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, String, String, String, Byte, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +56,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * the AllExtension because there is no corresponding ABIE for the
      * AllExtension ACC.
      */
-    public void setExtAbieId(ULong value) {
+    public void setExtAbieId(String value) {
         set(1, value);
     }
 
@@ -69,8 +69,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * the AllExtension because there is no corresponding ABIE for the
      * AllExtension ACC.
      */
-    public ULong getExtAbieId() {
-        return (ULong) get(1);
+    public String getExtAbieId() {
+        return (String) get(1);
     }
 
     /**
@@ -147,7 +147,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * Setter for <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>.
      * This is a foreign key to the top-level ASBIEP.
      */
-    public void setTopLevelAsbiepId(ULong value) {
+    public void setTopLevelAsbiepId(String value) {
         set(5, value);
     }
 
@@ -155,8 +155,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * Getter for <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>.
      * This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getTopLevelAsbiepId() {
-        return (ULong) get(5);
+    public String getTopLevelAsbiepId() {
+        return (String) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -173,12 +173,12 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, String, String, Byte, ULong> fieldsRow() {
+    public Row6<ULong, String, String, String, Byte, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, ULong, String, String, Byte, ULong> valuesRow() {
+    public Row6<ULong, String, String, String, Byte, String> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
@@ -188,7 +188,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.EXT_ABIE_ID;
     }
 
@@ -208,7 +208,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.TOP_LEVEL_ASBIEP_ID;
     }
 
@@ -218,7 +218,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getExtAbieId();
     }
 
@@ -238,7 +238,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getTopLevelAsbiepId();
     }
 
@@ -248,7 +248,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getExtAbieId();
     }
 
@@ -268,7 +268,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getTopLevelAsbiepId();
     }
 
@@ -279,7 +279,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public BieUserExtRevisionRecord value2(ULong value) {
+    public BieUserExtRevisionRecord value2(String value) {
         setExtAbieId(value);
         return this;
     }
@@ -303,13 +303,13 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public BieUserExtRevisionRecord value6(ULong value) {
+    public BieUserExtRevisionRecord value6(String value) {
         setTopLevelAsbiepId(value);
         return this;
     }
 
     @Override
-    public BieUserExtRevisionRecord values(ULong value1, ULong value2, String value3, String value4, Byte value5, ULong value6) {
+    public BieUserExtRevisionRecord values(ULong value1, String value2, String value3, String value4, Byte value5, String value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -333,7 +333,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     /**
      * Create a detached, initialised BieUserExtRevisionRecord
      */
-    public BieUserExtRevisionRecord(ULong bieUserExtRevisionId, ULong extAbieId, String extAccId, String userExtAccId, Byte revisedIndicator, ULong topLevelAsbiepId) {
+    public BieUserExtRevisionRecord(ULong bieUserExtRevisionId, String extAbieId, String extAccId, String userExtAccId, Byte revisedIndicator, String topLevelAsbiepId) {
         super(BieUserExtRevision.BIE_USER_EXT_REVISION);
 
         setBieUserExtRevisionId(bieUserExtRevisionId);

@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class TopLevelAsbiepRequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String version;
     private String status;
 

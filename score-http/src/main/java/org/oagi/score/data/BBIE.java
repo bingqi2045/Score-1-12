@@ -8,11 +8,11 @@ import java.util.Date;
 @Data
 public class BBIE implements BIE, FacetRestrictionsAware {
 
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieId;
     private String guid;
     private BigInteger basedBccManifestId = BigInteger.ZERO;
-    private BigInteger fromAbieId = BigInteger.ZERO;
-    private BigInteger toBbiepId = BigInteger.ZERO;
+    private String fromAbieId;
+    private String toBbiepId;
     private BigInteger bdtPriRestriId = BigInteger.ZERO;
     private String codeListId;
     private String agencyIdListId;
@@ -34,5 +34,5 @@ public class BBIE implements BIE, FacetRestrictionsAware {
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

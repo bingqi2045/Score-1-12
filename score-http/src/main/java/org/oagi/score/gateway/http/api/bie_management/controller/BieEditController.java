@@ -54,7 +54,7 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BieEditNode getRootNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                   @PathVariable("id") BigInteger topLevelAsbiepId) {
+                                   @PathVariable("id") String topLevelAsbiepId) {
         BieEditAbieNode rootNode = bieEditService.getRootNode(user, topLevelAsbiepId);
         return rootNode;
     }
@@ -63,7 +63,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AbieNode getAbieDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                  @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                  @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                   @PathVariable("manifestId") BigInteger manifestId,
                                   @RequestParam("hashPath") String hashPath) {
         return bieEditService.getAbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -73,7 +73,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AsbieNode getAsbieDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                    @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                    @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                     @PathVariable("manifestId") BigInteger manifestId,
                                     @RequestParam("hashPath") String hashPath) {
         return bieEditService.getAsbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -83,7 +83,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbieNode getBbieDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                  @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                  @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                   @PathVariable("manifestId") BigInteger manifestId,
                                   @RequestParam("hashPath") String hashPath) {
         return bieEditService.getBbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -93,7 +93,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AsbiepNode getAsbiepDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                      @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                      @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
         return bieEditService.getAsbiepDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -103,7 +103,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbiepNode getBbiepDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                    @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                    @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                     @PathVariable("manifestId") BigInteger manifestId,
                                     @RequestParam("hashPath") String hashPath) {
         return bieEditService.getBbiepDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -114,7 +114,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableBdtPriRestriListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -124,7 +124,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableCodeList> availableCodeListListByBccpManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableCodeListListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -134,7 +134,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableAgencyIdListListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -143,7 +143,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbieScNode getBbieScDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                      @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                      @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
         return bieEditService.getBbieScDetail(user, topLevelAsbiepId, manifestId, hashPath);
@@ -154,7 +154,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableBdtScPriRestriListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -164,7 +164,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableCodeListListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -174,7 +174,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
         return bieEditService.availableAgencyIdListListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
@@ -184,7 +184,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BdtNode getBdtDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                 @PathVariable("manifestId") BigInteger manifestId,
-                                @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+                                @PathVariable("topLevelAsbiepId") String topLevelAsbiepId) {
         return bieEditService.getBdtDetail(user, topLevelAsbiepId, manifestId);
     }
 
@@ -192,7 +192,7 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BieEditUsed> getUsedAbieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+                                             @PathVariable("topLevelAsbiepId") String topLevelAsbiepId) {
         return bieEditService.getBieUsedList(user, topLevelAsbiepId);
     }
 
@@ -200,14 +200,14 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BieEditRef> getRefAsbieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+                                            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId) {
         return bieEditService.getBieRefList(user, topLevelAsbiepId);
     }
 
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                            @PathVariable("id") BigInteger topLevelAsbiepId,
+                            @PathVariable("id") String topLevelAsbiepId,
                             @RequestBody Map<String, Object> body) {
         BieState state = BieState.valueOf((String) body.get("state"));
         bieEditService.updateState(user, topLevelAsbiepId, state);
@@ -224,7 +224,7 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/detail", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BieEditUpdateDetailResponse updateDetails(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                     @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                                     @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                                      @RequestBody BieEditUpdateDetailRequest request) {
         request.setTopLevelAsbiepId(topLevelAsbiepId);
         BieEditUpdateDetailResponse response = bieEditService.updateDetails(user, request);
@@ -279,7 +279,7 @@ public class BieEditController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reuseBIE(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                         @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                         @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                          @PathVariable("manifestId") BigInteger manifestId,
                          @RequestBody ReuseBIERequest reuseBIERequest) {
 
@@ -292,7 +292,7 @@ public class BieEditController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reuseBIE(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                         @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                         @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                          @RequestBody RemoveReusedBIERequest removeReusedBIERequest) {
 
         removeReusedBIERequest.setTopLevelAsbiepId(topLevelAsbiepId);
@@ -312,7 +312,7 @@ public class BieEditController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void resetDetailBIE(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                         @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                         @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                          @RequestBody ResetDetailBIERequest request) {
 
         request.setTopLevelAsbiepId(topLevelAsbiepId);

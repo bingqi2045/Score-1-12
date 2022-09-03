@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ASBIE;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ASBIERepository implements ScoreRepository<ASBIE, BigInteger> {
+public class ASBIERepository implements ScoreRepository<ASBIE, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -41,8 +42,8 @@ public class ASBIERepository implements ScoreRepository<ASBIE, BigInteger> {
     }
 
     @Override
-    public ASBIE findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public ASBIE findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return dslContext.select(Tables.ASBIE.ASBIE_ID,
@@ -62,10 +63,10 @@ public class ASBIERepository implements ScoreRepository<ASBIE, BigInteger> {
                 Tables.ASBIE.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIE.SEQ_KEY,
                 Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID).from(Tables.ASBIE)
-                .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(id))).fetchOneInto(ASBIE.class);
+                .where(Tables.ASBIE.ASBIE_ID.eq(id)).fetchOneInto(ASBIE.class);
     }
 
-    public List<ASBIE> findByOwnerTopLevelAsbiepIds(Collection<BigInteger> ownerTopLevelAsbiepIds) {
+    public List<ASBIE> findByOwnerTopLevelAsbiepIds(Collection<String> ownerTopLevelAsbiepIds) {
         if (ownerTopLevelAsbiepIds == null || ownerTopLevelAsbiepIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -89,9 +90,9 @@ public class ASBIERepository implements ScoreRepository<ASBIE, BigInteger> {
                 .where(
                         (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
+                                        ownerTopLevelAsbiepIds.iterator().next()) :
                                 Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                                        ownerTopLevelAsbiepIds)
                 )
                 .fetchInto(ASBIE.class);
 

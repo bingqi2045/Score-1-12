@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -54,10 +53,10 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     }
 
     /**
-     * The column <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary
-     * database key of a BBIE_SC.
+     * The column <code>oagi.bbie_sc.bbie_sc_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<BbieScRecord, ULong> BBIE_SC_ID = createField(DSL.name("bbie_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of a BBIE_SC.");
+    public final TableField<BbieScRecord, String> BBIE_SC_ID = createField(DSL.name("bbie_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bbie_sc.guid</code>. A globally unique identifier
@@ -88,7 +87,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC
      * applies to.
      */
-    public final TableField<BbieScRecord, ULong> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BBIE this BBIE_SC applies to.");
+    public final TableField<BbieScRecord, String> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.CHAR(36).nullable(false), this, "The BBIE this BBIE_SC applies to.");
 
     /**
      * The column <code>oagi.bbie_sc.dt_sc_pri_restri_id</code>. This must be
@@ -244,7 +243,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * The column <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<BbieScRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BbieScRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private BbieSc(Name alias, Table<BbieScRecord> aliased) {
         this(alias, aliased, null);
@@ -287,11 +286,6 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.BBIE_SC_BBIE_SC_HASH_PATH_K, Indexes.BBIE_SC_BBIE_SC_PATH_K);
-    }
-
-    @Override
-    public Identity<BbieScRecord, ULong> getIdentity() {
-        return (Identity<BbieScRecord, ULong>) super.getIdentity();
     }
 
     @Override

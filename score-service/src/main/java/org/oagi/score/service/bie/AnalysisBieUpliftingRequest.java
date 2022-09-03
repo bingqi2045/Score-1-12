@@ -10,7 +10,7 @@ public class AnalysisBieUpliftingRequest {
 
     private ScoreUser requester;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private String targetReleaseId;
 

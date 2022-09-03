@@ -36,7 +36,7 @@ public class BbieScNode {
         private String bbieHashPath;
         private BigInteger basedDtScManifestId;
 
-        private BigInteger bbieScId;
+        private String bbieScId;
         private String guid;
         private Integer cardinalityMin;
         private Integer cardinalityMax;

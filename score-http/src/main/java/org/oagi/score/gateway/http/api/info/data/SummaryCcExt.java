@@ -20,7 +20,7 @@ public class SummaryCcExt {
     private String ownerUsername;
     private String ownerUserId;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private BieState bieState;
     private String propertyTerm;
     private String associationPropertyTerm;

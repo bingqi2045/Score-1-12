@@ -181,7 +181,7 @@ public class CcListService {
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
-                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID));
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
@@ -225,7 +225,7 @@ public class CcListService {
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
-                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID));
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(BCCP.PROPERTY_TERM));

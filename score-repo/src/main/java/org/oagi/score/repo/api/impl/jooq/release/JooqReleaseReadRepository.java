@@ -108,7 +108,7 @@ public class JooqReleaseReadRepository
         } else if (request.getTopLevelAsbiepId() != null) {
             release = (Release) select()
                     .join(TOP_LEVEL_ASBIEP).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ASBIEP.RELEASE_ID))
-                    .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
+                    .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId()))
                     .fetchOne(mapper());
         } else if (StringUtils.hasLength(request.getReleaseNum())) {
             release = (Release) select()

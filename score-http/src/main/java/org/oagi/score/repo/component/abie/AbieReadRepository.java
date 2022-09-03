@@ -29,16 +29,16 @@ public class AbieReadRepository {
     @Autowired
     private AccReadRepository accReadRepository;
 
-    private AbieRecord getAbieByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
+    private AbieRecord getAbieByTopLevelAsbiepIdAndHashPath(String topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(ABIE)
                 .where(and(
-                        ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ABIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public AbieNode getAbieNode(BigInteger topLevelAsbiepId, BigInteger accManifestId, String hashPath) {
+    public AbieNode getAbieNode(String topLevelAsbiepId, BigInteger accManifestId, String hashPath) {
         AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestId);
         if (accRecord == null) {
             return null;
@@ -64,14 +64,14 @@ public class AbieReadRepository {
         return abieNode;
     }
 
-    public AbieNode.Abie getAbie(BigInteger topLevelAsbiepId, String hashPath) {
+    public AbieNode.Abie getAbie(String topLevelAsbiepId, String hashPath) {
         AbieNode.Abie abie = new AbieNode.Abie();
         abie.setUsed(true);
         abie.setHashPath(hashPath);
 
         AbieRecord abieRecord = getAbieByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (abieRecord != null) {
-            abie.setAbieId(abieRecord.getAbieId().toBigInteger());
+            abie.setAbieId(abieRecord.getAbieId());
             abie.setGuid(abieRecord.getGuid());
             abie.setBasedAccManifestId(abieRecord.getBasedAccManifestId().toBigInteger());
             abie.setRemark(abieRecord.getRemark());

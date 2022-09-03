@@ -39,30 +39,30 @@ public class GraphController {
         return graphService.findUsages(request);
     }
 
-    @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
+    @RequestMapping(value = "/graphs/{type}/{id}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @PathVariable("type") String type,
-                                        @PathVariable("id") BigInteger id,
+                                        @PathVariable("id") String id,
                                         @RequestParam(value = "q", required = false) String query) {
         Graph graph;
         switch (type.toLowerCase()) {
             case "acc":
             case "extension":
-                graph = graphService.getAccGraph(id);
+                graph = graphService.getAccGraph(new BigInteger(id));
                 break;
 
             case "asccp":
-                graph = graphService.getAsccpGraph(id, false);
+                graph = graphService.getAsccpGraph(new BigInteger(id), false);
                 break;
 
             case "bccp":
-                graph = graphService.getBccpGraph(id);
+                graph = graphService.getBccpGraph(new BigInteger(id));
                 break;
 
             case "dt":
-                graph = graphService.getDtGraph(id);
+                graph = graphService.getDtGraph(new BigInteger(id));
                 break;
 
             case "top_level_asbiep":
@@ -70,7 +70,7 @@ public class GraphController {
                 break;
 
             case "code_list":
-                graph = graphService.getCodeListGraph(id);
+                graph = graphService.getCodeListGraph(new BigInteger(id));
                 break;
 
             default:
@@ -99,7 +99,7 @@ public class GraphController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                              @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                               @PathVariable("targetReleaseId") String targetReleaseId) {
 
         AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);

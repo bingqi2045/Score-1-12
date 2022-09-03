@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class BieCopyRequestEvent implements Event {
 
-    private BigInteger sourceTopLevelAsbiepId;
-    private BigInteger copiedTopLevelAsbiepId;
+    private String sourceTopLevelAsbiepId;
+    private String copiedTopLevelAsbiepId;
     private List<String> bizCtxIds;
     private String userId;
 

@@ -11,8 +11,8 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAbieNode extends BieEditNode {
 
-    private BigInteger asbiepId;
-    private BigInteger abieId;
+    private String asbiepId;
+    private String abieId;
     private BigInteger asccpManifestId;
     private BigInteger accManifestId;
     private String ownerUserId;

@@ -6,6 +6,16 @@
 --                <dimitrije.milenkovic@nist.gov>    --
 -- ----------------------------------------------------
 
+-- Bug fix
+-- Delete orphan records; 'Program. Extension. Program. Extension' ASCC
+UPDATE `ascc_manifest` SET `seq_key_id` = NULL WHERE `ascc_manifest_id` = 57206;
+DELETE FROM `seq_key` WHERE `seq_key_id` = 85921;
+DELETE FROM `ascc_manifest` WHERE `ascc_manifest_id` = 57206;
+DELETE FROM `ascc` WHERE `ascc_id` = 7311;
+
+-- ----------------
+-- Business Terms -
+-- ----------------
 CREATE TABLE IF NOT EXISTS `business_term`
 (
     `business_term_id`      bigint(20) unsigned          NOT NULL AUTO_INCREMENT COMMENT 'A internal, primary database key of an Business term.',
@@ -1784,6 +1794,7 @@ ALTER TABLE `ctx_scheme_value` ADD CONSTRAINT `ctx_scheme_value_owner_ctx_scheme
 ALTER TABLE `biz_ctx_value` ADD CONSTRAINT `biz_ctx_value_ctx_scheme_value_id_fk` FOREIGN KEY (`ctx_scheme_value_id`) REFERENCES `ctx_scheme_value` (`ctx_scheme_value_id`);
 ALTER TABLE `biz_ctx_value` ADD CONSTRAINT `biz_ctx_value_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
 ALTER TABLE `biz_ctx_assignment` ADD CONSTRAINT `biz_ctx_assignment_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
+ALTER TABLE `biz_ctx_assignment` ADD UNIQUE KEY `biz_ctx_assignment_uk` (`biz_ctx_id`, `top_level_asbiep_id`);
 ALTER TABLE `abie` ADD CONSTRAINT `abie_biz_ctx_id_fk` FOREIGN KEY (`biz_ctx_id`) REFERENCES `biz_ctx` (`biz_ctx_id`);
 
 -- --------------------------------------------------------------------------------------------------
@@ -2645,35 +2656,35 @@ ALTER TABLE `acc`
     CHANGE `replacement_acc_uuid` `replacement_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_acc_uuid` `prev_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_acc_uuid` `next_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `acc_manifest` CHANGE `acc_uuid` `acc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest` CHANGE `acc_uuid` `acc_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `agency_id_list`
     CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the identification of the agency or organization which developed and/or maintains the list. Theoretically, this can be modeled as a self-reference foreign key, but it is not implemented at this point.',
     CHANGE `based_agency_id_list_uuid` `based_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.',
     CHANGE `replacement_agency_id_list_uuid` `replacement_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_agency_id_list_uuid` `prev_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_agency_id_list_uuid` `next_agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `agency_id_list_value`
-    CHANGE `owner_list_uuid` `owner_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.',
+    CHANGE `owner_list_uuid` `owner_list_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.',
     CHANGE `based_agency_id_list_value_uuid` `based_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table itself. This column is used when the AGENCY_ID_LIST_VALUE is derived from the based AGENCY_ID_LIST_VALUE.',
     CHANGE `replacement_agency_id_list_value_uuid` `replacement_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_agency_id_list_value_uuid` `prev_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_agency_id_list_value_uuid` `next_agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `ascc`
-    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.',
-    CHANGE `to_asccp_uuid` `to_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.',
+    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.',
+    CHANGE `to_asccp_uuid` `to_asccp_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.',
     CHANGE `replacement_ascc_uuid` `replacement_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_ascc_uuid` `prev_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_ascc_uuid` `next_ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `ascc_bizterm` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated ASCC';
-ALTER TABLE `ascc_manifest` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `ascc_bizterm` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated ASCC';
+ALTER TABLE `ascc_manifest` CHANGE `ascc_uuid` `ascc_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `asccp`
-    CHANGE `role_of_acc_uuid` `role_of_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The ACC from which this ASCCP is created (ASCCP applies role to the ACC).',
+    CHANGE `role_of_acc_uuid` `role_of_acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The ACC from which this ASCCP is created (ASCCP applies role to the ACC).',
     CHANGE `replacement_asccp_uuid` `replacement_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_asccp_uuid` `prev_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_asccp_uuid` `next_asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `asccp_manifest` CHANGE `asccp_uuid` `asccp_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asccp_manifest` CHANGE `asccp_uuid` `asccp_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `bbie`
     CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the BDT_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.',
     CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
@@ -2681,53 +2692,53 @@ ALTER TABLE `bbie_sc`
     CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.\n\nThis column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.',
     CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. If a agency ID list is assigned to the BBIE SC (or also can be viewed as assigned to the BBIEP SC for this association), then this column stores the assigned Agency ID list. It should be noted that one of the possible primitives assignable to the DT_SC_PRI_RESTRI_ID column may also be an Agency ID list. So this column is typically used only when the user wants to assign another Agency ID list different from the one permissible by the CC model.\n\nThis column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have a value at the same time.';
 ALTER TABLE `bcc`
-    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.',
-    CHANGE `to_bccp_uuid` `to_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.',
+    CHANGE `from_acc_uuid` `from_acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.',
+    CHANGE `to_bccp_uuid` `to_bccp_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.',
     CHANGE `replacement_bcc_uuid` `replacement_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_bcc_uuid` `prev_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_bcc_uuid` `next_bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `bcc_bizterm` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated BCC';
-ALTER TABLE `bcc_manifest` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bcc_bizterm` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated BCC';
+ALTER TABLE `bcc_manifest` CHANGE `bcc_uuid` `bcc_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `bccp`
-    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.',
+    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.',
     CHANGE `replacement_bccp_uuid` `replacement_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_bccp_uuid` `prev_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_bccp_uuid` `next_bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
 ALTER TABLE `bccp_manifest` CHANGE `bccp_uuid` `bccp_id` char(36) CHARACTER SET ascii DEFAULT NULL;
 ALTER TABLE `bdt_pri_restri`
-    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
+    CHANGE `bdt_uuid` `bdt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
     CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.',
     CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
 ALTER TABLE `bdt_sc_pri_restri`
-    CHANGE `bdt_sc_uuid` `bdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
+    CHANGE `bdt_sc_uuid` `bdt_sc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).',
     CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table.',
     CHANGE `agency_id_list_uuid` `agency_id_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.';
 ALTER TABLE `bie_user_ext_revision`
-    CHANGE `ext_acc_uuid` `ext_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).',
-    CHANGE `user_ext_acc_uuid` `user_ext_acc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).';
-ALTER TABLE `blob_content_manifest` CHANGE `blob_content_uuid` `blob_content_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+    CHANGE `ext_acc_uuid` `ext_acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).',
+    CHANGE `user_ext_acc_uuid` `user_ext_acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).';
+ALTER TABLE `blob_content_manifest` CHANGE `blob_content_uuid` `blob_content_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `cdt_awd_pri`
-    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to a CDT in the DT table.';
+    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key pointing to a CDT in the DT table.';
 ALTER TABLE `cdt_ref_spec`
-    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+    CHANGE `cdt_uuid` `cdt_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `cdt_sc_awd_pri`
-    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key pointing to the supplementary component (SC).';
+    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key pointing to the supplementary component (SC).';
 ALTER TABLE `cdt_sc_ref_spec`
-    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+    CHANGE `cdt_sc_uuid` `cdt_sc_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `code_list`
     CHANGE `agency_id_list_value_uuid` `agency_id_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.',
     CHANGE `based_code_list_uuid` `based_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.',
     CHANGE `replacement_code_list_uuid` `replacement_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_code_list_uuid` `prev_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_code_list_uuid` `next_code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `code_list_manifest` CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_manifest` CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `code_list_value`
-    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.',
+    CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.',
     CHANGE `based_code_list_value_uuid` `based_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the CODE_LIST_VALUE table itself. This column is used when the CODE_LIST is derived from the based CODE_LIST.',
     CHANGE `replacement_code_list_value_uuid` `replacement_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_code_list_value_uuid` `prev_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_code_list_value_uuid` `next_code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_uuid` `code_list_value_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_uuid` `code_list_value_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `ctx_scheme`
     CHANGE `code_list_uuid` `code_list_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.';
 ALTER TABLE `dt`
@@ -2735,14 +2746,14 @@ ALTER TABLE `dt`
     CHANGE `replacement_dt_uuid` `replacement_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_dt_uuid` `prev_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_dt_uuid` `next_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `dt_manifest` CHANGE `dt_uuid` `dt_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest` CHANGE `dt_uuid` `dt_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `dt_sc`
-    CHANGE `owner_dt_uuid` `owner_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT table indicating the data type, to which this supplementary component belongs.',
+    CHANGE `owner_dt_uuid` `owner_dt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the DT table indicating the data type, to which this supplementary component belongs.',
     CHANGE `based_dt_sc_uuid` `based_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.',
     CHANGE `replacement_dt_sc_uuid` `replacement_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.',
     CHANGE `prev_dt_sc_uuid` `prev_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     CHANGE `next_dt_sc_uuid` `next_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.';
-ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_uuid` `dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_uuid` `dt_sc_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `dt_usage_rule`
     CHANGE `target_dt_uuid` `target_dt_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.',
     CHANGE `target_dt_sc_uuid` `target_dt_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.';
@@ -2780,7 +2791,7 @@ ALTER TABLE `agency_id_list_value`
     ADD CONSTRAINT `agency_id_list_value_replacement_agency_id_list_value_id_fk` FOREIGN KEY (`replacement_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
     ADD CONSTRAINT `agency_id_list_value_prev_agency_id_list_value_id_fk` FOREIGN KEY (`prev_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
     ADD CONSTRAINT `agency_id_list_value_next_agency_id_list_value_id_fk` FOREIGN KEY (`next_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
-ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
 ALTER TABLE `ascc`
     ADD CONSTRAINT `ascc_from_acc_id_fk` FOREIGN KEY (`from_acc_id`) REFERENCES `acc` (`acc_id`),
     ADD CONSTRAINT `ascc_to_asccp_id_fk` FOREIGN KEY (`to_asccp_id`) REFERENCES `asccp` (`asccp_id`),
@@ -3448,3 +3459,300 @@ FROM `xbt`, `cdt_sc_awd_pri`
 JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'String'
   AND `xbt`.`name` IN ('qualified name', 'notation');
+
+-- ------------------------------------------------
+-- Change `abie_id`, `asbie_id`, `bbie_id`,      --
+--        `asbiep_id`, `bbiep_id`, `bbie_sc_id`, --
+--        and `top_level_asbiep_id` TO UUID      --
+-- ------------------------------------------------
+ALTER TABLE `abie` ADD COLUMN `abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `abie_id`;
+CALL update_uuid('abie');
+
+ALTER TABLE `asbie` ADD COLUMN `asbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `asbie_id`;
+CALL update_uuid('asbie');
+
+ALTER TABLE `bbie` ADD COLUMN `bbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bbie_id`;
+CALL update_uuid('bbie');
+
+ALTER TABLE `asbiep` ADD COLUMN `asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `asbiep_id`;
+CALL update_uuid('asbiep');
+
+ALTER TABLE `bbiep` ADD COLUMN `bbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bbiep_id`;
+CALL update_uuid('bbiep');
+
+ALTER TABLE `bbie_sc` ADD COLUMN `bbie_sc_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bbie_sc_id`;
+CALL update_uuid('bbie_sc');
+
+ALTER TABLE `top_level_asbiep` ADD COLUMN `top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `top_level_asbiep_id`;
+CALL update_uuid('top_level_asbiep');
+
+ALTER TABLE `abie` ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `abie`, `top_level_asbiep` SET `abie`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `abie`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `asbie`
+    ADD COLUMN `from_abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.' AFTER `from_abie_id`,
+    ADD COLUMN `to_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables' AFTER `to_asbiep_id`,
+    ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `asbie`, `abie` SET `asbie`.`from_abie_uuid` = `abie`.`abie_uuid`
+WHERE `asbie`.`from_abie_id` = `abie`.`abie_id`;
+UPDATE `asbie`, `asbiep` SET `asbie`.`to_asbiep_uuid` = `asbiep`.`asbiep_uuid`
+WHERE `asbie`.`to_asbiep_id` = `asbiep`.`asbiep_id`;
+UPDATE `asbie`, `top_level_asbiep` SET `asbie`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `asbie`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `asbie_bizterm` ADD COLUMN `asbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated ASBIE' AFTER `asbie_id`;
+UPDATE `asbie_bizterm`, `asbie` SET `asbie_bizterm`.`asbie_uuid` = `asbie`.`asbie_uuid`
+WHERE `asbie_bizterm`.`asbie_id` = `asbie`.`asbie_id`;
+
+ALTER TABLE `asbiep`
+    ADD COLUMN `role_of_abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.' AFTER `role_of_abie_id`,
+    ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `asbiep`, `abie` SET `asbiep`.`role_of_abie_uuid` = `abie`.`abie_uuid`
+WHERE `asbiep`.`role_of_abie_id` = `abie`.`abie_id`;
+UPDATE `asbiep`, `top_level_asbiep` SET `asbiep`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `asbiep`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `bbie`
+    ADD COLUMN `from_abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.' AFTER `from_abie_id`,
+    ADD COLUMN `to_bbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'TO_BBIEP_ID is a foreign key to the BBIEP table. TO_BBIEP_ID basically refers to a child data element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID in the based BCC.' AFTER `to_bbiep_id`,
+    ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `bbie`, `abie` SET `bbie`.`from_abie_uuid` = `abie`.`abie_uuid`
+WHERE `bbie`.`from_abie_id` = `abie`.`abie_id`;
+UPDATE `bbie`, `bbiep` SET `bbie`.`to_bbiep_uuid` = `bbiep`.`bbiep_uuid`
+WHERE `bbie`.`to_bbiep_id` = `bbiep`.`bbiep_id`;
+UPDATE `bbie`, `top_level_asbiep` SET `bbie`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `bbie`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `bbie_bizterm` ADD COLUMN `bbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated BBIE' AFTER `bbie_id`;
+UPDATE `bbie_bizterm`, `bbie` SET `bbie_bizterm`.`bbie_uuid` = `bbie`.`bbie_uuid`
+WHERE `bbie_bizterm`.`bbie_id` = `bbie`.`bbie_id`;
+
+ALTER TABLE `bbie_sc`
+    ADD COLUMN `bbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The BBIE this BBIE_SC applies to.' AFTER `bbie_id`,
+    ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `bbie_sc`, `bbie` SET `bbie_sc`.`bbie_uuid` = `bbie`.`bbie_uuid`
+WHERE `bbie_sc`.`bbie_id` = `bbie`.`bbie_id`;
+UPDATE `bbie_sc`, `top_level_asbiep` SET `bbie_sc`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `bbie_sc`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `bbiep` ADD COLUMN `owner_top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `owner_top_level_asbiep_id`;
+UPDATE `bbiep`, `top_level_asbiep` SET `bbiep`.`owner_top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `bbiep`.`owner_top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `bie_usage_rule`
+    ADD COLUMN `target_abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.' AFTER `target_abie_id`,
+    ADD COLUMN `target_asbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.' AFTER `target_asbie_id`,
+    ADD COLUMN `target_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.' AFTER `target_asbiep_id`,
+    ADD COLUMN `target_bbie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.' AFTER `target_bbie_id`,
+    ADD COLUMN `target_bbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.' AFTER `target_bbiep_id`;
+UPDATE `bie_usage_rule`, `abie` SET `bie_usage_rule`.`target_abie_uuid` = `abie`.`abie_uuid`
+WHERE `bie_usage_rule`.`target_abie_id` = `abie`.`abie_id`;
+UPDATE `bie_usage_rule`, `asbie` SET `bie_usage_rule`.`target_asbie_uuid` = `asbie`.`asbie_uuid`
+WHERE `bie_usage_rule`.`target_asbie_id` = `asbie`.`asbie_id`;
+UPDATE `bie_usage_rule`, `asbiep` SET `bie_usage_rule`.`target_asbiep_uuid` = `asbiep`.`asbiep_uuid`
+WHERE `bie_usage_rule`.`target_asbiep_id` = `asbiep`.`asbiep_id`;
+UPDATE `bie_usage_rule`, `bbie` SET `bie_usage_rule`.`target_bbie_uuid` = `bbie`.`bbie_uuid`
+WHERE `bie_usage_rule`.`target_bbie_id` = `bbie`.`bbie_id`;
+UPDATE `bie_usage_rule`, `bbiep` SET `bie_usage_rule`.`target_bbiep_uuid` = `bbiep`.`bbiep_uuid`
+WHERE `bie_usage_rule`.`target_bbiep_id` = `bbiep`.`bbiep_id`;
+
+ALTER TABLE `bie_user_ext_revision`
+    ADD COLUMN `ext_abie_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.' AFTER `ext_abie_id`,
+    ADD COLUMN `top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `top_level_asbiep_id`;
+UPDATE `bie_user_ext_revision`, `abie` SET `bie_user_ext_revision`.`ext_abie_uuid` = `abie`.`abie_uuid`
+WHERE `bie_user_ext_revision`.`ext_abie_uuid` = `abie`.`abie_id`;
+UPDATE `bie_user_ext_revision`, `top_level_asbiep` SET `bie_user_ext_revision`.`top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `bie_user_ext_revision`.`top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `biz_ctx_assignment` ADD COLUMN `top_level_asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.' AFTER `top_level_asbiep_id`;
+UPDATE `biz_ctx_assignment`, `top_level_asbiep` SET `biz_ctx_assignment`.`top_level_asbiep_uuid` = `top_level_asbiep`.`top_level_asbiep_uuid`
+WHERE `biz_ctx_assignment`.`top_level_asbiep_id` = `top_level_asbiep`.`top_level_asbiep_id`;
+
+ALTER TABLE `top_level_asbiep` ADD COLUMN `asbiep_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.' AFTER `asbiep_id`;
+UPDATE `top_level_asbiep`, `asbiep` SET `top_level_asbiep`.`asbiep_uuid` = `asbiep`.`asbiep_uuid`
+WHERE `top_level_asbiep`.`asbiep_id` = `asbiep`.`asbiep_id`;
+
+-- Drop old `xbt_id` columns
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `abie` DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `asbie`
+    DROP FOREIGN KEY `asbie_from_abie_id_fk`,
+    DROP FOREIGN KEY `asbie_to_asbiep_id_fk`,
+    DROP FOREIGN KEY `asbie_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `asbie`
+    DROP COLUMN `from_abie_id`,
+    DROP COLUMN `to_asbiep_id`,
+    DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `asbie_bizterm` DROP FOREIGN KEY `asbie_bizterm_asbie_fk`;
+ALTER TABLE `asbie_bizterm` DROP COLUMN `asbie_id`;
+
+ALTER TABLE `asbiep`
+    DROP FOREIGN KEY `asbiep_role_of_abie_id_fk`,
+    DROP FOREIGN KEY `asbiep_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `asbiep`
+    DROP COLUMN `role_of_abie_id`,
+    DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `bbie`
+    DROP FOREIGN KEY `bbie_from_abie_id_fk`,
+    DROP FOREIGN KEY `bbie_to_bbiep_id_fk`,
+    DROP FOREIGN KEY `bbie_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `bbie`
+    DROP COLUMN `from_abie_id`,
+    DROP COLUMN `to_bbiep_id`,
+    DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `bbie_bizterm` DROP FOREIGN KEY `bbie_bizterm_bbie_fk`;
+ALTER TABLE `bbie_bizterm` DROP COLUMN `bbie_id`;
+
+ALTER TABLE `bbie_sc`
+    DROP FOREIGN KEY `bbie_sc_bbie_id_fk`,
+    DROP FOREIGN KEY `bbie_sc_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `bbie_sc`
+    DROP COLUMN `bbie_id`,
+    DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_owner_top_level_asbiep_id_fk`;
+ALTER TABLE `bbiep` DROP COLUMN `owner_top_level_asbiep_id`;
+
+ALTER TABLE `bie_usage_rule`
+    DROP FOREIGN KEY `bie_usage_rule_target_abie_id_fk`,
+    DROP FOREIGN KEY `bie_usage_rule_target_asbie_id_fk`,
+    DROP FOREIGN KEY `bie_usage_rule_target_asbiep_id_fk`,
+    DROP FOREIGN KEY `bie_usage_rule_target_bbie_id_fk`,
+    DROP FOREIGN KEY `bie_usage_rule_target_bbiep_id_fk`;
+ALTER TABLE `bie_usage_rule`
+    DROP COLUMN `target_abie_id`,
+    DROP COLUMN `target_asbie_id`,
+    DROP COLUMN `target_asbiep_id`,
+    DROP COLUMN `target_bbie_id`,
+    DROP COLUMN `target_bbiep_id`;
+
+ALTER TABLE `bie_user_ext_revision`
+    DROP FOREIGN KEY `bie_user_ext_revision_ext_abie_id_fk`,
+    DROP FOREIGN KEY `bie_user_ext_revision_top_level_asbiep_id_fk`;
+ALTER TABLE `bie_user_ext_revision`
+    DROP COLUMN `ext_abie_id`,
+    DROP COLUMN `top_level_asbiep_id`;
+
+ALTER TABLE `biz_ctx_assignment`
+    DROP FOREIGN KEY `biz_ctx_assignment_top_level_asbiep_id_fk`,
+    DROP FOREIGN KEY `biz_ctx_assignment_biz_ctx_id_fk`;
+ALTER TABLE `biz_ctx_assignment` DROP KEY `biz_ctx_assignment_uk`;
+ALTER TABLE `biz_ctx_assignment` DROP COLUMN `top_level_asbiep_id`;
+
+ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_asbiep_id_fk`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `asbiep_id`;
+
+ALTER TABLE `abie` DROP COLUMN `abie_id`;
+ALTER TABLE `asbie` DROP COLUMN `asbie_id`;
+ALTER TABLE `bbie` DROP COLUMN `bbie_id`;
+ALTER TABLE `asbiep` DROP COLUMN `asbiep_id`;
+ALTER TABLE `bbiep` DROP COLUMN `bbiep_id`;
+ALTER TABLE `bbie_sc` DROP COLUMN `bbie_sc_id`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `top_level_asbiep_id`;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `abie` CHANGE `abie_uuid` `abie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asbie` CHANGE `asbie_uuid` `asbie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bbie` CHANGE `bbie_uuid` `bbie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asbiep` CHANGE `asbiep_uuid` `asbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bbiep` CHANGE `bbiep_uuid` `bbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bbie_sc` CHANGE `bbie_sc_uuid` `bbie_sc_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `top_level_asbiep` CHANGE `top_level_asbiep_uuid` `top_level_asbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `abie` CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `asbie`
+    CHANGE `from_abie_uuid` `from_abie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.',
+    CHANGE `to_asbiep_uuid` `to_asbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables',
+    CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `asbie_bizterm` CHANGE `asbie_uuid` `asbie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated ASBIE';
+
+ALTER TABLE `asbiep`
+    CHANGE `role_of_abie_uuid` `role_of_abie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.',
+    CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `bbie`
+    CHANGE `from_abie_uuid` `from_abie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.',
+    CHANGE `to_bbiep_uuid` `to_bbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'TO_BBIEP_ID is a foreign key to the BBIEP table. TO_BBIEP_ID basically refers to a child data element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID in the based BCC.',
+    CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `bbie_bizterm` CHANGE `bbie_uuid` `bbie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated BBIE';
+
+ALTER TABLE `bbie_sc`
+    CHANGE `bbie_uuid` `bbie_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The BBIE this BBIE_SC applies to.',
+    CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `bbiep` CHANGE `owner_top_level_asbiep_uuid` `owner_top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `bie_usage_rule`
+    CHANGE `target_abie_uuid` `target_abie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.',
+    CHANGE `target_asbie_uuid` `target_asbie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.',
+    CHANGE `target_asbiep_uuid` `target_asbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.',
+    CHANGE `target_bbie_uuid` `target_bbie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.',
+    CHANGE `target_bbiep_uuid` `target_bbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.';
+
+ALTER TABLE `bie_user_ext_revision`
+    CHANGE `ext_abie_uuid` `ext_abie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.',
+    CHANGE `top_level_asbiep_uuid` `top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `biz_ctx_assignment` CHANGE `top_level_asbiep_uuid` `top_level_asbiep_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'This is a foreign key to the top-level ASBIEP.';
+
+ALTER TABLE `top_level_asbiep` CHANGE `asbiep_uuid` `asbiep_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.';
+
+-- Add foreign key constraints
+ALTER TABLE `abie` ADD PRIMARY KEY (`abie_id`);
+ALTER TABLE `asbie` ADD PRIMARY KEY (`asbie_id`);
+ALTER TABLE `bbie` ADD PRIMARY KEY (`bbie_id`);
+ALTER TABLE `asbiep` ADD PRIMARY KEY (`asbiep_id`);
+ALTER TABLE `bbiep` ADD PRIMARY KEY (`bbiep_id`);
+ALTER TABLE `bbie_sc` ADD PRIMARY KEY (`bbie_sc_id`);
+ALTER TABLE `top_level_asbiep` ADD PRIMARY KEY (`top_level_asbiep_id`);
+
+ALTER TABLE `abie` ADD CONSTRAINT `abie_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `asbie`
+    ADD CONSTRAINT `asbie_from_abie_id_fk` FOREIGN KEY (`from_abie_id`) REFERENCES `abie` (`abie_id`),
+    ADD CONSTRAINT `asbie_to_asbiep_id_fk` FOREIGN KEY (`to_asbiep_id`) REFERENCES `asbiep` (`asbiep_id`),
+    ADD CONSTRAINT `asbie_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `asbie_bizterm` ADD CONSTRAINT `asbie_bizterm_asbie_id_fk` FOREIGN KEY (`asbie_id`) REFERENCES `asbie` (`asbie_id`);
+
+ALTER TABLE `asbiep`
+    ADD CONSTRAINT `asbiep_role_of_abie_id_fk` FOREIGN KEY (`role_of_abie_id`) REFERENCES `abie` (`abie_id`),
+    ADD CONSTRAINT `asbiep_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `bbie`
+    ADD CONSTRAINT `bbie_from_abie_id_fk` FOREIGN KEY (`from_abie_id`) REFERENCES `abie` (`abie_id`),
+    ADD CONSTRAINT `bbie_to_bbiep_id_fk` FOREIGN KEY (`to_bbiep_id`) REFERENCES `bbiep` (`bbiep_id`),
+    ADD CONSTRAINT `bbie_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `bbie_bizterm` ADD CONSTRAINT `bbie_bizterm_bbie_id_fk` FOREIGN KEY (`bbie_id`) REFERENCES `bbie` (`bbie_id`);
+
+ALTER TABLE `bbie_sc`
+    ADD CONSTRAINT `bbie_sc_bbie_id_fk` FOREIGN KEY (`bbie_id`) REFERENCES `bbie` (`bbie_id`),
+    ADD CONSTRAINT `bbie_sc_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `bbiep` ADD CONSTRAINT `bbiep_owner_top_level_asbiep_id_fk` FOREIGN KEY (`owner_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `bie_usage_rule`
+    ADD CONSTRAINT `bie_usage_rule_target_abie_id_fk` FOREIGN KEY (`target_abie_id`) REFERENCES `abie` (`abie_id`),
+    ADD CONSTRAINT `bie_usage_rule_target_asbie_id_fk` FOREIGN KEY (`target_asbie_id`) REFERENCES `asbie` (`asbie_id`),
+    ADD CONSTRAINT `bie_usage_rule_target_asbiep_id_fk` FOREIGN KEY (`target_asbiep_id`) REFERENCES `asbiep` (`asbiep_id`),
+    ADD CONSTRAINT `bie_usage_rule_target_bbie_id_fk` FOREIGN KEY (`target_bbie_id`) REFERENCES `bbie` (`bbie_id`),
+    ADD CONSTRAINT `bie_usage_rule_target_bbiep_id_fk` FOREIGN KEY (`target_bbiep_id`) REFERENCES `bbiep` (`bbiep_id`);
+
+ALTER TABLE `bie_user_ext_revision`
+    ADD CONSTRAINT `bie_user_ext_revision_ext_abie_id_fk` FOREIGN KEY (`ext_abie_id`) REFERENCES `abie` (`abie_id`),
+    ADD CONSTRAINT `bie_user_ext_revision_top_level_asbiep_id_fk` FOREIGN KEY (`top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+
+ALTER TABLE `biz_ctx_assignment`
+    ADD CONSTRAINT `biz_ctx_assignment_top_level_asbiep_id_fk` FOREIGN KEY (`top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
+ALTER TABLE `biz_ctx_assignment` ADD UNIQUE KEY `biz_ctx_assignment_uk` (`biz_ctx_id`, `top_level_asbiep_id`);
+
+ALTER TABLE `top_level_asbiep` ADD CONSTRAINT `top_level_asbiep_asbiep_id_fk` FOREIGN KEY (`asbiep_id`) REFERENCES `asbiep` (`asbiep_id`);

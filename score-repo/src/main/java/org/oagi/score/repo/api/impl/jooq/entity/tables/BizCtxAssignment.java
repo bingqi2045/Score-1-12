@@ -24,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentRecord;
@@ -67,7 +66,7 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
      * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This
      * is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BizCtxAssignmentRecord, String> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased) {
         this(alias, aliased, null);
@@ -113,22 +112,16 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     }
 
     @Override
+    public List<UniqueKey<BizCtxAssignmentRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK);
+    }
+
+    @Override
     public List<ForeignKey<BizCtxAssignmentRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
+        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
-    private transient BizCtx _bizCtx;
     private transient TopLevelAsbiep _topLevelAsbiep;
-
-    /**
-     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
-     */
-    public BizCtx bizCtx() {
-        if (_bizCtx == null)
-            _bizCtx = new BizCtx(this, Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK);
-
-        return _bizCtx;
-    }
 
     /**
      * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
@@ -185,21 +178,21 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<String, String, ULong> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

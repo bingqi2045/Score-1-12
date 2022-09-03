@@ -70,7 +70,7 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
      * The column <code>oagi.asbie_bizterm.asbie_id</code>. An internal ID of
      * the associated ASBIE
      */
-    public final TableField<AsbieBiztermRecord, ULong> ASBIE_ID = createField(DSL.name("asbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the associated ASBIE");
+    public final TableField<AsbieBiztermRecord, String> ASBIE_ID = createField(DSL.name("asbie_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated ASBIE");
 
     /**
      * The column <code>oagi.asbie_bizterm.primary_indicator</code>. The
@@ -160,7 +160,7 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
 
     @Override
     public List<ForeignKey<AsbieBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ASBIE_BIZTERM_ASCC_BIZTERM_FK, Keys.ASBIE_BIZTERM_ASBIE_FK, Keys.ASBIE_BIZTERM_CREATED_BY_FK, Keys.ASBIE_BIZTERM_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.ASBIE_BIZTERM_ASCC_BIZTERM_FK, Keys.ASBIE_BIZTERM_ASBIE_ID_FK, Keys.ASBIE_BIZTERM_CREATED_BY_FK, Keys.ASBIE_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient AsccBizterm _asccBizterm;
@@ -183,7 +183,7 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
      */
     public Asbie asbie() {
         if (_asbie == null)
-            _asbie = new Asbie(this, Keys.ASBIE_BIZTERM_ASBIE_FK);
+            _asbie = new Asbie(this, Keys.ASBIE_BIZTERM_ASBIE_ID_FK);
 
         return _asbie;
     }
@@ -254,21 +254,21 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -6,6 +6,7 @@ import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ABIE;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,15 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ABIERepository implements ScoreRepository<ABIE, BigInteger> {
+public class ABIERepository implements ScoreRepository<ABIE, String> {
 
     @Autowired
     private DSLContext dslContext;
 
     private SelectJoinStep<Record13<
-                ULong, ULong, String, ULong, LocalDateTime,
-                Integer, String, String, String, String, String, String,
-                LocalDateTime>> getSelectJoinStep() {
+            String, ULong, String, String, LocalDateTime,
+            Integer, String, String, String, String, String, String,
+            LocalDateTime>> getSelectJoinStep() {
         return dslContext.select(Tables.ABIE.ABIE_ID,
                 Tables.ABIE.BASED_ACC_MANIFEST_ID,
                 Tables.ABIE.BIZ_CTX_ID,
@@ -48,16 +49,16 @@ public class ABIERepository implements ScoreRepository<ABIE, BigInteger> {
     }
 
     @Override
-    public ABIE findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public ABIE findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(id)))
+                .where(Tables.ABIE.ABIE_ID.eq(id))
                 .fetchOneInto(ABIE.class);
     }
 
-    public List<ABIE> findByOwnerTopLevelAsbiepIds(Collection<BigInteger> ownerTopLevelAsbiepIds) {
+    public List<ABIE> findByOwnerTopLevelAsbiepIds(Collection<String> ownerTopLevelAsbiepIds) {
         if (ownerTopLevelAsbiepIds == null || ownerTopLevelAsbiepIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -65,9 +66,9 @@ public class ABIERepository implements ScoreRepository<ABIE, BigInteger> {
                 .where(
                         (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
+                                        ownerTopLevelAsbiepIds.iterator().next()) :
                                 Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                                        ownerTopLevelAsbiepIds)
                 )
                 .fetchInto(ABIE.class);
     }

@@ -16,7 +16,7 @@ public class BieReadService {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    public BieDocument getBieDocument(ScoreUser requester, BigInteger topLevelAsbiepId) {
+    public BieDocument getBieDocument(ScoreUser requester, String topLevelAsbiepId) {
         BieDocument bieDocument = BieDocumentBuilder.buildFrom(
                 scoreRepositoryFactory.createBieReadRepository(),
                 scoreRepositoryFactory.createCcReadRepository())

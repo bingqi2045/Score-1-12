@@ -7,19 +7,19 @@ import java.math.BigInteger;
 
 public class GetAssignedBusinessTermRequest extends Request {
 
-    private BigInteger assignedBtId;
+    private BigInteger assignedBizTermId;
     private String bieType;
 
     public GetAssignedBusinessTermRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getAssignedBtId() {
-        return assignedBtId;
+    public BigInteger getAssignedBizTermId() {
+        return assignedBizTermId;
     }
 
-    public void setAssignedBtId(BigInteger assignedBtId) {
-        this.assignedBtId = assignedBtId;
+    public void setAssignedBizTermId(BigInteger assignedBizTermId) {
+        this.assignedBizTermId = assignedBizTermId;
     }
 
     public String getBieType() {
@@ -30,8 +30,8 @@ public class GetAssignedBusinessTermRequest extends Request {
         this.bieType = bieType;
     }
 
-    public GetAssignedBusinessTermRequest withAssignedBtId(BigInteger assignedBtId) {
-        this.setAssignedBtId(assignedBtId);
+    public GetAssignedBusinessTermRequest withAssignedBizTermId(BigInteger assignedBizTermId) {
+        this.setAssignedBizTermId(assignedBizTermId);
         return this;
     }
 

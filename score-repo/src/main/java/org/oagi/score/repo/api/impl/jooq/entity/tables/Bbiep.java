@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function13;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -57,10 +56,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     }
 
     /**
-     * The column <code>oagi.bbiep.bbiep_id</code>. A internal, primary database
-     * key of an BBIEP.
+     * The column <code>oagi.bbiep.bbiep_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<BbiepRecord, ULong> BBIEP_ID = createField(DSL.name("bbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an BBIEP.");
+    public final TableField<BbiepRecord, String> BBIEP_ID = createField(DSL.name("bbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bbiep.guid</code>. A globally unique identifier
@@ -145,7 +144,7 @@ public class Bbiep extends TableImpl<BbiepRecord> {
      * The column <code>oagi.bbiep.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<BbiepRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BbiepRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private Bbiep(Name alias, Table<BbiepRecord> aliased) {
         this(alias, aliased, null);
@@ -188,11 +187,6 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.BBIEP_BBIEP_HASH_PATH_K, Indexes.BBIEP_BBIEP_PATH_K);
-    }
-
-    @Override
-    public Identity<BbiepRecord, ULong> getIdentity() {
-        return (Identity<BbiepRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -297,21 +291,21 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+    public Row13<String, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function13<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function13<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

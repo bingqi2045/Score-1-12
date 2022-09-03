@@ -70,7 +70,7 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
      * The column <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the
      * associated ASCC
      */
-    public final TableField<AsccBiztermRecord, String> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.CHAR(36), this, "An internal ID of the associated ASCC");
+    public final TableField<AsccBiztermRecord, String> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated ASCC");
 
     /**
      * The column <code>oagi.ascc_bizterm.created_by</code>. A foreign key

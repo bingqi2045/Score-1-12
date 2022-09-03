@@ -93,14 +93,14 @@ public class Ascc extends TableImpl<AsccRecord> {
      * key pointing to an ACC record. It is basically pointing to a parent data
      * element (type) of the TO_ASCCP_ID.
      */
-    public final TableField<AsccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.");
+    public final TableField<AsccRecord, String> FROM_ACC_ID = createField(DSL.name("from_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.");
 
     /**
      * The column <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
      * element of the FROM_ACC_ID.
      */
-    public final TableField<AsccRecord, String> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.CHAR(36), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.");
+    public final TableField<AsccRecord, String> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.");
 
     /**
      * The column <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the

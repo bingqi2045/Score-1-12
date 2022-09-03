@@ -10,11 +10,11 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAsbiepNode extends BieEditNode {
 
-    private BigInteger asbieId = BigInteger.ZERO;
+    private String asbieId;
     private BigInteger asccManifestId = BigInteger.ZERO;
-    private BigInteger asbiepId = BigInteger.ZERO;
+    private String asbiepId;
     private BigInteger asccpManifestId = BigInteger.ZERO;
-    private BigInteger abieId = BigInteger.ZERO;
+    private String abieId;
     private BigInteger accManifestId = BigInteger.ZERO;
 
 }

@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 
 public class UpsertBbieRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAsbiepId;
+    private final String topLevelAsbiepId;
     private final BbieNode.Bbie bbie;
 
     public UpsertBbieRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
-                             BigInteger topLevelAsbiepId, BbieNode.Bbie bbie) {
+                             String topLevelAsbiepId, BbieNode.Bbie bbie) {
         super(user, localDateTime);
         this.topLevelAsbiepId = topLevelAsbiepId;
         this.bbie = bbie;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 

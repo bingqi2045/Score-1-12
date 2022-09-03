@@ -62,7 +62,7 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
      * The column <code>oagi.cdt_awd_pri.cdt_id</code>. Foreign key pointing to
      * a CDT in the DT table.
      */
-    public final TableField<CdtAwdPriRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to a CDT in the DT table.");
+    public final TableField<CdtAwdPriRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
 
     /**
      * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key to the

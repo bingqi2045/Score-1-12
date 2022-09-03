@@ -18,7 +18,7 @@ public class TopLevelAsbiepReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public List<TopLevelAsbiep> findRefTopLevelAsbieps(Collection<BigInteger> topLevelAsbiepIds) {
+    public List<TopLevelAsbiep> findRefTopLevelAsbieps(Collection<String> topLevelAsbiepIds) {
         return dslContext.select(Tables.TOP_LEVEL_ASBIEP.fields())
                 .from(Tables.TOP_LEVEL_ASBIEP)
                 .join(Tables.ASBIEP).on(Tables.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID))

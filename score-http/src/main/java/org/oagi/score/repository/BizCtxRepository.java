@@ -57,7 +57,7 @@ public class BizCtxRepository implements ScoreRepository<BizCtx, String> {
         List<String> bizCtxIds = dslContext.select(
                 Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
-                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
+                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiep.getTopLevelAsbiepId()))
                 .fetchInto(String.class);
 
         return bizCtxIds.stream().map(bizCtxId -> findById(bizCtxId)).collect(Collectors.toList());

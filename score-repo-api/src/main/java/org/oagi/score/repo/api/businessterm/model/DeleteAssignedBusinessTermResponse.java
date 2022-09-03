@@ -9,21 +9,21 @@ public class DeleteAssignedBusinessTermResponse extends Response {
 
     private final List<BieToAssign> assignedBtList;
 
-    public DeleteAssignedBusinessTermResponse(List<BieToAssign> assignedBtIdList) {
-        this.assignedBtList = assignedBtIdList;
+    public DeleteAssignedBusinessTermResponse(List<BieToAssign> assignedBizTermIdList) {
+        this.assignedBtList = assignedBizTermIdList;
     }
 
     public List<BieToAssign> getAssignedBtList() {
         return assignedBtList;
     }
 
-    public boolean contains(BieToAssign assignedBtId) {
-        return this.assignedBtList.contains(assignedBtId);
+    public boolean contains(BieToAssign assignedBizTermId) {
+        return this.assignedBtList.contains(assignedBizTermId);
     }
 
-    public boolean containsAll(List<BieToAssign> assignedBtIdList) {
-        for (BieToAssign assignedBtId : assignedBtIdList) {
-            if (!this.assignedBtList.contains(assignedBtId)) {
+    public boolean containsAll(List<BieToAssign> assignedBizTermIdList) {
+        for (BieToAssign assignedBizTermId : assignedBizTermIdList) {
+            if (!this.assignedBtList.contains(assignedBizTermId)) {
                 return false;
             }
         }

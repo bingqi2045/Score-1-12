@@ -68,7 +68,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
      * The column
      * <code>oagi.agency_id_list_value_manifest.agency_id_list_value_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, String> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<AgencyIdListValueManifestRecord, String> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column
@@ -159,7 +159,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     @Override
     public List<ForeignKey<AgencyIdListValueManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_BASED_AGENCY_ID_LIST_VAL_MNF_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
+        return Arrays.asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_BASED_AGENCY_ID_LIST_VAL_MNF_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
     }
 
     private transient Release _release;
@@ -186,7 +186,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
      */
     public AgencyIdListValue agencyIdListValue() {
         if (_agencyIdListValue == null)
-            _agencyIdListValue = new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_ID_FK);
+            _agencyIdListValue = new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK);
 
         return _agencyIdListValue;
     }

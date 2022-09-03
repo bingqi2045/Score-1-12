@@ -66,7 +66,7 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     /**
      * The column <code>oagi.ascc_manifest.ascc_id</code>.
      */
-    public final TableField<AsccManifestRecord, String> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<AsccManifestRecord, String> ASCC_ID = createField(DSL.name("ascc_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.ascc_manifest.seq_key_id</code>.

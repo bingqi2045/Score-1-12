@@ -39,7 +39,7 @@ public class BdtReadRepository {
                 .fetchOptionalInto(DtRecord.class).orElse(null);
     }
 
-    public BdtNode getBdtNode(BigInteger topLevelAsbiepId, BigInteger dtManifestId) {
+    public BdtNode getBdtNode(String topLevelAsbiepId, BigInteger dtManifestId) {
         DtRecord dtRecord = getDtByDtManifestId(dtManifestId);
         if (dtRecord == null) {
             return null;

@@ -68,7 +68,7 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
      * The column <code>oagi.bdt_pri_restri.bdt_id</code>. Foreign key to the DT
      * table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public final TableField<BdtPriRestriRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
+    public final TableField<BdtPriRestriRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
 
     /**
      * The column <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.

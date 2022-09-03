@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class GetReleaseRequest extends Request {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private String releaseId;
 
@@ -30,15 +30,15 @@ public class GetReleaseRequest extends Request {
         return this;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
-    public void setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public void setTopLevelAsbiepId(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
     }
 
-    public GetReleaseRequest withTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public GetReleaseRequest withTopLevelAsbiepId(String topLevelAsbiepId) {
         setTopLevelAsbiepId(topLevelAsbiepId);
         return this;
     }

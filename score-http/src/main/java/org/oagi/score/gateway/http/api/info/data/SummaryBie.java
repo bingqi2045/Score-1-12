@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class SummaryBie {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private LocalDateTime lastUpdateTimestamp;
     private BieState state;
 

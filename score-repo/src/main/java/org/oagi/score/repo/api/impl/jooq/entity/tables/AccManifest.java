@@ -66,7 +66,7 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     /**
      * The column <code>oagi.acc_manifest.acc_id</code>.
      */
-    public final TableField<AccManifestRecord, String> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<AccManifestRecord, String> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.based_acc_manifest_id</code>.

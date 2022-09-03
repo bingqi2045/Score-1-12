@@ -176,7 +176,7 @@ public class JooqBusinessContextReadRepository
             System.out.println(request.getTopLevelAsbiepIdList().size());
             if (request.getTopLevelAsbiepIdList().size() == 1) {
                 conditions.add(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(
-                        ULong.valueOf(request.getTopLevelAsbiepIdList().iterator().next())
+                        request.getTopLevelAsbiepIdList().iterator().next()
                 ));
             } else {
                 conditions.add(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.in(

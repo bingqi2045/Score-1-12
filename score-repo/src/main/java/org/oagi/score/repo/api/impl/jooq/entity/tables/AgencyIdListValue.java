@@ -94,7 +94,7 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * key to the agency identification list in the AGENCY_ID_LIST table this
      * value belongs to.
      */
-    public final TableField<AgencyIdListValueRecord, String> OWNER_LIST_ID = createField(DSL.name("owner_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.");
+    public final TableField<AgencyIdListValueRecord, String> OWNER_LIST_ID = createField(DSL.name("owner_list_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the agency identification list in the AGENCY_ID_LIST table this value belongs to.");
 
     /**
      * The column

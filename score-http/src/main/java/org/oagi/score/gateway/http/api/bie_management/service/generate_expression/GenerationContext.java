@@ -153,17 +153,17 @@ public class GenerationContext implements InitializingBean {
     private Map<String, AgencyIdList> findAgencyIdListMap;
     private Map<String, AgencyIdListValue> findAgencyIdListValueMap;
     private Map<String, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
-    private Map<BigInteger, ABIE> findAbieMap;
-    private Map<BigInteger, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
-    private Map<BigInteger, List<BBIESC>>
+    private Map<String, ABIE> findAbieMap;
+    private Map<String, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
+    private Map<String, List<BBIESC>>
             findBbieScByBbieIdAndUsedIsTrueMap;
-    private Map<BigInteger, List<ASBIE>> findAsbieByFromAbieIdMap;
-    private Map<BigInteger, ASBIEP> findASBIEPMap;
-    private Map<BigInteger, ASBIEP> findAsbiepByRoleOfAbieIdMap;
-    private Map<BigInteger, BBIEP> findBBIEPMap;
+    private Map<String, List<ASBIE>> findAsbieByFromAbieIdMap;
+    private Map<String, ASBIEP> findASBIEPMap;
+    private Map<String, ASBIEP> findAsbiepByRoleOfAbieIdMap;
+    private Map<String, BBIEP> findBBIEPMap;
     private Map<String, String> findUserNameMap;
-    private Map<BigInteger, List<AsbieBizterm>> findAsbieBiztermByAsbieIdMap;
-    private Map<BigInteger, List<BbieBizterm>> findBbieBiztermByBbieIdMap;
+    private Map<String, List<AsbieBizTerm>> findAsbieBizTermByAsbieIdMap;
+    private Map<String, List<BbieBizTerm>> findBbieBizTermByBbieIdMap;
 
     private Map<String, Release> findReleaseMap;
     private Map<String, ContextScheme> findContextSchemeMap;
@@ -221,7 +221,7 @@ public class GenerationContext implements InitializingBean {
         return refTopLevelAsbiepSet;
     }
 
-    private void init(Collection<BigInteger> topLevelAsbiepIds, String releaseId) {
+    private void init(Collection<String> topLevelAsbiepIds, String releaseId) {
         List<BdtPriRestri> bdtPriRestriList = bdtPriRestriRepository.findAll();
         findBdtPriRestriByBdtIdAndDefaultIsTrueMap = bdtPriRestriList.stream()
                 .filter(e -> e.isDefault())
@@ -302,11 +302,11 @@ public class GenerationContext implements InitializingBean {
         findAgencyIdListValueByOwnerListIdMap = agencyIdListValues.stream()
                 .collect(Collectors.groupingBy(e -> e.getOwnerListId()));
 
-        List<AsbieBizterm> asbieBiztermList = asbieBiztermRepository.findAll();
-        findAsbieBiztermByAsbieIdMap = asbieBiztermList
+        List<AsbieBizTerm> asbieBizTermList = asbieBiztermRepository.findAll();
+        findAsbieBizTermByAsbieIdMap = asbieBizTermList
                 .stream().collect(Collectors.groupingBy(e -> e.getAsbieId()));
-        List<BbieBizterm> bbieBiztermList = bbieBiztermRepository.findAll();
-        findBbieBiztermByBbieIdMap = bbieBiztermList
+        List<BbieBizTerm> bbieBizTermList = bbieBiztermRepository.findAll();
+        findBbieBizTermByBbieIdMap = bbieBizTermList
                 .stream().collect(Collectors.groupingBy(e -> e.getBbieId()));
 
         List<ABIE> abieList = abieRepository.findByOwnerTopLevelAsbiepIds(topLevelAsbiepIds);
@@ -434,46 +434,46 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    public ABIE findAbie(BigInteger abieId) {
-        return (abieId != null && abieId.longValue() > 0L) ? findAbieMap.get(abieId) : null;
+    public ABIE findAbie(String abieId) {
+        return StringUtils.hasLength(abieId) ? findAbieMap.get(abieId) : null;
     }
 
-    public List<BBIE> findBbieByFromAbieIdAndUsedIsTrue(BigInteger fromAbieId) {
+    public List<BBIE> findBbieByFromAbieIdAndUsedIsTrue(String fromAbieId) {
         return findBbieByFromAbieIdAndUsedIsTrueMap.containsKey(fromAbieId) ?
                 findBbieByFromAbieIdAndUsedIsTrueMap.get(fromAbieId) :
                 Collections.emptyList();
     }
 
-    public List<BBIESC> findBbieScByBbieIdAndUsedIsTrue(BigInteger bbieId) {
+    public List<BBIESC> findBbieScByBbieIdAndUsedIsTrue(String bbieId) {
         return findBbieScByBbieIdAndUsedIsTrueMap.containsKey(bbieId) ?
                 findBbieScByBbieIdAndUsedIsTrueMap.get(bbieId) :
                 Collections.emptyList();
     }
 
-    public List<ASBIE> findAsbieByFromAbieId(BigInteger fromAbieId) {
+    public List<ASBIE> findAsbieByFromAbieId(String fromAbieId) {
         return findAsbieByFromAbieIdMap.containsKey(fromAbieId) ?
                 findAsbieByFromAbieIdMap.get(fromAbieId) :
                 Collections.emptyList();
     }
 
-    public ASBIEP findASBIEP(BigInteger asbiepId) {
-        return (asbiepId != null && asbiepId.longValue() > 0L) ? findASBIEPMap.get(asbiepId) : null;
+    public ASBIEP findASBIEP(String asbiepId) {
+        return StringUtils.hasLength(asbiepId) ? findASBIEPMap.get(asbiepId) : null;
     }
 
-    public ASBIEP findAsbiepByRoleOfAbieId(BigInteger roleOfAbieId) {
-        return (roleOfAbieId != null && roleOfAbieId.longValue() > 0L) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
+    public ASBIEP findAsbiepByRoleOfAbieId(String roleOfAbieId) {
+        return StringUtils.hasLength(roleOfAbieId) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
     }
 
-    public BBIEP findBBIEP(BigInteger bbiepId) {
-        return (bbiepId != null && bbiepId.longValue() > 0L) ? findBBIEPMap.get(bbiepId) : null;
+    public BBIEP findBBIEP(String bbiepId) {
+        return StringUtils.hasLength(bbiepId) ? findBBIEPMap.get(bbiepId) : null;
     }
 
-    public List<AsbieBizterm> findAsbieBizterm(BigInteger asbieId) {
-        return (asbieId != null && asbieId.longValue() > 0L) ? findAsbieBiztermByAsbieIdMap.get(asbieId) : Collections.emptyList();
+    public List<AsbieBizTerm> findAsbieBizTerm(String asbieId) {
+        return StringUtils.hasLength(asbieId) ? findAsbieBizTermByAsbieIdMap.get(asbieId) : Collections.emptyList();
     }
 
-    public List<BbieBizterm> findBbieBizterm(BigInteger bbieId) {
-        return (bbieId != null && bbieId.longValue() > 0L) ? findBbieBiztermByBbieIdMap.get(bbieId) : Collections.emptyList();
+    public List<BbieBizTerm> findBbieBizTerm(String bbieId) {
+        return StringUtils.hasLength(bbieId) ? findBbieBizTermByBbieIdMap.get(bbieId) : Collections.emptyList();
     }
 
     public String findUserName(String userId) {
@@ -648,12 +648,12 @@ public class GenerationContext implements InitializingBean {
         return (bcc != null) ? findBccpByBccpIdMap.get(bcc.getToBccpId()) : null;
     }
 
-    public List<AsbieBizterm> queryAsbieBizterm(ASBIE asbie) {
-        return (asbie != null) ? findAsbieBizterm(asbie.getAsbieId()) : Collections.emptyList();
+    public List<AsbieBizTerm> queryAsbieBizterm(ASBIE asbie) {
+        return (asbie != null) ? findAsbieBizTerm(asbie.getAsbieId()) : Collections.emptyList();
     }
 
-    public List<BbieBizterm> queryBbieBizterm(BBIE bbie) {
-        return (bbie != null) ? findBbieBizterm(bbie.getBbieId()) : Collections.emptyList();
+    public List<BbieBizTerm> queryBbieBizterm(BBIE bbie) {
+        return (bbie != null) ? findBbieBizTerm(bbie.getBbieId()) : Collections.emptyList();
     }
 
     public CodeList getCodeList(BBIESC bbieSc) {

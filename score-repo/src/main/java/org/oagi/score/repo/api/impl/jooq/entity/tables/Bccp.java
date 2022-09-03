@@ -85,7 +85,7 @@ public class Bccp extends TableImpl<BccpRecord> {
      * table indicating the data typye or data format of the BCCP. Only DT_ID
      * which DT_Type is BDT can be used.
      */
-    public final TableField<BccpRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.");
+    public final TableField<BccpRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.");
 
     /**
      * The column <code>oagi.bccp.den</code>. The dictionary entry name of the

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
@@ -56,16 +54,16 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     }
 
     /**
-     * The column <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A
-     * internal, primary database key of an top-level ASBIEP.
+     * The column <code>oagi.top_level_asbiep.top_level_asbiep_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an top-level ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, String> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.top_level_asbiep.asbiep_id</code>. Foreign key to
      * the ASBIEP table pointing to a record which is a top-level ASBIEP.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, String> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.CHAR(36), this, "Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.");
 
     /**
      * The column <code>oagi.top_level_asbiep.owner_user_id</code>. Foreign key
@@ -150,11 +148,6 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<TopLevelAsbiepRecord, ULong> getIdentity() {
-        return (Identity<TopLevelAsbiepRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -258,21 +251,21 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, String, LocalDateTime, String, String, String, String, String> fieldsRow() {
+    public Row9<String, String, String, LocalDateTime, String, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super LocalDateTime, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

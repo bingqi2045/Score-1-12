@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class BieEditUpdateDetailRequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private TopLevelAsbiepRequest topLevelAsbiepDetail;
     private List<AbieNode.Abie> abieDetails = Collections.emptyList();
     private List<AsbieNode.Asbie> asbieDetails = Collections.emptyList();

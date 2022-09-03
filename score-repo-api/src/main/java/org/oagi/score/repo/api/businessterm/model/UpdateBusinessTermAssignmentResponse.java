@@ -6,18 +6,18 @@ import java.math.BigInteger;
 
 public class UpdateBusinessTermAssignmentResponse extends Response {
 
-    private final BigInteger assignedBtId;
+    private final BigInteger assignedBizTermId;
     private final String bieType;
     private final boolean changed;
 
-    public UpdateBusinessTermAssignmentResponse(BigInteger assignedBtId, String bieType, boolean changed) {
-        this.assignedBtId = assignedBtId;
+    public UpdateBusinessTermAssignmentResponse(BigInteger assignedBizTermId, String bieType, boolean changed) {
+        this.assignedBizTermId = assignedBizTermId;
         this.bieType = bieType;
         this.changed = changed;
     }
 
-    public BigInteger getAssignedBtId() {
-        return assignedBtId;
+    public BigInteger getAssignedBizTermId() {
+        return assignedBizTermId;
     }
 
     public String getBieType() {

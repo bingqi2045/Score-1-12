@@ -66,7 +66,7 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     /**
      * The column <code>oagi.dt_manifest.dt_id</code>.
      */
-    public final TableField<DtManifestRecord, String> DT_ID = createField(DSL.name("dt_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<DtManifestRecord, String> DT_ID = createField(DSL.name("dt_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_manifest.based_dt_manifest_id</code>.

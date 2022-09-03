@@ -7,9 +7,9 @@ import java.math.BigInteger;
 
 public class UpdateBusinessTermAssignmentRequest extends Request {
 
-    private BigInteger assignedBtId;
+    private BigInteger assignedBizTermId;
 
-    private BigInteger bieId;
+    private String bieId;
 
     private String bieType;
 
@@ -21,16 +21,16 @@ public class UpdateBusinessTermAssignmentRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getAssignedBtId() {
-        return assignedBtId;
+    public BigInteger getAssignedBizTermId() {
+        return assignedBizTermId;
     }
 
-    public void setAssignedBtId(BigInteger assignedBtId) {
-        this.assignedBtId = assignedBtId;
+    public void setAssignedBizTermId(BigInteger assignedBizTermId) {
+        this.assignedBizTermId = assignedBizTermId;
     }
 
-    public UpdateBusinessTermAssignmentRequest withAssignedBtId(BigInteger assignedBtId) {
-        this.setAssignedBtId(assignedBtId);
+    public UpdateBusinessTermAssignmentRequest withAssignedBizTermId(BigInteger assignedBizTermId) {
+        this.setAssignedBizTermId(assignedBizTermId);
         return this;
     }
 
@@ -58,18 +58,18 @@ public class UpdateBusinessTermAssignmentRequest extends Request {
         this.primaryIndicator = primaryIndicator;
     }
 
-    public BigInteger getBieId() {
+    public String getBieId() {
         return bieId;
     }
 
-    public void setBieId(BigInteger bieId) {
+    public void setBieId(String bieId) {
         this.bieId = bieId;
     }
 
     @Override
     public String toString() {
         return "UpdateBusinessTermAssignmentRequest{" +
-                "assignedBtId=" + assignedBtId +
+                "assignedBizTermId=" + assignedBizTermId +
                 ", bieId=" + bieId +
                 ", bieType='" + bieType + '\'' +
                 ", typeCode='" + typeCode + '\'' +

@@ -10,11 +10,11 @@ public class BieUpliftingMapping {
     public final static BieUpliftingMapping NULL_INSTANCE = new BieUpliftingMapping();
 
     private String bieType;
-    private BigInteger bieId;
+    private String bieId;
     private BigInteger sourceManifestId;
     private String sourcePath;
     private BigInteger targetManifestId;
     private String targetPath;
-    private BigInteger refTopLevelAsbiepId;
+    private String refTopLevelAsbiepId;
 
 }

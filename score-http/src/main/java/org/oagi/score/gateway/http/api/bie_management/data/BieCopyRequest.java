@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class BieCopyRequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private List<String> bizCtxIds;
 
 }

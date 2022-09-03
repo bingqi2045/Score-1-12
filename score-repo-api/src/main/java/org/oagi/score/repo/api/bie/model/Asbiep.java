@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 public class Asbiep extends Auditable {
 
-    private BigInteger asbiepId;
+    private String asbiepId;
 
     private String guid;
 
@@ -16,7 +16,7 @@ public class Asbiep extends Auditable {
 
     private String hashPath;
 
-    private BigInteger roleOfAbieId;
+    private String roleOfAbieId;
 
     private String definition;
 
@@ -24,13 +24,13 @@ public class Asbiep extends Auditable {
 
     private String bizTerm;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getAsbiepId() {
+    public String getAsbiepId() {
         return asbiepId;
     }
 
-    public void setAsbiepId(BigInteger asbiepId) {
+    public void setAsbiepId(String asbiepId) {
         this.asbiepId = asbiepId;
     }
 
@@ -66,11 +66,11 @@ public class Asbiep extends Auditable {
         this.hashPath = hashPath;
     }
 
-    public BigInteger getRoleOfAbieId() {
+    public String getRoleOfAbieId() {
         return roleOfAbieId;
     }
 
-    public void setRoleOfAbieId(BigInteger roleOfAbieId) {
+    public void setRoleOfAbieId(String roleOfAbieId) {
         this.roleOfAbieId = roleOfAbieId;
     }
 
@@ -98,11 +98,11 @@ public class Asbiep extends Auditable {
         this.bizTerm = bizTerm;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 }

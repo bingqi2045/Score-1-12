@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class BBIESC implements BIE, FacetRestrictionsAware {
 
-    private BigInteger bbieScId = BigInteger.ZERO;
+    private String bbieScId;
     private String guid;
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieId;
     private BigInteger basedDtScManifestId = BigInteger.ZERO;
     private BigInteger dtScPriRestriId = BigInteger.ZERO;
     private String codeListId;
@@ -26,5 +26,5 @@ public class BBIESC implements BIE, FacetRestrictionsAware {
     private String bizTerm;
     private String example;
     private boolean used;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

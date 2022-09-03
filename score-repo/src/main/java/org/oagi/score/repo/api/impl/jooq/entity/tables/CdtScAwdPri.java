@@ -62,7 +62,7 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
      * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key
      * pointing to the supplementary component (SC).
      */
-    public final TableField<CdtScAwdPriRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key pointing to the supplementary component (SC).");
+    public final TableField<CdtScAwdPriRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to

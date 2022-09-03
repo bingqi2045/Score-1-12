@@ -28,19 +28,19 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database
-     * key of a BBIE.
+     * Setter for <code>oagi.bbie.bbie_id</code>. Primary, internal database
+     * key.
      */
-    public void setBbieId(ULong value) {
+    public void setBbieId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.bbie_id</code>. A internal, primary database
-     * key of a BBIE.
+     * Getter for <code>oagi.bbie.bbie_id</code>. Primary, internal database
+     * key.
      */
-    public ULong getBbieId() {
-        return (ULong) get(0);
+    public String getBbieId() {
+        return (String) get(0);
     }
 
     /**
@@ -110,19 +110,27 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
-     * based on the FROM_ACC_ID in the BASED_BCC_ID.
+     * Setter for <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
+     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
+     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
+     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
+     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
+     * in the BASED_BCC_ID.
      */
-    public void setFromAbieId(ULong value) {
+    public void setFromAbieId(String value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
-     * based on the FROM_ACC_ID in the BASED_BCC_ID.
+     * Getter for <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
+     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
+     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
+     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
+     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
+     * in the BASED_BCC_ID.
      */
-    public ULong getFromAbieId() {
-        return (ULong) get(5);
+    public String getFromAbieId() {
+        return (String) get(5);
     }
 
     /**
@@ -131,7 +139,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID
      * in the based BCC.
      */
-    public void setToBbiepId(ULong value) {
+    public void setToBbiepId(String value) {
         set(6, value);
     }
 
@@ -141,8 +149,8 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID
      * in the based BCC.
      */
-    public ULong getToBbiepId() {
-        return (ULong) get(6);
+    public String getToBbiepId() {
+        return (String) get(6);
     }
 
     /**
@@ -547,7 +555,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * Setter for <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAsbiepId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(String value) {
         set(28, value);
     }
 
@@ -555,8 +563,8 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * Getter for <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAsbiepId() {
-        return (ULong) get(28);
+    public String getOwnerTopLevelAsbiepId() {
+        return (String) get(28);
     }
 
     // -------------------------------------------------------------------------
@@ -564,7 +572,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -582,7 +590,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
+    public BbieRecord(String bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, String fromAbieId, String toBbiepId, ULong bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
         super(Bbie.BBIE);
 
         setBbieId(bbieId);

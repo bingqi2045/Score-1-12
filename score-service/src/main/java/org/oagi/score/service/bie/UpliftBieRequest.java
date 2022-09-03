@@ -13,7 +13,7 @@ public class UpliftBieRequest {
 
     private ScoreUser requester;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private BigInteger targetAsccpManifestId;
 

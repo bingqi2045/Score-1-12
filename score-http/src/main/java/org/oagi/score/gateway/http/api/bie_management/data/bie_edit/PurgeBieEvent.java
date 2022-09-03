@@ -11,6 +11,6 @@ import java.math.BigInteger;
 @AllArgsConstructor
 public class PurgeBieEvent {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
 }

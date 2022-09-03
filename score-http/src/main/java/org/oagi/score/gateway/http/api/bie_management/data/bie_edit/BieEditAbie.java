@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class BieEditAbie {
 
-    private BigInteger abieId;
+    private String abieId;
     private BigInteger basedAccManifestId;
 
 }

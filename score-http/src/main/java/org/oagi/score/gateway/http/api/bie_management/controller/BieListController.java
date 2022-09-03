@@ -103,7 +103,7 @@ public class BieListController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<BieList> getBieUsageList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                            @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                             @RequestParam(name = "sortActive") String sortActive,
                                             @RequestParam(name = "sortDirection") String sortDirection,
                                             @RequestParam(name = "pageIndex") int pageIndex,
@@ -132,7 +132,7 @@ public class BieListController {
                                                              @RequestParam(name = "types", required = false) String types,
                                                              @RequestParam(name = "access", required = false) String access,
                                                              @RequestParam(name = "states", required = false) String states,
-                                                             @RequestParam(name = "bieId", required = false) BigInteger bieId,
+                                                             @RequestParam(name = "bieId", required = false) String bieId,
                                                              @RequestParam(name = "updateStart", required = false) String updateStart,
                                                              @RequestParam(name = "updateEnd", required = false) String updateEnd,
                                                              @RequestParam(name = "ownedByDeveloper", required = false) Boolean ownedByDeveloper,
@@ -209,10 +209,10 @@ public class BieListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteBieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @RequestBody DeleteBieListRequest request) {
-        List<BigInteger> topLevelAsbiepIds = request.getTopLevelAsbiepIds();
+        List<String> topLevelAsbiepIds = request.getTopLevelAsbiepIds();
         bieService.deleteBieList(user, topLevelAsbiepIds);
 
-        for (BigInteger topLevelAsbiepId : topLevelAsbiepIds) {
+        for (String topLevelAsbiepId : topLevelAsbiepIds) {
             BieEvent event = new BieEvent();
             event.setAction("Discard");
             event.setTopLevelAsbiepId(topLevelAsbiepId);
@@ -226,20 +226,20 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public BizCtx findBizCtxFromAbieId(@PathVariable("id") BigInteger abieId) {
+    public BizCtx findBizCtxFromAbieId(@PathVariable("id") String abieId) {
         return bieService.findBizCtxByAbieId(abieId);
     }
 
     @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") BigInteger topLevelAsbiepId) {
+    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") String topLevelAsbiepId) {
         return bieService.getAssignBizCtx(topLevelAsbiepId);
     }
 
     @RequestMapping(value = "/profile_bie/{id}/assign_biz_ctx", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity assignBizCtx(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                       @PathVariable("id") BigInteger topLevelAsbiepId,
+                                       @PathVariable("id") String topLevelAsbiepId,
                                        @RequestBody Map<String, List<String>> request) {
         bieService.assignBizCtx(user, topLevelAsbiepId, request.getOrDefault("bizCtxList", Collections.emptyList()));
         return ResponseEntity.noContent().build();
@@ -248,7 +248,7 @@ public class BieListController {
     @RequestMapping(value = "/profile_bie/{id}/transfer_ownership", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("id") BigInteger topLevelAsbiepId,
+                                            @PathVariable("id") String topLevelAsbiepId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         bieService.transferOwnership(user, topLevelAsbiepId, targetLoginId);

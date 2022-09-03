@@ -8,9 +8,9 @@ import java.math.BigInteger;
 public class BieEditUsed {
 
     private String hashPath;
-    private BigInteger bieId;
+    private String bieId;
     private BigInteger manifestId;
     private String type;
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
 }

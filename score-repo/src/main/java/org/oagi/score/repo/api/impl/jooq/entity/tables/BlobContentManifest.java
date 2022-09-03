@@ -61,7 +61,7 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     /**
      * The column <code>oagi.blob_content_manifest.blob_content_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, String> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<BlobContentManifestRecord, String> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.release_id</code>. Foreign

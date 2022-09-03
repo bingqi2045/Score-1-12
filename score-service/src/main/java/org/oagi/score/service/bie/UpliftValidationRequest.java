@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class UpliftValidationRequest {
     private ScoreUser requester;
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String targetReleaseId;
     private List<BieUpliftingMapping> mappingList;
     private BigInteger targetAsccpManifestId;

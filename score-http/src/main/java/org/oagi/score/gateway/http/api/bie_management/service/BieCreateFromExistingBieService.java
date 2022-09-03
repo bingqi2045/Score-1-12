@@ -83,13 +83,13 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     public void createBieFromExistingBie(AuthenticatedPrincipal user, CreateBieFromExistingBieRequest request) {
         AppUser requester = sessionService.getAppUserByUsername(user);
 
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
-        ULong asbiepId = dslContext.select(ASBIE.TO_ASBIEP_ID)
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
+        String asbiepId = dslContext.select(ASBIE.TO_ASBIEP_ID)
                 .from(ASBIE)
                 .where(
                         and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
@@ -103,13 +103,13 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             throw new IllegalArgumentException("Developer does not allow to create new BIE along with the end user's BIE.");
         }
 
-        TopLevelAsbiep sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(topLevelAsbiepId.toBigInteger());
+        TopLevelAsbiep sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(topLevelAsbiepId);
 
         if (asbiepId != null) {
-            BigInteger copiedTopLevelAsbiepId =
+            String copiedTopLevelAsbiepId =
                     repository.createTopLevelAsbiep(requester.getAppUserId(), sourceTopLevelAsbiep.getReleaseId(), Initiating);
             BieCreateFromExistingBieRequestEvent event = new BieCreateFromExistingBieRequestEvent(
-                    topLevelAsbiepId.toBigInteger(), copiedTopLevelAsbiepId, asbiepId.toBigInteger(),
+                    topLevelAsbiepId, copiedTopLevelAsbiepId, asbiepId,
                     Collections.emptyList(), requester.getAppUserId()
             );
             /*
@@ -154,18 +154,18 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         }
     }
 
-    private List<BieCreateFromExistingBieAbie> getAbieByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieAbie> getAbieByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 ABIE.ABIE_ID,
                 ABIE.GUID,
                 ABIE.PATH,
                 ABIE.BASED_ACC_MANIFEST_ID
         ).from(ABIE)
-                .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieAbie.class);
     }
 
-    private List<BieCreateFromExistingBieAsbie> getAsbieByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieAsbie> getAsbieByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 ASBIE.ASBIE_ID,
                 ASBIE.GUID,
@@ -180,11 +180,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 ASBIE.REMARK,
                 ASBIE.SEQ_KEY,
                 ASBIE.IS_USED.as("used")).from(ASBIE)
-                .where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieAsbie.class);
     }
 
-    private List<BieCreateFromExistingBieBbie> getBbieByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieBbie> getBbieByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 BBIE.BBIE_ID,
                 BBIE.GUID,
@@ -206,11 +206,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 BBIE.REMARK,
                 BBIE.SEQ_KEY,
                 BBIE.IS_USED.as("used")).from(BBIE)
-                .where(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieBbie.class);
     }
 
-    private List<BieCreateFromExistingBieAsbiep> getAsbiepByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieAsbiep> getAsbiepByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 ASBIEP.ASBIEP_ID,
                 ASBIEP.GUID,
@@ -220,11 +220,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 ASBIEP.DEFINITION,
                 ASBIEP.REMARK,
                 ASBIEP.BIZ_TERM).from(ASBIEP)
-                .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieAsbiep.class);
     }
 
-    private List<BieCreateFromExistingBieBbiep> getBbiepByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieBbiep> getBbiepByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
                 BBIEP.GUID,
@@ -233,11 +233,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 BBIEP.DEFINITION,
                 BBIEP.REMARK,
                 BBIEP.BIZ_TERM).from(BBIEP)
-                .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieBbiep.class);
     }
 
-    private List<BieCreateFromExistingBieBbieSc> getBbieScByOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    private List<BieCreateFromExistingBieBbieSc> getBbieScByOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.GUID,
@@ -256,14 +256,14 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 BBIE_SC.REMARK,
                 BBIE_SC.BIZ_TERM,
                 BBIE_SC.IS_USED.as("used")).from(BBIE_SC)
-                .where(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
+                .where(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ownerTopLevelAsbiepId))
                 .fetchInto(BieCreateFromExistingBieBbieSc.class);
     }
 
     @Data
     public static class BieCreateFromExistingBieAbie {
 
-        private BigInteger abieId;
+        private String abieId;
         private String guid;
         private String path;
         private BigInteger basedAccManifestId;
@@ -273,11 +273,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Data
     public static class BieCreateFromExistingBieAsbie {
 
-        private BigInteger asbieId;
+        private String asbieId;
         private String guid;
         private String path;
-        private BigInteger fromAbieId;
-        private BigInteger toAsbiepId;
+        private String fromAbieId;
+        private String toAsbiepId;
         private BigInteger basedAsccManifestId;
         private String definition;
         private int cardinalityMin;
@@ -292,12 +292,12 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Data
     public static class BieCreateFromExistingBieBbie {
 
-        private BigInteger bbieId;
+        private String bbieId;
         private String guid;
         private String path;
         private BigInteger basedBccManifestId;
-        private BigInteger fromAbieId;
-        private BigInteger toBbiepId;
+        private String fromAbieId;
+        private String toBbiepId;
         private Long bdtPriRestriId;
         private String codeListId;
         private String agencyIdListId;
@@ -318,11 +318,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Data
     public static class BieCreateFromExistingBieAsbiep {
 
-        private BigInteger asbiepId;
+        private String asbiepId;
         private String guid;
         private String path;
         private BigInteger basedAsccpManifestId;
-        private BigInteger roleOfAbieId;
+        private String roleOfAbieId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -332,7 +332,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Data
     public static class BieCreateFromExistingBieBbiep {
 
-        private BigInteger bbiepId;
+        private String bbiepId;
         private String guid;
         private String path;
         private BigInteger basedBccpManifestId;
@@ -345,10 +345,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Data
     public static class BieCreateFromExistingBieBbieSc {
 
-        private BigInteger bbieScId;
+        private String bbieScId;
         private String guid;
         private String path;
-        private BigInteger bbieId;
+        private String bbieId;
         private BigInteger basedDtScManifestId;
         private Long dtScPriRestriId;
         private String codeListId;
@@ -379,37 +379,37 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private List<BieCreateFromExistingBieAbie> abieList;
 
         private List<BieCreateFromExistingBieAsbiep> asbiepList;
-        private final Map<BigInteger, List<BieCreateFromExistingBieAsbiep>> roleOfAbieToAsbiepMap;
+        private final Map<String, List<BieCreateFromExistingBieAsbiep>> roleOfAbieToAsbiepMap;
 
         private List<BieCreateFromExistingBieBbiep> bbiepList;
 
         private List<BieCreateFromExistingBieAsbie> asbieList;
-        private final Map<BigInteger, List<BieCreateFromExistingBieAsbie>> fromAbieToAsbieMap;
-        private final Map<BigInteger, List<BieCreateFromExistingBieAsbie>> toAsbiepToAsbieMap;
+        private final Map<String, List<BieCreateFromExistingBieAsbie>> fromAbieToAsbieMap;
+        private final Map<String, List<BieCreateFromExistingBieAsbie>> toAsbiepToAsbieMap;
 
         private List<BieCreateFromExistingBieBbie> bbieList;
-        private final Map<BigInteger, List<BieCreateFromExistingBieBbie>> fromAbieToBbieMap;
-        private final Map<BigInteger, List<BieCreateFromExistingBieBbie>> toBbiepToBbieMap;
+        private final Map<String, List<BieCreateFromExistingBieBbie>> fromAbieToBbieMap;
+        private final Map<String, List<BieCreateFromExistingBieBbie>> toBbiepToBbieMap;
 
         private List<BieCreateFromExistingBieBbieSc> bbieScList;
-        private final Map<BigInteger, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
+        private final Map<String, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
 
         public BieCreateFromExistingBieContext(BieCreateFromExistingBieRequestEvent event) {
             sourceAsccpKey = CcType.ASCCP.name() + "-" + dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
                     .from(ASBIEP)
-                    .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(event.getAsbiepId())))
+                    .where(ASBIEP.ASBIEP_ID.eq(event.getAsbiepId()))
                     .fetchOneInto(ULong.class).toBigInteger().toString();
-            BigInteger sourceTopLevelAsbiepId = event.getSourceTopLevelAsbiepId();
+            String sourceTopLevelAsbiepId = event.getSourceTopLevelAsbiepId();
             sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(sourceTopLevelAsbiepId);
 
-            BigInteger targetTopLevelAsbiepId = event.getTargetTopLevelAsbiepId();
+            String targetTopLevelAsbiepId = event.getTargetTopLevelAsbiepId();
             targetTopLevelAsbiep = topLevelAsbiepRepository.findById(targetTopLevelAsbiepId);
 
             bizCtxIds = event.getBizCtxIds();
             if (bizCtxIds == null || bizCtxIds.isEmpty()) {
                 bizCtxIds = dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                         .from(BIZ_CTX_ASSIGNMENT)
-                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(sourceTopLevelAsbiepId)))
+                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(sourceTopLevelAsbiepId))
                         .fetchInto(String.class);
             }
             userId = event.getUserId();
@@ -445,15 +445,15 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     bizCtxIds);
 
             for (BieCreateFromExistingBieAbie abie : abieList) {
-                BigInteger previousAbieId = abie.getAbieId();
-                BigInteger nextAbieId = insertAbie(abie);
+                String previousAbieId = abie.getAbieId();
+                String nextAbieId = insertAbie(abie);
 
                 fireChangeEvent("abie", previousAbieId, nextAbieId);
             }
 
             for (BieCreateFromExistingBieAsbiep asbiep : asbiepList) {
-                BigInteger previousAsbiepId = asbiep.getAsbiepId();
-                BigInteger nextAsbiepId = insertAsbiep(asbiep);
+                String previousAsbiepId = asbiep.getAsbiepId();
+                String nextAsbiepId = insertAsbiep(asbiep);
 
                 fireChangeEvent("asbiep", previousAsbiepId, nextAsbiepId);
             }
@@ -463,29 +463,29 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     targetTopLevelAsbiep.getTopLevelAsbiepId());
 
             for (BieCreateFromExistingBieBbiep bbiep : bbiepList) {
-                BigInteger previousBbiepId = bbiep.getBbiepId();
-                BigInteger nextBbiepId = insertBbiep(bbiep);
+                String previousBbiepId = bbiep.getBbiepId();
+                String nextBbiepId = insertBbiep(bbiep);
 
                 fireChangeEvent("bbiep", previousBbiepId, nextBbiepId);
             }
 
             for (BieCreateFromExistingBieAsbie asbie : asbieList) {
-                BigInteger previousAsbieId = asbie.getAsbieId();
-                BigInteger nextAsbieId = insertAsbie(asbie);
+                String previousAsbieId = asbie.getAsbieId();
+                String nextAsbieId = insertAsbie(asbie);
 
                 fireChangeEvent("asbie", previousAsbieId, nextAsbieId);
             }
 
             for (BieCreateFromExistingBieBbie bbie : bbieList) {
-                BigInteger previousBbieId = bbie.getBbieId();
-                BigInteger nextBbieId = insertBbie(bbie);
+                String previousBbieId = bbie.getBbieId();
+                String nextBbieId = insertBbie(bbie);
 
                 fireChangeEvent("bbie", previousBbieId, nextBbieId);
             }
 
             for (BieCreateFromExistingBieBbieSc bbieSc : bbieScList) {
-                BigInteger previousBbieScId = bbieSc.getBbieId();
-                BigInteger nextBbieScId = insertBbieSc(bbieSc);
+                String previousBbieScId = bbieSc.getBbieId();
+                String nextBbieScId = insertBbieSc(bbieSc);
 
                 fireChangeEvent("bbie_sc", previousBbieScId, nextBbieScId);
             }
@@ -504,13 +504,13 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             List<BieCreateFromExistingBieBbie> bbieList = new ArrayList();
             List<BieCreateFromExistingBieBbieSc> bbieScList = new ArrayList();
 
-            Map<BigInteger, BieCreateFromExistingBieAsbiep> asbiepMap = this.asbiepList.stream()
+            Map<String, BieCreateFromExistingBieAsbiep> asbiepMap = this.asbiepList.stream()
                     .collect(Collectors.toMap(BieCreateFromExistingBieAsbiep::getAsbiepId, Function.identity()));
 
-            Map<BigInteger, BieCreateFromExistingBieAbie> abieMap = this.abieList.stream()
+            Map<String, BieCreateFromExistingBieAbie> abieMap = this.abieList.stream()
                     .collect(Collectors.toMap(BieCreateFromExistingBieAbie::getAbieId, Function.identity()));
 
-            Map<BigInteger, BieCreateFromExistingBieBbiep> bbiepMap = this.bbiepList.stream()
+            Map<String, BieCreateFromExistingBieBbiep> bbiepMap = this.bbiepList.stream()
                     .collect(Collectors.toMap(BieCreateFromExistingBieBbiep::getBbiepId, Function.identity()));
 
             Queue<BieCreateFromExistingBieAsbiep> asbiepQueue = new LinkedList<>();
@@ -555,7 +555,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         }
 
 
-        private void fireChangeEvent(String type, BigInteger previousVal, BigInteger nextVal) {
+        private void fireChangeEvent(String type, String previousVal, String nextVal) {
             switch (type) {
                 case "abie":
                     roleOfAbieToAsbiepMap.getOrDefault(previousVal, Collections.emptyList()).stream().forEach(asbiep -> {
@@ -597,9 +597,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             }
         }
 
-        private BigInteger insertAbie(BieCreateFromExistingBieAbie abie) {
+        private String insertAbie(BieCreateFromExistingBieAbie abie) {
 
-            return dslContext.insertInto(ABIE)
+            String abieId = UUID.randomUUID().toString();
+            dslContext.insertInto(ABIE)
+                    .set(ABIE.ABIE_ID, abieId)
                     .set(ABIE.GUID, ScoreGuid.randomGuid())
                     .set(ABIE.PATH, getPath(abie.getPath()))
                     .set(ABIE.HASH_PATH, getHashPath(abie.getPath()))
@@ -609,18 +611,21 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ABIE.CREATION_TIMESTAMP, timestamp)
                     .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     // .set(ABIE.STATE, BieState.Initiating.getValue())
-                    .set(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .returning(ABIE.ABIE_ID).fetchOne().getValue(ABIE.ABIE_ID).toBigInteger();
+                    .set(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
+            return abieId;
         }
 
-        private BigInteger insertAsbiep(BieCreateFromExistingBieAsbiep asbiep) {
+        private String insertAsbiep(BieCreateFromExistingBieAsbiep asbiep) {
 
-            return dslContext.insertInto(ASBIEP)
+            String asbiepId = UUID.randomUUID().toString();
+            dslContext.insertInto(ASBIEP)
+                    .set(ASBIEP.ASBIEP_ID, asbiepId)
                     .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                     .set(ASBIEP.PATH, getPath(asbiep.getPath()))
                     .set(ASBIEP.HASH_PATH, getHashPath(asbiep.getPath()))
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
-                    .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(asbiep.getRoleOfAbieId()))
+                    .set(ASBIEP.ROLE_OF_ABIE_ID, asbiep.getRoleOfAbieId())
                     .set(ASBIEP.DEFINITION, asbiep.getDefinition())
                     .set(ASBIEP.REMARK, asbiep.getRemark())
                     .set(ASBIEP.BIZ_TERM, asbiep.getBizTerm())
@@ -628,13 +633,16 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ASBIEP.LAST_UPDATED_BY, userId)
                     .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).toBigInteger();
+                    .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
+            return asbiepId;
         }
 
-        private BigInteger insertBbiep(BieCreateFromExistingBieBbiep bbiep) {
+        private String insertBbiep(BieCreateFromExistingBieBbiep bbiep) {
 
-            return dslContext.insertInto(BBIEP)
+            String bbiepId = UUID.randomUUID().toString();
+            dslContext.insertInto(BBIEP)
+                    .set(BBIEP.BBIEP_ID, bbiepId)
                     .set(BBIEP.GUID, ScoreGuid.randomGuid())
                     .set(BBIEP.PATH, getPath(bbiep.getPath()))
                     .set(BBIEP.HASH_PATH, getHashPath(bbiep.getPath()))
@@ -646,18 +654,21 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIEP.LAST_UPDATED_BY, userId)
                     .set(BBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .returning(BBIEP.BBIEP_ID).fetchOne().getValue(BBIEP.BBIEP_ID).toBigInteger();
+                    .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
+            return bbiepId;
         }
 
-        private BigInteger insertAsbie(BieCreateFromExistingBieAsbie asbie) {
+        private String insertAsbie(BieCreateFromExistingBieAsbie asbie) {
 
-            return dslContext.insertInto(ASBIE)
+            String asbieId = UUID.randomUUID().toString();
+            dslContext.insertInto(ASBIE)
+                    .set(ASBIE.ASBIE_ID, asbieId)
                     .set(ASBIE.GUID, ScoreGuid.randomGuid())
                     .set(ASBIE.PATH, getPath(asbie.getPath()))
                     .set(ASBIE.HASH_PATH, getHashPath(asbie.getPath()))
-                    .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(asbie.getFromAbieId()))
-                    .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(asbie.getToAsbiepId()))
+                    .set(ASBIE.FROM_ABIE_ID, asbie.getFromAbieId())
+                    .set(ASBIE.TO_ASBIEP_ID, asbie.getToAsbiepId())
                     .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(asbie.getBasedAsccManifestId()))
                     .set(ASBIE.DEFINITION, asbie.getDefinition())
                     .set(ASBIE.REMARK, asbie.getRemark())
@@ -670,18 +681,21 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(ASBIE.LAST_UPDATED_BY, userId)
                     .set(ASBIE.CREATION_TIMESTAMP, timestamp)
                     .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .returning(ASBIE.ASBIE_ID).fetchOne().getValue(ASBIE.ASBIE_ID).toBigInteger();
+                    .set(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
+            return asbieId;
         }
 
-        private BigInteger insertBbie(BieCreateFromExistingBieBbie bbie) {
+        private String insertBbie(BieCreateFromExistingBieBbie bbie) {
 
-            return dslContext.insertInto(BBIE)
+            String bbieId = UUID.randomUUID().toString();
+            dslContext.insertInto(BBIE)
+                    .set(BBIE.BBIE_ID, bbieId)
                     .set(BBIE.GUID, ScoreGuid.randomGuid())
                     .set(BBIE.PATH, getPath(bbie.getPath()))
                     .set(BBIE.HASH_PATH, getHashPath(bbie.getPath()))
-                    .set(BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
-                    .set(BBIE.TO_BBIEP_ID, ULong.valueOf(bbie.getToBbiepId()))
+                    .set(BBIE.FROM_ABIE_ID, bbie.getFromAbieId())
+                    .set(BBIE.TO_BBIEP_ID, bbie.getToBbiepId())
                     .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(bbie.getBasedBccManifestId()))
                     .set(BBIE.BDT_PRI_RESTRI_ID, (bbie.getBdtPriRestriId() != null) ? ULong.valueOf(bbie.getBdtPriRestriId()) : null)
                     .set(BBIE.CODE_LIST_ID, (bbie.getCodeListId() != null) ? bbie.getCodeListId() : null)
@@ -701,17 +715,20 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE.LAST_UPDATED_BY, userId)
                     .set(BBIE.CREATION_TIMESTAMP, timestamp)
                     .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
-                    .returning(BBIE.BBIE_ID).fetchOne().getValue(BBIE.BBIE_ID).toBigInteger();
+                    .set(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
+            return bbieId;
         }
 
-        private BigInteger insertBbieSc(BieCreateFromExistingBieBbieSc bbieSc) {
+        private String insertBbieSc(BieCreateFromExistingBieBbieSc bbieSc) {
 
-            return dslContext.insertInto(BBIE_SC)
+            String bbieScId = UUID.randomUUID().toString();
+            dslContext.insertInto(BBIE_SC)
+                    .set(BBIE_SC.BBIE_SC_ID, bbieScId)
                     .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                     .set(BBIE_SC.PATH, getPath(bbieSc.getPath()))
                     .set(BBIE_SC.HASH_PATH, getHashPath(bbieSc.getPath()))
-                    .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))
+                    .set(BBIE_SC.BBIE_ID, bbieSc.getBbieId())
                     .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(bbieSc.getBasedDtScManifestId()))
                     .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, (bbieSc.getDtScPriRestriId() != null) ? ULong.valueOf(bbieSc.getDtScPriRestriId()) : null)
                     .set(BBIE_SC.CODE_LIST_ID, (bbieSc.getCodeListId() != null) ? bbieSc.getCodeListId() : null)
@@ -725,12 +742,13 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE_SC.CARDINALITY_MIN, bbieSc.getCardinalityMin())
                     .set(BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
-                    .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
+                    .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, targetTopLevelAsbiep.getTopLevelAsbiepId())
                     .set(BBIE.CREATED_BY, userId)
                     .set(BBIE.LAST_UPDATED_BY, userId)
                     .set(BBIE.CREATION_TIMESTAMP, timestamp)
                     .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();
+                    .execute();
+            return bbieScId;
         }
 
         private String getPath(String path) {

@@ -11,7 +11,7 @@ public class BieEvent {
 
     private String action;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private Map<String, Object> properties = new HashMap();
 

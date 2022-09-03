@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -42,7 +43,7 @@ public class BbieWriteRepository {
 
     public BbieNode.Bbie upsertBbie(UpsertBbieRequest request) {
         BbieNode.Bbie bbie = request.getBbie();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = bbie.getHashPath();
         BbieRecord bbieRecord = dslContext.selectFrom(BBIE)
                 .where(and(
@@ -56,6 +57,7 @@ public class BbieWriteRepository {
 
         if (bbieRecord == null) {
             bbieRecord = new BbieRecord();
+            bbieRecord.setBbieId(UUID.randomUUID().toString());
             bbieRecord.setGuid(ScoreGuid.randomGuid());
             bbieRecord.setBasedBccManifestId(ULong.valueOf(bbie.getBasedBccManifestId()));
             bbieRecord.setPath(bbie.getPath());
@@ -66,14 +68,14 @@ public class BbieWriteRepository {
                             ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ABIE.HASH_PATH.eq(bbie.getFromAbieHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             bbieRecord.setToBbiepId(dslContext.select(BBIEP.BBIEP_ID)
                     .from(BBIEP)
                     .where(and(
                             BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIEP.HASH_PATH.eq(bbie.getToBbiepHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 
             if (bbie.getUsed() != null) {
@@ -173,12 +175,9 @@ public class BbieWriteRepository {
             bbieRecord.setCreationTimestamp(request.getLocalDateTime());
             bbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbieRecord.setBbieId(
-                    dslContext.insertInto(BBIE)
-                            .set(bbieRecord)
-                            .returning(BBIE.BBIE_ID)
-                            .fetchOne().getBbieId()
-            );
+            dslContext.insertInto(BBIE)
+                    .set(bbieRecord)
+                    .execute();
         } else {
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 

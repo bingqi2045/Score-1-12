@@ -37,7 +37,7 @@ public class BusinessInformationEntityRepositoryTest {
 
     @Test
     public void insertTopLevelAsbiepTest() {
-        ULong topLevelAsbiepId = insertTopLevelAsbiep();
+        String topLevelAsbiepId = insertTopLevelAsbiep();
 
         TopLevelAsbiepRecord topLevelAsbiep = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
@@ -60,7 +60,7 @@ public class BusinessInformationEntityRepositoryTest {
     @Test
     public void insertAbieTest() {
         // tested by #insertTopLevelAsbiepTest
-        ULong topLevelAsbiepId = insertTopLevelAsbiep();
+        String topLevelAsbiepId = insertTopLevelAsbiep();
 
         ULong roleOfAccManifestId = ULong.valueOf(1L);
         ULong abieId = insertAbie(topLevelAsbiepId, roleOfAccManifestId);
@@ -76,7 +76,7 @@ public class BusinessInformationEntityRepositoryTest {
         assertEquals(roleOfAccManifestId, abie.getBasedAccManifestId());
     }
 
-    private ULong insertAbie(ULong topLevelAsbiepId, ULong roleOfAccManifestId) {
+    private ULong insertAbie(String topLevelAsbiepId, ULong roleOfAccManifestId) {
         return bieRepository.insertAbie()
                 .setUserId(userId)
                 .setTopLevelAsbiepId(topLevelAsbiepId)
@@ -85,19 +85,19 @@ public class BusinessInformationEntityRepositoryTest {
                 .execute();
     }
 
-    private ULong insertAbie(ULong topLevelAsbiepId) {
+    private ULong insertAbie(String topLevelAsbiepId) {
         return insertAbie(topLevelAsbiepId, ULong.valueOf(1L));
     }
 
     @Test
     public void insertAsbiepTest() {
         // tested by #insertTopLevelAsbiepTest
-        ULong topLevelAsbiepId = insertTopLevelAsbiep();
+        String topLevelAsbiepId = insertTopLevelAsbiep();
         // tested by #insertAbieTest
         ULong abieId = insertAbie(topLevelAsbiepId);
 
         ULong asccpManifestId = ULong.valueOf(1L);
-        ULong asbiepId = bieRepository.insertAsbiep()
+        String asbiepId = bieRepository.insertAsbiep()
                 .setAsccpManifestId(asccpManifestId)
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAsbiepId(topLevelAsbiepId)

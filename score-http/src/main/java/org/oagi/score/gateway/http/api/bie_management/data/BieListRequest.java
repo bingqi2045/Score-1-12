@@ -17,7 +17,7 @@ public class BieListRequest {
     private String propertyTerm;
     private String businessContext;
     private BigInteger asccpManifestId;
-    private BigInteger usageTopLevelAsbiepId;
+    private String usageTopLevelAsbiepId;
     private AccessPrivilege access;
     private List<String> excludePropertyTerms = Collections.emptyList();
     private List<BigInteger> excludeTopLevelAsbiepIds = Collections.emptyList();
@@ -32,5 +32,5 @@ public class BieListRequest {
     private Boolean ownedByDeveloper;
 
     private String asccBccDen;
-    private BigInteger bieId;
+    private String bieId;
 }

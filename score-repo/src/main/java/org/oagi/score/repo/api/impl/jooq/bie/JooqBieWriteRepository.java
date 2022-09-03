@@ -12,6 +12,7 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -32,13 +33,13 @@ public class JooqBieWriteRepository
         request.getBizCtxIds().forEach(bizCtxId -> {
             insertBizCtxAssignment(topLevelAsbiepRecord, bizCtxId);
         });
-        BigInteger topLevelAsbiepId = topLevelAsbiepRecord.getTopLevelAsbiepId().toBigInteger();
+        String topLevelAsbiepId = topLevelAsbiepRecord.getTopLevelAsbiepId();
 
         insertAbie(topLevelAsbiep.getRoleOfAbie(), requester, topLevelAsbiepId);
         topLevelAsbiep.getAsbiep().setRoleOfAbieId(topLevelAsbiep.getRoleOfAbie().getAbieId());
         insertAsbiep(topLevelAsbiep.getAsbiep(), requester, topLevelAsbiepId);
         dslContext().update(TOP_LEVEL_ASBIEP)
-                .set(TOP_LEVEL_ASBIEP.ASBIEP_ID, ULong.valueOf(topLevelAsbiep.getAsbiep().getAsbiepId()))
+                .set(TOP_LEVEL_ASBIEP.ASBIEP_ID, topLevelAsbiep.getAsbiep().getAsbiepId())
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepRecord.getTopLevelAsbiepId()))
                 .execute();
 
@@ -50,10 +51,10 @@ public class JooqBieWriteRepository
             insertAbie(asbie.getFromAbie(), requester, topLevelAsbiepId);
             asbie.getAsbie().setFromAbieId(asbie.getFromAbie().getAbieId());
             if (asbie.getToAsbiep() == null) {
-                BigInteger toAsbiepId = dslContext().select(TOP_LEVEL_ASBIEP.ASBIEP_ID)
+                String toAsbiepId = dslContext().select(TOP_LEVEL_ASBIEP.ASBIEP_ID)
                         .from(TOP_LEVEL_ASBIEP)
-                        .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(asbie.getRefTopLevelAsbiepId())))
-                        .fetchOneInto(BigInteger.class);
+                        .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(asbie.getRefTopLevelAsbiepId()))
+                        .fetchOneInto(String.class);
                 asbie.getAsbie().setToAsbiepId(toAsbiepId);
             } else {
                 insertAbie(asbie.getToAsbiep().getRoleOfAbie(), requester, topLevelAsbiepId);
@@ -116,7 +117,7 @@ public class JooqBieWriteRepository
                 .execute();
     }
 
-    private void insertAbie(Abie abie, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertAbie(Abie abie, ScoreUser user, String topLevelAsbiepId) {
         if (abie == null) {
             throw new IllegalArgumentException();
         }
@@ -127,6 +128,7 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         AbieRecord abieRecord = new AbieRecord();
+        abieRecord.setAbieId(UUID.randomUUID().toString());
         abieRecord.setGuid(abie.getGuid());
         abieRecord.setBasedAccManifestId(ULong.valueOf(abie.getBasedAccManifestId()));
         abieRecord.setPath(abie.getPath());
@@ -138,15 +140,15 @@ public class JooqBieWriteRepository
         abieRecord.setLastUpdateTimestamp(LocalDateTime.now());
         abieRecord.setRemark(abie.getRemark());
         abieRecord.setBizTerm(abie.getBizTerm());
-        abieRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        abieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        abie.setAbieId(dslContext().insertInto(ABIE)
+        dslContext().insertInto(ABIE)
                 .set(abieRecord)
-                .returning(ABIE.ABIE_ID).fetchOne()
-                .getAbieId().toBigInteger());
+                .execute();
+        abie.setAbieId(abieRecord.getAbieId());
     }
 
-    private void insertAsbiep(Asbiep asbiep, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertAsbiep(Asbiep asbiep, ScoreUser user, String topLevelAsbiepId) {
         if (asbiep == null) {
             throw new IllegalArgumentException();
         }
@@ -157,11 +159,12 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         AsbiepRecord asbiepRecord = new AsbiepRecord();
+        asbiepRecord.setAsbiepId(UUID.randomUUID().toString());
         asbiepRecord.setGuid(asbiep.getGuid());
         asbiepRecord.setBasedAsccpManifestId(ULong.valueOf(asbiep.getBasedAsccpManifestId()));
         asbiepRecord.setPath(asbiep.getPath());
         asbiepRecord.setHashPath(asbiep.getHashPath());
-        asbiepRecord.setRoleOfAbieId(ULong.valueOf(asbiep.getRoleOfAbieId()));
+        asbiepRecord.setRoleOfAbieId(asbiep.getRoleOfAbieId());
         asbiepRecord.setDefinition(asbiep.getDefinition());
         asbiepRecord.setRemark(asbiep.getRemark());
         asbiepRecord.setBizTerm(asbiep.getBizTerm());
@@ -169,15 +172,15 @@ public class JooqBieWriteRepository
         asbiepRecord.setLastUpdatedBy(userId);
         asbiepRecord.setCreationTimestamp(LocalDateTime.now());
         asbiepRecord.setLastUpdateTimestamp(LocalDateTime.now());
-        asbiepRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        asbiepRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        asbiep.setAsbiepId(dslContext().insertInto(ASBIEP)
+        dslContext().insertInto(ASBIEP)
                 .set(asbiepRecord)
-                .returning(ASBIEP.ASBIEP_ID).fetchOne()
-                .getAsbiepId().toBigInteger());
+                .execute();
+        asbiep.setAsbiepId(asbiepRecord.getAsbiepId());
     }
 
-    private void insertBbiep(Bbiep bbiep, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertBbiep(Bbiep bbiep, ScoreUser user, String topLevelAsbiepId) {
         if (bbiep == null) {
             throw new IllegalArgumentException();
         }
@@ -188,6 +191,7 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         BbiepRecord bbiepRecord = new BbiepRecord();
+        bbiepRecord.setBbiepId(UUID.randomUUID().toString());
         bbiepRecord.setGuid(bbiep.getGuid());
         bbiepRecord.setBasedBccpManifestId(ULong.valueOf(bbiep.getBasedBccpManifestId()));
         bbiepRecord.setPath(bbiep.getPath());
@@ -199,15 +203,15 @@ public class JooqBieWriteRepository
         bbiepRecord.setLastUpdatedBy(userId);
         bbiepRecord.setCreationTimestamp(LocalDateTime.now());
         bbiepRecord.setLastUpdateTimestamp(LocalDateTime.now());
-        bbiepRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        bbiepRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        bbiep.setBbiepId(dslContext().insertInto(BBIEP)
+        dslContext().insertInto(BBIEP)
                 .set(bbiepRecord)
-                .returning(BBIEP.BBIEP_ID).fetchOne()
-                .getBbiepId().toBigInteger());
+                .execute();
+        bbiep.setBbiepId(bbiepRecord.getBbiepId());
     }
 
-    private void insertAsbie(Asbie asbie, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertAsbie(Asbie asbie, ScoreUser user, String topLevelAsbiepId) {
         if (asbie == null) {
             throw new IllegalArgumentException();
         }
@@ -218,12 +222,13 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         AsbieRecord asbieRecord = new AsbieRecord();
+        asbieRecord.setAsbieId(UUID.randomUUID().toString());
         asbieRecord.setGuid(asbie.getGuid());
         asbieRecord.setBasedAsccManifestId(ULong.valueOf(asbie.getBasedAsccManifestId()));
         asbieRecord.setPath(asbie.getPath());
         asbieRecord.setHashPath(asbie.getHashPath());
-        asbieRecord.setFromAbieId(ULong.valueOf(asbie.getFromAbieId()));
-        asbieRecord.setToAsbiepId(ULong.valueOf(asbie.getToAsbiepId()));
+        asbieRecord.setFromAbieId(asbie.getFromAbieId());
+        asbieRecord.setToAsbiepId(asbie.getToAsbiepId());
         asbieRecord.setDefinition(asbie.getDefinition());
         asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
         asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
@@ -235,15 +240,15 @@ public class JooqBieWriteRepository
         asbieRecord.setLastUpdatedBy(userId);
         asbieRecord.setCreationTimestamp(LocalDateTime.now());
         asbieRecord.setLastUpdateTimestamp(LocalDateTime.now());
-        asbieRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        asbieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        asbie.setAsbieId(dslContext().insertInto(ASBIE)
+        dslContext().insertInto(ASBIE)
                 .set(asbieRecord)
-                .returning(ASBIE.ASBIE_ID).fetchOne()
-                .getAsbieId().toBigInteger());
+                .execute();
+        asbie.setAsbieId(asbieRecord.getAsbieId());
     }
 
-    private void insertBbie(Bbie bbie, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertBbie(Bbie bbie, ScoreUser user, String topLevelAsbiepId) {
         if (bbie == null) {
             throw new IllegalArgumentException();
         }
@@ -254,12 +259,13 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         BbieRecord bbieRecord = new BbieRecord();
+        bbieRecord.setBbieId(UUID.randomUUID().toString());
         bbieRecord.setGuid(bbie.getGuid());
         bbieRecord.setBasedBccManifestId(ULong.valueOf(bbie.getBasedBccManifestId()));
         bbieRecord.setPath(bbie.getPath());
         bbieRecord.setHashPath(bbie.getHashPath());
-        bbieRecord.setFromAbieId(ULong.valueOf(bbie.getFromAbieId()));
-        bbieRecord.setToBbiepId(ULong.valueOf(bbie.getToBbiepId()));
+        bbieRecord.setFromAbieId(bbie.getFromAbieId());
+        bbieRecord.setToBbiepId(bbie.getToBbiepId());
         if (bbie.getBdtPriRestriId() != null) {
             bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
         }
@@ -284,15 +290,15 @@ public class JooqBieWriteRepository
         bbieRecord.setLastUpdatedBy(userId);
         bbieRecord.setCreationTimestamp(LocalDateTime.now());
         bbieRecord.setLastUpdateTimestamp(LocalDateTime.now());
-        bbieRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        bbieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        bbie.setBbieId(dslContext().insertInto(BBIE)
+        dslContext().insertInto(BBIE)
                 .set(bbieRecord)
-                .returning(BBIE.BBIE_ID).fetchOne()
-                .getBbieId().toBigInteger());
+                .execute();
+        bbie.setBbieId(bbieRecord.getBbieId());
     }
 
-    private void insertBbieSc(BbieSc bbieSc, ScoreUser user, BigInteger topLevelAsbiepId) {
+    private void insertBbieSc(BbieSc bbieSc, ScoreUser user, String topLevelAsbiepId) {
         if (bbieSc == null) {
             throw new IllegalArgumentException();
         }
@@ -303,11 +309,12 @@ public class JooqBieWriteRepository
         String userId = user.getUserId();
 
         BbieScRecord bbieScRecord = new BbieScRecord();
+        bbieScRecord.setBbieScId(UUID.randomUUID().toString());
         bbieScRecord.setGuid(bbieSc.getGuid());
         bbieScRecord.setBasedDtScManifestId(ULong.valueOf(bbieSc.getBasedDtScManifestId()));
         bbieScRecord.setPath(bbieSc.getPath());
         bbieScRecord.setHashPath(bbieSc.getHashPath());
-        bbieScRecord.setBbieId(ULong.valueOf(bbieSc.getBbieId()));
+        bbieScRecord.setBbieId(bbieSc.getBbieId());
         if (bbieSc.getDtScPriRestriId() != null) {
             bbieScRecord.setDtScPriRestriId(ULong.valueOf(bbieSc.getDtScPriRestriId()));
         }
@@ -330,12 +337,12 @@ public class JooqBieWriteRepository
         bbieScRecord.setLastUpdatedBy(userId);
         bbieScRecord.setCreationTimestamp(LocalDateTime.now());
         bbieScRecord.setLastUpdateTimestamp(LocalDateTime.now());
-        bbieScRecord.setOwnerTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
+        bbieScRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
-        bbieSc.setBbieId(dslContext().insertInto(BBIE_SC)
+        dslContext().insertInto(BBIE_SC)
                 .set(bbieScRecord)
-                .returning(BBIE_SC.BBIE_SC_ID).fetchOne()
-                .getBbieScId().toBigInteger());
+                .execute();
+        bbieSc.setBbieScId(bbieScRecord.getBbieScId());
     }
 
 }

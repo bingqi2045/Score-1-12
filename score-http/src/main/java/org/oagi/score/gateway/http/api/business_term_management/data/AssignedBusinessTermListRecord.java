@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 public class AssignedBusinessTermListRecord {
     private List<BusinessContext> businessContexts;
-    private BigInteger assignedBtId;
-    private BigInteger bieId;
+    private BigInteger assignedBizTermId;
+    private String bieId;
     private String bieType;
     private String den;
     private String primaryIndicator;

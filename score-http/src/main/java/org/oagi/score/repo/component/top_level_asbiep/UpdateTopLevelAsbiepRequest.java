@@ -8,19 +8,19 @@ import java.time.LocalDateTime;
 
 public class UpdateTopLevelAsbiepRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAsbiepId;
+    private final String topLevelAsbiepId;
     private final String status;
     private final String version;
 
     public UpdateTopLevelAsbiepRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
-                                       BigInteger topLevelAsbiepId, String status, String version) {
+                                       String topLevelAsbiepId, String status, String version) {
         super(user, localDateTime);
         this.topLevelAsbiepId = topLevelAsbiepId;
         this.status = status;
         this.version = version;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 

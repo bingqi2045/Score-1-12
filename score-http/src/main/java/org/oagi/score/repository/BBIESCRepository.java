@@ -7,6 +7,7 @@ import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BBIESC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,15 +19,15 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 
 @Repository
-public class BBIESCRepository implements ScoreRepository<BBIESC, BigInteger> {
+public class BBIESCRepository implements ScoreRepository<BBIESC, String> {
 
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record20<ULong, String, ULong, ULong, ULong,
+    private SelectJoinStep<Record20<String, String, String, ULong, ULong,
             String, String, Integer, Integer, ULong,
             ULong, String, String, String, String,
-            String, String, String, Byte, ULong>> getSelectJoinStep() {
+            String, String, String, Byte, String>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BBIE_SC.BBIE_SC_ID,
                 Tables.BBIE_SC.GUID,
@@ -57,23 +58,23 @@ public class BBIESCRepository implements ScoreRepository<BBIESC, BigInteger> {
     }
 
     @Override
-    public BBIESC findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BBIESC findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(id))
                 .fetchOptionalInto(BBIESC.class).orElse(null);
     }
 
-    public List<BBIESC> findByOwnerTopLevelAsbiepIdsAndUsed(Collection<BigInteger> ownerTopLevelAsbiepIds, boolean used) {
+    public List<BBIESC> findByOwnerTopLevelAsbiepIdsAndUsed(Collection<String> ownerTopLevelAsbiepIds, boolean used) {
         return getSelectJoinStep()
                 .where(and(
                         (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
+                                        ownerTopLevelAsbiepIds.iterator().next()) :
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
+                                        ownerTopLevelAsbiepIds),
                         Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIESC.class);
     }

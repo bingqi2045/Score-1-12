@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record9;
 import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 
 
@@ -21,31 +20,31 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
  * be retrieved all at once speeding up the profile BOD transactions.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepRecord> implements Record9<ULong, ULong, String, LocalDateTime, String, String, String, String, String> {
+public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepRecord> implements Record9<String, String, String, LocalDateTime, String, String, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A
-     * internal, primary database key of an top-level ASBIEP.
+     * Setter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>.
+     * Primary, internal database key.
      */
-    public void setTopLevelAsbiepId(ULong value) {
+    public void setTopLevelAsbiepId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A
-     * internal, primary database key of an top-level ASBIEP.
+     * Getter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>.
+     * Primary, internal database key.
      */
-    public ULong getTopLevelAsbiepId() {
-        return (ULong) get(0);
+    public String getTopLevelAsbiepId() {
+        return (String) get(0);
     }
 
     /**
      * Setter for <code>oagi.top_level_asbiep.asbiep_id</code>. Foreign key to
      * the ASBIEP table pointing to a record which is a top-level ASBIEP.
      */
-    public void setAsbiepId(ULong value) {
+    public void setAsbiepId(String value) {
         set(1, value);
     }
 
@@ -53,8 +52,8 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
      * Getter for <code>oagi.top_level_asbiep.asbiep_id</code>. Foreign key to
      * the ASBIEP table pointing to a record which is a top-level ASBIEP.
      */
-    public ULong getAsbiepId() {
-        return (ULong) get(1);
+    public String getAsbiepId() {
+        return (String) get(1);
     }
 
     /**
@@ -184,7 +183,7 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -193,22 +192,22 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, String, LocalDateTime, String, String, String, String, String> fieldsRow() {
+    public Row9<String, String, String, LocalDateTime, String, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, ULong, String, LocalDateTime, String, String, String, String, String> valuesRow() {
+    public Row9<String, String, String, LocalDateTime, String, String, String, String, String> valuesRow() {
         return (Row9) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return TopLevelAsbiep.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return TopLevelAsbiep.TOP_LEVEL_ASBIEP.ASBIEP_ID;
     }
 
@@ -248,12 +247,12 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getTopLevelAsbiepId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getAsbiepId();
     }
 
@@ -293,12 +292,12 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getTopLevelAsbiepId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getAsbiepId();
     }
 
@@ -338,13 +337,13 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     }
 
     @Override
-    public TopLevelAsbiepRecord value1(ULong value) {
+    public TopLevelAsbiepRecord value1(String value) {
         setTopLevelAsbiepId(value);
         return this;
     }
 
     @Override
-    public TopLevelAsbiepRecord value2(ULong value) {
+    public TopLevelAsbiepRecord value2(String value) {
         setAsbiepId(value);
         return this;
     }
@@ -392,7 +391,7 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     }
 
     @Override
-    public TopLevelAsbiepRecord values(ULong value1, ULong value2, String value3, LocalDateTime value4, String value5, String value6, String value7, String value8, String value9) {
+    public TopLevelAsbiepRecord values(String value1, String value2, String value3, LocalDateTime value4, String value5, String value6, String value7, String value8, String value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -419,7 +418,7 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     /**
      * Create a detached, initialised TopLevelAsbiepRecord
      */
-    public TopLevelAsbiepRecord(ULong topLevelAsbiepId, ULong asbiepId, String ownerUserId, LocalDateTime lastUpdateTimestamp, String lastUpdatedBy, String releaseId, String version, String status, String state) {
+    public TopLevelAsbiepRecord(String topLevelAsbiepId, String asbiepId, String ownerUserId, LocalDateTime lastUpdateTimestamp, String lastUpdatedBy, String releaseId, String version, String status, String state) {
         super(TopLevelAsbiep.TOP_LEVEL_ASBIEP);
 
         setTopLevelAsbiepId(topLevelAsbiepId);

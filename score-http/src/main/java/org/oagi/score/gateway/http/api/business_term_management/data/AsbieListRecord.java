@@ -24,7 +24,7 @@ public class AsbieListRecord {
     private String lastUpdateUser;
     private String lastUpdateTimestamp;
     private String used;
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String topLevelAsccpPropertyTerm;
     private List<BusinessContext> businessContexts;
     private String owner;

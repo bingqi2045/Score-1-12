@@ -52,7 +52,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
         this.setDerived(bbieScNode.isDerived());
         this.setLocked(bbieScNode.isLocked());
 
-        this.setBbieScManifestId(bbieScNode.getBbieScManifestId());
+        this.setBbieScId(bbieScNode.getBbieScId());
         this.setDtScManifestId(bbieScNode.getDtScManifestId());
 
         return this;

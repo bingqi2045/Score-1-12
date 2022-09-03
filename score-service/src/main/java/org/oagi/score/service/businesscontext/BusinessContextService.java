@@ -68,19 +68,19 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void assign(String bizCtxId, BigInteger topLevelAsbiepId) {
+    public void assign(String bizCtxId, String topLevelAsbiepId) {
         dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
                 .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID, UUID.randomUUID().toString())
-                .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
+                .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
                 .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId)
                 .execute();
     }
 
     @Transactional
-    public void dismiss(String bizCtxId, BigInteger topLevelAsbiepId) {
+    public void dismiss(String bizCtxId, String topLevelAsbiepId) {
         dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT)
                 .where(and(
-                        BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(bizCtxId)
                 ))
                 .execute();

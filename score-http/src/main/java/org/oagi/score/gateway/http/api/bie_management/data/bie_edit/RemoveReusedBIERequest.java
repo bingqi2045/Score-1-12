@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class RemoveReusedBIERequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String asbieHashPath;
 }

@@ -10,7 +10,7 @@ public class FindTargetAsccpManifestRequest {
 
     private ScoreUser requester;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private String targetReleaseId;
 
@@ -23,7 +23,7 @@ public class FindTargetAsccpManifestRequest {
         this.requester = requester;
     }
 
-    public FindTargetAsccpManifestRequest withTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public FindTargetAsccpManifestRequest withTopLevelAsbiepId(String topLevelAsbiepId) {
         this.setTopLevelAsbiepId(topLevelAsbiepId);
         return this;
     }

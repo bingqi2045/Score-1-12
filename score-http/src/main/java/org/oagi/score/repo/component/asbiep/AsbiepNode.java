@@ -30,9 +30,9 @@ public class AsbiepNode {
         private String roleOfAbiePath;
         private String roleOfAbieHashPath;
         private BigInteger basedAsccpManifestId;
-        private BigInteger refTopLevelAsbiepId;
+        private String refTopLevelAsbiepId;
 
-        private BigInteger asbiepId;
+        private String asbiepId;
         private String guid;
         private String remark;
         private String bizTerm;

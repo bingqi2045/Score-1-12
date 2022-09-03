@@ -76,7 +76,7 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
      * The column <code>oagi.bdt_sc_pri_restri.bdt_sc_id</code>. Foreign key to
      * the DT table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public final TableField<BdtScPriRestriRecord, String> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
+    public final TableField<BdtScPriRestriRecord, String> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
 
     /**
      * The column
