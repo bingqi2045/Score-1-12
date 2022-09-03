@@ -444,11 +444,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setExcludeTopLevelAsbiepIds(List<BigInteger> excludeTopLevelAsbiepIds) {
+        public SelectBieListArguments setExcludeTopLevelAsbiepIds(List<String> excludeTopLevelAsbiepIds) {
             if (!excludeTopLevelAsbiepIds.isEmpty()) {
-                conditions.add(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.notIn(
-                        excludeTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                conditions.add(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.notIn(excludeTopLevelAsbiepIds));
             }
             return this;
         }

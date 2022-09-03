@@ -429,7 +429,7 @@ public class JooqBieReadRepository
     public GetReuseBieListResponse getReuseBieList(
             GetReuseBieListRequest request) throws ScoreDataAccessException {
         String topLevelAsbiepId = request.getTopLevelAsbiepId();
-        List<ULong> reuseTopLevelAsbiepIdList = getReuseTopLevelAsbiepList(topLevelAsbiepId, request.isReusedBie());
+        List<String> reuseTopLevelAsbiepIdList = getReuseTopLevelAsbiepList(topLevelAsbiepId, request.isReusedBie());
         List<TopLevelAsbiep> reuseTopLevelAsbiepList = (!reuseTopLevelAsbiepIdList.isEmpty()) ?
                 selectTopLevelAsbiep()
                         .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(reuseTopLevelAsbiepIdList))
@@ -438,7 +438,7 @@ public class JooqBieReadRepository
         return new GetReuseBieListResponse(reuseTopLevelAsbiepList);
     }
 
-    private List<ULong> getReuseTopLevelAsbiepList(String topLevelAsbiepId, boolean isReusedBie) {
+    private List<String> getReuseTopLevelAsbiepList(String topLevelAsbiepId, boolean isReusedBie) {
         List<Condition> conds = new ArrayList();
         if (isReusedBie) {
             return dslContext().selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
@@ -449,7 +449,7 @@ public class JooqBieReadRepository
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId),
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
                     ))
-                    .fetchInto(ULong.class);
+                    .fetchInto(String.class);
         } else {
             return dslContext().selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                     .from(ASBIE)
@@ -459,7 +459,7 @@ public class JooqBieReadRepository
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId)
                     ))
-                    .fetchInto(ULong.class);
+                    .fetchInto(String.class);
         }
     }
 

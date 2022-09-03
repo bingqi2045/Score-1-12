@@ -1193,10 +1193,10 @@ public class CcNodeRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOneInto(String.class);
 
-        List<ULong> accIds = dslContext.select(ACC.ACC_ID)
+        List<String> accIds = dslContext.select(ACC.ACC_ID)
                 .from(ACC)
                 .where(ACC.GUID.eq(guid))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         List<ULong> accManifestIds = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
@@ -1238,10 +1238,10 @@ public class CcNodeRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpId))
                 .fetchOneInto(String.class);
 
-        List<ULong> asccpIds = dslContext.select(ASCCP.ASCCP_ID)
+        List<String> asccpIds = dslContext.select(ASCCP.ASCCP_ID)
                 .from(ASCCP)
                 .where(ASCCP.GUID.eq(guid))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         dslContext.deleteFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.in(asccpIds))
@@ -1254,13 +1254,13 @@ public class CcNodeRepository {
                 .where(BCCP.BCCP_ID.eq(bccpId))
                 .fetchOneInto(String.class);
 
-        List<ULong> asccpIds = dslContext.select(BCCP.BCCP_ID)
+        List<String> bccpIds = dslContext.select(BCCP.BCCP_ID)
                 .from(BCCP)
                 .where(BCCP.GUID.eq(guid))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         dslContext.deleteFrom(BCCP)
-                .where(BCCP.BCCP_ID.in(asccpIds))
+                .where(BCCP.BCCP_ID.in(bccpIds))
                 .execute();
     }
 

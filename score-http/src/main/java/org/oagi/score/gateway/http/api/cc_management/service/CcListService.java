@@ -133,7 +133,7 @@ public class CcListService {
 
         Release workingRelease = releaseRepository.getWorkingRelease();
 
-        List<ULong> uegIds = dslContext.select(ACC.ACC_ID.as("id"))
+        List<String> uegIds = dslContext.select(ACC.ACC_ID.as("id"))
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .where(and(
@@ -141,7 +141,7 @@ public class CcListService {
                         ACC_MANIFEST.RELEASE_ID.notEqual(workingRelease.getReleaseId()),
                         ACC.OWNER_USER_ID.eq(requesterId)
                 ))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         byte isUsed = (byte) 0;
 

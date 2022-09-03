@@ -226,7 +226,7 @@ public class CoreComponentRepository {
     }
 
     public List<SummaryCcExt> getSummaryCcExtList(String releaseId) {
-        List<ULong> uegAccIds;
+        List<String> uegAccIds;
         if (StringUtils.hasLength(releaseId)) {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
                             .from(ACC)
@@ -236,7 +236,7 @@ public class CoreComponentRepository {
                                     ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                             ))
                             .groupBy(ACC.GUID)
-                            .fetchInto(ULong.class);
+                            .fetchInto(String.class);
 
         } else {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
@@ -244,7 +244,7 @@ public class CoreComponentRepository {
                             .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                             .where(ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()))
                             .groupBy(ACC.GUID)
-                            .fetchInto(ULong.class);
+                            .fetchInto(String.class);
         }
 
         return dslContext.select(ACC.ACC_ID,

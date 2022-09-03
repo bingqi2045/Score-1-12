@@ -628,11 +628,11 @@ public class BieEditService implements InitializingBean {
                 .fetchOne();
         String prevToAsbiepId = asbieRecord.getToAsbiepId();
 
-        ULong ownerTopLevelAsbiepOfToAsbiep =
+        String ownerTopLevelAsbiepOfToAsbiep =
                 dslContext.select(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                         .from(ASBIEP)
                         .where(ASBIEP.ASBIEP_ID.eq(asbieRecord.getToAsbiepId()))
-                        .fetchOneInto(ULong.class);
+                        .fetchOneInto(String.class);
 
         boolean isReused = !asbieRecord.getOwnerTopLevelAsbiepId().equals(ownerTopLevelAsbiepOfToAsbiep);
         if (isReused) {
@@ -675,7 +675,7 @@ public class BieEditService implements InitializingBean {
         String topLevelAsbiepId = purgeBieEvent.getTopLevelAsbiepId();
 
         while (true) {
-            List<ULong> unreferencedAbieList = dslContext.select(ABIE.ABIE_ID)
+            List<String> unreferencedAbieList = dslContext.select(ABIE.ABIE_ID)
                     .from(ABIE)
                     .leftJoin(ASBIEP).on(and(
                             ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID),
@@ -687,7 +687,7 @@ public class BieEditService implements InitializingBean {
                             TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.isNull(),
                             ASBIEP.ASBIEP_ID.isNull()
                     ))
-                    .fetchInto(ULong.class);
+                    .fetchInto(String.class);
 
             if (unreferencedAbieList.isEmpty()) {
                 break;

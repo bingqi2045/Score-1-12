@@ -244,10 +244,10 @@ public class SeqKeyWriteRepositoryTest
                 .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(allExtensionAccManifestId)))
                 .execute();
 
-        List<ULong> bccIdList = dslContext().select(BCC_MANIFEST.BCC_ID)
+        List<String> bccIdList = dslContext().select(BCC_MANIFEST.BCC_ID)
                 .from(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.in(Arrays.asList(identifierBccManifestId, indicatorBccManifestId, numberBccManifestId)))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         dslContext().deleteFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.in(Arrays.asList(identifierBccManifestId, indicatorBccManifestId, numberBccManifestId)))

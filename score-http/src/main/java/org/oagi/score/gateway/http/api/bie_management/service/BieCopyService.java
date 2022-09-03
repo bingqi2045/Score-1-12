@@ -510,7 +510,7 @@ public class BieCopyService implements InitializingBean {
                                     ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(copiedTopLevelAsbiep.getTopLevelAsbiepId()),
                                     ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
                             ))
-                            .fetchInto(ULong.class)))
+                            .fetchInto(String.class)))
                     .execute();
 
             dslContext.deleteFrom(BBIE)
@@ -523,7 +523,7 @@ public class BieCopyService implements InitializingBean {
                                     BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(copiedTopLevelAsbiep.getTopLevelAsbiepId()),
                                     ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
                             ))
-                            .fetchInto(ULong.class)))
+                            .fetchInto(String.class)))
                     .execute();
         }
 

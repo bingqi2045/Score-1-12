@@ -20,7 +20,7 @@ public class BieListRequest {
     private String usageTopLevelAsbiepId;
     private AccessPrivilege access;
     private List<String> excludePropertyTerms = Collections.emptyList();
-    private List<BigInteger> excludeTopLevelAsbiepIds = Collections.emptyList();
+    private List<String> excludeTopLevelAsbiepIds = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
     private List<String> types = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
