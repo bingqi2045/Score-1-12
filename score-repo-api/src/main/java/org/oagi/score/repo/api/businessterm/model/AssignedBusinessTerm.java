@@ -7,14 +7,14 @@ import java.util.Date;
 
 public class AssignedBusinessTerm extends Auditable {
 
-    private BigInteger assignedBizTermId;
+    private String assignedBizTermId;
     private String bieId;
     private String bieType;
     private Boolean isPrimary;
     private String primaryIndicator;
     private String typeCode;
     private String den;
-    private BigInteger businessTermId;
+    private String businessTermId;
     private String businessTerm;
     private String externalReferenceUri;
     private Date lastUpdateTimestamp;
@@ -22,11 +22,11 @@ public class AssignedBusinessTerm extends Auditable {
     private String owner;
     private String lastUpdateUser;
 
-    public BigInteger getAssignedBizTermId() {
+    public String getAssignedBizTermId() {
         return assignedBizTermId;
     }
 
-    public void setAssignedBizTermId(BigInteger assignedBizTermId) {
+    public void setAssignedBizTermId(String assignedBizTermId) {
         this.assignedBizTermId = assignedBizTermId;
     }
 
@@ -46,11 +46,11 @@ public class AssignedBusinessTerm extends Auditable {
         isPrimary = primary;
     }
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 
@@ -138,7 +138,7 @@ public class AssignedBusinessTerm extends Auditable {
     public AssignedBusinessTerm() {
     }
 
-    public AssignedBusinessTerm(BigInteger assignedBizTermId, String bieId, String bieType, Boolean isPrimary, String primaryIndicator, String typeCode, String den, BigInteger businessTermId, String businessTerm, String externalReferenceUri, Date lastUpdateTimestamp, String owner, String lastUpdateUser) {
+    public AssignedBusinessTerm(String assignedBizTermId, String bieId, String bieType, Boolean isPrimary, String primaryIndicator, String typeCode, String den, String businessTermId, String businessTerm, String externalReferenceUri, Date lastUpdateTimestamp, String owner, String lastUpdateUser) {
         this.assignedBizTermId = assignedBizTermId;
         this.bieId = bieId;
         this.bieType = bieType;

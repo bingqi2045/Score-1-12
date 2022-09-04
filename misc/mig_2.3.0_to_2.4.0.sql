@@ -3756,3 +3756,316 @@ ALTER TABLE `biz_ctx_assignment`
 ALTER TABLE `biz_ctx_assignment` ADD UNIQUE KEY `biz_ctx_assignment_uk` (`biz_ctx_id`, `top_level_asbiep_id`);
 
 ALTER TABLE `top_level_asbiep` ADD CONSTRAINT `top_level_asbiep_asbiep_id_fk` FOREIGN KEY (`asbiep_id`) REFERENCES `asbiep` (`asbiep_id`);
+
+-- ------------------------------------------------------------------------------------
+-- Change `app_oauth2_user_id`, `asbie_bizterm_id`, `ascc_bizterm_id`,               --
+-- `bbie_bizterm_id`, `bcc_bizterm_id`, `bdt_pri_restri_id`, `bdt_sc_pri_restri_id`, --
+-- `bie_usage_rule_id`, `bie_user_ext_revision_id`, `business_term_id`,              --
+-- `cc_tag_id`, `cdt_ref_spec_id`, `cdt_sc_ref_spec_id`, `comment_id`,               --
+-- `dt_usage_rule_id`, `exception_id`, `message_id`, `oauth2_app_id`,                --
+-- `oauth2_app_scope_id`, `ref_spec_id`, `usage_rule_id`, `usage_rule_expression_id` --
+--                                                                          TO UUID  --
+-- ------------------------------------------------------------------------------------
+ALTER TABLE `app_oauth2_user` ADD COLUMN `app_oauth2_user_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `app_oauth2_user_id`;
+CALL update_uuid('app_oauth2_user');
+
+ALTER TABLE `asbie_bizterm` ADD COLUMN `asbie_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `asbie_bizterm_id`;
+CALL update_uuid('asbie_bizterm');
+
+ALTER TABLE `ascc_bizterm` ADD COLUMN `ascc_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ascc_bizterm_id`;
+CALL update_uuid('ascc_bizterm');
+
+ALTER TABLE `bbie_bizterm` ADD COLUMN `bbie_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bbie_bizterm_id`;
+CALL update_uuid('bbie_bizterm');
+
+ALTER TABLE `bcc_bizterm` ADD COLUMN `bcc_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bcc_bizterm_id`;
+CALL update_uuid('bcc_bizterm');
+
+ALTER TABLE `bdt_pri_restri` ADD COLUMN `bdt_pri_restri_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bdt_pri_restri_id`;
+CALL update_uuid('bdt_pri_restri');
+
+ALTER TABLE `bdt_sc_pri_restri` ADD COLUMN `bdt_sc_pri_restri_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bdt_sc_pri_restri_id`;
+CALL update_uuid('bdt_sc_pri_restri');
+
+ALTER TABLE `bie_usage_rule` ADD COLUMN `bie_usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bie_usage_rule_id`;
+CALL update_uuid('bie_usage_rule');
+
+ALTER TABLE `bie_user_ext_revision` ADD COLUMN `bie_user_ext_revision_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bie_user_ext_revision_id`;
+CALL update_uuid('bie_user_ext_revision');
+
+ALTER TABLE `business_term` ADD COLUMN `business_term_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `business_term_id`;
+CALL update_uuid('business_term');
+
+ALTER TABLE `cc_tag` ADD COLUMN `cc_tag_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `cc_tag_id`;
+CALL update_uuid('cc_tag');
+
+ALTER TABLE `cdt_ref_spec` ADD COLUMN `cdt_ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `cdt_ref_spec_id`;
+CALL update_uuid('cdt_ref_spec');
+
+ALTER TABLE `cdt_sc_ref_spec` ADD COLUMN `cdt_sc_ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `cdt_sc_ref_spec_id`;
+CALL update_uuid('cdt_sc_ref_spec');
+
+ALTER TABLE `comment` ADD COLUMN `comment_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `comment_id`;
+CALL update_uuid('comment');
+
+ALTER TABLE `dt_usage_rule` ADD COLUMN `dt_usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `dt_usage_rule_id`;
+CALL update_uuid('dt_usage_rule');
+
+ALTER TABLE `exception` ADD COLUMN `exception_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `exception_id`;
+CALL update_uuid('exception');
+
+ALTER TABLE `message` ADD COLUMN `message_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `message_id`;
+CALL update_uuid('message');
+
+ALTER TABLE `oauth2_app` ADD COLUMN `oauth2_app_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `oauth2_app_id`;
+CALL update_uuid('oauth2_app');
+
+ALTER TABLE `oauth2_app_scope` ADD COLUMN `oauth2_app_scope_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `oauth2_app_scope_id`;
+CALL update_uuid('oauth2_app_scope');
+
+ALTER TABLE `ref_spec` ADD COLUMN `ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ref_spec_id`;
+CALL update_uuid('ref_spec');
+
+UPDATE `ref_spec` SET `ref_spec_uuid` = '7294fd33-8315-467b-9416-783c32551a15' WHERE `spec` = 'CCTS DT v3.1';
+
+ALTER TABLE `usage_rule` ADD COLUMN `usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `usage_rule_id`;
+CALL update_uuid('usage_rule');
+
+ALTER TABLE `usage_rule_expression` ADD COLUMN `usage_rule_expression_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `usage_rule_expression_id`;
+CALL update_uuid('usage_rule_expression');
+
+ALTER TABLE `acc_manifest_tag` ADD COLUMN `cc_tag_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cc_tag_id`;
+UPDATE `acc_manifest_tag`, `cc_tag` SET `acc_manifest_tag`.`cc_tag_uuid` = `cc_tag`.`cc_tag_uuid`
+WHERE `acc_manifest_tag`.`cc_tag_id` = `cc_tag`.`cc_tag_id`;
+
+ALTER TABLE `app_oauth2_user` ADD COLUMN `oauth2_app_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A reference to the record in `oauth2_app`.' AFTER `oauth2_app_id`;
+UPDATE `app_oauth2_user`, `oauth2_app` SET `app_oauth2_user`.`oauth2_app_uuid` = `oauth2_app`.`oauth2_app_uuid`
+WHERE `app_oauth2_user`.`oauth2_app_id` = `oauth2_app`.`oauth2_app_id`;
+
+ALTER TABLE `asbie_bizterm` ADD COLUMN `ascc_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the ascc_business_term record.' AFTER `ascc_bizterm_id`;
+UPDATE `asbie_bizterm`, `ascc_bizterm` SET `asbie_bizterm`.`ascc_bizterm_uuid` = `ascc_bizterm`.`ascc_bizterm_uuid`
+WHERE `asbie_bizterm`.`ascc_bizterm_id` = `ascc_bizterm`.`ascc_bizterm_id`;
+
+ALTER TABLE `ascc_bizterm` ADD COLUMN `business_term_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.' AFTER `business_term_id`;
+UPDATE `ascc_bizterm`, `business_term` SET `ascc_bizterm`.`business_term_uuid` = `business_term`.`business_term_uuid`
+WHERE `ascc_bizterm`.`business_term_id` = `business_term`.`business_term_id`;
+
+ALTER TABLE `asccp_manifest_tag` ADD COLUMN `cc_tag_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cc_tag_id`;
+UPDATE `asccp_manifest_tag`, `cc_tag` SET `asccp_manifest_tag`.`cc_tag_uuid` = `cc_tag`.`cc_tag_uuid`
+WHERE `asccp_manifest_tag`.`cc_tag_id` = `cc_tag`.`cc_tag_id`;
+
+ALTER TABLE `bbie` ADD COLUMN `bdt_pri_restri_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.' AFTER `bdt_pri_restri_id`;
+UPDATE `bbie`, `bdt_pri_restri` SET `bbie`.`bdt_pri_restri_uuid` = `bdt_pri_restri`.`bdt_pri_restri_uuid`
+WHERE `bbie`.`bdt_pri_restri_id` = `bdt_pri_restri`.`bdt_pri_restri_id`;
+
+ALTER TABLE `bbie_bizterm` ADD COLUMN `bcc_bizterm_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the bcc_business_term record.' AFTER `bcc_bizterm_id`;
+UPDATE `bbie_bizterm`, `bcc_bizterm` SET `bbie_bizterm`.`bcc_bizterm_uuid` = `bcc_bizterm`.`bcc_bizterm_uuid`
+WHERE `bbie_bizterm`.`bcc_bizterm_id` = `bcc_bizterm`.`bcc_bizterm_id`;
+
+ALTER TABLE `bbie_sc` ADD COLUMN `dt_sc_pri_restri_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).\n\nIt is the foreign key to the BDT_SC_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.\n\nThis column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.' AFTER `dt_sc_pri_restri_id`;
+UPDATE `bbie_sc`, `bdt_sc_pri_restri` SET `bbie_sc`.`dt_sc_pri_restri_uuid` = `bdt_sc_pri_restri`.`bdt_sc_pri_restri_uuid`
+WHERE `bbie_sc`.`dt_sc_pri_restri_id` = `bdt_sc_pri_restri`.`bdt_sc_pri_restri_id`;
+
+ALTER TABLE `bcc_bizterm` ADD COLUMN `business_term_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.' AFTER `business_term_id`;
+UPDATE `bcc_bizterm`, `business_term` SET `bcc_bizterm`.`business_term_uuid` = `business_term`.`business_term_uuid`
+WHERE `bcc_bizterm`.`business_term_id` = `business_term`.`business_term_id`;
+
+ALTER TABLE `bccp_manifest_tag` ADD COLUMN `cc_tag_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cc_tag_id`;
+UPDATE `bccp_manifest_tag`, `cc_tag` SET `bccp_manifest_tag`.`cc_tag_uuid` = `cc_tag`.`cc_tag_uuid`
+WHERE `bccp_manifest_tag`.`cc_tag_id` = `cc_tag`.`cc_tag_id`;
+
+ALTER TABLE `bie_usage_rule` ADD COLUMN `assigned_usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.' AFTER `assigned_usage_rule_id`;
+UPDATE `bie_usage_rule`, `usage_rule` SET `bie_usage_rule`.`assigned_usage_rule_uuid` = `usage_rule`.`usage_rule_uuid`
+WHERE `bie_usage_rule`.`assigned_usage_rule_id` = `usage_rule`.`usage_rule_id`;
+
+ALTER TABLE `cdt_ref_spec` ADD COLUMN `ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `ref_spec_id`;
+UPDATE `cdt_ref_spec`, `ref_spec` SET `cdt_ref_spec`.`ref_spec_uuid` = `ref_spec`.`ref_spec_uuid`
+WHERE `cdt_ref_spec`.`ref_spec_id` = `ref_spec`.`ref_spec_id`;
+
+ALTER TABLE `cdt_sc_ref_spec` ADD COLUMN `ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `ref_spec_id`;
+UPDATE `cdt_sc_ref_spec`, `ref_spec` SET `cdt_sc_ref_spec`.`ref_spec_uuid` = `ref_spec`.`ref_spec_uuid`
+WHERE `cdt_sc_ref_spec`.`ref_spec_id` = `ref_spec`.`ref_spec_id`;
+
+ALTER TABLE `comment` ADD COLUMN `prev_comment_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_comment_id`;
+UPDATE `comment`, `comment` as tmp SET `comment`.`prev_comment_uuid` = tmp.`comment_uuid`
+WHERE `comment`.`prev_comment_id` = tmp.`comment_id`;
+
+ALTER TABLE `dt_manifest_tag` ADD COLUMN `cc_tag_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `cc_tag_id`;
+UPDATE `dt_manifest_tag`, `cc_tag` SET `dt_manifest_tag`.`cc_tag_uuid` = `cc_tag`.`cc_tag_uuid`
+WHERE `dt_manifest_tag`.`cc_tag_id` = `cc_tag`.`cc_tag_id`;
+
+ALTER TABLE `dt_usage_rule` ADD COLUMN `assigned_usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.' AFTER `assigned_usage_rule_id`;
+UPDATE `dt_usage_rule`, `usage_rule` SET `dt_usage_rule`.`assigned_usage_rule_uuid` = `usage_rule`.`usage_rule_uuid`
+WHERE `dt_usage_rule`.`assigned_usage_rule_id` = `usage_rule`.`usage_rule_id`;
+
+ALTER TABLE `oauth2_app_scope` ADD COLUMN `oauth2_app_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `oauth2_app_id`;
+UPDATE `oauth2_app_scope`, `oauth2_app` SET `oauth2_app_scope`.`oauth2_app_uuid` = `oauth2_app`.`oauth2_app_uuid`
+WHERE `oauth2_app_scope`.`oauth2_app_id` = `oauth2_app`.`oauth2_app_id`;
+
+ALTER TABLE `usage_rule_expression` ADD COLUMN `represented_usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `represented_usage_rule_id`;
+UPDATE `usage_rule_expression`, `usage_rule` SET `usage_rule_expression`.`represented_usage_rule_uuid` = `usage_rule`.`usage_rule_uuid`
+WHERE `usage_rule_expression`.`represented_usage_rule_id` = `usage_rule`.`usage_rule_id`;
+
+-- Drop old `*_id` columns
+ALTER TABLE `acc_manifest_tag` DROP FOREIGN KEY `acc_manifest_tag_cc_tag_id_fk`;
+ALTER TABLE `acc_manifest_tag` DROP COLUMN `cc_tag_id`;
+
+ALTER TABLE `app_oauth2_user` DROP FOREIGN KEY `app_oauth2_user_oauth2_app_id_fk`;
+ALTER TABLE `app_oauth2_user` DROP COLUMN `oauth2_app_id`;
+
+ALTER TABLE `asbie_bizterm` DROP FOREIGN KEY `asbie_bizterm_ascc_bizterm_fk`;
+ALTER TABLE `asbie_bizterm` DROP COLUMN `ascc_bizterm_id`;
+
+ALTER TABLE `ascc_bizterm` DROP FOREIGN KEY `ascc_bizterm_business_term_fk`;
+ALTER TABLE `ascc_bizterm` DROP COLUMN `business_term_id`;
+
+ALTER TABLE `asccp_manifest_tag` DROP FOREIGN KEY `asccp_manifest_tag_cc_tag_id_fk`;
+ALTER TABLE `asccp_manifest_tag` DROP COLUMN `cc_tag_id`;
+
+ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_bdt_pri_restri_id_fk`;
+ALTER TABLE `bbie` DROP COLUMN `bdt_pri_restri_id`;
+
+ALTER TABLE `bbie_bizterm` DROP FOREIGN KEY `bbie_bizterm_bcc_bizterm_fk`;
+ALTER TABLE `bbie_bizterm` DROP COLUMN `bcc_bizterm_id`;
+
+ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_dt_sc_pri_restri_id_fk`;
+ALTER TABLE `bbie_sc` DROP COLUMN `dt_sc_pri_restri_id`;
+
+ALTER TABLE `bcc_bizterm` DROP FOREIGN KEY `bcc_bizterm_business_term_fk`;
+ALTER TABLE `bcc_bizterm` DROP COLUMN `business_term_id`;
+
+ALTER TABLE `bccp_manifest_tag` DROP FOREIGN KEY `bccp_manifest_tag_cc_tag_id_fk`;
+ALTER TABLE `bccp_manifest_tag` DROP COLUMN `cc_tag_id`;
+
+ALTER TABLE `bie_usage_rule` DROP FOREIGN KEY `bie_usage_rule_assigned_usage_rule_id_fk`;
+ALTER TABLE `bie_usage_rule` DROP COLUMN `assigned_usage_rule_id`;
+
+ALTER TABLE `cdt_ref_spec` DROP FOREIGN KEY `cdt_ref_spec_ref_spec_id_fk`;
+ALTER TABLE `cdt_ref_spec` DROP COLUMN `ref_spec_id`;
+
+ALTER TABLE `cdt_sc_ref_spec` DROP FOREIGN KEY `cdt_sc_ref_spec_ref_spec_id_fk`;
+ALTER TABLE `cdt_sc_ref_spec` DROP COLUMN `ref_spec_id`;
+
+ALTER TABLE `comment` DROP FOREIGN KEY `comment_prev_comment_id_fk`;
+ALTER TABLE `comment` DROP COLUMN `prev_comment_id`;
+
+ALTER TABLE `dt_manifest_tag` DROP FOREIGN KEY `dt_manifest_tag_cc_tag_id_fk`;
+ALTER TABLE `dt_manifest_tag` DROP COLUMN `cc_tag_id`;
+
+ALTER TABLE `dt_usage_rule` DROP FOREIGN KEY `dt_usage_rule_assigned_usage_rule_id_fk`;
+ALTER TABLE `dt_usage_rule` DROP COLUMN `assigned_usage_rule_id`;
+
+ALTER TABLE `oauth2_app_scope` DROP FOREIGN KEY `oauth2_app_scope_oauth2_app_id_fk`;
+ALTER TABLE `oauth2_app_scope` DROP COLUMN `oauth2_app_id`;
+
+ALTER TABLE `usage_rule_expression` DROP FOREIGN KEY `usage_rule_expression_represented_usage_rule_id_fk`;
+ALTER TABLE `usage_rule_expression` DROP COLUMN `represented_usage_rule_id`;
+
+ALTER TABLE `app_oauth2_user` DROP COLUMN `app_oauth2_user_id`;
+ALTER TABLE `asbie_bizterm` DROP COLUMN `asbie_bizterm_id`;
+ALTER TABLE `ascc_bizterm` DROP COLUMN `ascc_bizterm_id`;
+ALTER TABLE `bbie_bizterm` DROP COLUMN `bbie_bizterm_id`;
+ALTER TABLE `bcc_bizterm` DROP COLUMN `bcc_bizterm_id`;
+ALTER TABLE `bdt_pri_restri` DROP COLUMN `bdt_pri_restri_id`;
+ALTER TABLE `bdt_sc_pri_restri` DROP COLUMN `bdt_sc_pri_restri_id`;
+ALTER TABLE `bie_usage_rule` DROP COLUMN `bie_usage_rule_id`;
+ALTER TABLE `bie_user_ext_revision` DROP COLUMN `bie_user_ext_revision_id`;
+ALTER TABLE `business_term` DROP COLUMN `business_term_id`;
+ALTER TABLE `cc_tag` DROP COLUMN `cc_tag_id`;
+ALTER TABLE `cdt_ref_spec` DROP COLUMN `cdt_ref_spec_id`;
+ALTER TABLE `cdt_sc_ref_spec` DROP COLUMN `cdt_sc_ref_spec_id`;
+ALTER TABLE `comment` DROP COLUMN `comment_id`;
+ALTER TABLE `dt_usage_rule` DROP COLUMN `dt_usage_rule_id`;
+ALTER TABLE `exception` DROP COLUMN `exception_id`;
+ALTER TABLE `message` DROP COLUMN `message_id`;
+ALTER TABLE `oauth2_app` DROP COLUMN `oauth2_app_id`;
+ALTER TABLE `oauth2_app_scope` DROP COLUMN `oauth2_app_scope_id`;
+ALTER TABLE `ref_spec` DROP COLUMN `ref_spec_id`;
+ALTER TABLE `usage_rule` DROP COLUMN `usage_rule_id`;
+ALTER TABLE `usage_rule_expression` DROP COLUMN `usage_rule_expression_id`;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `app_oauth2_user` CHANGE `app_oauth2_user_uuid` `app_oauth2_user_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asbie_bizterm` CHANGE `asbie_bizterm_uuid` `asbie_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ascc_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bbie_bizterm` CHANGE `bbie_bizterm_uuid` `bbie_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bcc_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bdt_pri_restri` CHANGE `bdt_pri_restri_uuid` `bdt_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bdt_sc_pri_restri` CHANGE `bdt_sc_pri_restri_uuid` `bdt_sc_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bie_usage_rule` CHANGE `bie_usage_rule_uuid` `bie_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bie_user_ext_revision` CHANGE `bie_user_ext_revision_uuid` `bie_user_ext_revision_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `business_term` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cc_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cdt_ref_spec` CHANGE `cdt_ref_spec_uuid` `cdt_ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cdt_sc_ref_spec` CHANGE `cdt_sc_ref_spec_uuid` `cdt_sc_ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `comment` CHANGE `comment_uuid` `comment_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt_usage_rule` CHANGE `dt_usage_rule_uuid` `dt_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `exception` CHANGE `exception_uuid` `exception_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `message` CHANGE `message_uuid` `message_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `oauth2_app` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_scope_uuid` `oauth2_app_scope_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `usage_rule` CHANGE `usage_rule_uuid` `usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `usage_rule_expression` CHANGE `usage_rule_expression_uuid` `usage_rule_expression_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `acc_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `app_oauth2_user` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A reference to the record in `oauth2_app`.';
+ALTER TABLE `asbie_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the ascc_business_term record.';
+ALTER TABLE `ascc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.';
+ALTER TABLE `asccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bbie` CHANGE `bdt_pri_restri_uuid` `bdt_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.';
+ALTER TABLE `bbie_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the bcc_business_term record.';
+ALTER TABLE `bbie_sc` CHANGE `dt_sc_pri_restri_uuid` `dt_sc_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).\n\nIt is the foreign key to the BDT_SC_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.\n\nThis column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.';
+ALTER TABLE `bcc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.';
+ALTER TABLE `bccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bie_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
+ALTER TABLE `cdt_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `cdt_sc_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `comment` CHANGE `prev_comment_uuid` `prev_comment_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
+ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `usage_rule_expression` CHANGE `represented_usage_rule_uuid` `represented_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+
+-- Add foreign key constraints
+ALTER TABLE `app_oauth2_user` ADD PRIMARY KEY (`app_oauth2_user_id`);
+ALTER TABLE `asbie_bizterm` ADD PRIMARY KEY (`asbie_bizterm_id`);
+ALTER TABLE `ascc_bizterm` ADD PRIMARY KEY (`ascc_bizterm_id`);
+ALTER TABLE `bbie_bizterm` ADD PRIMARY KEY (`bbie_bizterm_id`);
+ALTER TABLE `bcc_bizterm` ADD PRIMARY KEY (`bcc_bizterm_id`);
+ALTER TABLE `bdt_pri_restri` ADD PRIMARY KEY (`bdt_pri_restri_id`);
+ALTER TABLE `bdt_sc_pri_restri` ADD PRIMARY KEY (`bdt_sc_pri_restri_id`);
+ALTER TABLE `bie_usage_rule` ADD PRIMARY KEY (`bie_usage_rule_id`);
+ALTER TABLE `bie_user_ext_revision` ADD PRIMARY KEY (`bie_user_ext_revision_id`);
+ALTER TABLE `business_term` ADD PRIMARY KEY (`business_term_id`);
+ALTER TABLE `cc_tag` ADD PRIMARY KEY (`cc_tag_id`);
+ALTER TABLE `cdt_ref_spec` ADD PRIMARY KEY (`cdt_ref_spec_id`);
+ALTER TABLE `cdt_sc_ref_spec` ADD PRIMARY KEY (`cdt_sc_ref_spec_id`);
+ALTER TABLE `comment` ADD PRIMARY KEY (`comment_id`);
+ALTER TABLE `dt_usage_rule` ADD PRIMARY KEY (`dt_usage_rule_id`);
+ALTER TABLE `exception` ADD PRIMARY KEY (`exception_id`);
+ALTER TABLE `message` ADD PRIMARY KEY (`message_id`);
+ALTER TABLE `oauth2_app` ADD PRIMARY KEY (`oauth2_app_id`);
+ALTER TABLE `oauth2_app_scope` ADD PRIMARY KEY (`oauth2_app_scope_id`);
+ALTER TABLE `ref_spec` ADD PRIMARY KEY (`ref_spec_id`);
+ALTER TABLE `usage_rule` ADD PRIMARY KEY (`usage_rule_id`);
+ALTER TABLE `usage_rule_expression` ADD PRIMARY KEY (`usage_rule_expression_id`);
+
+ALTER TABLE `acc_manifest_tag` ADD CONSTRAINT `acc_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`);
+ALTER TABLE `app_oauth2_user` ADD CONSTRAINT `app_oauth2_user_oauth2_app_id_fk` FOREIGN KEY (`oauth2_app_id`) REFERENCES `oauth2_app` (`oauth2_app_id`);
+ALTER TABLE `asbie_bizterm` ADD CONSTRAINT `asbie_bizterm_ascc_bizterm_id_fk` FOREIGN KEY (`ascc_bizterm_id`) REFERENCES `ascc_bizterm` (`ascc_bizterm_id`);
+ALTER TABLE `ascc_bizterm` ADD CONSTRAINT `ascc_bizterm_business_term_id_fk` FOREIGN KEY (`business_term_id`) REFERENCES `business_term` (`business_term_id`);
+ALTER TABLE `asccp_manifest_tag` ADD CONSTRAINT `asccp_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`);
+ALTER TABLE `bbie` ADD CONSTRAINT `bbie_bdt_pri_restri_id_fk` FOREIGN KEY (`bdt_pri_restri_id`) REFERENCES `bdt_pri_restri` (`bdt_pri_restri_id`);
+ALTER TABLE `bbie_bizterm` ADD CONSTRAINT `bbie_bizterm_bcc_bizterm_id_fk` FOREIGN KEY (`bcc_bizterm_id`) REFERENCES `bcc_bizterm` (`bcc_bizterm_id`);
+ALTER TABLE `bbie_sc` ADD CONSTRAINT `bbie_sc_dt_sc_pri_restri_id_fk` FOREIGN KEY (`dt_sc_pri_restri_id`) REFERENCES `bdt_sc_pri_restri` (`bdt_sc_pri_restri_id`);
+ALTER TABLE `bcc_bizterm` ADD CONSTRAINT `bcc_bizterm_business_term_id_fk` FOREIGN KEY (`business_term_id`) REFERENCES `business_term` (`business_term_id`);
+ALTER TABLE `bccp_manifest_tag` ADD CONSTRAINT `bccp_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`);
+ALTER TABLE `bie_usage_rule` ADD CONSTRAINT `bie_usage_rule_assigned_usage_rule_id_fk` FOREIGN KEY (`assigned_usage_rule_id`) REFERENCES `usage_rule` (`usage_rule_id`);
+ALTER TABLE `cdt_ref_spec` ADD CONSTRAINT `cdt_ref_spec_ref_spec_id_fk` FOREIGN KEY (`ref_spec_id`) REFERENCES `ref_spec` (`ref_spec_id`);
+ALTER TABLE `cdt_sc_ref_spec` ADD CONSTRAINT `cdt_sc_ref_spec_ref_spec_id_fk` FOREIGN KEY (`ref_spec_id`) REFERENCES `ref_spec` (`ref_spec_id`);
+ALTER TABLE `comment` ADD CONSTRAINT `comment_prev_comment_id_fk` FOREIGN KEY (`prev_comment_id`) REFERENCES `comment` (`comment_id`);
+ALTER TABLE `dt_manifest_tag` ADD CONSTRAINT `dt_manifest_tag_cc_tag_id_fk` FOREIGN KEY (`cc_tag_id`) REFERENCES `cc_tag` (`cc_tag_id`);
+ALTER TABLE `dt_usage_rule` ADD CONSTRAINT `dt_usage_rule_assigned_usage_rule_id_fk` FOREIGN KEY (`assigned_usage_rule_id`) REFERENCES `usage_rule` (`usage_rule_id`);
+ALTER TABLE `oauth2_app_scope` ADD CONSTRAINT `oauth2_app_scope_oauth2_app_id_fk` FOREIGN KEY (`oauth2_app_id`) REFERENCES `oauth2_app` (`oauth2_app_id`);
+ALTER TABLE `usage_rule_expression` ADD CONSTRAINT `usage_rule_expression_represented_usage_rule_id_fk` FOREIGN KEY (`represented_usage_rule_id`) REFERENCES `usage_rule` (`usage_rule_id`);

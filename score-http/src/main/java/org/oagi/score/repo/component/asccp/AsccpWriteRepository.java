@@ -120,7 +120,7 @@ public class AsccpWriteRepository {
         CcTagRecord ccTag = dslContext.selectFrom(CC_TAG)
                 .where(CC_TAG.TAG_NAME.eq(tag))
                 .fetchOptional().orElse(null);
-        ULong ccTagId;
+        String ccTagId;
         if (ccTag == null) {
             ccTagId = dslContext.insertInto(CC_TAG)
                     .set(CC_TAG.TAG_NAME, tag)

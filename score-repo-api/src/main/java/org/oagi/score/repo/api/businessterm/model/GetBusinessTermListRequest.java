@@ -10,7 +10,7 @@ import java.util.List;
 
 public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> {
 
-    private Collection<BigInteger> businessTermIdList;
+    private Collection<String> businessTermIdList;
     private String businessTerm;
     private String definition;
     private String comment;
@@ -25,11 +25,11 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
         super(requester, BusinessTerm.class);
     }
 
-    public Collection<BigInteger> getBusinessTermIdList() {
+    public Collection<String> getBusinessTermIdList() {
         return businessTermIdList;
     }
 
-    public void setBusinessTermIdList(Collection<BigInteger> businessTermIdList) {
+    public void setBusinessTermIdList(Collection<String> businessTermIdList) {
         this.businessTermIdList = businessTermIdList;
     }
 

@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BbieBizTerm;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BBIEBiztermRepository implements ScoreRepository<BbieBizTerm, BigInteger> {
+public class BBIEBiztermRepository implements ScoreRepository<BbieBizTerm, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -41,8 +42,8 @@ public class BBIEBiztermRepository implements ScoreRepository<BbieBizTerm, BigIn
     }
 
     @Override
-    public BbieBizTerm findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BbieBizTerm findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return dslContext.select(
@@ -64,7 +65,7 @@ public class BBIEBiztermRepository implements ScoreRepository<BbieBizTerm, BigIn
         .on(Tables.BBIE_BIZTERM.BCC_BIZTERM_ID.eq(Tables.BCC_BIZTERM.BCC_BIZTERM_ID))
         .innerJoin(Tables.BUSINESS_TERM)
         .on(Tables.BCC_BIZTERM.BUSINESS_TERM_ID.eq(Tables.BUSINESS_TERM.BUSINESS_TERM_ID))
-        .where(Tables.BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(ULong.valueOf(id)))
+        .where(Tables.BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(id))
         .fetchOneInto(BbieBizTerm.class);
     }
 }

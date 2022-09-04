@@ -267,7 +267,7 @@ public class JooqBieWriteRepository
         bbieRecord.setFromAbieId(bbie.getFromAbieId());
         bbieRecord.setToBbiepId(bbie.getToBbiepId());
         if (bbie.getBdtPriRestriId() != null) {
-            bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
+            bbieRecord.setBdtPriRestriId(bbie.getBdtPriRestriId());
         }
         if (bbie.getCodeListId() != null) {
             bbieRecord.setCodeListId(bbie.getCodeListId());
@@ -316,7 +316,7 @@ public class JooqBieWriteRepository
         bbieScRecord.setHashPath(bbieSc.getHashPath());
         bbieScRecord.setBbieId(bbieSc.getBbieId());
         if (bbieSc.getDtScPriRestriId() != null) {
-            bbieScRecord.setDtScPriRestriId(ULong.valueOf(bbieSc.getDtScPriRestriId()));
+            bbieScRecord.setDtScPriRestriId(bbieSc.getDtScPriRestriId());
         }
         if (bbieSc.getCodeListId() != null) {
             bbieScRecord.setCodeListId(bbieSc.getCodeListId());

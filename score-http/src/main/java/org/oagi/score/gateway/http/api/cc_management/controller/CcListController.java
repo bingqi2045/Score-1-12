@@ -136,7 +136,6 @@ public class CcListController {
 
         request.setCcTagIds(!StringUtils.hasLength(ccTagIds) ? Collections.emptyList() :
                 Arrays.asList(ccTagIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e))
-                        .map(e -> new BigInteger(e))
                         .collect(Collectors.toList()));
 
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :

@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record6;
 import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtScPriRestri;
 
 
@@ -31,7 +30,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtScPriRestri;
  * BDT_SC_PRI_RESTRI key.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriRecord> implements Record6<ULong, String, String, String, String, Byte> {
+public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriRecord> implements Record6<String, String, String, String, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +38,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
      * Setter for <code>oagi.bdt_sc_pri_restri.bdt_sc_pri_restri_id</code>.
      * Primary, internal database key.
      */
-    public void setBdtScPriRestriId(ULong value) {
+    public void setBdtScPriRestriId(String value) {
         set(0, value);
     }
 
@@ -47,8 +46,8 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
      * Getter for <code>oagi.bdt_sc_pri_restri.bdt_sc_pri_restri_id</code>.
      * Primary, internal database key.
      */
-    public ULong getBdtScPriRestriId() {
-        return (ULong) get(0);
+    public String getBdtScPriRestriId() {
+        return (String) get(0);
     }
 
     /**
@@ -142,7 +141,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -151,17 +150,17 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> fieldsRow() {
+    public Row6<String, String, String, String, String, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> valuesRow() {
+    public Row6<String, String, String, String, String, Byte> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BdtScPriRestri.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID;
     }
 
@@ -191,7 +190,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBdtScPriRestriId();
     }
 
@@ -221,7 +220,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBdtScPriRestriId();
     }
 
@@ -251,7 +250,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     }
 
     @Override
-    public BdtScPriRestriRecord value1(ULong value) {
+    public BdtScPriRestriRecord value1(String value) {
         setBdtScPriRestriId(value);
         return this;
     }
@@ -287,7 +286,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     }
 
     @Override
-    public BdtScPriRestriRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6) {
+    public BdtScPriRestriRecord values(String value1, String value2, String value3, String value4, String value5, Byte value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -311,7 +310,7 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
     /**
      * Create a detached, initialised BdtScPriRestriRecord
      */
-    public BdtScPriRestriRecord(ULong bdtScPriRestriId, String bdtScId, String cdtScAwdPriXpsTypeMapId, String codeListId, String agencyIdListId, Byte isDefault) {
+    public BdtScPriRestriRecord(String bdtScPriRestriId, String bdtScId, String cdtScAwdPriXpsTypeMapId, String codeListId, String agencyIdListId, Byte isDefault) {
         super(BdtScPriRestri.BDT_SC_PRI_RESTRI);
 
         setBdtScPriRestriId(bdtScPriRestriId);

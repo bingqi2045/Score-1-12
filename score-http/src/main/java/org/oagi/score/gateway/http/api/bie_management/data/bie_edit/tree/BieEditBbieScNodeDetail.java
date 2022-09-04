@@ -26,7 +26,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
     private String bizTerm;
     private String remark;
 
-    private BigInteger dtScPriRestriId = BigInteger.ZERO;
+    private String dtScPriRestriId;
     private String codeListId;
     private String agencyIdListId;
 

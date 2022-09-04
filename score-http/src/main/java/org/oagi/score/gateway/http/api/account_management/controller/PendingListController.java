@@ -66,13 +66,13 @@ public class PendingListController {
 
     @RequestMapping(value = "/pending/{appOauth2UserId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppOauth2User getPending(@PathVariable("appOauth2UserId") long appOauth2UserId) {
+    public AppOauth2User getPending(@PathVariable("appOauth2UserId") String appOauth2UserId) {
         return service.getPending(appOauth2UserId);
     }
 
     @RequestMapping(value = "/pending/{appOauth2UserId}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity rejectPending(@PathVariable("appOauth2UserId") long appOauth2UserId,
+    public ResponseEntity rejectPending(@PathVariable("appOauth2UserId") String appOauth2UserId,
                                         @RequestBody AppOauth2User request) {
         service.deletePending(request);
         return ResponseEntity.noContent().build();
@@ -80,7 +80,7 @@ public class PendingListController {
 
     @RequestMapping(value = "/pending/link/{appOauth2UserId}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity linkToUser(@PathVariable("appOauth2UserId") long appOauth2UserId,
+    public ResponseEntity linkToUser(@PathVariable("appOauth2UserId") String appOauth2UserId,
                                      @RequestBody Map<String, Object> body) {
         String appUserId = ((String) body.get("appUserId"));
         service.linkPendingToAppUser(appOauth2UserId, appUserId);

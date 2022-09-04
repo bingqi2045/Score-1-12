@@ -59,7 +59,7 @@ public class BccpManifestTag extends TableImpl<BccpManifestTagRecord> {
     /**
      * The column <code>oagi.bccp_manifest_tag.cc_tag_id</code>.
      */
-    public final TableField<BccpManifestTagRecord, ULong> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestTagRecord, String> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.CHAR(36), this, "");
 
     private BccpManifestTag(Name alias, Table<BccpManifestTagRecord> aliased) {
         this(alias, aliased, null);
@@ -176,21 +176,21 @@ public class BccpManifestTag extends TableImpl<BccpManifestTagRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, ULong> fieldsRow() {
+    public Row2<ULong, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function2<? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function2<? super ULong, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -213,7 +213,7 @@ public class AccountListService {
         AppUserRecord record = new AppUserRecord();
         record.setAppUserId(UUID.randomUUID().toString());
         record.setLoginId(account.getLoginId());
-        if (account.getAppOauth2UserId() == 0) {
+        if (!StringUtils.hasLength(account.getAppOauth2UserId())) {
             record.setPassword(passwordEncoder.encode(account.getPassword()));
         }
         record.setName(account.getName());
@@ -228,9 +228,9 @@ public class AccountListService {
 
         String appUserId = record.getAppUserId();
 
-        if (account.getAppOauth2UserId() > 0 && account.getSub().length() > 0) {
+        if (StringUtils.hasLength(account.getAppOauth2UserId()) && account.getSub().length() > 0) {
             AppOauth2UserRecord oauth2User = dslContext.selectFrom(APP_OAUTH2_USER).where(
-                    and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(account.getAppOauth2UserId())),
+                    and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(account.getAppOauth2UserId()),
                             APP_OAUTH2_USER.SUB.eq(account.getSub()))).fetchOne();
             if (oauth2User == null) {
                 throw new IllegalStateException("Cannot find Oauth2 account ");

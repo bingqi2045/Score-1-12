@@ -7,21 +7,21 @@ import java.math.BigInteger;
 
 public class GetBusinessTermRequest extends Request {
 
-    private BigInteger businessTermId;
+    private String businessTermId;
 
     public GetBusinessTermRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 
-    public GetBusinessTermRequest withBusinessTermId(BigInteger businessTermId) {
+    public GetBusinessTermRequest withBusinessTermId(String businessTermId) {
         this.setBusinessTermId(businessTermId);
         return this;
     }

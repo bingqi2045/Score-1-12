@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record6;
 import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
 
 
@@ -23,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
  * column among the three can have a value in a particular record.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, String, String, String, String, Byte> {
+public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<String, String, String, String, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +30,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Setter for <code>oagi.bdt_pri_restri.bdt_pri_restri_id</code>. Primary,
      * internal database key.
      */
-    public void setBdtPriRestriId(ULong value) {
+    public void setBdtPriRestriId(String value) {
         set(0, value);
     }
 
@@ -39,8 +38,8 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
      * Getter for <code>oagi.bdt_pri_restri.bdt_pri_restri_id</code>. Primary,
      * internal database key.
      */
-    public ULong getBdtPriRestriId() {
-        return (ULong) get(0);
+    public String getBdtPriRestriId() {
+        return (String) get(0);
     }
 
     /**
@@ -134,7 +133,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -143,17 +142,17 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> fieldsRow() {
+    public Row6<String, String, String, String, String, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> valuesRow() {
+    public Row6<String, String, String, String, String, Byte> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BdtPriRestri.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID;
     }
 
@@ -183,7 +182,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBdtPriRestriId();
     }
 
@@ -213,7 +212,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBdtPriRestriId();
     }
 
@@ -243,7 +242,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord value1(ULong value) {
+    public BdtPriRestriRecord value1(String value) {
         setBdtPriRestriId(value);
         return this;
     }
@@ -279,7 +278,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     }
 
     @Override
-    public BdtPriRestriRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6) {
+    public BdtPriRestriRecord values(String value1, String value2, String value3, String value4, String value5, Byte value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -303,7 +302,7 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     /**
      * Create a detached, initialised BdtPriRestriRecord
      */
-    public BdtPriRestriRecord(ULong bdtPriRestriId, String bdtId, String cdtAwdPriXpsTypeMapId, String codeListId, String agencyIdListId, Byte isDefault) {
+    public BdtPriRestriRecord(String bdtPriRestriId, String bdtId, String cdtAwdPriXpsTypeMapId, String codeListId, String agencyIdListId, Byte isDefault) {
         super(BdtPriRestri.BDT_PRI_RESTRI);
 
         setBdtPriRestriId(bdtPriRestriId);

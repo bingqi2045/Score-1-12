@@ -28,7 +28,7 @@ public class JooqMessageWriteRepository
     @Override
     public SendMessageResponse sendMessage(SendMessageRequest request) throws ScoreDataAccessException {
         ScoreUser sender = request.getRequester();
-        Map<ScoreUser, BigInteger> messageIds = new HashMap();
+        Map<ScoreUser, String> messageIds = new HashMap();
         for (ScoreUser recipient : request.getRecipients()) {
             MessageRecord message = new MessageRecord();
             message.setSenderId(sender.getUserId());
@@ -38,11 +38,11 @@ public class JooqMessageWriteRepository
             message.setBodyContentType(request.getBodyContentType());
             message.setIsRead((byte) 0);
             message.setCreationTimestamp(LocalDateTime.now());
-            ULong messageId = dslContext().insertInto(MESSAGE)
+            String messageId = dslContext().insertInto(MESSAGE)
                     .set(message)
                     .returning(MESSAGE.MESSAGE_ID)
                     .fetchOne().getMessageId();
-            messageIds.put(recipient, messageId.toBigInteger());
+            messageIds.put(recipient, messageId);
         }
 
         return new SendMessageResponse(messageIds);

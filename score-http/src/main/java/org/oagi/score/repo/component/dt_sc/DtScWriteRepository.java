@@ -457,7 +457,7 @@ public class DtScWriteRepository {
 
         records.forEach(r -> {
             if (!list.stream().map(CcBdtScPriRestri::getBdtScPriRestriId).collect(Collectors.toList())
-                    .contains(r.getBdtScPriRestriId().toBigInteger())) {
+                    .contains(r.getBdtScPriRestriId())) {
                 deleteList.add(r);
             }
         });
@@ -495,13 +495,13 @@ public class DtScWriteRepository {
                 }
                 restri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
                         .set(bdtScPriRestriRecord)
-                        .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId().toBigInteger());
+                        .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId());
 
                 insertedList.add(bdtScPriRestriRecord);
             } else {
                 // update
                 bdtScPriRestriRecord = dslContext.selectFrom(BDT_SC_PRI_RESTRI)
-                        .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(restri.getBdtScPriRestriId())))
+                        .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(restri.getBdtScPriRestriId()))
                         .fetchOne();
 
                 if (restri.getCdtScAwdPriXpsTypeMapId() != null) {

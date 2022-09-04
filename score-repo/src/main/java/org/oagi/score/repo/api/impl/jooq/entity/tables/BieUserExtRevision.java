@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BieUserExtRevisionRecord;
@@ -65,7 +63,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BieUserExtRevisionRecord, String> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bie_user_ext_revision.ext_abie_id</code>. This
@@ -149,11 +147,6 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BieUserExtRevisionRecord, ULong> getIdentity() {
-        return (Identity<BieUserExtRevisionRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -258,21 +251,21 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, String, Byte, String> fieldsRow() {
+    public Row6<String, String, String, String, Byte, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

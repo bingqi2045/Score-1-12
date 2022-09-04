@@ -141,10 +141,10 @@ public class DtWriteRepository {
             dtScRecord.setDefinition(basedDtSc.getDefinition());
             dtScRecord.setDefinitionSource(basedDtSc.getDefinitionSource());
             dtScRecord.setOwnerDtId(bdt.getDtId());
-            if (basedBdt.getBasedDtId() == null && request.getSpecId().longValue() > 0) {
+            if (basedBdt.getBasedDtId() == null && StringUtils.hasLength(request.getSpecId())) {
                 String cdtScId = findCdtSc(basedDtSc.getDtScId(), basedScMap);
                 CdtScRefSpecRecord specRecord = dslContext.selectFrom(CDT_SC_REF_SPEC)
-                        .where(and(CDT_SC_REF_SPEC.CDT_SC_ID.eq(cdtScId), CDT_SC_REF_SPEC.REF_SPEC_ID.eq(ULong.valueOf(request.getSpecId()))))
+                        .where(and(CDT_SC_REF_SPEC.CDT_SC_ID.eq(cdtScId), CDT_SC_REF_SPEC.REF_SPEC_ID.eq(request.getSpecId())))
                         .fetchOne();
                 if (specRecord != null) {
                     dtScRecord.setCardinalityMin(0);
@@ -713,7 +713,7 @@ public class DtWriteRepository {
 
         records.forEach(r -> {
             if (!list.stream().map(CcBdtPriRestri::getBdtPriRestriId).collect(Collectors.toList())
-                    .contains(r.getBdtPriRestriId().toBigInteger())) {
+                    .contains(r.getBdtPriRestriId())) {
                 deleteList.add(r);
             }
         });
@@ -741,13 +741,13 @@ public class DtWriteRepository {
                 }
                 restri.setBdtPriRestriId(dslContext.insertInto(BDT_PRI_RESTRI)
                         .set(newBdtPriRestri)
-                        .returning(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).fetchOne().getBdtPriRestriId().toBigInteger());
+                        .returning(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).fetchOne().getBdtPriRestriId());
 
                 insertedList.add(newBdtPriRestri);
             } else {
                 // update
                 BdtPriRestriRecord bdtPriRestriRecord = dslContext.selectFrom(BDT_PRI_RESTRI)
-                        .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(ULong.valueOf(restri.getBdtPriRestriId())))
+                        .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(restri.getBdtPriRestriId()))
                         .fetchOne();
 
                 if (restri.getCdtAwdPriXpsTypeMapId() != null) {
@@ -791,12 +791,12 @@ public class DtWriteRepository {
             throw new IllegalArgumentException("Default Value Domain required.");
         }
 
-        BigInteger defaultValueDomainId = defaultValueDomain.getBdtPriRestriId();
+        String defaultValueDomainId = defaultValueDomain.getBdtPriRestriId();
         dslContext.update(BDT_PRI_RESTRI).set(BDT_PRI_RESTRI.IS_DEFAULT, (byte) 0)
                 .where(BDT_PRI_RESTRI.BDT_ID.eq(dtId)).execute();
 
         dslContext.update(BDT_PRI_RESTRI).set(BDT_PRI_RESTRI.IS_DEFAULT, (byte) 1)
-                .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(ULong.valueOf(defaultValueDomainId))).execute();
+                .where(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.eq(defaultValueDomainId)).execute();
 
         insertDerivedValueDomain(dtId, insertedList);
         updateDefaultValueDomainForDerivedDt(dtId, defaultValueDomain);

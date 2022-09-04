@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 public class GetMessageResponse extends Response {
 
-    private final BigInteger messageId;
+    private final String messageId;
     private final ScoreUser sender;
     private final String subject;
     private final String body;
     private final String bodyContentType;
     private final LocalDateTime timestamp;
 
-    public GetMessageResponse(BigInteger messageId,
+    public GetMessageResponse(String messageId,
                               ScoreUser sender,
                               String subject,
                               String body, String bodyContentType,
@@ -28,7 +28,7 @@ public class GetMessageResponse extends Response {
         this.timestamp = timestamp;
     }
 
-    public BigInteger getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 

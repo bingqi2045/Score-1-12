@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class CcBdtScPriRestri {
 
-    private BigInteger bdtScPriRestriId;
+    private String bdtScPriRestriId;
     private PrimitiveRestriType type;
     private String cdtScAwdPriId;
     private String primitiveName;

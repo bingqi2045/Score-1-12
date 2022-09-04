@@ -35,7 +35,7 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String bdtId;
     private String bdtDen;
 
-    private BigInteger bdtPriRestriId;
+    private String bdtPriRestriId;
     private String codeListId;
     private String agencyIdListId;
 

@@ -6,6 +6,7 @@ import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BdtScPriRestri;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -13,12 +14,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BdtScPriRestriRepository implements ScoreRepository<BdtScPriRestri, BigInteger> {
+public class BdtScPriRestriRepository implements ScoreRepository<BdtScPriRestri, String> {
 
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record6<ULong, String, String, String, String, Byte>> getSelectJoinStep() {
+    private SelectJoinStep<Record6<String, String, String, String, String, Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID,
@@ -35,12 +36,12 @@ public class BdtScPriRestriRepository implements ScoreRepository<BdtScPriRestri,
     }
 
     @Override
-    public BdtScPriRestri findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BdtScPriRestri findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(id))
                 .fetchOptionalInto(BdtScPriRestri.class).orElse(null);
     }
 }

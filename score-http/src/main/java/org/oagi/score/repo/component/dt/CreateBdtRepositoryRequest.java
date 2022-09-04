@@ -10,12 +10,12 @@ public class CreateBdtRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger basedDdtManifestId;
     private final String releaseId;
-    private final BigInteger specId;
+    private final String specId;
 
     private String initialPropertyTerm = "Property Term";
 
     public CreateBdtRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger basedDdtManifestId, String releaseId, BigInteger specId) {
+                                      BigInteger basedDdtManifestId, String releaseId, String specId) {
         super(user);
         this.basedDdtManifestId = basedDdtManifestId;
         this.releaseId = releaseId;
@@ -30,7 +30,7 @@ public class CreateBdtRepositoryRequest extends RepositoryRequest {
         return releaseId;
     }
 
-    public BigInteger getSpecId() {
+    public String getSpecId() {
         return specId;
     }
 

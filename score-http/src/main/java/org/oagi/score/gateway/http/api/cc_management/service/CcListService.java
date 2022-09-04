@@ -332,7 +332,7 @@ public class CcListService {
         return dslContext.selectFrom(CC_TAG)
                 .fetch(record -> {
                     CcTag tag = new CcTag();
-                    tag.setCcTagId(record.getCcTagId().toBigInteger());
+                    tag.setCcTagId(record.getCcTagId());
                     tag.setTagName(record.getTagName());
                     return tag;
                 });

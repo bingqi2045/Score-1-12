@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class UpdateBusinessTermAssignmentRequest extends Request {
 
-    private BigInteger assignedBizTermId;
+    private String assignedBizTermId;
 
     private String bieId;
 
@@ -21,15 +21,15 @@ public class UpdateBusinessTermAssignmentRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getAssignedBizTermId() {
+    public String getAssignedBizTermId() {
         return assignedBizTermId;
     }
 
-    public void setAssignedBizTermId(BigInteger assignedBizTermId) {
+    public void setAssignedBizTermId(String assignedBizTermId) {
         this.assignedBizTermId = assignedBizTermId;
     }
 
-    public UpdateBusinessTermAssignmentRequest withAssignedBizTermId(BigInteger assignedBizTermId) {
+    public UpdateBusinessTermAssignmentRequest withAssignedBizTermId(String assignedBizTermId) {
         this.setAssignedBizTermId(assignedBizTermId);
         return this;
     }

@@ -39,7 +39,7 @@ public class JooqMessageReadRepository
                 APP_USER.APP_USER_ID, APP_USER.LOGIN_ID, APP_USER.IS_DEVELOPER)
                 .from(MESSAGE)
                 .join(APP_USER).on(MESSAGE.SENDER_ID.eq(APP_USER.APP_USER_ID))
-                .where(MESSAGE.MESSAGE_ID.eq(ULong.valueOf(request.getMessageId())))
+                .where(MESSAGE.MESSAGE_ID.eq(request.getMessageId()))
                 .fetchOptional().orElse(null);
         if (message == null) {
             throw new ScoreDataAccessException("Message with ID: '" + request.getMessageId() + "' does not exist.");
@@ -52,7 +52,7 @@ public class JooqMessageReadRepository
         if (message.get(MESSAGE.IS_READ) == (byte) 0) {
             dslContext().update(MESSAGE)
                     .set(MESSAGE.IS_READ, (byte) 1)
-                    .where(MESSAGE.MESSAGE_ID.eq(ULong.valueOf(request.getMessageId())))
+                    .where(MESSAGE.MESSAGE_ID.eq(request.getMessageId()))
                     .execute();
         }
 
@@ -81,7 +81,7 @@ public class JooqMessageReadRepository
     private RecordMapper<Record, MessageList> mapper() {
         return record -> {
             MessageList messageList = new MessageList();
-            messageList.setMessageId(record.get(MESSAGE.MESSAGE_ID).toBigInteger());
+            messageList.setMessageId(record.get(MESSAGE.MESSAGE_ID));
             messageList.setSubject(record.get(MESSAGE.SUBJECT));
             messageList.setRead(record.get(MESSAGE.IS_READ) == (byte) 1);
             messageList.setSender(new ScoreUser(

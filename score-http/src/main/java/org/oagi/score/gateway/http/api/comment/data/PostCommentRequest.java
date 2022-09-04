@@ -7,6 +7,6 @@ public class PostCommentRequest {
 
     private String reference;
     private String text;
-    private Long prevCommentId;
+    private String prevCommentId;
 
 }

@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record9;
 import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsbieBizterm;
 
 
@@ -20,31 +19,31 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsbieBizterm;
  * ascc_bizterm and ASBIE. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> implements Record9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> {
+public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> implements Record9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. An internal,
-     * primary database key of an asbie_bizterm record.
+     * Setter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public void setAsbieBiztermId(ULong value) {
+    public void setAsbieBiztermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. An internal,
-     * primary database key of an asbie_bizterm record.
+     * Getter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getAsbieBiztermId() {
-        return (ULong) get(0);
+    public String getAsbieBiztermId() {
+        return (String) get(0);
     }
 
     /**
      * Setter for <code>oagi.asbie_bizterm.ascc_bizterm_id</code>. An internal
      * ID of the ascc_business_term record.
      */
-    public void setAsccBiztermId(ULong value) {
+    public void setAsccBiztermId(String value) {
         set(1, value);
     }
 
@@ -52,8 +51,8 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
      * Getter for <code>oagi.asbie_bizterm.ascc_bizterm_id</code>. An internal
      * ID of the ascc_business_term record.
      */
-    public ULong getAsccBiztermId() {
-        return (ULong) get(1);
+    public String getAsccBiztermId() {
+        return (String) get(1);
     }
 
     /**
@@ -177,7 +176,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -186,22 +185,22 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row9) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return AsbieBizterm.ASBIE_BIZTERM.ASBIE_BIZTERM_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return AsbieBizterm.ASBIE_BIZTERM.ASCC_BIZTERM_ID;
     }
 
@@ -241,12 +240,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAsbieBiztermId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getAsccBiztermId();
     }
 
@@ -286,12 +285,12 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAsbieBiztermId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getAsccBiztermId();
     }
 
@@ -331,13 +330,13 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public AsbieBiztermRecord value1(ULong value) {
+    public AsbieBiztermRecord value1(String value) {
         setAsbieBiztermId(value);
         return this;
     }
 
     @Override
-    public AsbieBiztermRecord value2(ULong value) {
+    public AsbieBiztermRecord value2(String value) {
         setAsccBiztermId(value);
         return this;
     }
@@ -385,7 +384,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     }
 
     @Override
-    public AsbieBiztermRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, String value7, LocalDateTime value8, LocalDateTime value9) {
+    public AsbieBiztermRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, LocalDateTime value8, LocalDateTime value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -412,7 +411,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     /**
      * Create a detached, initialised AsbieBiztermRecord
      */
-    public AsbieBiztermRecord(ULong asbieBiztermId, ULong asccBiztermId, String asbieId, String primaryIndicator, String typeCode, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public AsbieBiztermRecord(String asbieBiztermId, String asccBiztermId, String asbieId, String primaryIndicator, String typeCode, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(AsbieBizterm.ASBIE_BIZTERM);
 
         setAsbieBiztermId(asbieBiztermId);

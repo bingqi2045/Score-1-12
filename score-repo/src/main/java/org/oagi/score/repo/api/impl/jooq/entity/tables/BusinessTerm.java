@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function11;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BusinessTermRecord;
@@ -55,10 +53,10 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     /**
-     * The column <code>oagi.business_term.business_term_id</code>. A internal,
-     * primary database key of an Business term.
+     * The column <code>oagi.business_term.business_term_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BusinessTermRecord, ULong> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an Business term.");
+    public final TableField<BusinessTermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.business_term.guid</code>. A globally unique
@@ -161,11 +159,6 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     @Override
-    public Identity<BusinessTermRecord, ULong> getIdentity() {
-        return (Identity<BusinessTermRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BusinessTermRecord> getPrimaryKey() {
         return Keys.KEY_BUSINESS_TERM_PRIMARY;
     }
@@ -244,21 +237,21 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
+    public Row11<String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record11;
 import org.jooq.Row11;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
  * usually associated to BIE or CC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> implements Record11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> {
+public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> implements Record11<String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.business_term.business_term_id</code>. A internal,
-     * primary database key of an Business term.
+     * Setter for <code>oagi.business_term.business_term_id</code>. Primary,
+     * internal database key.
      */
-    public void setBusinessTermId(ULong value) {
+    public void setBusinessTermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.business_term.business_term_id</code>. A internal,
-     * primary database key of an Business term.
+     * Getter for <code>oagi.business_term.business_term_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getBusinessTermId() {
-        return (ULong) get(0);
+    public String getBusinessTermId() {
+        return (String) get(0);
     }
 
     /**
@@ -209,7 +208,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -218,17 +217,17 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
+    public Row11<String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     @Override
-    public Row11<ULong, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> valuesRow() {
+    public Row11<String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> valuesRow() {
         return (Row11) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BusinessTerm.BUSINESS_TERM.BUSINESS_TERM_ID;
     }
 
@@ -283,7 +282,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBusinessTermId();
     }
 
@@ -338,7 +337,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBusinessTermId();
     }
 
@@ -393,7 +392,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public BusinessTermRecord value1(ULong value) {
+    public BusinessTermRecord value1(String value) {
         setBusinessTermId(value);
         return this;
     }
@@ -459,7 +458,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     }
 
     @Override
-    public BusinessTermRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8, String value9, String value10, String value11) {
+    public BusinessTermRecord values(String value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8, String value9, String value10, String value11) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -488,7 +487,7 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     /**
      * Create a detached, initialised BusinessTermRecord
      */
-    public BusinessTermRecord(ULong businessTermId, String guid, String businessTerm, String definition, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String externalRefUri, String externalRefId, String comment) {
+    public BusinessTermRecord(String businessTermId, String guid, String businessTerm, String definition, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String externalRefUri, String externalRefId, String comment) {
         super(BusinessTerm.BUSINESS_TERM);
 
         setBusinessTermId(businessTermId);

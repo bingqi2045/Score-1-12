@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class AvailableBdtScPriRestri {
 
-    private BigInteger bdtScPriRestriId;
+    private String bdtScPriRestriId;
     private boolean isDefault;
     private String xbtId;
     private String xbtName;

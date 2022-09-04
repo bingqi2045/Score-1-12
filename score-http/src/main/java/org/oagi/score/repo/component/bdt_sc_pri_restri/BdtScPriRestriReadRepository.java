@@ -23,7 +23,7 @@ public class BdtScPriRestriReadRepository {
     private Function<Record, AvailableBdtScPriRestri> mapper() {
         return e -> {
             AvailableBdtScPriRestri availableBdtScPriRestri = new AvailableBdtScPriRestri();
-            availableBdtScPriRestri.setBdtScPriRestriId(e.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
+            availableBdtScPriRestri.setBdtScPriRestriId(e.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID));
             boolean isDefault = e.get(BDT_SC_PRI_RESTRI.IS_DEFAULT) == (byte) 1;
             /*
              * Issue #808

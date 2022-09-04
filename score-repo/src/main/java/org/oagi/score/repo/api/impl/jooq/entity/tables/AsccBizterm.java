@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function7;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccBiztermRecord;
@@ -55,16 +53,16 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. An internal,
-     * primary database key of an Business term.
+     * The column <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<AsccBiztermRecord, ULong> ASCC_BIZTERM_ID = createField(DSL.name("ascc_bizterm_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an Business term.");
+    public final TableField<AsccBiztermRecord, String> ASCC_BIZTERM_ID = createField(DSL.name("ascc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.ascc_bizterm.business_term_id</code>. An internal
-     * ID of the associated business term
+     * ID of the associated business term.
      */
-    public final TableField<AsccBiztermRecord, ULong> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the associated business term");
+    public final TableField<AsccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36), this, "An internal ID of the associated business term.");
 
     /**
      * The column <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the
@@ -137,18 +135,13 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
     }
 
     @Override
-    public Identity<AsccBiztermRecord, ULong> getIdentity() {
-        return (Identity<AsccBiztermRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<AsccBiztermRecord> getPrimaryKey() {
         return Keys.KEY_ASCC_BIZTERM_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<AsccBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ASCC_BIZTERM_BUSINESS_TERM_FK, Keys.ASCC_BIZTERM_ASCC_ID_FK, Keys.ASCC_BIZTERM_CREATED_BY_FK, Keys.ASCC_BIZTERM_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.ASCC_BIZTERM_BUSINESS_TERM_ID_FK, Keys.ASCC_BIZTERM_ASCC_ID_FK, Keys.ASCC_BIZTERM_CREATED_BY_FK, Keys.ASCC_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient BusinessTerm _businessTerm;
@@ -161,7 +154,7 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
      */
     public BusinessTerm businessTerm() {
         if (_businessTerm == null)
-            _businessTerm = new BusinessTerm(this, Keys.ASCC_BIZTERM_BUSINESS_TERM_FK);
+            _businessTerm = new BusinessTerm(this, Keys.ASCC_BIZTERM_BUSINESS_TERM_ID_FK);
 
         return _businessTerm;
     }
@@ -242,21 +235,21 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

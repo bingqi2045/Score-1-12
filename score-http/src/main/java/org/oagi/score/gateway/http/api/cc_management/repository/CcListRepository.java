@@ -243,12 +243,12 @@ public class CcListRepository {
                     .map(e -> e.getValue()).collect(Collectors.toList())));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -515,12 +515,12 @@ public class CcListRepository {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notIn(Arrays.asList(SemanticGroup.getValue(), UserExtensionGroup.getValue())));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -610,12 +610,12 @@ public class CcListRepository {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -720,12 +720,12 @@ public class CcListRepository {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 

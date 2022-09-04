@@ -78,7 +78,7 @@ public class BbieScReadRepository {
         return bbieScNode;
     }
 
-    public BigInteger getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
+    public String getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
         ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
         String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
                 .from(DT_SC)
@@ -101,7 +101,7 @@ public class BbieScReadRepository {
             conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
         }
 
-        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+        SelectOnConditionStep<Record1<String>> step = dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
                 .from(BDT_SC_PRI_RESTRI)
                 .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
@@ -109,7 +109,7 @@ public class BbieScReadRepository {
                 .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
                 .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
         return step.where(conds)
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public BbieScNode.BbieSc getBbieSc(String topLevelAsbiepId, String hashPath) {
@@ -146,7 +146,7 @@ public class BbieScReadRepository {
             bbieSc.setExample(bbieScRecord.getExample());
 
             bbieSc.setBdtScPriRestriId((bbieScRecord.getDtScPriRestriId() != null) ?
-                    bbieScRecord.getDtScPriRestriId().toBigInteger() : null);
+                    bbieScRecord.getDtScPriRestriId() : null);
             bbieSc.setCodeListId((bbieScRecord.getCodeListId() != null) ?
                     bbieScRecord.getCodeListId() : null);
             bbieSc.setAgencyIdListId((bbieScRecord.getAgencyIdListId() != null) ?

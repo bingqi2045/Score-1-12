@@ -135,7 +135,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot
      * have a value at the same time.
      */
-    public void setDtScPriRestriId(ULong value) {
+    public void setDtScPriRestriId(String value) {
         set(6, value);
     }
 
@@ -153,8 +153,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot
      * have a value at the same time.
      */
-    public ULong getDtScPriRestriId() {
-        return (ULong) get(6);
+    public String getDtScPriRestriId() {
+        return (String) get(6);
     }
 
     /**
@@ -536,7 +536,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(String bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, String bbieId, ULong dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
+    public BbieScRecord(String bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, String bbieId, String dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         setBbieScId(bbieScId);

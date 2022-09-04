@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record6;
 import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
 
 
@@ -25,7 +24,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
  * component/ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, String, String, String, Byte, String> {
+public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<String, String, String, String, Byte, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,7 +33,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public void setBieUserExtRevisionId(ULong value) {
+    public void setBieUserExtRevisionId(String value) {
         set(0, value);
     }
 
@@ -43,8 +42,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public ULong getBieUserExtRevisionId() {
-        return (ULong) get(0);
+    public String getBieUserExtRevisionId() {
+        return (String) get(0);
     }
 
     /**
@@ -164,7 +163,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -173,17 +172,17 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, String, Byte, String> fieldsRow() {
+    public Row6<String, String, String, String, Byte, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, String, String, String, Byte, String> valuesRow() {
+    public Row6<String, String, String, String, Byte, String> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID;
     }
 
@@ -213,7 +212,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBieUserExtRevisionId();
     }
 
@@ -243,7 +242,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBieUserExtRevisionId();
     }
 
@@ -273,7 +272,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public BieUserExtRevisionRecord value1(ULong value) {
+    public BieUserExtRevisionRecord value1(String value) {
         setBieUserExtRevisionId(value);
         return this;
     }
@@ -309,7 +308,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public BieUserExtRevisionRecord values(ULong value1, String value2, String value3, String value4, Byte value5, String value6) {
+    public BieUserExtRevisionRecord values(String value1, String value2, String value3, String value4, Byte value5, String value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -333,7 +332,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     /**
      * Create a detached, initialised BieUserExtRevisionRecord
      */
-    public BieUserExtRevisionRecord(ULong bieUserExtRevisionId, String extAbieId, String extAccId, String userExtAccId, Byte revisedIndicator, String topLevelAsbiepId) {
+    public BieUserExtRevisionRecord(String bieUserExtRevisionId, String extAbieId, String extAccId, String userExtAccId, Byte revisedIndicator, String topLevelAsbiepId) {
         super(BieUserExtRevision.BIE_USER_EXT_REVISION);
 
         setBieUserExtRevisionId(bieUserExtRevisionId);

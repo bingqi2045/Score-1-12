@@ -34,11 +34,11 @@ public class MessageService {
     }
 
     @Transactional // This transaction should be not a read-only to mark the message as read.
-    public GetMessageResponse getMessage(ScoreUser requester, BigInteger messageId) {
+    public GetMessageResponse getMessage(ScoreUser requester, String messageId) {
         MessageReadRepository messageReadRepository = scoreRepositoryFactory.createMessageReadRepository();
         GetMessageResponse response = messageReadRepository.getMessage(new GetMessageRequest(requester, messageId));
         Map<String, String> properties = new HashMap();
-        properties.put("messageId", messageId.toString());
+        properties.put("messageId", messageId);
         simpMessagingTemplate.convertAndSend("/topic/message/" + requester.getUsername(), properties);
         return response;
     }
@@ -49,9 +49,9 @@ public class MessageService {
         MessageWriteRepository messageWriteRepository = scoreRepositoryFactory.createMessageWriteRepository();
         return CompletableFuture.supplyAsync(() -> {
             SendMessageResponse response = messageWriteRepository.sendMessage(request);
-            for (Map.Entry<ScoreUser, BigInteger> resp : response.getMessageIds().entrySet()) {
+            for (Map.Entry<ScoreUser, String> resp : response.getMessageIds().entrySet()) {
                 Map<String, String> properties = new HashMap();
-                properties.put("messageId", resp.getValue().toString());
+                properties.put("messageId", resp.getValue());
                 simpMessagingTemplate.convertAndSend("/topic/message/" + resp.getKey().getUsername(), properties);
             }
             return response;

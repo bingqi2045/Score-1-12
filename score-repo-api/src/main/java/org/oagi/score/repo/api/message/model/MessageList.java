@@ -7,17 +7,17 @@ import java.util.Date;
 
 public class MessageList {
 
-    private BigInteger messageId;
+    private String messageId;
     private ScoreUser sender;
     private String subject;
     private boolean read;
     private Date timestamp;
 
-    public BigInteger getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(BigInteger messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 

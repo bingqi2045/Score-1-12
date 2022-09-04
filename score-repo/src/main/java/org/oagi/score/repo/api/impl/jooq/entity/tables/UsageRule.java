@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -23,7 +22,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleRecord;
@@ -54,10 +52,10 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
     }
 
     /**
-     * The column <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the
-     * usage rule.
+     * The column <code>oagi.usage_rule.usage_rule_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<UsageRuleRecord, ULong> USAGE_RULE_ID = createField(DSL.name("usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule.");
+    public final TableField<UsageRuleRecord, String> USAGE_RULE_ID = createField(DSL.name("usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.usage_rule.name</code>. Short nmenomic name of the
@@ -111,11 +109,6 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
     }
 
     @Override
-    public Identity<UsageRuleRecord, ULong> getIdentity() {
-        return (Identity<UsageRuleRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<UsageRuleRecord> getPrimaryKey() {
         return Keys.KEY_USAGE_RULE_PRIMARY;
     }
@@ -164,21 +157,21 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, String, Integer> fieldsRow() {
+    public Row3<String, String, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super String, ? super Integer, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super Integer, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super String, ? super Integer, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super Integer, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

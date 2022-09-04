@@ -223,7 +223,7 @@ public class JooqBieReadRepository
             bbie.setFromAbieId(record.get(BBIE.FROM_ABIE_ID));
             bbie.setToBbiepId(record.get(BBIE.TO_BBIEP_ID));
             bbie.setBdtPriRestriId((record.get(BBIE.BDT_PRI_RESTRI_ID) != null) ?
-                    record.get(BBIE.BDT_PRI_RESTRI_ID).toBigInteger() : null);
+                    record.get(BBIE.BDT_PRI_RESTRI_ID) : null);
             bbie.setCodeListId((record.get(BBIE.CODE_LIST_ID) != null) ?
                     record.get(BBIE.CODE_LIST_ID) : null);
             bbie.setAgencyIdListId((record.get(BBIE.AGENCY_ID_LIST_ID) != null) ?
@@ -335,7 +335,7 @@ public class JooqBieReadRepository
             bbieSc.setPath(record.get(BBIE_SC.PATH));
             bbieSc.setHashPath(record.get(BBIE_SC.HASH_PATH));
             bbieSc.setDtScPriRestriId((record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID) != null) ?
-                    record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID) : null);
             bbieSc.setCodeListId((record.get(BBIE_SC.CODE_LIST_ID) != null) ?
                     record.get(BBIE_SC.CODE_LIST_ID) : null);
             bbieSc.setAgencyIdListId((record.get(BBIE_SC.AGENCY_ID_LIST_ID) != null) ?

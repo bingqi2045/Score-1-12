@@ -112,7 +112,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * specific association). This is assigned by the user who authors the BIE.
      * The assignment would override the default from the CC side.
      */
-    public final TableField<BbieRecord, ULong> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.");
+    public final TableField<BbieRecord, String> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.CHAR(36), this, "This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.");
 
     /**
      * The column <code>oagi.bbie.code_list_id</code>. This is a foreign key to

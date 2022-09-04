@@ -13,7 +13,7 @@ public class BBIE implements BIE, FacetRestrictionsAware {
     private BigInteger basedBccManifestId = BigInteger.ZERO;
     private String fromAbieId;
     private String toBbiepId;
-    private BigInteger bdtPriRestriId = BigInteger.ZERO;
+    private String bdtPriRestriId;
     private String codeListId;
     private String agencyIdListId;
     private int cardinalityMin;

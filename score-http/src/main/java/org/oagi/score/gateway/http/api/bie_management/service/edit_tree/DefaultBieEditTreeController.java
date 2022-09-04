@@ -740,7 +740,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             } else if (detail.getCodeListId() != null) {
                 detail.setBdtPriRestriId(null);
                 detail.setAgencyIdListId(null);
-            } else if (detail.getBdtPriRestriId() != null && detail.getBdtPriRestriId().longValue() > 0L) {
+            } else if (detail.getBdtPriRestriId() != null) {
                 detail.setCodeListId(null);
                 detail.setAgencyIdListId(null);
             }
@@ -783,7 +783,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (!StringUtils.hasLength(bbiepNode.getBbieId())) {
-            BigInteger defaultBdtPriRestriId = repository.getDefaultBdtPriRestriIdByBdtId(detail.getBdtManifestId());
+            String defaultBdtPriRestriId = repository.getDefaultBdtPriRestriIdByBdtId(detail.getBdtManifestId());
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
@@ -925,7 +925,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             } else if (detail.getCodeListId() != null) {
                 detail.setDtScPriRestriId(null);
                 detail.setAgencyIdListId(null);
-            } else if (detail.getDtScPriRestriId() != null && detail.getDtScPriRestriId().longValue() > 0L) {
+            } else if (detail.getDtScPriRestriId() != null) {
                 detail.setCodeListId(null);
                 detail.setAgencyIdListId(null);
             }
@@ -943,7 +943,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (!StringUtils.hasLength(bbieScNode.getBbieScId())) {
-            BigInteger defaultDtScPriRestriId = repository.getDefaultDtScPriRestriIdByDtScManifestId(bbieScNode.getDtScManifestId());
+            String defaultDtScPriRestriId = repository.getDefaultDtScPriRestriIdByDtScManifestId(bbieScNode.getDtScManifestId());
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
 
@@ -1199,7 +1199,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(BBIE.BBIE_ID.eq(bbiepNodeDetail.getBbieId())).execute();
         }
 
-        BigInteger bdtPriRestriId = bbiepNodeDetail.getBdtPriRestriId();
+        String bdtPriRestriId = bbiepNodeDetail.getBdtPriRestriId();
         String codeListId = bbiepNodeDetail.getCodeListId();
         String agencyIdListId = bbiepNodeDetail.getAgencyIdListId();
 
@@ -1219,7 +1219,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             dslContext.update(BBIE)
                     .setNull(BBIE.AGENCY_ID_LIST_ID)
                     .setNull(BBIE.CODE_LIST_ID)
-                    .set(BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(bdtPriRestriId))
+                    .set(BBIE.BDT_PRI_RESTRI_ID, bdtPriRestriId)
                     .where(BBIE.BBIE_ID.eq(bbiepNodeDetail.getBbieId())).execute();
         }
 
@@ -1280,7 +1280,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(BBIE_SC.BBIE_SC_ID.eq(bbieScNodeDetail.getBbieScId())).execute();
         }
 
-        BigInteger dtScPriRestriId = bbieScNodeDetail.getDtScPriRestriId();
+        String dtScPriRestriId = bbieScNodeDetail.getDtScPriRestriId();
         String codeListId = bbieScNodeDetail.getCodeListId();
         String agencyIdListId = bbieScNodeDetail.getAgencyIdListId();
 
@@ -1298,7 +1298,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(BBIE_SC.BBIE_SC_ID.eq(bbieScNodeDetail.getBbieScId())).execute();
         } else if (dtScPriRestriId != null) {
             dslContext.update(BBIE_SC)
-                    .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(dtScPriRestriId))
+                    .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, dtScPriRestriId)
                     .setNull(BBIE_SC.CODE_LIST_ID)
                     .setNull(BBIE_SC.AGENCY_ID_LIST_ID)
                     .where(BBIE_SC.BBIE_SC_ID.eq(bbieScNodeDetail.getBbieScId())).execute();

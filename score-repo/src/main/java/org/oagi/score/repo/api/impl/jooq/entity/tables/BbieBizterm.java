@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieBiztermRecord;
@@ -55,16 +53,16 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
-     * primary database key of an bbie_bizterm record.
+     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BbieBiztermRecord, ULong> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an bbie_bizterm record.");
+    public final TableField<BbieBiztermRecord, String> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bbie_bizterm record.
+     * of the bcc_business_term record.
      */
-    public final TableField<BbieBiztermRecord, ULong> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the bbie_bizterm record.");
+    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36), this, "An internal ID of the bcc_business_term record.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
@@ -149,18 +147,13 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     @Override
-    public Identity<BbieBiztermRecord, ULong> getIdentity() {
-        return (Identity<BbieBiztermRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BbieBiztermRecord> getPrimaryKey() {
         return Keys.KEY_BBIE_BIZTERM_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<BbieBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_FK, Keys.BBIE_BIZTERM_BBIE_ID_FK, Keys.BBIE_BIZTERM_CREATED_BY_FK, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_ID_FK, Keys.BBIE_BIZTERM_BBIE_ID_FK, Keys.BBIE_BIZTERM_CREATED_BY_FK, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient BccBizterm _bccBizterm;
@@ -173,7 +166,7 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
      */
     public BccBizterm bccBizterm() {
         if (_bccBizterm == null)
-            _bccBizterm = new BccBizterm(this, Keys.BBIE_BIZTERM_BCC_BIZTERM_FK);
+            _bccBizterm = new BccBizterm(this, Keys.BBIE_BIZTERM_BCC_BIZTERM_ID_FK);
 
         return _bccBizterm;
     }
@@ -254,21 +247,21 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

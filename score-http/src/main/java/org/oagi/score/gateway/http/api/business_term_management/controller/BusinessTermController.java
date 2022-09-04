@@ -263,7 +263,7 @@ public class BusinessTermController {
 
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("id") BigInteger businessTermId,
+            @PathVariable("id") String businessTermId,
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessTerm businessTerm) {
 
@@ -287,7 +287,7 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_term/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessTermId) throws ScoreDataAccessException {
+            @PathVariable("id") String businessTermId) throws ScoreDataAccessException {
 
         DeleteBusinessTermRequest request =
                 new DeleteBusinessTermRequest(authenticationService.asScoreUser(requester))
@@ -304,13 +304,13 @@ public class BusinessTermController {
     }
 
     public static class DeleteBusinessTermRequestData {
-        private List<BigInteger> businessTermIdList = Collections.emptyList();
+        private List<String> businessTermIdList = Collections.emptyList();
 
-        public List<BigInteger> getBusinessTermIdList() {
+        public List<String> getBusinessTermIdList() {
             return businessTermIdList;
         }
 
-        public void setBusinessTermIdList(List<BigInteger> businessTermIdList) {
+        public void setBusinessTermIdList(List<String> businessTermIdList) {
             this.businessTermIdList = businessTermIdList;
         }
     }
@@ -337,7 +337,7 @@ public class BusinessTermController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BusinessTerm getBusinessTerm(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger businessTermId) {
+            @PathVariable("id") String businessTermId) {
 
         GetBusinessTermRequest request = new GetBusinessTermRequest(
                 authenticationService.asScoreUser(requester));
@@ -356,7 +356,7 @@ public class BusinessTermController {
         AssignBusinessTermResponse response =
                 businessTermService.assignBusinessTerm(request);
 
-        if (response.getAssignedBusinessTermId() != null) {
+        if (response.getAssignedBusinessTermIdList() != null) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.badRequest().build();
@@ -376,7 +376,7 @@ public class BusinessTermController {
     public AssignedBusinessTerm getAssignedBusinessTerm(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @PathVariable("type") String bieType,
-            @PathVariable("id") BigInteger assignedBizTermId) {
+            @PathVariable("id") String assignedBizTermId) {
         GetAssignedBusinessTermRequest request = new GetAssignedBusinessTermRequest(
                 authenticationService.asScoreUser(requester))
                 .withAssignedBizTermId(assignedBizTermId)
@@ -388,7 +388,7 @@ public class BusinessTermController {
     @RequestMapping(value = "/business_terms/assign/{type}/{id}", method = RequestMethod.POST)
     public ResponseEntity updateAssignment(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger assignedBizTermId,
+            @PathVariable("id") String assignedBizTermId,
             @PathVariable("type") String bieType,
             @RequestBody AssignedBusinessTerm assignedBusinessTerm) {
 

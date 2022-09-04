@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function7;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BieUsageRuleRecord;
@@ -56,17 +54,17 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     }
 
     /**
-     * The column <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary
-     * key of the table.
+     * The column <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BieUsageRuleRecord, ULong> BIE_USAGE_RULE_ID = createField(DSL.name("bie_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
+    public final TableField<BieUsageRuleRecord, String> BIE_USAGE_RULE_ID = createField(DSL.name("bie_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bie_usage_rule.assigned_usage_rule_id</code>.
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
      * a BIE.
      */
-    public final TableField<BieUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
+    public final TableField<BieUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_abie_id</code>. Foreign key
@@ -139,11 +137,6 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BieUsageRuleRecord, ULong> getIdentity() {
-        return (Identity<BieUsageRuleRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -267,21 +260,21 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, String, String, String, String, String> fieldsRow() {
+    public Row7<String, String, String, String, String, String, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

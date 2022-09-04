@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppScopeRecord;
@@ -54,13 +52,14 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
 
     /**
      * The column <code>oagi.oauth2_app_scope.oauth2_app_scope_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_SCOPE_ID = createField(DSL.name("oauth2_app_scope_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<Oauth2AppScopeRecord, String> OAUTH2_APP_SCOPE_ID = createField(DSL.name("oauth2_app_scope_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.oauth2_app_scope.oauth2_app_id</code>.
      */
-    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<Oauth2AppScopeRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.oauth2_app_scope.scope</code>.
@@ -103,11 +102,6 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<Oauth2AppScopeRecord, ULong> getIdentity() {
-        return (Identity<Oauth2AppScopeRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -176,21 +170,21 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, String> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

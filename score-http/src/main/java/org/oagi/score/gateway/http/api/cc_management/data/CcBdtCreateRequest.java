@@ -9,6 +9,6 @@ public class CcBdtCreateRequest {
 
     private String releaseId;
     private BigInteger bdtManifestId;
-    private BigInteger specId;
+    private String specId;
 
 }

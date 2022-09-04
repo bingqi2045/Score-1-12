@@ -160,7 +160,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * specific association). This is assigned by the user who authors the BIE.
      * The assignment would override the default from the CC side.
      */
-    public void setBdtPriRestriId(ULong value) {
+    public void setBdtPriRestriId(String value) {
         set(7, value);
     }
 
@@ -171,8 +171,8 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * specific association). This is assigned by the user who authors the BIE.
      * The assignment would override the default from the CC side.
      */
-    public ULong getBdtPriRestriId() {
-        return (ULong) get(7);
+    public String getBdtPriRestriId() {
+        return (String) get(7);
     }
 
     /**
@@ -590,7 +590,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(String bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, String fromAbieId, String toBbiepId, ULong bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
+    public BbieRecord(String bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, String fromAbieId, String toBbiepId, String bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
         super(Bbie.BBIE);
 
         setBbieId(bbieId);

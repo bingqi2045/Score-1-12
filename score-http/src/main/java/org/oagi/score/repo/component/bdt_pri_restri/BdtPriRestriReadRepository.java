@@ -23,7 +23,7 @@ public class BdtPriRestriReadRepository {
     private Function<Record, AvailableBdtPriRestri> mapper() {
         return e -> {
             AvailableBdtPriRestri availableBdtPriRestri = new AvailableBdtPriRestri();
-            availableBdtPriRestri.setBdtPriRestriId(e.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
+            availableBdtPriRestri.setBdtPriRestriId(e.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID));
             boolean isDefault = e.get(BDT_PRI_RESTRI.IS_DEFAULT) == (byte) 1;
             /*
              * Issue #808

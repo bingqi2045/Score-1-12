@@ -41,7 +41,7 @@ public class CommentService {
     public void postComments(AuthenticatedPrincipal user, PostCommentRequest request) {
         String userId = sessionService.userId(user);
 
-        long commentId = repository.insertComment()
+        String commentId = repository.insertComment()
                 .setReference(request.getReference())
                 .setText(request.getText())
                 .setPrevCommentId(request.getPrevCommentId())

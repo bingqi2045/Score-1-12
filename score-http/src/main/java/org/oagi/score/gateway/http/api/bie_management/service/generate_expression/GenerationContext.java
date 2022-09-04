@@ -132,10 +132,10 @@ public class GenerationContext implements InitializingBean {
     private ReleaseRepository releaseRepository;
     // Prepared Datas
     private Map<String, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
-    private Map<BigInteger, BdtPriRestri> findBdtPriRestriMap;
+    private Map<String, BdtPriRestri> findBdtPriRestriMap;
     private Map<String, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
     private Map<String, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
-    private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriMap;
+    private Map<String, BdtScPriRestri> findBdtScPriRestriMap;
     private Map<String, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
     private Map<String, Xbt> findXbtMap;
     private Map<String, CodeList> findCodeListMap;
@@ -356,8 +356,8 @@ public class GenerationContext implements InitializingBean {
         return StringUtils.hasLength(bdtId) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
     }
 
-    public BdtPriRestri findBdtPriRestri(BigInteger bdtPriRestriId) {
-        return (bdtPriRestriId != null && bdtPriRestriId.longValue() > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
+    public BdtPriRestri findBdtPriRestri(String bdtPriRestriId) {
+        return StringUtils.hasLength(bdtPriRestriId) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
     }
 
     public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(String cdtAwdPriXpsTypeMapId) {
@@ -369,8 +369,8 @@ public class GenerationContext implements InitializingBean {
         return StringUtils.hasLength(bdtScId) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
     }
 
-    public BdtScPriRestri findBdtScPriRestri(BigInteger bdtScPriRestriId) {
-        return (bdtScPriRestriId != null && bdtScPriRestriId.longValue() > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
+    public BdtScPriRestri findBdtScPriRestri(String bdtScPriRestriId) {
+        return StringUtils.hasLength(bdtScPriRestriId) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
     }
 
     public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(String cdtScAwdPriXpsTypeMapId) {

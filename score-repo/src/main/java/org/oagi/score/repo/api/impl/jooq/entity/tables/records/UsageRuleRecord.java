@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record3;
 import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
  * a usage rule expression with the unstructured constraint type.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implements Record3<ULong, String, Integer> {
+public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implements Record3<String, String, Integer> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the
-     * usage rule.
+     * Setter for <code>oagi.usage_rule.usage_rule_id</code>. Primary, internal
+     * database key.
      */
-    public void setUsageRuleId(ULong value) {
+    public void setUsageRuleId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the
-     * usage rule.
+     * Getter for <code>oagi.usage_rule.usage_rule_id</code>. Primary, internal
+     * database key.
      */
-    public ULong getUsageRuleId() {
-        return (ULong) get(0);
+    public String getUsageRuleId() {
+        return (String) get(0);
     }
 
     /**
@@ -79,7 +78,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -88,17 +87,17 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, String, Integer> fieldsRow() {
+    public Row3<String, String, Integer> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Row3<ULong, String, Integer> valuesRow() {
+    public Row3<String, String, Integer> valuesRow() {
         return (Row3) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return UsageRule.USAGE_RULE.USAGE_RULE_ID;
     }
 
@@ -113,7 +112,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getUsageRuleId();
     }
 
@@ -128,7 +127,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getUsageRuleId();
     }
 
@@ -143,7 +142,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     }
 
     @Override
-    public UsageRuleRecord value1(ULong value) {
+    public UsageRuleRecord value1(String value) {
         setUsageRuleId(value);
         return this;
     }
@@ -161,7 +160,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     }
 
     @Override
-    public UsageRuleRecord values(ULong value1, String value2, Integer value3) {
+    public UsageRuleRecord values(String value1, String value2, Integer value3) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -182,7 +181,7 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     /**
      * Create a detached, initialised UsageRuleRecord
      */
-    public UsageRuleRecord(ULong usageRuleId, String name, Integer conditionType) {
+    public UsageRuleRecord(String usageRuleId, String name, Integer conditionType) {
         super(UsageRule.USAGE_RULE);
 
         setUsageRuleId(usageRuleId);

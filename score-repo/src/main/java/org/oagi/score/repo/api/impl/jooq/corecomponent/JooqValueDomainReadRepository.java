@@ -54,7 +54,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, BdtPriRestri> getBdtPriRestriMap(String releaseId) throws ScoreDataAccessException {
+    public Map<String, BdtPriRestri> getBdtPriRestriMap(String releaseId) throws ScoreDataAccessException {
         List<BdtPriRestri> bdtPriRestriRecords = dslContext().select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 BDT_PRI_RESTRI.BDT_ID,
                 BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -74,7 +74,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, BdtScPriRestri> getBdtScPriRestriMap(String releaseId) throws ScoreDataAccessException {
+    public Map<String, BdtScPriRestri> getBdtScPriRestriMap(String releaseId) throws ScoreDataAccessException {
         List<BdtScPriRestri> bdtScPriRestriRecords = dslContext().select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.BDT_SC_ID,
                 BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,

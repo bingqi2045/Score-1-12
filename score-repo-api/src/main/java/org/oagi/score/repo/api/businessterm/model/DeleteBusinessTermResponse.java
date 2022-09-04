@@ -7,23 +7,23 @@ import java.util.List;
 
 public class DeleteBusinessTermResponse extends Response {
 
-    private final List<BigInteger> businessTermIdList;
+    private final List<String> businessTermIdList;
 
-    public DeleteBusinessTermResponse(List<BigInteger> businessTermIdList) {
+    public DeleteBusinessTermResponse(List<String> businessTermIdList) {
         this.businessTermIdList = businessTermIdList;
     }
 
-    public List<BigInteger> getBusinessTermIdList() {
+    public List<String> getBusinessTermIdList() {
         return businessTermIdList;
     }
 
-    public boolean contains(BigInteger businessTermId) {
+    public boolean contains(String businessTermId) {
         return this.businessTermIdList.contains(businessTermId);
     }
 
-    public boolean containsAll(List<BigInteger> businessTermIdList) {
-        for (BigInteger businessTermID : businessTermIdList) {
-            if (!this.businessTermIdList.contains(businessTermID)) {
+    public boolean containsAll(List<String> businessTermIdList) {
+        for (String businessTermId : businessTermIdList) {
+            if (!this.businessTermIdList.contains(businessTermId)) {
                 return false;
             }
         }

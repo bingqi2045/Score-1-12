@@ -614,7 +614,7 @@ public class BieRepository {
                 .set(BBIE.FROM_ABIE_ID, fromAbieId)
                 .set(BBIE.TO_BBIEP_ID, toBbiepId)
                 .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(basedBccManifestId))
-                .set(BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtManifestId)))
+                .set(BBIE.BDT_PRI_RESTRI_ID, getDefaultBdtPriRestriIdByBdtId(bdtManifestId))
                 .set(BBIE.CARDINALITY_MIN, bccRecord.getCardinalityMin())
                 .set(BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
                 .set(BBIE.IS_NILLABLE, bccRecord.getIsNillable())
@@ -631,7 +631,7 @@ public class BieRepository {
                 .returning().fetchOne();
     }
 
-    public BigInteger getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
+    public String getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
         ULong dtManifestId = ULong.valueOf(bdtManifestId);
         String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
                 .from(DT)
@@ -654,7 +654,7 @@ public class BieRepository {
             conds.add(BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
         }
 
-        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+        SelectOnConditionStep<Record1<String>> step = dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
                 .from(BDT_PRI_RESTRI)
                 .join(DT).on(BDT_PRI_RESTRI.BDT_ID.eq(DT.DT_ID))
@@ -662,7 +662,7 @@ public class BieRepository {
                 .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
                 .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
         return step.where(conds)
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public String createBbieSc(AuthenticatedPrincipal user, String bbieId, BigInteger dtScManifestId,
@@ -680,7 +680,7 @@ public class BieRepository {
                 .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                 .set(BBIE_SC.BBIE_ID, bbieId)
                 .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(dtScManifestId))
-                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScManifestId(dtScManifestId)))
+                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, getDefaultDtScPriRestriIdByDtScManifestId(dtScManifestId))
                 .set(BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
                 .set(BBIE_SC.IS_USED, (byte) (dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
@@ -691,7 +691,7 @@ public class BieRepository {
         return bbieScId;
     }
 
-    public BigInteger getDefaultDtScPriRestriIdByDtScManifestId(BigInteger dtScManifestId) {
+    public String getDefaultDtScPriRestriIdByDtScManifestId(BigInteger dtScManifestId) {
         ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
         String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
                 .from(DT_SC)
@@ -714,7 +714,7 @@ public class BieRepository {
             conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
         }
 
-        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+        SelectOnConditionStep<Record1<String>> step = dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
                 .from(BDT_SC_PRI_RESTRI)
                 .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
@@ -722,7 +722,7 @@ public class BieRepository {
                 .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
                 .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
         return step.where(conds)
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public void updateState(String topLevelAsbiepId, BieState state) {

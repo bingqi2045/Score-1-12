@@ -103,7 +103,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * This column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot
      * have a value at the same time.
      */
-    public final TableField<BbieScRecord, ULong> DT_SC_PRI_RESTRI_ID = createField(DSL.name("dt_sc_pri_restri_id"), SQLDataType.BIGINTUNSIGNED, this, "This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).\n\nIt is the foreign key to the BDT_SC_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.\n\nThis column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.");
+    public final TableField<BbieScRecord, String> DT_SC_PRI_RESTRI_ID = createField(DSL.name("dt_sc_pri_restri_id"), SQLDataType.CHAR(36), this, "This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).\n\nIt is the foreign key to the BDT_SC_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.\n\nThis column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.");
 
     /**
      * The column <code>oagi.bbie_sc.code_list_id</code>. This is a foreign key

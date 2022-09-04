@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BdtPriRestri implements Serializable {
 
-    private BigInteger bdtPriRestriId = BigInteger.ZERO;
+    private String bdtPriRestriId;
     private String bdtId;
     private String cdtAwdPriXpsTypeMapId;
     private String codeListId;

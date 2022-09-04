@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 public class BdtScPriRestri implements Serializable {
 
-    private BigInteger bdtScPriRestriId;
+    private String bdtScPriRestriId;
     private String bdtScId;
     private String xbtId;
     private String xbtName;
@@ -14,11 +14,11 @@ public class BdtScPriRestri implements Serializable {
     private String agencyIdListId;
     private boolean isDefault;
 
-    public BigInteger getBdtScPriRestriId() {
+    public String getBdtScPriRestriId() {
         return bdtScPriRestriId;
     }
 
-    public void setBdtScPriRestriId(BigInteger bdtScPriRestriId) {
+    public void setBdtScPriRestriId(String bdtScPriRestriId) {
         this.bdtScPriRestriId = bdtScPriRestriId;
     }
 

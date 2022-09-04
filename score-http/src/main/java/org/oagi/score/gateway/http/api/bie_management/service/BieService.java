@@ -397,7 +397,7 @@ public class BieService {
                     .withBody(failureMessageBody.toString())
                     .withBodyContentType(SendMessageRequest.MARKDOWN_CONTENT_TYPE);
 
-            BigInteger errorMessageId = messageService.asyncSendMessage(sendMessageRequest).join()
+            String errorMessageId = messageService.asyncSendMessage(sendMessageRequest).join()
                     .getMessageIds().values().iterator().next();
             throw new DataAccessForbiddenException(sendMessageRequest.getSubject(), errorMessageId);
         }

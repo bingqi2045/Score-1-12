@@ -9,14 +9,14 @@ import java.util.List;
 @Data
 public class AssignedBusinessTermListRecord {
     private List<BusinessContext> businessContexts;
-    private BigInteger assignedBizTermId;
+    private String assignedBizTermId;
     private String bieId;
     private String bieType;
     private String den;
     private String primaryIndicator;
     private Boolean isPrimary;
     private String typeCode;
-    private BigInteger businessTermId;
+    private String businessTermId;
     private String businessTerm;
     private String externalReferenceUri;
     private String lastUpdatedBy;

@@ -277,7 +277,7 @@ public class BieEditService implements InitializingBean {
                     .withBody(failureMessageBody.toString())
                     .withBodyContentType(SendMessageRequest.MARKDOWN_CONTENT_TYPE);
 
-            BigInteger errorMessageId = messageService.asyncSendMessage(sendMessageRequest).join()
+            String errorMessageId = messageService.asyncSendMessage(sendMessageRequest).join()
                     .getMessageIds().values().iterator().next();
             throw new DataAccessForbiddenException(sendMessageRequest.getSubject(), errorMessageId);
         }
@@ -942,7 +942,7 @@ public class BieEditService implements InitializingBean {
                     throw new IllegalArgumentException();
                 }
 
-                bbieRecord.setBdtPriRestriId(ULong.valueOf(bdtPriRestriList.get(0).getBdtPriRestriId()));
+                bbieRecord.setBdtPriRestriId(bdtPriRestriList.get(0).getBdtPriRestriId());
                 bbieRecord.setCodeListId(null);
                 bbieRecord.setAgencyIdListId(null);
                 bbieRecord.setLastUpdatedBy(requester.getAppUserId());
@@ -995,7 +995,7 @@ public class BieEditService implements InitializingBean {
                     throw new IllegalArgumentException();
                 }
 
-                bbieScRecord.setDtScPriRestriId(ULong.valueOf(bdtScPriRestriList.get(0).getBdtScPriRestriId()));
+                bbieScRecord.setDtScPriRestriId(bdtScPriRestriList.get(0).getBdtScPriRestriId());
                 bbieScRecord.setCodeListId(null);
                 bbieScRecord.setAgencyIdListId(null);
                 bbieScRecord.setDefaultValue(null);

@@ -18,7 +18,7 @@ public class Bbie implements BieAssociation {
 
     private String toBbiepId;
 
-    private BigInteger bdtPriRestriId;
+    private String bdtPriRestriId;
 
     private String codeListId;
 
@@ -100,11 +100,11 @@ public class Bbie implements BieAssociation {
         this.toBbiepId = toBbiepId;
     }
 
-    public BigInteger getBdtPriRestriId() {
+    public String getBdtPriRestriId() {
         return bdtPriRestriId;
     }
 
-    public void setBdtPriRestriId(BigInteger bdtPriRestriId) {
+    public void setBdtPriRestriId(String bdtPriRestriId) {
         this.bdtPriRestriId = bdtPriRestriId;
     }
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
@@ -38,54 +39,54 @@ public class CommentRepository {
                 .fetchStream()
                 .map(e -> {
                     Comment comment = new Comment();
-                    comment.setCommentId(e.get(COMMENT.COMMENT_ID).longValue());
+                    comment.setCommentId(e.get(COMMENT.COMMENT_ID));
                     comment.setLoginId(e.get(APP_USER.LOGIN_ID));
                     comment.setText(e.get(COMMENT.COMMENT_));
                     comment.setTimestamp(e.get(COMMENT.LAST_UPDATE_TIMESTAMP));
                     comment.setHidden(e.get(COMMENT.IS_HIDDEN) == (byte) 1);
-                    ULong prevCommentId = e.get(COMMENT.PREV_COMMENT_ID);
+                    String prevCommentId = e.get(COMMENT.PREV_COMMENT_ID);
                     if (prevCommentId != null) {
-                        comment.setPrevCommentId(prevCommentId.longValue());
+                        comment.setPrevCommentId(prevCommentId);
                     }
                     return comment;
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<Comment> getCommentsByPrevCommentId(long commentId) {
+    public List<Comment> getCommentsByPrevCommentId(String commentId) {
         return dslContext.select(
                 COMMENT.COMMENT_ID, APP_USER.LOGIN_ID, COMMENT.COMMENT_,
                 COMMENT.LAST_UPDATE_TIMESTAMP,
                 COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
                 .from(COMMENT)
                 .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(COMMENT.PREV_COMMENT_ID.eq(ULong.valueOf(commentId)), COMMENT.IS_DELETED.eq((byte) 0))
+                .where(COMMENT.PREV_COMMENT_ID.eq(commentId), COMMENT.IS_DELETED.eq((byte) 0))
                 .orderBy(COMMENT.LAST_UPDATE_TIMESTAMP.asc())
                 .fetchStream()
                 .map(e -> {
                     Comment comment = new Comment();
-                    comment.setCommentId(e.get(COMMENT.COMMENT_ID).longValue());
+                    comment.setCommentId(e.get(COMMENT.COMMENT_ID));
                     comment.setLoginId(e.get(APP_USER.LOGIN_ID));
                     comment.setText(e.get(COMMENT.COMMENT_));
                     comment.setTimestamp(e.get(COMMENT.LAST_UPDATE_TIMESTAMP));
                     comment.setHidden(e.get(COMMENT.IS_HIDDEN) == (byte) 1);
-                    ULong prevCommentId = e.get(COMMENT.PREV_COMMENT_ID);
+                    String prevCommentId = e.get(COMMENT.PREV_COMMENT_ID);
                     if (prevCommentId != null) {
-                        comment.setPrevCommentId(prevCommentId.longValue());
+                        comment.setPrevCommentId(prevCommentId);
                     }
                     return comment;
                 })
                 .collect(Collectors.toList());
     }
 
-    public Comment getCommentByCommentId(long commentId) {
+    public Comment getCommentByCommentId(String commentId) {
         return dslContext.select(
                 COMMENT.COMMENT_ID, APP_USER.LOGIN_ID, COMMENT.COMMENT_.as("text"),
                 COMMENT.LAST_UPDATE_TIMESTAMP.as("timestamp"),
                 COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
                 .from(COMMENT)
                 .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentId)), COMMENT.IS_DELETED.eq((byte) 0))
+                .where(COMMENT.COMMENT_ID.eq(commentId), COMMENT.IS_DELETED.eq((byte) 0))
                 .fetchOneInto(Comment.class);
     }
 
@@ -94,7 +95,7 @@ public class CommentRepository {
 
         private String reference;
         private String text;
-        private ULong prevCommentId;
+        private String prevCommentId;
         private String createdBy;
 
         public InsertCommentArguments setReference(String reference) {
@@ -107,14 +108,7 @@ public class CommentRepository {
             return this;
         }
 
-        public InsertCommentArguments setPrevCommentId(Long prevCommentId) {
-            if (prevCommentId == null || prevCommentId <= 0L) {
-                return this;
-            }
-            return setPrevCommentId(ULong.valueOf(prevCommentId));
-        }
-
-        public InsertCommentArguments setPrevCommentId(ULong prevCommentId) {
+        public InsertCommentArguments setPrevCommentId(String prevCommentId) {
             this.prevCommentId = prevCommentId;
             return this;
         }
@@ -124,7 +118,7 @@ public class CommentRepository {
             return this;
         }
 
-        public long execute() {
+        public String execute() {
             return executeInsertComment(this);
         }
     }
@@ -133,10 +127,11 @@ public class CommentRepository {
         return new InsertCommentArguments();
     }
 
-    private long executeInsertComment(InsertCommentArguments arguments) {
+    private String executeInsertComment(InsertCommentArguments arguments) {
         CommentRecord record = new CommentRecord();
         LocalDateTime timestamp = LocalDateTime.now();
 
+        record.setCommentId(UUID.randomUUID().toString());
         record.setReference(arguments.getReference());
         record.setComment(arguments.getText());
         record.setIsHidden((byte) 0);
@@ -147,15 +142,16 @@ public class CommentRepository {
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        return dslContext.insertInto(COMMENT)
+        dslContext.insertInto(COMMENT)
                 .set(record)
-                .returning().fetchOne().getCommentId().longValue();
+                .execute();
+        return record.getCommentId();
     }
 
-    public String getOwnerIdByCommentId(long commentId) {
+    public String getOwnerIdByCommentId(String commentId) {
         return dslContext.select(COMMENT.CREATED_BY)
                 .from(COMMENT)
-                .where(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentId)))
+                .where(COMMENT.COMMENT_ID.eq(commentId))
                 .fetchOptionalInto(String.class).orElse(null);
     }
 
@@ -163,7 +159,7 @@ public class CommentRepository {
     public class UpdateCommentArguments {
 
         private final String userId;
-        private ULong commentId;
+        private String commentId;
 
         private String text;
         private Boolean hide;
@@ -173,14 +169,7 @@ public class CommentRepository {
             this.userId = userId;
         }
 
-        public UpdateCommentArguments setCommentId(Long commentId) {
-            if (commentId == null || commentId <= 0L) {
-                return this;
-            }
-            return setCommentId(ULong.valueOf(commentId));
-        }
-
-        public UpdateCommentArguments setCommentId(ULong commentId) {
+        public UpdateCommentArguments setCommentId(String commentId) {
             this.commentId = commentId;
             return this;
         }

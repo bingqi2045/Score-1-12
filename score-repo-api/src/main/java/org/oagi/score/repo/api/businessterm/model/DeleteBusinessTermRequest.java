@@ -10,34 +10,34 @@ import java.util.List;
 
 public class DeleteBusinessTermRequest extends Request {
 
-    private List<BigInteger> businessTermIdList = Collections.emptyList();
+    private List<String> businessTermIdList = Collections.emptyList();
 
     public DeleteBusinessTermRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public List<BigInteger> getBusinessTermIdList() {
+    public List<String> getBusinessTermIdList() {
         return businessTermIdList;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         if (businessTermId != null) {
             this.businessTermIdList = Arrays.asList(businessTermId);
         }
     }
 
-    public DeleteBusinessTermRequest withBusinessTermId(BigInteger businessTermId) {
+    public DeleteBusinessTermRequest withBusinessTermId(String businessTermId) {
         this.setBusinessTermId(businessTermId);
         return this;
     }
 
-    public void setBusinessTermIdList(List<BigInteger> businessTermIdList) {
+    public void setBusinessTermIdList(List<String> businessTermIdList) {
         if (businessTermIdList != null) {
             this.businessTermIdList = businessTermIdList;
         }
     }
 
-    public DeleteBusinessTermRequest withBusinessTermIdList(List<BigInteger> businessTermIdList) {
+    public DeleteBusinessTermRequest withBusinessTermIdList(List<String> businessTermIdList) {
         this.setBusinessTermIdList(businessTermIdList);
         return this;
     }

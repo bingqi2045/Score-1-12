@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 @Data
 public class Comment {
 
-    private long commentId;
+    private String commentId;
     private String text;
 
     private String loginId;
     private LocalDateTime timestamp;
 
     private boolean hidden;
-    private Long prevCommentId;
+    private String prevCommentId;
 
 }

@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class CcTag {
 
-    private BigInteger ccTagId;
+    private String ccTagId;
 
     private String tagName;
 

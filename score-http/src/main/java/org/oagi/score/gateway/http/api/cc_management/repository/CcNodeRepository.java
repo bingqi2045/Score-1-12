@@ -738,7 +738,7 @@ public class CcNodeRepository {
 
         for (BdtPriRestriRecord bdtPriRestriRecord : bdtPriRestriRecords) {
             CcBdtPriRestri ccBdtPriRestri = new CcBdtPriRestri();
-            ccBdtPriRestri.setBdtPriRestriId(bdtPriRestriRecord.getBdtPriRestriId().toBigInteger());
+            ccBdtPriRestri.setBdtPriRestriId(bdtPriRestriRecord.getBdtPriRestriId());
             if (bdtPriRestriRecord.getCdtAwdPriXpsTypeMapId() != null) {
                 ccBdtPriRestri.setType(PrimitiveRestriType.Primitive);
 
@@ -873,7 +873,7 @@ public class CcNodeRepository {
 
         for (BdtScPriRestriRecord bdtScPriRestriRecord : bdtScPriRestriRecords) {
             CcBdtScPriRestri ccBdtScPriRestri = new CcBdtScPriRestri();
-            ccBdtScPriRestri.setBdtScPriRestriId(bdtScPriRestriRecord.getBdtScPriRestriId().toBigInteger());
+            ccBdtScPriRestri.setBdtScPriRestriId(bdtScPriRestriRecord.getBdtScPriRestriId());
             if (bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId() != null) {
                 ccBdtScPriRestri.setType(PrimitiveRestriType.Primitive);
 

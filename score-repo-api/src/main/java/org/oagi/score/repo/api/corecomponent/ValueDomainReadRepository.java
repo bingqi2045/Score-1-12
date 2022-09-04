@@ -15,10 +15,10 @@ public interface ValueDomainReadRepository {
     List<CodeList> getCodeListList(
             String releaseId) throws ScoreDataAccessException;
 
-    Map<BigInteger, BdtPriRestri> getBdtPriRestriMap(
+    Map<String, BdtPriRestri> getBdtPriRestriMap(
             String releaseId) throws ScoreDataAccessException;
 
-    Map<BigInteger, BdtScPriRestri> getBdtScPriRestriMap(
+    Map<String, BdtScPriRestri> getBdtScPriRestriMap(
             String releaseId) throws ScoreDataAccessException;
 
     Map<String, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(

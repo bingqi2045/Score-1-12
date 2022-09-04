@@ -57,7 +57,7 @@ public class JooqBusinessTermReadRepository
     private RecordMapper<Record, BusinessTerm> mapper() {
         return record -> {
             BusinessTerm businessTerm = new BusinessTerm();
-            businessTerm.setBusinessTermId(record.get(BUSINESS_TERM.BUSINESS_TERM_ID).toBigInteger());
+            businessTerm.setBusinessTermId(record.get(BUSINESS_TERM.BUSINESS_TERM_ID));
             businessTerm.setGuid(record.get(BUSINESS_TERM.GUID));
             businessTerm.setBusinessTerm(record.get(BUSINESS_TERM.BUSINESS_TERM_));
             businessTerm.setDefinition(record.get(BUSINESS_TERM.DEFINITION));
@@ -87,10 +87,10 @@ public class JooqBusinessTermReadRepository
             GetBusinessTermRequest request) throws ScoreDataAccessException {
         BusinessTerm businessTerm = null;
 
-        BigInteger businessTermId = request.getBusinessTermId();
-        if (!isNull(businessTermId)) {
+        String businessTermId = request.getBusinessTermId();
+        if (StringUtils.hasLength(businessTermId)) {
             businessTerm = (BusinessTerm) select()
-                    .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermId)))
+                    .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(businessTermId))
                     .fetchOne(mapper());
         }
 
@@ -104,7 +104,7 @@ public class JooqBusinessTermReadRepository
         if (request.getBusinessTermIdList() != null && !request.getBusinessTermIdList().isEmpty()) {
             if (request.getBusinessTermIdList().size() == 1) {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.eq(
-                        ULong.valueOf(request.getBusinessTermIdList().iterator().next())
+                        request.getBusinessTermIdList().iterator().next()
                 ));
             } else {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.in(

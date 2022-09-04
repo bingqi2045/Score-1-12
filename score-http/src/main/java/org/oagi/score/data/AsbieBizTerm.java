@@ -13,7 +13,7 @@ public class AsbieBizTerm {
     private String asbieId;
     private String primaryIndicator;
     private String typeCode;
-    private BigInteger businessTermId = BigInteger.ZERO;
+    private String businessTermId;
     private String businessTerm;
     private String guid;
     private String externalRefUri;

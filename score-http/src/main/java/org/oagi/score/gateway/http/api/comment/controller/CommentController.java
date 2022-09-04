@@ -49,7 +49,7 @@ public class CommentController {
 
     @RequestMapping(value = "/comment/{commentId}", method = RequestMethod.POST)
     public void updateComment(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("commentId") long commentId,
+                              @PathVariable("commentId") String commentId,
                               @RequestBody UpdateCommentRequest request) {
         request.setCommentId(commentId);
 

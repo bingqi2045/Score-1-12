@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function4;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleExpressionRecord;
@@ -56,10 +54,10 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     /**
      * The column
-     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>. Primary
-     * key of the usage rule expression
+     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<UsageRuleExpressionRecord, ULong> USAGE_RULE_EXPRESSION_ID = createField(DSL.name("usage_rule_expression_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule expression");
+    public final TableField<UsageRuleExpressionRecord, String> USAGE_RULE_EXPRESSION_ID = createField(DSL.name("usage_rule_expression_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.usage_rule_expression.constraint_type</code>.
@@ -79,10 +77,9 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     /**
      * The column
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
-     * usage rule which the expression represents
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
      */
-    public final TableField<UsageRuleExpressionRecord, ULong> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The usage rule which the expression represents");
+    public final TableField<UsageRuleExpressionRecord, String> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), SQLDataType.CHAR(36), this, "");
 
     private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased) {
         this(alias, aliased, null);
@@ -120,11 +117,6 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<UsageRuleExpressionRecord, ULong> getIdentity() {
-        return (Identity<UsageRuleExpressionRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -193,21 +185,21 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, Integer, String, ULong> fieldsRow() {
+    public Row4<String, Integer, String, String> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super ULong, ? super Integer, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super Integer, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super ULong, ? super Integer, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super Integer, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

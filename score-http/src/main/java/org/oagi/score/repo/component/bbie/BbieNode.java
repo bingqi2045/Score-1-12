@@ -54,7 +54,7 @@ public class BbieNode {
         private String fixedValue;
         private String example;
 
-        private BigInteger bdtPriRestriId;
+        private String bdtPriRestriId;
         private String codeListId;
         private String agencyIdListId;
 

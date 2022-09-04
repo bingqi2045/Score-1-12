@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUsageRule;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUsageRule;
  * TARGET_ASBIE_ID, TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> implements Record7<ULong, ULong, String, String, String, String, String> {
+public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> implements Record7<String, String, String, String, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary
-     * key of the table.
+     * Setter for <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary,
+     * internal database key.
      */
-    public void setBieUsageRuleId(ULong value) {
+    public void setBieUsageRuleId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary
-     * key of the table.
+     * Getter for <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getBieUsageRuleId() {
-        return (ULong) get(0);
+    public String getBieUsageRuleId() {
+        return (String) get(0);
     }
 
     /**
@@ -45,7 +44,7 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
      * a BIE.
      */
-    public void setAssignedUsageRuleId(ULong value) {
+    public void setAssignedUsageRuleId(String value) {
         set(1, value);
     }
 
@@ -54,8 +53,8 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
      * a BIE.
      */
-    public ULong getAssignedUsageRuleId() {
-        return (ULong) get(1);
+    public String getAssignedUsageRuleId() {
+        return (String) get(1);
     }
 
     /**
@@ -153,7 +152,7 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -162,22 +161,22 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, String, String, String, String, String> fieldsRow() {
+    public Row7<String, String, String, String, String, String, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, ULong, String, String, String, String, String> valuesRow() {
+    public Row7<String, String, String, String, String, String, String> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BieUsageRule.BIE_USAGE_RULE.BIE_USAGE_RULE_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BieUsageRule.BIE_USAGE_RULE.ASSIGNED_USAGE_RULE_ID;
     }
 
@@ -207,12 +206,12 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBieUsageRuleId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getAssignedUsageRuleId();
     }
 
@@ -242,12 +241,12 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBieUsageRuleId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getAssignedUsageRuleId();
     }
 
@@ -277,13 +276,13 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     }
 
     @Override
-    public BieUsageRuleRecord value1(ULong value) {
+    public BieUsageRuleRecord value1(String value) {
         setBieUsageRuleId(value);
         return this;
     }
 
     @Override
-    public BieUsageRuleRecord value2(ULong value) {
+    public BieUsageRuleRecord value2(String value) {
         setAssignedUsageRuleId(value);
         return this;
     }
@@ -319,7 +318,7 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     }
 
     @Override
-    public BieUsageRuleRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, String value7) {
+    public BieUsageRuleRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -344,7 +343,7 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     /**
      * Create a detached, initialised BieUsageRuleRecord
      */
-    public BieUsageRuleRecord(ULong bieUsageRuleId, ULong assignedUsageRuleId, String targetAbieId, String targetAsbieId, String targetAsbiepId, String targetBbieId, String targetBbiepId) {
+    public BieUsageRuleRecord(String bieUsageRuleId, String assignedUsageRuleId, String targetAbieId, String targetAsbieId, String targetAsbiepId, String targetBbieId, String targetBbiepId) {
         super(BieUsageRule.BIE_USAGE_RULE);
 
         setBieUsageRuleId(bieUsageRuleId);

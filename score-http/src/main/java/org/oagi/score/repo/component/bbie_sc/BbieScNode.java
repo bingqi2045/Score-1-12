@@ -50,7 +50,7 @@ public class BbieScNode {
         private String fixedValue;
         private String example;
 
-        private BigInteger bdtScPriRestriId;
+        private String bdtScPriRestriId;
         private String codeListId;
         private String agencyIdListId;
 

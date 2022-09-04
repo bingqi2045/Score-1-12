@@ -7,13 +7,13 @@ import java.util.List;
 
 public class CreateBulkBusinessTermResponse extends Auditable {
 
-    private final List<BigInteger> businessTermIds;
+    private final List<String> businessTermIds;
 
-    public CreateBulkBusinessTermResponse(List<BigInteger> businessTermIds) {
+    public CreateBulkBusinessTermResponse(List<String> businessTermIds) {
         this.businessTermIds = businessTermIds;
     }
 
-    public List<BigInteger> getBusinessTermIds() {
+    public List<String> getBusinessTermIds() {
         return businessTermIds;
     }
 }

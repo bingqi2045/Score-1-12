@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record4;
 import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
 
 
@@ -19,26 +18,26 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
  * syntaxes can be unstructured, which works a description of the usage rule.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpressionRecord> implements Record4<ULong, Integer, String, ULong> {
+public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpressionRecord> implements Record4<String, Integer, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Setter for
-     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>. Primary
-     * key of the usage rule expression
+     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>.
+     * Primary, internal database key.
      */
-    public void setUsageRuleExpressionId(ULong value) {
+    public void setUsageRuleExpressionId(String value) {
         set(0, value);
     }
 
     /**
      * Getter for
-     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>. Primary
-     * key of the usage rule expression
+     * <code>oagi.usage_rule_expression.usage_rule_expression_id</code>.
+     * Primary, internal database key.
      */
-    public ULong getUsageRuleExpressionId() {
-        return (ULong) get(0);
+    public String getUsageRuleExpressionId() {
+        return (String) get(0);
     }
 
     /**
@@ -83,20 +82,18 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
 
     /**
      * Setter for
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
-     * usage rule which the expression represents
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
      */
-    public void setRepresentedUsageRuleId(ULong value) {
+    public void setRepresentedUsageRuleId(String value) {
         set(3, value);
     }
 
     /**
      * Getter for
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
-     * usage rule which the expression represents
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
      */
-    public ULong getRepresentedUsageRuleId() {
-        return (ULong) get(3);
+    public String getRepresentedUsageRuleId() {
+        return (String) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -104,7 +101,7 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -113,17 +110,17 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, Integer, String, ULong> fieldsRow() {
+    public Row4<String, Integer, String, String> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<ULong, Integer, String, ULong> valuesRow() {
+    public Row4<String, Integer, String, String> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID;
     }
 
@@ -138,12 +135,12 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return UsageRuleExpression.USAGE_RULE_EXPRESSION.REPRESENTED_USAGE_RULE_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getUsageRuleExpressionId();
     }
 
@@ -158,12 +155,12 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getRepresentedUsageRuleId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getUsageRuleExpressionId();
     }
 
@@ -178,12 +175,12 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getRepresentedUsageRuleId();
     }
 
     @Override
-    public UsageRuleExpressionRecord value1(ULong value) {
+    public UsageRuleExpressionRecord value1(String value) {
         setUsageRuleExpressionId(value);
         return this;
     }
@@ -201,13 +198,13 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     }
 
     @Override
-    public UsageRuleExpressionRecord value4(ULong value) {
+    public UsageRuleExpressionRecord value4(String value) {
         setRepresentedUsageRuleId(value);
         return this;
     }
 
     @Override
-    public UsageRuleExpressionRecord values(ULong value1, Integer value2, String value3, ULong value4) {
+    public UsageRuleExpressionRecord values(String value1, Integer value2, String value3, String value4) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -229,7 +226,7 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     /**
      * Create a detached, initialised UsageRuleExpressionRecord
      */
-    public UsageRuleExpressionRecord(ULong usageRuleExpressionId, Integer constraintType, String constraintText, ULong representedUsageRuleId) {
+    public UsageRuleExpressionRecord(String usageRuleExpressionId, Integer constraintType, String constraintText, String representedUsageRuleId) {
         super(UsageRuleExpression.USAGE_RULE_EXPRESSION);
 
         setUsageRuleExpressionId(usageRuleExpressionId);

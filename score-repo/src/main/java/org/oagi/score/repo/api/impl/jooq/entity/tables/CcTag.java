@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function2;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -23,7 +22,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CcTagRecord;
@@ -51,9 +49,10 @@ public class CcTag extends TableImpl<CcTagRecord> {
     }
 
     /**
-     * The column <code>oagi.cc_tag.cc_tag_id</code>.
+     * The column <code>oagi.cc_tag.cc_tag_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<CcTagRecord, ULong> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CcTagRecord, String> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.cc_tag.tag_name</code>.
@@ -96,11 +95,6 @@ public class CcTag extends TableImpl<CcTagRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CcTagRecord, ULong> getIdentity() {
-        return (Identity<CcTagRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -152,21 +146,21 @@ public class CcTag extends TableImpl<CcTagRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, String> fieldsRow() {
+    public Row2<String, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function2<? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

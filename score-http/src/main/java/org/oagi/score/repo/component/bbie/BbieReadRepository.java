@@ -88,7 +88,7 @@ public class BbieReadRepository {
                 bbie.setFixedValue(bccpRecord.getFixedValue());
             }
             bbie.setNillable(bccpRecord.getIsNillable() == 1);
-            BigInteger defaultBdtPriRestriId = getDefaultBdtPriRestriIdByBdtId(
+            String defaultBdtPriRestriId = getDefaultBdtPriRestriIdByBdtId(
                     bccpManifestRecord.getBdtManifestId().toBigInteger());
             bbie.setBdtPriRestriId(defaultBdtPriRestriId);
         }
@@ -96,7 +96,7 @@ public class BbieReadRepository {
         return bbieNode;
     }
 
-    public BigInteger getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
+    public String getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
         ULong dtManifestId = ULong.valueOf(bdtManifestId);
         String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
                 .from(DT)
@@ -119,7 +119,7 @@ public class BbieReadRepository {
             conds.add(BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
         }
 
-        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+        SelectOnConditionStep<Record1<String>> step = dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
                 .from(BDT_PRI_RESTRI)
                 .join(DT).on(BDT_PRI_RESTRI.BDT_ID.eq(DT.DT_ID))
@@ -127,7 +127,7 @@ public class BbieReadRepository {
                 .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
                 .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
         return step.where(conds)
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public BbieNode.Bbie getBbie(String topLevelAsbiepId, String hashPath) {
@@ -171,7 +171,7 @@ public class BbieReadRepository {
             bbie.setExample(bbieRecord.getExample());
 
             bbie.setBdtPriRestriId((bbieRecord.getBdtPriRestriId() != null) ?
-                    bbieRecord.getBdtPriRestriId().toBigInteger() : null);
+                    bbieRecord.getBdtPriRestriId() : null);
             bbie.setCodeListId((bbieRecord.getCodeListId() != null) ?
                     bbieRecord.getCodeListId() : null);
             bbie.setAgencyIdListId((bbieRecord.getAgencyIdListId() != null) ?

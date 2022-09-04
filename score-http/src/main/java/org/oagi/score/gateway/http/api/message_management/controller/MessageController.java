@@ -99,7 +99,7 @@ public class MessageController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetMessageResponse getMessage(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger messageId) {
+            @PathVariable("id") String messageId) {
         return messageService.getMessage(
                 sessionService.asScoreUser(requester),
                 messageId);

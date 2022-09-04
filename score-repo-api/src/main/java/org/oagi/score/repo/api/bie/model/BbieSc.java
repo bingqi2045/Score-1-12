@@ -18,7 +18,7 @@ public class BbieSc extends Auditable {
 
     private String bbieId;
 
-    private BigInteger dtScPriRestriId;
+    private String dtScPriRestriId;
 
     private String codeListId;
 
@@ -94,11 +94,11 @@ public class BbieSc extends Auditable {
         this.bbieId = bbieId;
     }
 
-    public BigInteger getDtScPriRestriId() {
+    public String getDtScPriRestriId() {
         return dtScPriRestriId;
     }
 
-    public void setDtScPriRestriId(BigInteger dtScPriRestriId) {
+    public void setDtScPriRestriId(String dtScPriRestriId) {
         this.dtScPriRestriId = dtScPriRestriId;
     }
 
