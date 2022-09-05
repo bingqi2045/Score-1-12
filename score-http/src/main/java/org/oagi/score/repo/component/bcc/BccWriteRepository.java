@@ -410,7 +410,7 @@ public class BccWriteRepository {
                 sessionService.asScoreUser(user));
         seqKeyHandler.initBcc(
                 bccManifestRecord.getFromAccManifestId(),
-                (bccManifestRecord.getSeqKeyId() != null) ? bccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                (bccManifestRecord.getSeqKeyId() != null) ? bccManifestRecord.getSeqKeyId() : null,
                 bccManifestRecord.getBccManifestId());
         return seqKeyHandler;
     }
@@ -510,23 +510,23 @@ public class BccWriteRepository {
                     userId, timestamp, hash, LogAction.Refactored);
         }
 
-        targetBccRecord.setBccId(null);
+        targetBccRecord.setBccId(UUID.randomUUID().toString());
         targetBccRecord.setLastUpdatedBy(userId);
         targetBccRecord.setLastUpdateTimestamp(timestamp);
         targetBccRecord.setFromAccId(targetAccRecord.getAccId());
         targetBccRecord.setPrevBccId(null);
         targetBccRecord.setNextBccId(null);
         targetBccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + bccpDen);
-        String bccId = dslContext.insertInto(BCC).set(targetBccRecord).returning().fetchOne().getBccId();
+        dslContext.insertInto(BCC).set(targetBccRecord).execute();
+        String bccId = targetBccRecord.getBccId();
 
-        targetBccManifestRecord.setBccManifestId(null);
+        targetBccManifestRecord.setBccManifestId(UUID.randomUUID().toString());
         targetBccManifestRecord.setFromAccManifestId(request.getAccManifestId());
         targetBccManifestRecord.setBccId(bccId);
         targetBccManifestRecord.setSeqKeyId(null);
         targetBccManifestRecord.setPrevBccManifestId(null);
         targetBccManifestRecord.setNextBccManifestId(null);
-        targetBccManifestRecord.setBccManifestId(
-                dslContext.insertInto(BCC_MANIFEST).set(targetBccManifestRecord).returning().fetchOne().getBccManifestId());
+        dslContext.insertInto(BCC_MANIFEST).set(targetBccManifestRecord).execute();
 
         seqKeyHandler(request.getUser(), targetBccManifestRecord).moveTo(MoveTo.LAST);
 

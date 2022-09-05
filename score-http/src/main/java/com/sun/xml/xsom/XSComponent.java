@@ -46,8 +46,8 @@ import com.sun.xml.xsom.visitor.XSVisitor;
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.NamespaceContext;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Base interface for all the schema components.

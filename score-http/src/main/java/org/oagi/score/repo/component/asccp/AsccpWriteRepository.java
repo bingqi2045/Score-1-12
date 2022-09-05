@@ -5,7 +5,6 @@ import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
@@ -123,10 +122,11 @@ public class AsccpWriteRepository {
                 .fetchOptional().orElse(null);
         String ccTagId;
         if (ccTag == null) {
-            ccTagId = dslContext.insertInto(CC_TAG)
+            ccTagId = UUID.randomUUID().toString();
+            dslContext.insertInto(CC_TAG)
+                    .set(CC_TAG.CC_TAG_ID, ccTagId)
                     .set(CC_TAG.TAG_NAME, tag)
-                    .returning(CC_TAG.CC_TAG_ID)
-                    .fetchOne().getCcTagId();
+                    .execute();
         } else {
             ccTagId = ccTag.getCcTagId();
         }
@@ -188,6 +188,7 @@ public class AsccpWriteRepository {
 
         // creates new asccp for revised record.
         AsccpRecord nextAsccpRecord = prevAsccpRecord.copy();
+        nextAsccpRecord.setAsccpId(UUID.randomUUID().toString());
         nextAsccpRecord.setState(CcState.WIP.name());
         nextAsccpRecord.setCreatedBy(userId);
         nextAsccpRecord.setLastUpdatedBy(userId);
@@ -195,11 +196,9 @@ public class AsccpWriteRepository {
         nextAsccpRecord.setCreationTimestamp(timestamp);
         nextAsccpRecord.setLastUpdateTimestamp(timestamp);
         nextAsccpRecord.setPrevAsccpId(prevAsccpRecord.getAsccpId());
-        nextAsccpRecord.setAsccpId(
-                dslContext.insertInto(ASCCP)
-                        .set(nextAsccpRecord)
-                        .returning(ASCCP.ASCCP_ID).fetchOne().getAsccpId()
-        );
+        dslContext.insertInto(ASCCP)
+                .set(nextAsccpRecord)
+                .execute();
 
         prevAsccpRecord.setNextAsccpId(nextAsccpRecord.getAsccpId());
         prevAsccpRecord.update(ASCCP.NEXT_ASCCP_ID);

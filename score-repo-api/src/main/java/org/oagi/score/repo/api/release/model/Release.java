@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.release.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Release extends Auditable implements Comparable<Release>, Serializable {
 

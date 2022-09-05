@@ -4,30 +4,18 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Function10;
-import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Records;
-import org.jooq.Row10;
-import org.jooq.Schema;
-import org.jooq.SelectField;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccManifestRecord;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -71,7 +59,7 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     /**
      * The column <code>oagi.ascc_manifest.seq_key_id</code>.
      */
-    public final TableField<AsccManifestRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AsccManifestRecord, String> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.ascc_manifest.from_acc_manifest_id</code>.
@@ -289,21 +277,21 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<String, String, String, ULong, String, String, Byte, String, String, String> fieldsRow() {
+    public Row10<String, String, String, String, String, String, Byte, String, String, String> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 @Data
@@ -37,9 +36,9 @@ public class BCC implements CoreComponent {
     private int revisionTrackingNum;
     private boolean deprecated;
     private boolean nillable;
-    private BigInteger seqKeyId = BigInteger.ZERO;
-    private BigInteger prevSeqKeyId = BigInteger.ZERO;
-    private BigInteger nextSeqKeyId = BigInteger.ZERO;
+    private String seqKeyId;
+    private String prevSeqKeyId;
+    private String nextSeqKeyId;
 
     public String getId() {
         return getBccId();

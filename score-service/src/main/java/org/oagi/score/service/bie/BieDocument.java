@@ -3,7 +3,6 @@ package org.oagi.score.service.bie;
 import org.oagi.score.repo.api.bie.model.*;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 

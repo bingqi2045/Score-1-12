@@ -6,7 +6,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.CcState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

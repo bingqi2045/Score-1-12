@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record2;
-import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
@@ -76,7 +75,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;

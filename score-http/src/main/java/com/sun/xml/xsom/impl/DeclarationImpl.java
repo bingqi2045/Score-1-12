@@ -42,7 +42,6 @@ package com.sun.xml.xsom.impl;
 
 import com.sun.xml.xsom.XSDeclaration;
 import com.sun.xml.xsom.impl.parser.SchemaDocumentImpl;
-import com.sun.xml.xsom.util.NameGetter;
 import org.xml.sax.Locator;
 
 abstract class DeclarationImpl extends ComponentImpl implements XSDeclaration

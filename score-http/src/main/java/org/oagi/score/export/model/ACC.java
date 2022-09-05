@@ -1,6 +1,5 @@
 package org.oagi.score.export.model;
 
-import org.jooq.types.ULong;
 import org.oagi.score.common.util.OagisComponentType;
 import org.oagi.score.common.util.Utility;
 import org.oagi.score.provider.ImportedDataProvider;

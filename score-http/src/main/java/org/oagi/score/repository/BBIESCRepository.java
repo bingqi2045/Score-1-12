@@ -1,7 +1,6 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record17;
 import org.jooq.Record20;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
@@ -11,10 +10,8 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 

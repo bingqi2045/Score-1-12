@@ -1,6 +1,5 @@
 package org.oagi.score.export.impl;
 
-import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
 import org.oagi.score.provider.ImportedDataProvider;
@@ -8,7 +7,6 @@ import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repository.ModuleRepository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.controller;
 
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
-import org.oagi.score.gateway.http.api.module_management.data.ExportStandaloneSchemaRequest;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.service.common.data.CcState;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

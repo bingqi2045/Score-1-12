@@ -3,7 +3,6 @@ package org.oagi.score.repo.component.dt;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -20,7 +19,6 @@ import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,12 +104,13 @@ public class DtWriteRepository {
                 .execute();
 
         DtManifestRecord bdtManifest = new DtManifestRecord();
+        bdtManifest.setDtManifestId(UUID.randomUUID().toString());
         bdtManifest.setDtId(bdt.getDtId());
         bdtManifest.setBasedDtManifestId(basedBdtManifest.getDtManifestId());
         bdtManifest.setReleaseId(request.getReleaseId());
-        bdtManifest = dslContext.insertInto(DT_MANIFEST)
+        dslContext.insertInto(DT_MANIFEST)
                 .set(bdtManifest)
-                .returning(DT_MANIFEST.DT_MANIFEST_ID).fetchOne();
+                .execute();
 
         createBdtPriRestri(bdt.getDtId(), basedBdt.getDtId(), basedBdtManifest.getBasedDtManifestId() != null);
 
@@ -131,7 +130,6 @@ public class DtWriteRepository {
                     .fetchOne();
 
             DtScRecord dtScRecord = new DtScRecord();
-            DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
 
             dtScRecord.setDtScId(UUID.randomUUID().toString());
             dtScRecord.setGuid(ScoreGuid.randomGuid());
@@ -170,15 +168,16 @@ public class DtWriteRepository {
                     .set(dtScRecord)
                     .execute();
 
+            DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
+            dtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
             dtScManifestRecord.setReleaseId(basedBdtManifest.getReleaseId());
             dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
             dtScManifestRecord.setBasedDtScManifestId(basedDtScManifest.getDtScManifestId());
             dtScManifestRecord.setOwnerDtManifestId(bdtManifest.getDtManifestId());
 
-            dtScManifestRecord.setDtScManifestId(
-                    dslContext.insertInto(DT_SC_MANIFEST)
-                            .set(dtScManifestRecord)
-                            .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId());
+            dslContext.insertInto(DT_SC_MANIFEST)
+                    .set(dtScManifestRecord)
+                    .execute();
 
             createBdtScPriRestri(dtScRecord.getDtScId(), basedDtSc.getDtScId(), basedBdtManifest.getBasedDtManifestId() != null);
         }
@@ -317,6 +316,7 @@ public class DtWriteRepository {
 
         // creates new bdt for revised record.
         DtRecord nextDtRecord = prevDtRecord.copy();
+        nextDtRecord.setDtId(UUID.randomUUID().toString());
         nextDtRecord.setState(CcState.WIP.name());
         nextDtRecord.setCreatedBy(userId);
         nextDtRecord.setLastUpdatedBy(userId);
@@ -324,11 +324,9 @@ public class DtWriteRepository {
         nextDtRecord.setCreationTimestamp(timestamp);
         nextDtRecord.setLastUpdateTimestamp(timestamp);
         nextDtRecord.setPrevDtId(prevDtRecord.getDtId());
-        nextDtRecord.setDtId(
-                dslContext.insertInto(DT)
-                        .set(nextDtRecord)
-                        .returning(DT.DT_ID).fetchOne().getDtId()
-        );
+        dslContext.insertInto(DT)
+                .set(nextDtRecord)
+                .execute();
 
         prevDtRecord.setNextDtId(nextDtRecord.getDtId());
         prevDtRecord.update(DT.NEXT_DT_ID);
@@ -374,13 +372,12 @@ public class DtWriteRepository {
 
             DtScRecord nextDtSc = prevDtSc.copy();
 
+            nextDtSc.setDtScId(UUID.randomUUID().toString());
             nextDtSc.setOwnerDtId(nextDtRecord.getDtId());
             nextDtSc.setPrevDtScId(prevDtSc.getDtScId());
-            nextDtSc.setDtScId(
-                    dslContext.insertInto(DT_SC)
-                            .set(nextDtSc)
-                            .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
-            );
+            dslContext.insertInto(DT_SC)
+                    .set(nextDtSc)
+                    .execute();
 
             prevDtSc.setNextDtScId(nextDtSc.getDtScId());
             prevDtSc.update(DT_SC.NEXT_DT_SC_ID);
@@ -732,6 +729,7 @@ public class DtWriteRepository {
             if (restri.getBdtPriRestriId() == null) {
                 // insert
                 BdtPriRestriRecord newBdtPriRestri = new BdtPriRestriRecord();
+                newBdtPriRestri.setBdtPriRestriId(UUID.randomUUID().toString());
                 newBdtPriRestri.setIsDefault((byte) 0);
                 newBdtPriRestri.setBdtId(dtId);
                 if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
@@ -739,9 +737,10 @@ public class DtWriteRepository {
                 } else if (restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
                     newBdtPriRestri.setAgencyIdListId(restri.getAgencyIdListId());
                 }
-                restri.setBdtPriRestriId(dslContext.insertInto(BDT_PRI_RESTRI)
+                dslContext.insertInto(BDT_PRI_RESTRI)
                         .set(newBdtPriRestri)
-                        .returning(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).fetchOne().getBdtPriRestriId());
+                        .execute();
+                restri.setBdtPriRestriId(newBdtPriRestri.getBdtPriRestriId());
 
                 insertedList.add(newBdtPriRestri);
             } else {
@@ -1143,26 +1142,22 @@ public class DtWriteRepository {
                 .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
 
         dtScRecord.setBasedDtScId(dtScRecord.getDtScId());
-        dtScRecord.setDtScId(null);
+        dtScRecord.setDtScId(UUID.randomUUID().toString());
         dtScRecord.setGuid(ScoreGuid.randomGuid());
         dtScRecord.setOwnerDtId(targetDtRecord.getDtId());
 
-        dtScRecord.setDtScId(
-                dslContext.insertInto(DT_SC)
-                        .set(dtScRecord)
-                        .returning(DT_SC.DT_SC_ID).fetchOne().getDtScId()
-        );
+        dslContext.insertInto(DT_SC)
+                .set(dtScRecord)
+                .execute();
 
         dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
         dtScManifestRecord.setBasedDtScManifestId(dtScManifestRecord.getDtScManifestId());
         dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
-        dtScManifestRecord.setDtScManifestId(null);
+        dtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
 
-        dtScManifestRecord.setDtScManifestId(
-                dslContext.insertInto(DT_SC_MANIFEST)
-                        .set(dtScManifestRecord)
-                        .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
-        );
+        dslContext.insertInto(DT_SC_MANIFEST)
+                .set(dtScManifestRecord)
+                .execute();
 
         dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(dtManifestId))
                 .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
@@ -1214,14 +1209,13 @@ public class DtWriteRepository {
                 cdtScAwdPriXpsTypeMapRecords.add(cdtScAwdPriXpsTypeMapRecord);
 
                 BdtScPriRestriRecord bdtScPriRestriRecord = new BdtScPriRestriRecord();
+                bdtScPriRestriRecord.setBdtScPriRestriId(UUID.randomUUID().toString());
                 bdtScPriRestriRecord.setBdtScId(bdtScId);
                 bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapRecord.getCdtScAwdPriXpsTypeMapId());
                 bdtScPriRestriRecord.setIsDefault(cdtAwdPriXpsTypeMapRecord.getIsDefault());
-                bdtScPriRestriRecord.setBdtScPriRestriId(
-                        dslContext.insertInto(BDT_SC_PRI_RESTRI)
-                                .set(bdtScPriRestriRecord)
-                                .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId()
-                );
+                dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                        .set(bdtScPriRestriRecord)
+                        .execute();
             }
         }
     }
@@ -1288,15 +1282,14 @@ public class DtWriteRepository {
         insertBdtScPriRestriByRepresentationTerm(dtScRecord.getDtScId(), defaultRepresentationTerm);
 
         DtScManifestRecord dtScManifestRecord = new DtScManifestRecord();
+        dtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
         dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
         dtScManifestRecord.setReleaseId(ownerDtManifest.getReleaseId());
         dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
 
-        dtScManifestRecord.setDtScManifestId(
-                dslContext.insertInto(DT_SC_MANIFEST)
-                        .set(dtScManifestRecord)
-                        .returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID).fetchOne().getDtScManifestId()
-        );
+        dslContext.insertInto(DT_SC_MANIFEST)
+                .set(dtScManifestRecord)
+                .execute();
 
         // creates new log for updated record.
         LogRecord logRecord =

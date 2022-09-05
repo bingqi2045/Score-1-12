@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.bccp;
 
-import java.math.BigInteger;
-
 public class PurgeBccpRepositoryResponse {
 
     private final String bccpManifestId;

@@ -4,7 +4,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Record4;
-import org.jooq.types.ULong;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
@@ -1063,10 +1062,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .where(and(
-                        CODE_LIST.CODE_LIST_ID.in(
-                                basedCodeListIds.stream()
-                                        .map(e -> ULong.valueOf(e))
-                                        .collect(Collectors.toList())),
+                        CODE_LIST.CODE_LIST_ID.in(basedCodeListIds),
                         CODE_LIST.STATE.eq("Published")))
                 .fetchInto(BieEditCodeList.class);
 

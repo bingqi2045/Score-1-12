@@ -1,6 +1,5 @@
 package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
 import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
@@ -10,7 +9,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,11 +93,10 @@ public class SeqKeyWriteRepositoryTest
         bccManifestRecord.setReleaseId(releaseId);
         bccManifestRecord.setBccId(bccId);
 
-        return dslContext().insertInto(BCC_MANIFEST)
+        dslContext().insertInto(BCC_MANIFEST)
                 .set(bccManifestRecord)
-                .returning(BCC_MANIFEST.BCC_MANIFEST_ID)
-                .fetchOne()
-                .getBccManifestId();
+                .execute();
+        return bccManifestRecord.getBccManifestId();
     }
 
     @Test
@@ -195,7 +192,7 @@ public class SeqKeyWriteRepositoryTest
         assertEquals(head.getNextSeqKey().getSeqKeyId(), response.getSeqKeyId());
         assertEquals(0, dslContext().selectCount()
                 .from(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(head.getNextSeqKey().getSeqKeyId())))
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(head.getNextSeqKey().getSeqKeyId()))
                 .fetchOneInto(Integer.class));
 
         // reload

@@ -1,9 +1,7 @@
 package org.oagi.score.repo.api.agency.model;
 
-import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 

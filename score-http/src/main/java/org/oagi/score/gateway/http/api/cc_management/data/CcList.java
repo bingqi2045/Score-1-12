@@ -5,7 +5,6 @@ import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.Optional;
 

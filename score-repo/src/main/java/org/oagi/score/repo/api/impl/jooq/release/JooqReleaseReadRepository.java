@@ -4,7 +4,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
@@ -22,7 +21,6 @@ import java.util.Date;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 public class JooqReleaseReadRepository
         extends JooqScoreRepository

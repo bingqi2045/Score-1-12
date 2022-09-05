@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.ascc;
 
-import java.math.BigInteger;
-
 public class UpdateAsccPropertiesRepositoryResponse {
 
     private final String asccManifestId;

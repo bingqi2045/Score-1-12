@@ -17,7 +17,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -145,7 +148,7 @@ public class LogSerializer {
 
         List<AssocRecord> sortedRecords = new ArrayList();
         if (!seqKeyRecords.isEmpty()) {
-            Map<ULong, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
+            Map<String, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
                     Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
             SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
             while (node != null) {

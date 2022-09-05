@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.bie.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
-
 public class BbieSc extends Auditable {
 
     private String bbieScId;

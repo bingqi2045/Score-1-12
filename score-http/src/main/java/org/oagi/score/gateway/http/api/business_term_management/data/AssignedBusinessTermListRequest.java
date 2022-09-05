@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.business_term_management.data;
 import lombok.Data;
 import org.oagi.score.service.common.data.PageRequest;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 

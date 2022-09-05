@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.bie.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Objects;
 
 public class Abie implements Serializable {

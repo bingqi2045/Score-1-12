@@ -1,14 +1,11 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.List;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.TOP_LEVEL_ASBIEP;

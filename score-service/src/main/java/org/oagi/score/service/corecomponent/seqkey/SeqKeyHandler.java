@@ -7,7 +7,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,15 +33,15 @@ public class SeqKeyHandler {
         this.requester = requester;
     }
 
-    public void initAscc(String fromAccManifestId, BigInteger seqKeyId, String associationId) {
+    public void initAscc(String fromAccManifestId, String seqKeyId, String associationId) {
         init(fromAccManifestId, seqKeyId, SeqKeyType.ASCC, associationId);
     }
 
-    public void initBcc(String fromAccManifestId, BigInteger seqKeyId, String associationId) {
+    public void initBcc(String fromAccManifestId, String seqKeyId, String associationId) {
         init(fromAccManifestId, seqKeyId, SeqKeyType.BCC, associationId);
     }
 
-    private void init(String fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, String associationManifestId) {
+    private void init(String fromAccManifestId, String seqKeyId, SeqKeyType type, String associationManifestId) {
         GetSeqKeyRequest getSeqKeyRequest = new GetSeqKeyRequest(this.requester)
                 .withFromAccManifestId(fromAccManifestId);
         GetSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyReadRepository()
@@ -219,7 +218,7 @@ public class SeqKeyHandler {
             return Collections.emptyList();
         }
 
-        Map<BigInteger, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
+        Map<String, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
                 .collect(Collectors.toMap(
                         SeqKeySupportable::getSeqKeyId, Function.identity()));
 

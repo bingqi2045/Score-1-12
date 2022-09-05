@@ -7,7 +7,6 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditCodeL
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 

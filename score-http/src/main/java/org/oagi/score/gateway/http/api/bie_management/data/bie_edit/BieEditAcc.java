@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.score.service.common.data.TrackableImpl;
 
-import java.math.BigInteger;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAcc extends TrackableImpl<String> {

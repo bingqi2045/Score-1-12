@@ -7,24 +7,23 @@ import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.utils.StringUtils;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.common.data.BCCEntityType;
-import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.service.log.model.LogSerializer;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.BCCEntityType;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
+import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -169,6 +168,7 @@ public class AccWriteRepository {
 
         // creates new acc for revised record.
         AccRecord nextAccRecord = prevAccRecord.copy();
+        nextAccRecord.setAccId(UUID.randomUUID().toString());
         nextAccRecord.setState(CcState.WIP.name());
         nextAccRecord.setCreatedBy(userId);
         nextAccRecord.setLastUpdatedBy(userId);
@@ -176,11 +176,9 @@ public class AccWriteRepository {
         nextAccRecord.setCreationTimestamp(timestamp);
         nextAccRecord.setLastUpdateTimestamp(timestamp);
         nextAccRecord.setPrevAccId(prevAccRecord.getAccId());
-        nextAccRecord.setAccId(
-                dslContext.insertInto(ACC)
-                        .set(nextAccRecord)
-                        .returning(ACC.ACC_ID).fetchOne().getAccId()
-        );
+        dslContext.insertInto(ACC)
+                .set(nextAccRecord)
+                .execute();
 
         prevAccRecord.setNextAccId(nextAccRecord.getAccId());
         prevAccRecord.update(ACC.NEXT_ACC_ID);
@@ -249,6 +247,7 @@ public class AccWriteRepository {
                     .fetchOne();
 
             AsccRecord nextAsccRecord = prevAsccRecord.copy();
+            nextAsccRecord.setAsccId(UUID.randomUUID().toString());
             nextAsccRecord.setFromAccId(nextAccRecord.getAccId());
             nextAsccRecord.setToAsccpId(
                     dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
@@ -263,11 +262,9 @@ public class AccWriteRepository {
             nextAsccRecord.setCreationTimestamp(timestamp);
             nextAsccRecord.setLastUpdateTimestamp(timestamp);
             nextAsccRecord.setPrevAsccId(prevAsccRecord.getAsccId());
-            nextAsccRecord.setAsccId(
-                    dslContext.insertInto(ASCC)
-                            .set(nextAsccRecord)
-                            .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
-            );
+            dslContext.insertInto(ASCC)
+                    .set(nextAsccRecord)
+                    .execute();
 
             prevAsccRecord.setNextAsccId(nextAsccRecord.getAsccId());
             prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
@@ -297,6 +294,7 @@ public class AccWriteRepository {
                     .fetchOne();
 
             BccRecord nextBccRecord = prevBccRecord.copy();
+            nextBccRecord.setBccId(UUID.randomUUID().toString());
             nextBccRecord.setFromAccId(nextAccRecord.getAccId());
             nextBccRecord.setToBccpId(
                     dslContext.select(BCCP_MANIFEST.BCCP_ID)
@@ -311,11 +309,9 @@ public class AccWriteRepository {
             nextBccRecord.setCreationTimestamp(timestamp);
             nextBccRecord.setLastUpdateTimestamp(timestamp);
             nextBccRecord.setPrevBccId(prevBccRecord.getBccId());
-            nextBccRecord.setBccId(
-                    dslContext.insertInto(BCC)
-                            .set(nextBccRecord)
-                            .returning(BCC.BCC_ID).fetchOne().getBccId()
-            );
+            dslContext.insertInto(BCC)
+                    .set(nextBccRecord)
+                    .execute();
 
             prevBccRecord.setNextBccId(nextBccRecord.getBccId());
             prevBccRecord.update(BCC.NEXT_BCC_ID);
@@ -326,7 +322,7 @@ public class AccWriteRepository {
         }
     }
 
-    private ULong getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccManifestRecord accManifestRecord) {
+    private String getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccManifestRecord accManifestRecord) {
         if (seqKeyRecord.getAsccManifestId() != null) {
             return dslContext.select(ASCC_MANIFEST.as("next").SEQ_KEY_ID)
                     .from(ASCC_MANIFEST.as("prev"))
@@ -335,7 +331,7 @@ public class AccWriteRepository {
                     .where(and(ASCC_MANIFEST.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
                             ASCC_MANIFEST.as("prev").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId()),
                             ASCC_MANIFEST.as("next").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
-                    .fetchOneInto(ULong.class);
+                    .fetchOneInto(String.class);
         } else {
             return dslContext.select(BCC_MANIFEST.as("next").SEQ_KEY_ID)
                     .from(BCC_MANIFEST.as("prev"))
@@ -344,7 +340,7 @@ public class AccWriteRepository {
                     .where(and(BCC_MANIFEST.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
                             BCC_MANIFEST.as("prev").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId()),
                             BCC_MANIFEST.as("next").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
-                    .fetchOneInto(ULong.class);
+                    .fetchOneInto(String.class);
         }
     }
 
@@ -1102,7 +1098,7 @@ public class AccWriteRepository {
                     AsccManifestRecord asccManifestRecord = getAsccManifestRecordForUpdateSeq(accManifestRecord, after);
                     seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
                             .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
-                                    .withSeqKeyId(asccManifestRecord.getSeqKeyId().toBigInteger()))
+                                    .withSeqKeyId(asccManifestRecord.getSeqKeyId()))
                             .getSeqKey();
                     break;
 
@@ -1110,7 +1106,7 @@ public class AccWriteRepository {
                     BccManifestRecord bccManifestRecord = getBccManifestRecordForUpdateSeq(accManifestRecord, after);
                     seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
                             .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
-                                    .withSeqKeyId(bccManifestRecord.getSeqKeyId().toBigInteger()))
+                                    .withSeqKeyId(bccManifestRecord.getSeqKeyId()))
                             .getSeqKey();
                     break;
 
@@ -1547,7 +1543,7 @@ public class AccWriteRepository {
                 sessionService.asScoreUser(user));
         seqKeyHandler.initAscc(
                 asccManifestRecord.getFromAccManifestId(),
-                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId() : null,
                 asccManifestRecord.getAsccManifestId());
         return seqKeyHandler;
     }
@@ -1557,7 +1553,7 @@ public class AccWriteRepository {
                 sessionService.asScoreUser(user));
         seqKeyHandler.initBcc(
                 asccManifestRecord.getFromAccManifestId(),
-                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId() : null,
                 asccManifestRecord.getBccManifestId());
         return seqKeyHandler;
     }

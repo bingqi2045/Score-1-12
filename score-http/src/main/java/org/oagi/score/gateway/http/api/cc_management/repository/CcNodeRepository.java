@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jooq.*;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.*;
 import java.util.function.Function;
@@ -1198,13 +1196,13 @@ public class CcNodeRepository {
                 .where(ACC.GUID.eq(guid))
                 .fetchInto(String.class);
 
-        List<ULong> accManifestIds = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+        List<String> accManifestIds = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .where(and(
                         ACC_MANIFEST.ACC_ID.in(accIds),
                         ACC_MANIFEST.RELEASE_ID.eq(accManifestRecord.getReleaseId())
                 ))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         dslContext.deleteFrom(ASCC_MANIFEST)
                 .where(and(

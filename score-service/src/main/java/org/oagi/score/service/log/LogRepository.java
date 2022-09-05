@@ -8,7 +8,6 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -671,7 +669,7 @@ public class LogRepository {
             dslContext.update(LOG)
                     .set(LOG.SNAPSHOT, content != null ? JSON.valueOf(content.toString()) : null)
                     .where(LOG.LOG_ID.eq(this.logId))
-                    .returning().fetchOne();
+                    .execute();
         }
     }
 

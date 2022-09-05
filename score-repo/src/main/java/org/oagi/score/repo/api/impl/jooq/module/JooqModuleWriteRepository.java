@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
@@ -12,12 +11,12 @@ import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -50,7 +49,9 @@ public class JooqModuleWriteRepository
 
         String path = parent.getPath().length() > 0 ? parent.getPath() + MODULE_PATH_SEPARATOR + request.getName() : request.getName();
 
-        ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
+        String moduleId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE)
+                .set(MODULE.MODULE_ID, moduleId)
                 .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
                 .set(MODULE.PATH, path)
                 .set(MODULE.TYPE, request.getModuleType().name())
@@ -63,8 +64,9 @@ public class JooqModuleWriteRepository
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning()
-                .fetchOne();
+                .execute();
+        ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(moduleId)).fetchOne();
 
         Module module = new Module();
         module.setModuleId(moduleRecord.getModuleId());
@@ -212,7 +214,10 @@ public class JooqModuleWriteRepository
         } else {
             path = parent.getPath() + MODULE_PATH_SEPARATOR + target.getName();
         }
-        ModuleRecord inserted = dslContext().insertInto(MODULE)
+
+        String moduleId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE)
+                .set(MODULE.MODULE_ID, moduleId)
                 .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
                 .set(MODULE.NAME, target.getName())
                 .set(MODULE.TYPE, target.getType())
@@ -225,7 +230,9 @@ public class JooqModuleWriteRepository
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning().fetchOne();
+                .execute();
+        ModuleRecord inserted = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(moduleId)).fetchOne();
 
         if (copySub) {
             if (target.getType().equals(ModuleType.DIRECTORY.name())) {

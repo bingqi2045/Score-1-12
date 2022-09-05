@@ -6,8 +6,6 @@ import org.oagi.score.data.Cardinality;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.service.common.data.TrackableImpl;
 
-import java.math.BigInteger;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBcc extends TrackableImpl<String> implements SeqKeySupportable, Cardinality {

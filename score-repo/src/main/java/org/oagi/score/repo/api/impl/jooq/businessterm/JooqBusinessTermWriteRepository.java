@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businessterm;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.BusinessTermWriteRepository;
 import org.oagi.score.repo.api.businessterm.model.*;
@@ -13,7 +11,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +39,7 @@ public class JooqBusinessTermWriteRepository
 
         BusinessTermRecord record = new BusinessTermRecord();
 
+        record.setBusinessTermId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setBusinessTerm(request.getBusinessTerm());
         record.setComment(request.getComment());
@@ -53,11 +51,11 @@ public class JooqBusinessTermWriteRepository
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        String businessTermId = dslContext().insertInto(BUSINESS_TERM)
+        dslContext().insertInto(BUSINESS_TERM)
                 .set(record)
-                .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
-                .fetchOne().getBusinessTermId();
+                .execute();
 
+        String businessTermId = record.getBusinessTermId();
         return new CreateBusinessTermResponse(businessTermId);
     }
 

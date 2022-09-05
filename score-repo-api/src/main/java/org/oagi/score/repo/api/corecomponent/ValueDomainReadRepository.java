@@ -6,7 +6,6 @@ import org.oagi.score.repo.api.corecomponent.model.BdtPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.BdtScPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.CodeList;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 

@@ -5,8 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 
-import java.math.BigInteger;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CcAsccpNode extends CcNode implements SeqKeySupportable {

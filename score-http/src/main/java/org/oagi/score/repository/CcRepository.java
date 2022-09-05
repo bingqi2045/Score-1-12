@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.jooq.impl.DSL.concat;
-import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository

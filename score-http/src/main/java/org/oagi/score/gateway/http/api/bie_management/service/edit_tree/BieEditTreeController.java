@@ -6,7 +6,6 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEdit
 import org.oagi.score.repo.api.bie.model.BieState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface BieEditTreeController {

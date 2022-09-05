@@ -6,16 +6,15 @@ import org.jooq.Record2;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccWriteRepository;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -159,6 +158,7 @@ public class BccpWriteRepository {
 
         // creates new bccp for revised record.
         BccpRecord nextBccpRecord = prevBccpRecord.copy();
+        nextBccpRecord.setBccpId(UUID.randomUUID().toString());
         nextBccpRecord.setState(CcState.WIP.name());
         nextBccpRecord.setCreatedBy(userId);
         nextBccpRecord.setLastUpdatedBy(userId);
@@ -166,11 +166,9 @@ public class BccpWriteRepository {
         nextBccpRecord.setCreationTimestamp(timestamp);
         nextBccpRecord.setLastUpdateTimestamp(timestamp);
         nextBccpRecord.setPrevBccpId(prevBccpRecord.getBccpId());
-        nextBccpRecord.setBccpId(
-                dslContext.insertInto(BCCP)
-                        .set(nextBccpRecord)
-                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
-        );
+        dslContext.insertInto(BCCP)
+                .set(nextBccpRecord)
+                .execute();
 
         prevBccpRecord.setNextBccpId(nextBccpRecord.getBccpId());
         prevBccpRecord.update(BCCP.NEXT_BCCP_ID);

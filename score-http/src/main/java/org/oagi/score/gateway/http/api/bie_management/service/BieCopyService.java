@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import lombok.Data;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCopyRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;

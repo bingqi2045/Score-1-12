@@ -1,10 +1,7 @@
 package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.*;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.ReleaseCleanupEvent;
@@ -13,6 +10,9 @@ import org.oagi.score.redis.event.EventListenerContainer;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.release.ReleaseRepositoryDiscardRequest;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -36,7 +36,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.RELEASE;
 
 @Service
 @Transactional(readOnly = true)

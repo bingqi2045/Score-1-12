@@ -1,19 +1,15 @@
 package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetWriteRepository;
-import org.oagi.score.repo.api.module.model.ModuleSet;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -43,7 +39,9 @@ public class JooqModuleSetWriteRepository
             throw new IllegalArgumentException("Module set name cannot be empty.");
         }
 
-        ModuleSetRecord moduleSetRecord = dslContext().insertInto(MODULE_SET)
+        String moduleSetId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE_SET)
+                .set(MODULE_SET.MODULE_SET_ID, moduleSetId)
                 .set(MODULE_SET.GUID, randomGuid())
                 .set(MODULE_SET.NAME, request.getName())
                 .set(MODULE_SET.DESCRIPTION, request.getDescription())
@@ -51,8 +49,9 @@ public class JooqModuleSetWriteRepository
                 .set(MODULE_SET.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE_SET.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning()
-                .fetchOne();
+                .execute();
+        ModuleSetRecord moduleSetRecord = dslContext().selectFrom(MODULE_SET)
+                .where(MODULE_SET.MODULE_SET_ID.eq(moduleSetId)).fetchOne();
 
         ModuleSet moduleSet = new ModuleSet();
         moduleSet.setModuleSetId(moduleSetRecord.getModuleSetId());

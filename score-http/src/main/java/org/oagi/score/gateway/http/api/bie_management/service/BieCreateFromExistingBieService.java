@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import lombok.Data;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.CreateBieFromExistingBieRequest;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -398,7 +396,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
             sourceAsccpKey = CcType.ASCCP.name() + "-" + dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
                     .from(ASBIEP)
                     .where(ASBIEP.ASBIEP_ID.eq(event.getAsbiepId()))
-                    .fetchOneInto(ULong.class).toBigInteger().toString();
+                    .fetchOneInto(String.class);
             String sourceTopLevelAsbiepId = event.getSourceTopLevelAsbiepId();
             sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(sourceTopLevelAsbiepId);
 

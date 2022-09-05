@@ -40,9 +40,9 @@
 
 package com.sun.xml.xsom.impl.parser;
 
-import com.sun.xml.xsom.impl.Ref;
 import com.sun.xml.xsom.XSContentType;
 import com.sun.xml.xsom.XSType;
+import com.sun.xml.xsom.impl.Ref;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 

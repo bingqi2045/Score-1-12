@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.CcReadRepository;
 import org.oagi.score.repo.api.corecomponent.model.*;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
@@ -221,7 +219,7 @@ public class JooqCcReadRepository
             asccManifest.setAsccManifestId(record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID));
             asccManifest.setReleaseId(record.get(ASCC_MANIFEST.RELEASE_ID));
             asccManifest.setAsccId(record.get(ASCC_MANIFEST.ASCC_ID));
-            asccManifest.setSeqKeyId(record.get(ASCC_MANIFEST.SEQ_KEY_ID).toBigInteger());
+            asccManifest.setSeqKeyId(record.get(ASCC_MANIFEST.SEQ_KEY_ID));
             asccManifest.setFromAccManifestId(record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID));
             asccManifest.setToAsccpManifestId(record.get(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID));
             asccManifest.setConflict((byte) 1 == record.get(ASCC_MANIFEST.CONFLICT));
@@ -241,7 +239,7 @@ public class JooqCcReadRepository
             bccManifest.setBccManifestId(record.get(BCC_MANIFEST.BCC_MANIFEST_ID));
             bccManifest.setReleaseId(record.get(BCC_MANIFEST.RELEASE_ID));
             bccManifest.setBccId(record.get(BCC_MANIFEST.BCC_ID));
-            bccManifest.setSeqKeyId(record.get(BCC_MANIFEST.SEQ_KEY_ID).toBigInteger());
+            bccManifest.setSeqKeyId(record.get(BCC_MANIFEST.SEQ_KEY_ID));
             bccManifest.setFromAccManifestId(record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID));
             bccManifest.setToBccpManifestId(record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID));
             bccManifest.setConflict((byte) 1 == record.get(BCC_MANIFEST.CONFLICT));
@@ -258,7 +256,7 @@ public class JooqCcReadRepository
     private RecordMapper<Record, CcAssociationSequence> mapperSequence() {
         return record -> {
             CcAssociationSequence sequence = new CcAssociationSequence();
-            sequence.setSeqKeyId(record.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
+            sequence.setSeqKeyId(record.get(SEQ_KEY.SEQ_KEY_ID));
             sequence.setFromAccManifestId(record.get(SEQ_KEY.FROM_ACC_MANIFEST_ID));
             if (record.get(SEQ_KEY.ASCC_MANIFEST_ID) != null) {
                 sequence.setAsccManifestId(record.get(SEQ_KEY.ASCC_MANIFEST_ID));
@@ -267,10 +265,10 @@ public class JooqCcReadRepository
                 sequence.setBccManifestId(record.get(SEQ_KEY.BCC_MANIFEST_ID));
             }
             if (record.get(SEQ_KEY.PREV_SEQ_KEY_ID) != null) {
-                sequence.setPrevSeqKeyId(record.get(SEQ_KEY.PREV_SEQ_KEY_ID).toBigInteger());
+                sequence.setPrevSeqKeyId(record.get(SEQ_KEY.PREV_SEQ_KEY_ID));
             }
             if (record.get(SEQ_KEY.NEXT_SEQ_KEY_ID) != null) {
-                sequence.setNextSeqKeyId(record.get(SEQ_KEY.NEXT_SEQ_KEY_ID).toBigInteger());
+                sequence.setNextSeqKeyId(record.get(SEQ_KEY.NEXT_SEQ_KEY_ID));
             }
             return sequence;
         };
@@ -1012,37 +1010,37 @@ public class JooqCcReadRepository
 
         ccPackage.setAccList(selectAcc()
                 .where(ACC.ACC_ID.in(ccPackage.getAccManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getAccId())).distinct()
+                        .map(e -> e.getAccId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperAcc()));
         ccPackage.setAsccList(selectAscc()
                 .where(ASCC.ASCC_ID.in(ccPackage.getAsccManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getAsccId())).distinct()
+                        .map(e -> e.getAsccId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperAscc()));
         ccPackage.setBccList(selectBcc()
                 .where(BCC.BCC_ID.in(ccPackage.getBccManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getBccId())).distinct()
+                        .map(e -> e.getBccId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperBcc()));
         ccPackage.setAsccpList(selectAsccp()
                 .where(ASCCP.ASCCP_ID.in(ccPackage.getAsccpManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getAsccpId())).distinct()
+                        .map(e -> e.getAsccpId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperAsccp()));
         ccPackage.setBccpList(selectBccp()
                 .where(BCCP.BCCP_ID.in(ccPackage.getBccpManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getBccpId())).distinct()
+                        .map(e -> e.getBccpId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperBccp()));
         ccPackage.setDtList(selectDt()
                 .where(DT.DT_ID.in(ccPackage.getDtManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getDtId())).distinct()
+                        .map(e -> e.getDtId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperDt()));
         ccPackage.setDtScList(selectDtSc()
                 .where(DT_SC.DT_SC_ID.in(ccPackage.getDtScManifestList().stream()
-                        .map(e -> ULong.valueOf(e.getDtScId())).distinct()
+                        .map(e -> e.getDtScId()).distinct()
                         .collect(Collectors.toList())))
                 .fetch(mapperDtSc()));
 

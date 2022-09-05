@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class CreateBulkBusinessTermResponse extends Auditable {

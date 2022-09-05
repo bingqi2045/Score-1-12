@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Request;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class AssignBusinessTermRequest extends Request {

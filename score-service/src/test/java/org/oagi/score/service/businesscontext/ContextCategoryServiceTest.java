@@ -2,7 +2,6 @@ package org.oagi.score.service.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -11,7 +10,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.AbstractServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

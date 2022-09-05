@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.release_management.service;
 import com.google.gson.stream.JsonWriter;
 import org.jooq.*;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.release_management.data.MigrationMetadata;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.Zip;
@@ -25,8 +24,8 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -321,7 +320,7 @@ public class MigrationService {
         writeInsertStatements(writer, MODULE_BLOB_CONTENT_MANIFEST, null);
 
         writeInsertStatements(writer, LOG, null);
-        writeInsertStatements(writer, SEQ_KEY, SEQ_KEY.SEQ_KEY_ID.lessOrEqual(ULong.valueOf(metadata.getMaxSeqKeyId())));
+        writeInsertStatements(writer, SEQ_KEY, null);
         writeInsertStatements(writer, NAMESPACE, null);
         writeInsertStatements(writer, RELEASE, null);
 

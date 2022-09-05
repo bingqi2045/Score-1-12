@@ -3,8 +3,6 @@ package org.oagi.score.repo.component.bbiep;
 import lombok.Data;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
-
 @Data
 public class BbiepNode {
 

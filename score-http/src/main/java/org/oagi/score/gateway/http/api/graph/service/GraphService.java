@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.graph.service;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.graph.data.FindUsagesRequest;
 import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
 import org.oagi.score.gateway.http.api.graph.data.Graph;
@@ -20,7 +19,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;

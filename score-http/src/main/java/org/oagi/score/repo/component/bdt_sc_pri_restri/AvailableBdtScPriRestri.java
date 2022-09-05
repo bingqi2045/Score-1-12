@@ -2,8 +2,6 @@ package org.oagi.score.repo.component.bdt_sc_pri_restri;
 
 import lombok.Data;
 
-import java.math.BigInteger;
-
 @Data
 public class AvailableBdtScPriRestri {
 

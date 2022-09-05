@@ -4,7 +4,6 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record8;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.agency_id_management.service.AgencyIdService;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 

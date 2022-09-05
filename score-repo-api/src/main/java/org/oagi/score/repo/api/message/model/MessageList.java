@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.message.model;
 
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 public class MessageList {

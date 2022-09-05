@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 public class ContextScheme extends Auditable {

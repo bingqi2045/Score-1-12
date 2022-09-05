@@ -50,9 +50,9 @@ import com.sun.xml.xsom.visitor.XSContentTypeFunction;
 import com.sun.xml.xsom.visitor.XSContentTypeVisitor;
 import com.sun.xml.xsom.visitor.XSFunction;
 import com.sun.xml.xsom.visitor.XSVisitor;
-import java.math.BigInteger;
 import org.xml.sax.Locator;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class ParticleImpl extends ComponentImpl implements XSParticle, ContentTypeImpl

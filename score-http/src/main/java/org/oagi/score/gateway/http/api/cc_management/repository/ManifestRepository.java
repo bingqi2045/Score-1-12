@@ -1,12 +1,10 @@
 package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;

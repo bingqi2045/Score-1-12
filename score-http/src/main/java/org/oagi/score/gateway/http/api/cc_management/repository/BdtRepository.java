@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BdtPriRestri;
 import org.oagi.score.data.BdtScPriRestri;
 import org.oagi.score.data.DT;

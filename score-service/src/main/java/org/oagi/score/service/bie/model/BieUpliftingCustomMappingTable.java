@@ -5,7 +5,6 @@ import org.oagi.score.repo.api.corecomponent.model.AsccpManifest;
 import org.oagi.score.repo.api.corecomponent.model.BccManifest;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

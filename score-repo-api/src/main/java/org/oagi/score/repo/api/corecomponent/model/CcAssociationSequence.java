@@ -1,10 +1,8 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
-import java.math.BigInteger;
-
 public class CcAssociationSequence {
 
-    private BigInteger seqKeyId;
+    private String seqKeyId;
 
     private String fromAccManifestId;
 
@@ -12,15 +10,15 @@ public class CcAssociationSequence {
 
     private String bccManifestId;
 
-    private BigInteger prevSeqKeyId;
+    private String prevSeqKeyId;
 
-    private BigInteger nextSeqKeyId;
+    private String nextSeqKeyId;
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 
-    public void setSeqKeyId(BigInteger seqKeyId) {
+    public void setSeqKeyId(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 
@@ -48,19 +46,19 @@ public class CcAssociationSequence {
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getPrevSeqKeyId() {
+    public String getPrevSeqKeyId() {
         return prevSeqKeyId;
     }
 
-    public void setPrevSeqKeyId(BigInteger prevSeqKeyId) {
+    public void setPrevSeqKeyId(String prevSeqKeyId) {
         this.prevSeqKeyId = prevSeqKeyId;
     }
 
-    public BigInteger getNextSeqKeyId() {
+    public String getNextSeqKeyId() {
         return nextSeqKeyId;
     }
 
-    public void setNextSeqKeyId(BigInteger nextSeqKeyId) {
+    public void setNextSeqKeyId(String nextSeqKeyId) {
         this.nextSeqKeyId = nextSeqKeyId;
     }
 }

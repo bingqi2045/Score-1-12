@@ -1,7 +1,6 @@
 package org.oagi.score.repo.component.asbie;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
@@ -15,7 +14,6 @@ import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

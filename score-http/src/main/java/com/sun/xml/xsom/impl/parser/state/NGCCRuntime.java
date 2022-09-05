@@ -39,16 +39,12 @@
  */
 package com.sun.xml.xsom.impl.parser.state;
 
+import org.xml.sax.*;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.StringTokenizer;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Runtime Engine for RELAXNGCC execution.

@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -174,9 +173,9 @@ public class GenerationContext implements InitializingBean {
     public static class SeqKey implements SeqKeySupportable {
         private String key;
         private String state;
-        private BigInteger seqKeyId;
-        private BigInteger prevSeqKeyId;
-        private BigInteger nextSeqKeyId;
+        private String seqKeyId;
+        private String prevSeqKeyId;
+        private String nextSeqKeyId;
         private String toAsccpManifestId;
     }
 

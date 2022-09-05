@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.impl.jooq.message;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.MessageRecord;
@@ -10,10 +9,10 @@ import org.oagi.score.repo.api.message.model.SendMessageRequest;
 import org.oagi.score.repo.api.message.model.SendMessageResponse;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MESSAGE;
 
@@ -31,6 +30,7 @@ public class JooqMessageWriteRepository
         Map<ScoreUser, String> messageIds = new HashMap();
         for (ScoreUser recipient : request.getRecipients()) {
             MessageRecord message = new MessageRecord();
+            message.setMessageId(UUID.randomUUID().toString());
             message.setSenderId(sender.getUserId());
             message.setRecipientId(recipient.getUserId());
             message.setSubject(request.getSubject());
@@ -38,10 +38,12 @@ public class JooqMessageWriteRepository
             message.setBodyContentType(request.getBodyContentType());
             message.setIsRead((byte) 0);
             message.setCreationTimestamp(LocalDateTime.now());
-            String messageId = dslContext().insertInto(MESSAGE)
+
+            dslContext().insertInto(MESSAGE)
                     .set(message)
-                    .returning(MESSAGE.MESSAGE_ID)
-                    .fetchOne().getMessageId();
+                    .execute();
+
+            String messageId = message.getMessageId();
             messageIds.put(recipient, messageId);
         }
 

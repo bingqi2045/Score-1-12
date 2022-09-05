@@ -2,8 +2,6 @@ package org.oagi.score.gateway.http.api.namespace_management.data;
 
 import lombok.Data;
 
-import java.math.BigInteger;
-
 @Data
 public class Namespace {
 

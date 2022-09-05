@@ -1,7 +1,5 @@
 package org.oagi.score.repo.api.bie.model;
 
-import java.math.BigInteger;
-
 public class Asbie implements BieAssociation {
 
     private String asbieId;

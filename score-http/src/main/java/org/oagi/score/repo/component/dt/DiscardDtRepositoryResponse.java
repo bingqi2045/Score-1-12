@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.dt;
 
-import java.math.BigInteger;
-
 public class DiscardDtRepositoryResponse {
 
     private final String dtManifestId;

@@ -3,7 +3,6 @@ package org.oagi.score.data;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 
 @Data

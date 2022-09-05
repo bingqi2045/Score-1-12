@@ -3,8 +3,6 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class GetCcPackageRequest extends Request {
 
     private String asccpManifestId;

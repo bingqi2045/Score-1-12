@@ -2,14 +2,12 @@ package org.oagi.score.gateway.http.api.agency_id_management.service;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.agency_id_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.agency.model.AgencyIdList;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListRequest;
 import org.oagi.score.repo.api.agency.model.GetAgencyIdListListResponse;
-
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValueRecord;
 import org.oagi.score.repo.api.user.model.ScoreRole;
@@ -21,9 +19,10 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -105,7 +104,7 @@ public class AgencyIdService {
                 .on(and(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID),
                         AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(
-                        simpleAgencyIdLists.stream().map(e -> ULong.valueOf(e.getAgencyIdListManifestId())).collect(Collectors.toList())
+                        simpleAgencyIdLists.stream().map(e -> e.getAgencyIdListManifestId()).collect(Collectors.toList())
                 ))
                 .fetchStreamInto(SimpleAgencyIdListValue.class)
                 .sorted(Comparator.comparing(SimpleAgencyIdListValue::getName))

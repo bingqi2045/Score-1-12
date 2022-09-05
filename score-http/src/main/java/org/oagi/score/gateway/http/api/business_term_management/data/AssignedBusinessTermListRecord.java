@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.business_term_management.data;
 import lombok.Data;
 import org.oagi.score.repo.api.businesscontext.model.BusinessContext;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data

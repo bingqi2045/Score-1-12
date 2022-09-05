@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 

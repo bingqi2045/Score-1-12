@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oagi.score.redis.event.Event;
 
-import java.math.BigInteger;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,17 +1,14 @@
 package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.agency.model.AgencyIdList;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.model.BdtPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.BdtScPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.CodeList;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

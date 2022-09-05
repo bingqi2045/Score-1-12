@@ -3,7 +3,6 @@ package org.oagi.score.data;
 import lombok.Data;
 import org.oagi.score.repo.api.bie.model.BieState;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 @Data

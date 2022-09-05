@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.bie.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
-
 public class CreateBieResponse extends Response {
 
     private String topLevelAsbiepId;

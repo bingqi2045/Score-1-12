@@ -1,15 +1,15 @@
 package org.oagi.score.repository;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record12;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.data.DTSC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository

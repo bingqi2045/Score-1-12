@@ -5,8 +5,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
-
 @Repository
 public class GraphContextRepository {
 

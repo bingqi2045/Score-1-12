@@ -1,23 +1,21 @@
 package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
 import org.oagi.score.repo.api.base.PaginationRequest;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryReadRepository;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxCategoryRecord;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ContextCategoryReadRepositoryTest
@@ -25,12 +23,12 @@ public class ContextCategoryReadRepositoryTest
 
     private ContextCategoryReadRepository repository;
     private ScoreUser requester;
-    private List<BigInteger> contextCategoryIds = new ArrayList();
+    private List<String> contextCategoryIds = new ArrayList();
 
     @BeforeAll
     void setUp() {
         repository = scoreRepositoryFactory().createContextCategoryReadRepository();
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
 
         int cnt = 20;
         for (int i = 0; i < cnt; ++i) {
@@ -64,7 +62,7 @@ public class ContextCategoryReadRepositoryTest
 
         ContextCategory contextCategory = response.getContextCategory();
         CtxCategoryRecord record = dslContext().selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                 .fetchOptional().orElse(null);
 
         assertNotNull(record);
@@ -92,7 +90,7 @@ public class ContextCategoryReadRepositoryTest
 
         for (ContextCategory contextCategory : response.getResults()) {
             CtxCategoryRecord record = dslContext().selectFrom(CTX_CATEGORY)
-                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                     .fetchOptional().orElse(null);
 
             assertNotNull(record);

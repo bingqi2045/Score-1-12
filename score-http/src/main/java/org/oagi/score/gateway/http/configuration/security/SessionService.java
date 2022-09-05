@@ -16,7 +16,6 @@ import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.Map;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;

@@ -3,7 +3,6 @@ package org.oagi.score.gateway.http.api.cc_management.controller;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
@@ -21,8 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.fail;

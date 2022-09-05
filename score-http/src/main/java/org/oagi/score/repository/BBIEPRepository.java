@@ -1,17 +1,14 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BBIEP;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class BBIEPRepository implements ScoreRepository<BBIEP, String> {

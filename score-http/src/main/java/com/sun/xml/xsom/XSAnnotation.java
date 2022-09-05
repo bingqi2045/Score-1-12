@@ -40,8 +40,8 @@
 
 package com.sun.xml.xsom;
 
-import org.xml.sax.Locator;
 import com.sun.xml.xsom.parser.AnnotationParser;
+import org.xml.sax.Locator;
 
 /**
  * <a href="http://www.w3.org/TR/xmlschema-1/#Annotation_details">

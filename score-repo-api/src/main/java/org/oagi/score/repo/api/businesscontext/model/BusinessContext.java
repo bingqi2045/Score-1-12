@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 

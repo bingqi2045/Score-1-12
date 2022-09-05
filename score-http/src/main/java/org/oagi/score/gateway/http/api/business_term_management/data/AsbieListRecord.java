@@ -5,7 +5,6 @@ import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.businesscontext.model.BusinessContext;
 import org.oagi.score.service.common.data.AccessPrivilege;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data

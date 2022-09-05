@@ -1,10 +1,7 @@
 package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Auditable;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-import java.util.Date;
 import java.util.Objects;
 
 public class BieToAssign extends Auditable {

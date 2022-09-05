@@ -1,14 +1,13 @@
 package org.oagi.score.repo.component.code_list;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -129,6 +128,7 @@ public class CodeListWriteRepository {
                 .execute();
 
         CodeListManifestRecord codeListManifest = new CodeListManifestRecord();
+        codeListManifest.setCodeListManifestId(UUID.randomUUID().toString());
         codeListManifest.setCodeListId(codeList.getCodeListId());
         codeListManifest.setReleaseId(request.getReleaseId());
         if (basedCodeListManifestRecord != null) {
@@ -136,9 +136,9 @@ public class CodeListWriteRepository {
         }
         codeListManifest.setAgencyIdListValueManifestId(agencyIdListValueManifestRecord.getAgencyIdListValueManifestId());
 
-        codeListManifest = dslContext.insertInto(CODE_LIST_MANIFEST)
+        dslContext.insertInto(CODE_LIST_MANIFEST)
                 .set(codeListManifest)
-                .returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).fetchOne();
+                .execute();
 
         if (basedCodeListValueManifestList != null) {
             for (CodeListValueManifestRecord basedCodeListValueManifest : basedCodeListValueManifestList) {
@@ -148,6 +148,7 @@ public class CodeListWriteRepository {
                         .fetchOne();
 
                 CodeListValueRecord codeListValueRecord = basedCodeListValue.copy();
+                codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
                 codeListValueRecord.setCodeListId(codeList.getCodeListId());
                 codeListValueRecord.setGuid(ScoreGuid.randomGuid());
                 codeListValueRecord.setBasedCodeListValueId(basedCodeListValue.getCodeListValueId());
@@ -159,13 +160,12 @@ public class CodeListWriteRepository {
                 codeListValueRecord.setPrevCodeListValueId(null);
                 codeListValueRecord.setNextCodeListValueId(null);
 
-                codeListValueRecord.setCodeListValueId(
-                        dslContext.insertInto(CODE_LIST_VALUE)
-                                .set(codeListValueRecord)
-                                .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId()
-                );
+                dslContext.insertInto(CODE_LIST_VALUE)
+                        .set(codeListValueRecord)
+                        .execute();
 
                 CodeListValueManifestRecord codeListValueManifestRecord = basedCodeListValueManifest.copy();
+                codeListValueManifestRecord.setCodeListValueManifestId(UUID.randomUUID().toString());
                 codeListValueManifestRecord.setReleaseId(request.getReleaseId());
                 codeListValueManifestRecord.setCodeListValueId(codeListValueRecord.getCodeListValueId());
                 codeListValueManifestRecord.setCodeListManifestId(codeListManifest.getCodeListManifestId());
@@ -394,16 +394,14 @@ public class CodeListWriteRepository {
 
             CodeListValueManifestRecord codeListValueManifestRecord = new CodeListValueManifestRecord();
 
+            codeListValueManifestRecord.setCodeListValueManifestId(UUID.randomUUID().toString());
             codeListValueManifestRecord.setReleaseId(codeListManifestRecord.getReleaseId());
             codeListValueManifestRecord.setCodeListValueId(codeListValueRecord.getCodeListValueId());
             codeListValueManifestRecord.setCodeListManifestId(codeListManifestRecord.getCodeListManifestId());
 
-            codeListValueManifestRecord.setCodeListValueManifestId(
-                    dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
-                            .set(codeListValueManifestRecord)
-                            .returning(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID)
-                            .fetchOne().getCodeListValueManifestId()
-            );
+            dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
+                    .set(codeListValueManifestRecord)
+                    .execute();
         }
     }
 
@@ -618,6 +616,7 @@ public class CodeListWriteRepository {
         }
 
         CodeListRecord nextCodeListRecord = prevCodeListRecord.copy();
+        nextCodeListRecord.setCodeListId(UUID.randomUUID().toString());
         nextCodeListRecord.setState(CcState.WIP.name());
         nextCodeListRecord.setVersionId(nextCodeListRecord.getVersionId());
         nextCodeListRecord.setCreatedBy(userId);
@@ -626,11 +625,9 @@ public class CodeListWriteRepository {
         nextCodeListRecord.setCreationTimestamp(timestamp);
         nextCodeListRecord.setLastUpdateTimestamp(timestamp);
         nextCodeListRecord.setPrevCodeListId(prevCodeListRecord.getCodeListId());
-        nextCodeListRecord.setCodeListId(
-                dslContext.insertInto(CODE_LIST)
-                        .set(nextCodeListRecord)
-                        .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getCodeListId()
-        );
+        dslContext.insertInto(CODE_LIST)
+                .set(nextCodeListRecord)
+                .execute();
 
         prevCodeListRecord.setNextCodeListId(nextCodeListRecord.getCodeListId());
         prevCodeListRecord.update(CODE_LIST.NEXT_CODE_LIST_ID);
@@ -776,6 +773,7 @@ public class CodeListWriteRepository {
                     .fetchOne();
 
             CodeListValueRecord nextCodeListValueRecord = prevCodeListValueRecord.copy();
+            nextCodeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
             nextCodeListValueRecord.setCodeListId(nextCodeListRecord.getCodeListId());
             nextCodeListValueRecord.setCreatedBy(user.getAppUserId());
             nextCodeListValueRecord.setLastUpdatedBy(user.getAppUserId());
@@ -783,11 +781,9 @@ public class CodeListWriteRepository {
             nextCodeListValueRecord.setCreationTimestamp(timestamp);
             nextCodeListValueRecord.setLastUpdateTimestamp(timestamp);
             nextCodeListValueRecord.setPrevCodeListValueId(prevCodeListValueRecord.getCodeListValueId());
-            nextCodeListValueRecord.setCodeListValueId(
-                    dslContext.insertInto(CODE_LIST_VALUE)
-                            .set(nextCodeListValueRecord)
-                            .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId()
-            );
+            dslContext.insertInto(CODE_LIST_VALUE)
+                    .set(nextCodeListValueRecord)
+                    .execute();
 
             prevCodeListValueRecord.setNextCodeListValueId(nextCodeListValueRecord.getCodeListValueId());
             prevCodeListValueRecord.update(CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID);

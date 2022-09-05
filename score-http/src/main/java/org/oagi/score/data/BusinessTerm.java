@@ -3,7 +3,6 @@ package org.oagi.score.data;
 import lombok.Data;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 @Data
 public class BusinessTerm {

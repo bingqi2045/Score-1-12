@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.impl.jooq.bie;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieWriteRepository;
 import org.oagi.score.repo.api.bie.model.*;
@@ -10,7 +9,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -84,6 +82,7 @@ public class JooqBieWriteRepository
         String userId = request.getRequester().getUserId();
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = new TopLevelAsbiepRecord();
+        topLevelAsbiepRecord.setTopLevelAsbiepId(UUID.randomUUID().toString());
         topLevelAsbiepRecord.setReleaseId(dslContext().select(ASCCP_MANIFEST.RELEASE_ID)
                 .from(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
@@ -97,11 +96,10 @@ public class JooqBieWriteRepository
         topLevelAsbiepRecord.setLastUpdatedBy(userId);
         topLevelAsbiepRecord.setLastUpdateTimestamp(LocalDateTime.now());
 
-        topLevelAsbiepRecord.setTopLevelAsbiepId(
-                dslContext().insertInto(TOP_LEVEL_ASBIEP)
-                        .set(topLevelAsbiepRecord)
-                        .returning(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
-                        .fetchOne().getTopLevelAsbiepId());
+        dslContext().insertInto(TOP_LEVEL_ASBIEP)
+                .set(topLevelAsbiepRecord)
+                .execute();
+
         return topLevelAsbiepRecord;
     }
 

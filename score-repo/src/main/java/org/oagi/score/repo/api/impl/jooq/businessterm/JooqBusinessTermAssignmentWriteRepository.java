@@ -2,12 +2,14 @@ package org.oagi.score.repo.api.impl.jooq.businessterm;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.BusinessTermAssignmentWriteRepository;
 import org.oagi.score.repo.api.businessterm.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieBiztermRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccBiztermRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieBiztermRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccBiztermRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -45,6 +48,7 @@ public class JooqBusinessTermAssignmentWriteRepository
             if (bieToAssign.getBieType().equals("ASBIE")) {
                 String asccId = findCcIdByBie(bieToAssign);
                 AsccBiztermRecord asccBiztermRecord = new AsccBiztermRecord();
+                asccBiztermRecord.setAsccBiztermId(UUID.randomUUID().toString());
                 asccBiztermRecord.setAsccId(asccId);
                 asccBiztermRecord.setBusinessTermId(request.getBusinessTermId());
                 asccBiztermRecord.setCreatedBy(requesterUserId);
@@ -55,10 +59,10 @@ public class JooqBusinessTermAssignmentWriteRepository
                 String asccBizTermRecordId;
                 asccBizTermRecordId = getAsccBizTermRecordId(asccBiztermRecord.getBusinessTermId(), asccBiztermRecord.getAsccId());
                 if (asccBizTermRecordId == null) {
-                    asccBizTermRecordId = dslContext().insertInto(ASCC_BIZTERM)
+                    dslContext().insertInto(ASCC_BIZTERM)
                             .set(asccBiztermRecord)
-                            .returning(ASCC_BIZTERM.ASCC_BIZTERM_ID)
-                            .fetchOne().getAsccBiztermId();
+                            .execute();
+                    asccBizTermRecordId = asccBiztermRecord.getAsccBiztermId();
                 }
 
                 if (request.getPrimaryIndicator().equals("1")) {
@@ -66,6 +70,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                             request.getTypeCode(), requesterUserId);
                 }
                 AsbieBiztermRecord asbieBiztermRecord = new AsbieBiztermRecord();
+                asbieBiztermRecord.setAsbieBiztermId(UUID.randomUUID().toString());
                 asbieBiztermRecord.setAsbieId(bieToAssign.getBieId());
                 asbieBiztermRecord.setAsccBiztermId(asccBizTermRecordId);
                 asbieBiztermRecord.setPrimaryIndicator(request.getPrimaryIndicator());
@@ -74,14 +79,17 @@ public class JooqBusinessTermAssignmentWriteRepository
                 asbieBiztermRecord.setLastUpdatedBy(requesterUserId);
                 asbieBiztermRecord.setCreationTimestamp(timestamp);
                 asbieBiztermRecord.setLastUpdateTimestamp(timestamp);
-                String asbieBizTermRecordId = dslContext().insertInto(ASBIE_BIZTERM)
+
+                dslContext().insertInto(ASBIE_BIZTERM)
                         .set(asbieBiztermRecord)
-                        .returning(ASBIE_BIZTERM.ASBIE_BIZTERM_ID)
-                        .fetchOne().getAsbieBiztermId();
+                        .execute();
+
+                String asbieBizTermRecordId = asbieBiztermRecord.getAsbieBiztermId();
                 return asbieBizTermRecordId;
             } else if (bieToAssign.getBieType().equals("BBIE")) {
                 String bccId = findCcIdByBie(bieToAssign);
                 BccBiztermRecord bccBiztermRecord = new BccBiztermRecord();
+                bccBiztermRecord.setBccBiztermId(UUID.randomUUID().toString());
                 bccBiztermRecord.setBccId(bccId);
                 bccBiztermRecord.setBusinessTermId(request.getBusinessTermId());
                 bccBiztermRecord.setCreatedBy(requesterUserId);
@@ -92,17 +100,20 @@ public class JooqBusinessTermAssignmentWriteRepository
                 String bccBizTermRecordId;
                 bccBizTermRecordId = getBccBizTermRecordId(bccBiztermRecord.getBusinessTermId(), bccBiztermRecord.getBccId());
                 if (bccBizTermRecordId == null) {
-                    bccBizTermRecordId = dslContext().insertInto(BCC_BIZTERM)
+                    dslContext().insertInto(BCC_BIZTERM)
                             .set(bccBiztermRecord)
-                            .returning(BCC_BIZTERM.BCC_BIZTERM_ID)
-                            .fetchOne().getBccBiztermId();
+                            .execute();
+
+                    bccBizTermRecordId = bccBiztermRecord.getBccBiztermId();
                 }
 
                 if (request.getPrimaryIndicator().equals("1")) {
                     updateOtherBieBiztermToNotPrimary(bieToAssign.getBieId(), bieToAssign.getBieType(),
                             request.getTypeCode(), requesterUserId);
                 }
+
                 BbieBiztermRecord bbieBizTermRecord = new BbieBiztermRecord();
+                bbieBizTermRecord.setBbieBiztermId(UUID.randomUUID().toString());
                 bbieBizTermRecord.setBbieId(bieToAssign.getBieId());
                 bbieBizTermRecord.setBccBiztermId(bccBizTermRecordId);
                 bbieBizTermRecord.setPrimaryIndicator(request.getPrimaryIndicator());
@@ -111,10 +122,12 @@ public class JooqBusinessTermAssignmentWriteRepository
                 bbieBizTermRecord.setLastUpdatedBy(requesterUserId);
                 bbieBizTermRecord.setCreationTimestamp(timestamp);
                 bbieBizTermRecord.setLastUpdateTimestamp(timestamp);
-                String bbieBiztermRecordId = dslContext().insertInto(BBIE_BIZTERM)
+
+                dslContext().insertInto(BBIE_BIZTERM)
                         .set(bbieBizTermRecord)
-                        .returning(BBIE_BIZTERM.BBIE_BIZTERM_ID)
-                        .fetchOne().getBbieBiztermId();
+                        .execute();
+
+                String bbieBiztermRecordId = bbieBizTermRecord.getBbieBiztermId();
                 return bbieBiztermRecordId;
             } else throw new ScoreDataAccessException("Wrong BIE type");
         }).collect(Collectors.toList());

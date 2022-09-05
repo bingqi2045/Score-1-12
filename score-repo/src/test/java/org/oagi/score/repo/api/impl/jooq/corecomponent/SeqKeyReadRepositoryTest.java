@@ -1,6 +1,5 @@
 package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
 import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
@@ -16,7 +15,6 @@ import java.util.List;
 
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 
@@ -30,7 +28,7 @@ public class SeqKeyReadRepositoryTest
     @BeforeAll
     void setUp() {
         repository = scoreRepositoryFactory().createSeqKeyReadRepository();
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
     }
 
     @Test

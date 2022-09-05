@@ -5,8 +5,6 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public interface AgencyIdListWriteRepository {
     String createAgencyIdList(ScoreUser user, String releaseId, String basedAgencyIdListManifestId) throws ScoreDataAccessException;
     AgencyIdList updateAgencyIdListProperty(ScoreUser user, AgencyIdList agencyIdList) throws ScoreDataAccessException;

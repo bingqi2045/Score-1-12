@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class BdtScPriRestri implements Serializable {
 

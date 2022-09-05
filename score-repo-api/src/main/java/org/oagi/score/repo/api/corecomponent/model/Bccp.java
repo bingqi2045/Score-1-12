@@ -4,7 +4,6 @@ import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Bccp extends Auditable implements CoreComponent, Serializable {
 

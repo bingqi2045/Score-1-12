@@ -2,7 +2,6 @@ package org.oagi.score.service.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.AbstractServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,7 +36,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
     @BeforeAll
     void setUp() {
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
     }
 
     @Test
@@ -70,7 +68,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertNotNull(response.getContextSchemeId());
 
         CtxSchemeRecord ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .fetchOne();
 
         assertEquals(request.getSchemeId(), ctxCategoryRecord.getSchemeId());
@@ -115,7 +113,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertNotNull(response.getContextSchemeId());
 
         CtxSchemeRecord ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .fetchOne();
 
         assertEquals(request.getSchemeId(), ctxCategoryRecord.getSchemeId());
@@ -125,7 +123,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertEquals(request.getDescription(), ctxCategoryRecord.getDescription());
 
         List<CtxSchemeValueRecord> ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .orderBy(CTX_SCHEME_VALUE.GUID.asc())
                 .fetch();
 
@@ -155,7 +153,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
             String contextCategoryId = response.getContextCategoryId();
 
-            BigInteger contextSchemeId =
+            String contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
                             .withContextCategoryId(contextCategoryId)
                             .withSchemeId(RandomStringUtils.randomAlphanumeric(45))
@@ -172,11 +170,11 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .getContextSchemeId();
 
             ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(contextSchemeId))
                     .fetchOne();
 
             ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextSchemeId))
                     .orderBy(CTX_SCHEME_VALUE.GUID.asc())
                     .fetch();
         }
@@ -185,7 +183,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
         List<ContextSchemeValue> updateContextSchemeValueList = new ArrayList();
         ContextSchemeValue contextSchemeValue1 = new ContextSchemeValue(); // Update
-        contextSchemeValue1.setContextSchemeValueId(ctxSchemeValueRecordList.get(0).getCtxSchemeValueId().toBigInteger());
+        contextSchemeValue1.setContextSchemeValueId(ctxSchemeValueRecordList.get(0).getCtxSchemeValueId());
         contextSchemeValue1.setGuid(ctxSchemeValueRecordList.get(0).getGuid());
         contextSchemeValue1.setValue(RandomStringUtils.randomAlphanumeric(100));
         contextSchemeValue1.setMeaning(RandomStringUtils.randomAlphanumeric(200));
@@ -197,7 +195,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         updateContextSchemeValueList.add(contextSchemeValue2);
 
         UpdateContextSchemeRequest request = new UpdateContextSchemeRequest(requester)
-                .withContextSchemeId(ctxCategoryRecord.getCtxSchemeId().toBigInteger())
+                .withContextSchemeId(ctxCategoryRecord.getCtxSchemeId())
                 .withSchemeId(RandomStringUtils.randomAlphanumeric(45))
                 .withSchemeName(RandomStringUtils.randomAlphanumeric(255))
                 .withSchemeAgencyId(RandomStringUtils.randomAlphanumeric(45))
@@ -212,7 +210,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertNotNull(response.getContextSchemeId());
 
         ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .fetchOne();
 
         assertEquals(request.getSchemeId(), ctxCategoryRecord.getSchemeId());
@@ -222,7 +220,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertEquals(request.getDescription(), ctxCategoryRecord.getDescription());
 
         ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .orderBy(CTX_SCHEME_VALUE.GUID.asc())
                 .fetch();
 
@@ -252,7 +250,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
             String contextCategoryId = response.getContextCategoryId();
 
-            BigInteger contextSchemeId =
+            String contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
                             .withContextCategoryId(contextCategoryId)
                             .withSchemeId(RandomStringUtils.randomAlphanumeric(45))
@@ -269,16 +267,16 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .getContextSchemeId();
 
             ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(contextSchemeId))
                     .fetchOne();
 
             ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextSchemeId))
                     .orderBy(CTX_SCHEME_VALUE.GUID.asc())
                     .fetch();
         }
 
-        BigInteger contextSchemeId = ctxCategoryRecord.getCtxSchemeId().toBigInteger();
+        String contextSchemeId = ctxCategoryRecord.getCtxSchemeId();
         DeleteContextSchemeRequest request = new DeleteContextSchemeRequest(requester)
                 .withContextSchemeId(contextSchemeId);
 
@@ -289,13 +287,13 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
         assertNotNull(response.contains(contextSchemeId));
 
         ctxCategoryRecord = dslContext.selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(contextSchemeId))
                 .fetchOptional().orElse(null);
 
         assertNull(ctxCategoryRecord);
 
         ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq((ULong.valueOf(contextSchemeId))))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq((contextSchemeId)))
                 .fetch();
 
         assertTrue(ctxSchemeValueRecordList.isEmpty());
@@ -313,7 +311,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
             String contextCategoryId = response.getContextCategoryId();
 
-            BigInteger contextSchemeId =
+            String contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
                             .withContextCategoryId(contextCategoryId)
                             .withSchemeId(RandomStringUtils.randomAlphanumeric(45))
@@ -330,16 +328,16 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
                             .getContextSchemeId();
 
             ctxSchemeRecord = dslContext.selectFrom(CTX_SCHEME)
-                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME.CTX_SCHEME_ID.eq(contextSchemeId))
                     .fetchOne();
 
             ctxSchemeValueRecordList = dslContext.selectFrom(CTX_SCHEME_VALUE)
-                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeId)))
+                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextSchemeId))
                     .orderBy(CTX_SCHEME_VALUE.GUID.asc())
                     .fetch();
         }
 
-        BigInteger contextSchemeId = ctxSchemeRecord.getCtxSchemeId().toBigInteger();
+        String contextSchemeId = ctxSchemeRecord.getCtxSchemeId();
         GetContextSchemeRequest request = new GetContextSchemeRequest(requester)
                 .withContextSchemeId(contextSchemeId);
 
@@ -381,7 +379,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
             String contextCategoryId = response.getContextCategoryId();
 
-            BigInteger contextSchemeId =
+            String contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
                             .withContextCategoryId(contextCategoryId)
                             .withSchemeId(RandomStringUtils.randomAlphanumeric(45))
@@ -435,7 +433,7 @@ public class ContextSchemeServiceTest extends AbstractServiceTest {
 
             String contextCategoryId = response.getContextCategoryId();
 
-            BigInteger contextSchemeId =
+            String contextSchemeId =
                     contextSchemeService.createContextScheme(new CreateContextSchemeRequest(requester)
                             .withContextCategoryId(contextCategoryId)
                             .withSchemeId(RandomStringUtils.randomAlphanumeric(45))

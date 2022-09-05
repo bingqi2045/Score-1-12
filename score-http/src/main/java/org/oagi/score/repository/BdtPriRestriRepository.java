@@ -3,14 +3,12 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record6;
 import org.jooq.SelectJoinStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BdtPriRestri;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository

@@ -2,11 +2,9 @@ package org.oagi.score.repo.component.bdt_sc_pri_restri;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;

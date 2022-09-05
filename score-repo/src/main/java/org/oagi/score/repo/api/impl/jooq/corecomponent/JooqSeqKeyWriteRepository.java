@@ -3,15 +3,15 @@ package org.oagi.score.repo.api.impl.jooq.corecomponent;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetStep;
 import org.jooq.UpdateWhereStep;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 
-import java.math.BigInteger;
+import java.util.UUID;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
@@ -30,6 +30,7 @@ public class JooqSeqKeyWriteRepository
     public CreateSeqKeyResponse createSeqKey(CreateSeqKeyRequest request) throws ScoreDataAccessException {
 
         SeqKeyRecord record = new SeqKeyRecord();
+        record.setSeqKeyId(UUID.randomUUID().toString());
         record.setFromAccManifestId(request.getFromAccManifestId());
         if (SeqKeyType.ASCC == request.getType()) {
             record.setAsccManifestId(request.getManifestId());
@@ -37,12 +38,9 @@ public class JooqSeqKeyWriteRepository
             record.setBccManifestId(request.getManifestId());
         }
 
-        record.setSeqKeyId(
-                dslContext().insertInto(SEQ_KEY)
-                        .set(record)
-                        .returning(SEQ_KEY.SEQ_KEY_ID)
-                        .fetchOne().getSeqKeyId()
-        );
+        dslContext().insertInto(SEQ_KEY)
+                .set(record)
+                .execute();
 
         switch (request.getType()) {
             case ASCC:
@@ -61,7 +59,7 @@ public class JooqSeqKeyWriteRepository
         }
 
         SeqKey seqKey = new SeqKey();
-        seqKey.setSeqKeyId(record.getSeqKeyId().toBigInteger());
+        seqKey.setSeqKeyId(record.getSeqKeyId());
         seqKey.setFromAccManifestId(record.getFromAccManifestId());
         if (record.getAsccManifestId() != null) {
             seqKey.setAsccManifestId(record.getAsccManifestId());
@@ -73,14 +71,7 @@ public class JooqSeqKeyWriteRepository
         return new CreateSeqKeyResponse(seqKey);
     }
 
-    private void setPrev(BigInteger key, BigInteger prev) {
-        if (key == null) {
-            return;
-        }
-        setPrev(ULong.valueOf(key), (prev != null) ? ULong.valueOf(prev) : null);
-    }
-
-    private void setPrev(ULong key, ULong prev) {
+    private void setPrev(String key, String prev) {
         if (key != null) {
             if (prev != null) {
                 dslContext().update(SEQ_KEY)
@@ -96,14 +87,7 @@ public class JooqSeqKeyWriteRepository
         }
     }
 
-    private void setNext(BigInteger key, BigInteger next) {
-        if (key == null) {
-            return;
-        }
-        setNext(ULong.valueOf(key), (next != null) ? ULong.valueOf(next) : null);
-    }
-
-    private void setNext(ULong key, ULong next) {
+    private void setNext(String key, String next) {
         if (key != null) {
             if (next != null) {
                 dslContext().update(SEQ_KEY)
@@ -122,8 +106,8 @@ public class JooqSeqKeyWriteRepository
     private void brokeLinks(SeqKey seqKey) {
         SeqKeyRecord record = get(seqKey.getSeqKeyId());
 
-        ULong prev = record.getPrevSeqKeyId();
-        ULong next = record.getNextSeqKeyId();
+        String prev = record.getPrevSeqKeyId();
+        String next = record.getNextSeqKeyId();
 
         setNext(prev, next);
         setPrev(next, prev);
@@ -132,9 +116,12 @@ public class JooqSeqKeyWriteRepository
         setNext(record.getSeqKeyId(), null);
     }
 
-    private SeqKeyRecord get(BigInteger id) {
+    private SeqKeyRecord get(String id) {
+        if (!StringUtils.hasLength(id)) {
+            return null;
+        }
         return dslContext().selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(id)))
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(id))
                 .fetchOne();
     }
 
@@ -148,10 +135,10 @@ public class JooqSeqKeyWriteRepository
 
         // DO NOT change orders of executions.
 
-        BigInteger current = request.getItem().getSeqKeyId();
-        BigInteger after = request.getAfter().getSeqKeyId();
-        BigInteger prev = request.getAfter().getSeqKeyId();
-        BigInteger next = (request.getAfter().getNextSeqKey() != null) ?
+        String current = request.getItem().getSeqKeyId();
+        String after = request.getAfter().getSeqKeyId();
+        String prev = request.getAfter().getSeqKeyId();
+        String next = (request.getAfter().getNextSeqKey() != null) ?
                 request.getAfter().getNextSeqKey().getSeqKeyId() : null;
 
         setPrev(current, prev);
@@ -177,20 +164,20 @@ public class JooqSeqKeyWriteRepository
         if (prev == null) {
             step = step.setNull(SEQ_KEY.PREV_SEQ_KEY_ID);
         } else {
-            step = step.set(SEQ_KEY.PREV_SEQ_KEY_ID, ULong.valueOf(prev.getSeqKeyId()));
+            step = step.set(SEQ_KEY.PREV_SEQ_KEY_ID, prev.getSeqKeyId());
         }
 
         SeqKey next = seqKey.getNextSeqKey();
         if (next == null) {
             step = step.setNull(SEQ_KEY.NEXT_SEQ_KEY_ID);
         } else {
-            step = step.set(SEQ_KEY.NEXT_SEQ_KEY_ID, ULong.valueOf(next.getSeqKeyId()));
+            step = step.set(SEQ_KEY.NEXT_SEQ_KEY_ID, next.getSeqKeyId());
         }
 
         int affectedRows = 0;
         if (step instanceof UpdateWhereStep) {
             affectedRows = ((UpdateWhereStep) step)
-                    .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKey.getSeqKeyId())))
+                    .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey.getSeqKeyId()))
                     .execute();
         }
 
@@ -200,23 +187,23 @@ public class JooqSeqKeyWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteSeqKeyResponse deleteSeqKey(DeleteSeqKeyRequest request) throws ScoreDataAccessException {
-        BigInteger seqKeyId = request.getSeqKeyId();
+        String seqKeyId = request.getSeqKeyId();
         SeqKeyRecord seqKeyRecord = dslContext().selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyId))
                 .fetchOne();
 
         // disconnect links between prev and next
         {
             SeqKeyRecord prev = dslContext().selectFrom(SEQ_KEY)
-                    .where(SEQ_KEY.PREV_SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .where(SEQ_KEY.PREV_SEQ_KEY_ID.eq(seqKeyId))
                     .fetchOptional().orElse(null);
 
             SeqKeyRecord next = dslContext().selectFrom(SEQ_KEY)
-                    .where(SEQ_KEY.NEXT_SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .where(SEQ_KEY.NEXT_SEQ_KEY_ID.eq(seqKeyId))
                     .fetchOptional().orElse(null);
 
             SeqKeyRecord current = dslContext().selectFrom(SEQ_KEY)
-                    .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyId))
                     .fetchOptional().orElse(null);
 
             if (prev != null) {
@@ -247,7 +234,7 @@ public class JooqSeqKeyWriteRepository
         }
 
         int affectedRows = dslContext().deleteFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyId))
                 .execute();
 
         return new DeleteSeqKeyResponse((affectedRows == 0) ? null : seqKeyId);

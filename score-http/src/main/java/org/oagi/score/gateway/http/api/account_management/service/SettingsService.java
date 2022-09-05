@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.account_management.data.AppUser;
 import org.oagi.score.gateway.http.api.account_management.data.UpdatePasswordRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -11,8 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.row;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;

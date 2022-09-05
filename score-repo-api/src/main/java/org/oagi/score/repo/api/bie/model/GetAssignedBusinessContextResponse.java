@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.bie.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class GetAssignedBusinessContextResponse extends Response {

@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.CcList;
 import org.oagi.score.gateway.http.api.cc_management.data.CcListRequest;

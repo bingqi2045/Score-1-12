@@ -1,8 +1,6 @@
 package org.oagi.score.repo.api.agency.model;
 
 import org.oagi.score.repo.api.corecomponent.CcManifest;
-import org.oagi.score.repo.api.corecomponent.model.CcState;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
 import java.math.BigInteger;

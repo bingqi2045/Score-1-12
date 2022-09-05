@@ -2,7 +2,6 @@ package org.oagi.score.service.corecomponent;
 
 import org.oagi.score.repo.api.corecomponent.model.*;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface CcDocument {

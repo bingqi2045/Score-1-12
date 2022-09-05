@@ -3,10 +3,8 @@ package org.oagi.score.repo.component.ascc;
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.log.model.LogUtils;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class CreateAsccRepositoryRequest extends RepositoryRequest {

@@ -2,8 +2,10 @@ package org.oagi.score.repo.component.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.jooq.*;
-import org.jooq.types.ULong;
+import org.jooq.DSLContext;
+import org.jooq.Record4;
+import org.jooq.Record5;
+import org.jooq.Record6;
 import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
 import org.oagi.score.gateway.http.api.graph.data.Graph;
 import org.oagi.score.gateway.http.api.graph.data.Node;
@@ -17,7 +19,6 @@ import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
@@ -99,9 +100,9 @@ public class CoreComponentGraphContext implements GraphContext {
         private String releaseId;
         private String prevAsccManifestId;
 
-        private BigInteger seqKeyId;
-        private BigInteger prevSeqKeyId;
-        private BigInteger nextSeqKeyId;
+        private String seqKeyId;
+        private String prevSeqKeyId;
+        private String nextSeqKeyId;
     }
 
     @Data
@@ -118,9 +119,9 @@ public class CoreComponentGraphContext implements GraphContext {
         private String releaseId;
         private String prevBccManifestId;
 
-        private BigInteger seqKeyId;
-        private BigInteger prevSeqKeyId;
-        private BigInteger nextSeqKeyId;
+        private String seqKeyId;
+        private String prevSeqKeyId;
+        private String nextSeqKeyId;
     }
 
     @Data
@@ -237,9 +238,9 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(SEQ_KEY).on(ASCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
-                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
-                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
-                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                            String seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            String prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            String nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
 
                             return new AsccManifest(
                                     record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
@@ -251,9 +252,9 @@ public class CoreComponentGraphContext implements GraphContext {
                                     record.get(ASCC.IS_DEPRECATED),
                                     record.get(ASCC_MANIFEST.RELEASE_ID),
                                     record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID),
-                                    seqKeyId.toBigInteger(),
-                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
-                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                                    seqKeyId,
+                                    (prevSeqKeyId != null) ? prevSeqKeyId : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId : null);
                         });
         asccManifestMap = asccManifestList.stream()
                 .collect(groupingBy(AsccManifest::getFromAccManifestId));
@@ -280,9 +281,9 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(SEQ_KEY).on(BCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(BCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
-                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
-                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
-                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                            String seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            String prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            String nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
 
                             return new BccManifest(
                                     record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
@@ -295,9 +296,9 @@ public class CoreComponentGraphContext implements GraphContext {
                                     record.get(BCC.IS_DEPRECATED),
                                     record.get(BCC_MANIFEST.RELEASE_ID),
                                     record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
-                                    seqKeyId.toBigInteger(),
-                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
-                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                                    seqKeyId,
+                                    (prevSeqKeyId != null) ? prevSeqKeyId : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId : null);
                         });
         bccManifestMap = bccManifestList.stream()
                 .collect(groupingBy(BccManifest::getFromAccManifestId));

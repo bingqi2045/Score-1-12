@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.user.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.*;
 
 public final class ScoreUser implements Serializable {

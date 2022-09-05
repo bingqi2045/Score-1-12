@@ -2,18 +2,13 @@ package org.oagi.score.gateway.http.api.code_list_management.service;
 
 import org.jooq.*;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.code_list_management.data.*;
-import org.oagi.score.service.common.data.AccessPrivilege;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.code_list.*;
+import org.oagi.score.service.common.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -21,17 +16,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.*;
-
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
-import static org.oagi.score.repo.api.bie.model.BieState.*;
+import static org.oagi.score.repo.api.bie.model.BieState.Production;
+import static org.oagi.score.repo.api.bie.model.BieState.QA;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
@@ -362,7 +357,9 @@ public class CodeListService extends EventHandler {
     private void createCodeList(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                                 CodeListValue codeListValue) {
 
-        String codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
+        String codeListValueId = UUID.randomUUID().toString();
+        dslContext.insertInto(CODE_LIST_VALUE,
+                CODE_LIST_VALUE.CODE_LIST_VALUE_ID,
                 CODE_LIST_VALUE.CODE_LIST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.MEANING,
@@ -373,6 +370,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.LAST_UPDATED_BY,
                 CODE_LIST_VALUE.CREATION_TIMESTAMP,
                 CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP).values(
+                codeListValueId,
                 manifestRecord.getCodeListId(),
                 codeListValue.getValue(),
                 codeListValue.getMeaning(),
@@ -383,7 +381,7 @@ public class CodeListService extends EventHandler {
                 codeListRecord.getLastUpdatedBy(),
                 codeListRecord.getCreationTimestamp(),
                 codeListRecord.getLastUpdateTimestamp())
-                .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId();
+                .execute();
 
         dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
                 .set(CODE_LIST_VALUE_MANIFEST.RELEASE_ID, manifestRecord.getReleaseId())
@@ -577,7 +575,7 @@ public class CodeListService extends EventHandler {
 
                 String prevCodeListValueId = codeListValueRecord.getCodeListValueId();
 
-                codeListValueRecord.setCodeListValueId(null);
+                codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
                 codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
 
                 String requesterId = codeListRecord.getOwnerUserId();
@@ -591,9 +589,9 @@ public class CodeListService extends EventHandler {
                 codeListValueRecord.setLastUpdatedBy(requesterId);
                 codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
-                codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
+                dslContext.insertInto(CODE_LIST_VALUE)
                         .set(codeListValueRecord)
-                        .returning().fetchOne();
+                        .execute();
 
                 dslContext.update(CODE_LIST_VALUE)
                         .set(CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID, codeListValueRecord.getCodeListValueId())

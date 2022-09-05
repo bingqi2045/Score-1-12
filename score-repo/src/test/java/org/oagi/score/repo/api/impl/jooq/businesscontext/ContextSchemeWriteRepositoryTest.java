@@ -1,9 +1,7 @@
 package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.CreateContextCategoryRequest;
 import org.oagi.score.repo.api.businesscontext.model.CreateContextSchemeRequest;
@@ -11,14 +9,14 @@ import org.oagi.score.repo.api.businesscontext.model.CreateContextSchemeResponse
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ContextSchemeWriteRepositoryTest
@@ -31,11 +29,11 @@ public class ContextSchemeWriteRepositoryTest
     @BeforeAll
     void setUp() {
         repository = scoreRepositoryFactory().createContextSchemeWriteRepository();
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
         contextCategoryId = createContextCategory();
     }
 
-    private BigInteger createContextCategory() {
+    private String createContextCategory() {
         CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester);
         request.setName(RandomStringUtils.random(45, true, true));
         request.setDescription(RandomStringUtils.random(1000, true, true));
@@ -71,7 +69,7 @@ public class ContextSchemeWriteRepositoryTest
         assertNotNull(response.getContextSchemeId());
 
         CtxSchemeRecord record = dslContext().selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .fetchOptional().orElse(null);
 
         assertNotNull(record);
@@ -80,13 +78,13 @@ public class ContextSchemeWriteRepositoryTest
         assertEquals(request.getDescription(), record.getDescription());
         assertEquals(request.getSchemeAgencyId(), record.getSchemeAgencyId());
         assertEquals(request.getSchemeVersionId(), record.getSchemeVersionId());
-        assertEquals(requester.getUserId(), record.getCreatedBy().toBigInteger());
-        assertEquals(requester.getUserId(), record.getLastUpdatedBy().toBigInteger());
+        assertEquals(requester.getUserId(), record.getCreatedBy());
+        assertEquals(requester.getUserId(), record.getLastUpdatedBy());
         assertEquals(record.getCreationTimestamp(), record.getLastUpdateTimestamp());
         assertTrue(record.getCreationTimestamp().compareTo(requestTime) > 0);
 
         List<CtxSchemeValueRecord> valueRecords = dslContext().selectFrom(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(response.getContextSchemeId())))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(response.getContextSchemeId()))
                 .orderBy(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
                 .fetch();
 

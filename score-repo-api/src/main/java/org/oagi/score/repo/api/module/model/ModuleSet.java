@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class ModuleSet extends Auditable implements Comparable<ModuleSet>, Serializable {
 

@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.data.expression;
 
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 

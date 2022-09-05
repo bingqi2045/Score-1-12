@@ -4,7 +4,6 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record7;
 import org.jooq.SelectJoinStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

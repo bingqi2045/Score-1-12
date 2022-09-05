@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.acc;
 
-import java.math.BigInteger;
-
 public class UpdateAccStateRepositoryResponse {
 
     private final String accManifestId;

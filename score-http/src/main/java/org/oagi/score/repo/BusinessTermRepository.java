@@ -1,7 +1,6 @@
 package org.oagi.score.repo;
 
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;

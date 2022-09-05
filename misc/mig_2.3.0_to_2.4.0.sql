@@ -4796,6 +4796,11 @@ ALTER TABLE `dt_manifest` ADD PRIMARY KEY (`dt_manifest_id`);
 ALTER TABLE `dt_sc_manifest` ADD PRIMARY KEY (`dt_sc_manifest_id`);
 ALTER TABLE `xbt_manifest` ADD PRIMARY KEY (`xbt_manifest_id`);
 
+ALTER TABLE `acc_manifest_tag` ADD PRIMARY KEY (`acc_manifest_id`, `cc_tag_id`);
+ALTER TABLE `asccp_manifest_tag` ADD PRIMARY KEY (`asccp_manifest_id`, `cc_tag_id`);
+ALTER TABLE `bccp_manifest_tag` ADD PRIMARY KEY (`bccp_manifest_id`, `cc_tag_id`);
+ALTER TABLE `dt_manifest_tag` ADD PRIMARY KEY (`dt_manifest_id`, `cc_tag_id`);
+
 ALTER TABLE `abie` ADD CONSTRAINT `abie_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
 ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
 ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_replacement_acc_manifest_id_fk` FOREIGN KEY (`replacement_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
@@ -4871,3 +4876,56 @@ ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_ascc_manifest_id_fk` FOREIGN KEY (
 ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_bcc_manifest_id_fk` FOREIGN KEY (`bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
 ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_prev_xbt_manifest_id_fk` FOREIGN KEY (`prev_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`);
 ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_next_xbt_manifest_id_fk` FOREIGN KEY (`next_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`);
+
+-- ------------------------------
+-- Change `seq_key_id` TO UUID --
+-- ------------------------------
+ALTER TABLE `seq_key` ADD COLUMN `seq_key_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `seq_key_id`;
+CALL update_uuid('seq_key');
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `seq_key_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `seq_key_id`;
+UPDATE `ascc_manifest`, `seq_key` SET `ascc_manifest`.`seq_key_uuid` = `seq_key`.`seq_key_uuid`
+WHERE `ascc_manifest`.`seq_key_id` = `seq_key`.`seq_key_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `seq_key_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `seq_key_id`;
+UPDATE `bcc_manifest`, `seq_key` SET `bcc_manifest`.`seq_key_uuid` = `seq_key`.`seq_key_uuid`
+WHERE `bcc_manifest`.`seq_key_id` = `seq_key`.`seq_key_id`;
+
+ALTER TABLE `seq_key` ADD COLUMN `prev_seq_key_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_seq_key_id`;
+UPDATE `seq_key`, `seq_key` AS tmp SET `seq_key`.`prev_seq_key_uuid` = tmp.`seq_key_uuid`
+WHERE `seq_key`.`prev_seq_key_id` = tmp.`seq_key_id`;
+
+ALTER TABLE `seq_key` ADD COLUMN `next_seq_key_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_seq_key_id`;
+UPDATE `seq_key`, `seq_key` AS tmp SET `seq_key`.`next_seq_key_uuid` = tmp.`seq_key_uuid`
+WHERE `seq_key`.`next_seq_key_id` = tmp.`seq_key_id`;
+
+-- Drop old `seq_key_id` columns
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_seq_key_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `seq_key_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_seq_key_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `seq_key_id`;
+
+ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_prev_seq_key_id_fk`;
+ALTER TABLE `seq_key` DROP COLUMN `prev_seq_key_id`;
+
+ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_next_seq_key_id_fk`;
+ALTER TABLE `seq_key` DROP COLUMN `next_seq_key_id`;
+
+ALTER TABLE `seq_key` DROP COLUMN `seq_key_id`;
+
+-- Rename `seq_key_uuid` TO `seq_key_id`
+ALTER TABLE `seq_key` CHANGE `seq_key_uuid` `seq_key_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `ascc_manifest` CHANGE `seq_key_uuid` `seq_key_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bcc_manifest` CHANGE `seq_key_uuid` `seq_key_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `seq_key` CHANGE `prev_seq_key_uuid` `prev_seq_key_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `seq_key` CHANGE `next_seq_key_uuid` `next_seq_key_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+
+-- Add foreign key constraints
+ALTER TABLE `seq_key` ADD PRIMARY KEY (`seq_key_id`);
+
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);

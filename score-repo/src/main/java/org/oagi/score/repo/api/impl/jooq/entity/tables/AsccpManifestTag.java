@@ -4,28 +4,18 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Function2;
-import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Records;
-import org.jooq.Row2;
-import org.jooq.Schema;
-import org.jooq.SelectField;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestTagRecord;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -95,6 +85,11 @@ public class AsccpManifestTag extends TableImpl<AsccpManifestTagRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
+    }
+
+    @Override
+    public UniqueKey<AsccpManifestTagRecord> getPrimaryKey() {
+        return Keys.KEY_ASCCP_MANIFEST_TAG_PRIMARY;
     }
 
     @Override

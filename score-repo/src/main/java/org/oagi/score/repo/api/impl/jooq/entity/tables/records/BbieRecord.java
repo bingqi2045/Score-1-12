@@ -4,13 +4,13 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 /**

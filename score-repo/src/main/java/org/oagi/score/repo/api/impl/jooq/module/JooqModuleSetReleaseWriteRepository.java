@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.impl.jooq.module;
 import org.jooq.DSLContext;
 import org.jooq.InsertSetMoreStep;
 import org.jooq.UpdateSetStep;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
@@ -14,11 +13,11 @@ import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
@@ -85,14 +84,17 @@ public class JooqModuleSetReleaseWriteRepository
             insertSetMoreStep = insertSetMoreStep.set(MODULE_SET_RELEASE.DESCRIPTION, moduleSetReleaseDescription);
         }
 
-        ModuleSetReleaseRecord moduleSetReleaseRecord = insertSetMoreStep
+        String moduleSetReleaseId = UUID.randomUUID().toString();
+        insertSetMoreStep
+                .set(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID, moduleSetReleaseId)
                 .set(MODULE_SET_RELEASE.IS_DEFAULT, request.isDefault() ? (byte) 1 : 0)
                 .set(MODULE_SET_RELEASE.CREATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET_RELEASE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE_SET_RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning()
-                .fetchOne();
+                .execute();
+        ModuleSetReleaseRecord moduleSetReleaseRecord = dslContext().selectFrom(MODULE_SET_RELEASE)
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId)).fetchOne();
 
         ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
         moduleSetRelease.setModuleSetReleaseId(moduleSetReleaseRecord.getModuleSetReleaseId());

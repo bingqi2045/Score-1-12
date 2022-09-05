@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
@@ -23,10 +21,8 @@ import static org.jooq.impl.DSL.count;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 public class JooqContextSchemeReadRepository
         extends JooqScoreRepository
@@ -192,10 +188,7 @@ public class JooqContextSchemeReadRepository
                         request.getContextSchemeIdList().iterator().next()
                 ));
             } else {
-                conditions.add(CTX_SCHEME.CTX_SCHEME_ID.in(
-                        request.getContextSchemeIdList().stream()
-                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                conditions.add(CTX_SCHEME.CTX_SCHEME_ID.in(request.getContextSchemeIdList()));
             }
         }
         if (!request.getContextCategoryIdList().isEmpty()) {
@@ -204,10 +197,7 @@ public class JooqContextSchemeReadRepository
                         request.getContextSchemeIdList().iterator().next()
                 ));
             } else {
-                conditions.add(CTX_SCHEME.CTX_CATEGORY_ID.in(
-                        request.getContextCategoryIdList().stream()
-                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                conditions.add(CTX_SCHEME.CTX_CATEGORY_ID.in(request.getContextCategoryIdList()));
             }
         }
         if (StringUtils.hasLength(request.getSchemeName())) {

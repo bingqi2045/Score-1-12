@@ -3,9 +3,6 @@ package org.oagi.score.repo.component.dt;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
-import java.util.List;
-
 public class CreateCodeListRestrictionRepositoryRequest extends RepositoryRequest {
 
     private final String dtManifestId;

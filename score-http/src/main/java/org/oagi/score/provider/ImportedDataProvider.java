@@ -1,10 +1,9 @@
 package org.oagi.score.provider;
 
-import org.jooq.types.ULong;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.export.model.ModuleXbtID;
-import org.oagi.score.repository.CcRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repository.CcRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,7 +3,6 @@ package org.oagi.score.repo.component.ascc;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
@@ -411,7 +410,7 @@ public class AsccWriteRepository {
                 sessionService.asScoreUser(user));
         seqKeyHandler.initAscc(
                 asccManifestRecord.getFromAccManifestId(),
-                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId() : null,
                 asccManifestRecord.getAsccManifestId());
         return seqKeyHandler;
     }
@@ -512,23 +511,23 @@ public class AsccWriteRepository {
             );
         }
 
-        targetAsccRecord.setAsccId(null);
+        targetAsccRecord.setAsccId(UUID.randomUUID().toString());
         targetAsccRecord.setLastUpdatedBy(userId);
         targetAsccRecord.setLastUpdateTimestamp(timestamp);
         targetAsccRecord.setFromAccId(targetAccRecord.getAccId());
         targetAsccRecord.setPrevAsccId(null);
         targetAsccRecord.setNextAsccId(null);
         targetAsccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + asccpDen);
-        String asccId = dslContext.insertInto(ASCC).set(targetAsccRecord).returning().fetchOne().getAsccId();
+        dslContext.insertInto(ASCC).set(targetAsccRecord).execute();
+        String asccId = targetAsccRecord.getAsccId();
 
-        targetAsccManifestRecord.setAsccManifestId(null);
+        targetAsccManifestRecord.setAsccManifestId(UUID.randomUUID().toString());
         targetAsccManifestRecord.setFromAccManifestId(request.getAccManifestId());
         targetAsccManifestRecord.setAsccId(asccId);
         targetAsccManifestRecord.setSeqKeyId(null);
         targetAsccManifestRecord.setPrevAsccManifestId(null);
         targetAsccManifestRecord.setNextAsccManifestId(null);
-        targetAsccManifestRecord.setAsccManifestId(
-                dslContext.insertInto(ASCC_MANIFEST).set(targetAsccManifestRecord).returning().fetchOne().getAsccManifestId());
+        dslContext.insertInto(ASCC_MANIFEST).set(targetAsccManifestRecord).execute();
 
         seqKeyHandler(request.getUser(), targetAsccManifestRecord).moveTo(MoveTo.LAST);
 

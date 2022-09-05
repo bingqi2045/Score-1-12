@@ -3,7 +3,6 @@ package org.oagi.score.service.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.model.*;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -155,7 +154,7 @@ public class CcDocumentImpl implements CcDocument {
             return Collections.emptyList();
         }
 
-        Map<BigInteger, CcAssociationSequence> sequenceMap =
+        Map<String, CcAssociationSequence> sequenceMap =
                 sequences.stream().collect(Collectors.toMap(CcAssociationSequence::getSeqKeyId, Function.identity()));
 
         List<CcAssociationSequence> sorted = new ArrayList(sequences.size());

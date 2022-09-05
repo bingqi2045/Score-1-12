@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.user.model;
 
 import org.oagi.score.repo.api.base.Request;
 
-import java.math.BigInteger;
-
 public class GetScoreUserRequest extends Request {
 
     private String userId;

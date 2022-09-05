@@ -4,7 +4,6 @@ import lombok.Data;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcAsccpNodeDetail;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBccpNodeDetail;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 

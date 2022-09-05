@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.configuration.intializer;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.PurgeBieEvent;
 import org.oagi.score.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.InitializingBean;

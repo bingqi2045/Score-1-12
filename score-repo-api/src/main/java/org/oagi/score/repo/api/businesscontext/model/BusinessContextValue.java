@@ -1,7 +1,6 @@
 package org.oagi.score.repo.api.businesscontext.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class BusinessContextValue implements Serializable {
 

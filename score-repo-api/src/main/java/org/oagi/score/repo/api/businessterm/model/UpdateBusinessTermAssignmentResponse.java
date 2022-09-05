@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
-
 public class UpdateBusinessTermAssignmentResponse extends Response {
 
     private final String assignedBizTermId;

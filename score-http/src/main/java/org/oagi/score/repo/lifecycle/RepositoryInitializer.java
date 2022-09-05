@@ -3,16 +3,14 @@ package org.oagi.score.repo.lifecycle;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
-import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -21,9 +19,8 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
-import static org.oagi.score.gateway.http.helper.Utility.MODULE_SEPARATOR;
-import static org.oagi.score.service.log.model.LogUtils.generateHash;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.service.log.model.LogUtils.generateHash;
 
 @Component
 public class RepositoryInitializer implements InitializingBean {
@@ -167,6 +164,7 @@ public class RepositoryInitializer implements InitializingBean {
             SeqKeyWrapper seqKeyWrapper = seqKeyWrappers.get(i);
 
             SeqKeyRecord seqKeyRecord = new SeqKeyRecord();
+            seqKeyRecord.setSeqKeyId(UUID.randomUUID().toString());
             seqKeyRecord.setFromAccManifestId(fromAccManifestId);
             seqKeyRecord.setAsccManifestId(seqKeyWrapper.getAsccManifestId());
             seqKeyRecord.setBccManifestId(seqKeyWrapper.getBccManifestId());
@@ -178,12 +176,9 @@ public class RepositoryInitializer implements InitializingBean {
                     (i + 1 == len) ? null : seqKeyWrappers.get(i + 1)
             );
 
-            seqKeyRecord.setSeqKeyId(
-                    dslContext.insertInto(SEQ_KEY)
-                            .set(seqKeyRecord)
-                            .returning(SEQ_KEY.SEQ_KEY_ID)
-                            .fetchOne().getSeqKeyId()
-            );
+            dslContext.insertInto(SEQ_KEY)
+                    .set(seqKeyRecord)
+                    .execute();
         }
 
         for (SeqKeyWrapper seqKeyWrapper : seqKeyWrappers) {

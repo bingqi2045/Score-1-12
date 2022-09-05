@@ -44,9 +44,9 @@ import com.sun.xml.xsom.SCD;
 import com.sun.xml.xsom.XSAnnotation;
 import com.sun.xml.xsom.XSComponent;
 import com.sun.xml.xsom.XSSchemaSet;
-import com.sun.xml.xsom.util.ComponentNameFunction;
 import com.sun.xml.xsom.impl.parser.SchemaDocumentImpl;
 import com.sun.xml.xsom.parser.SchemaDocument;
+import com.sun.xml.xsom.util.ComponentNameFunction;
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.NamespaceContext;

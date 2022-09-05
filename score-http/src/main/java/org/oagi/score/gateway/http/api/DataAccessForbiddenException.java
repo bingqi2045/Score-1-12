@@ -3,8 +3,6 @@ package org.oagi.score.gateway.http.api;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
-
 public class DataAccessForbiddenException extends DataAccessException {
 
     private String errorMessageId;

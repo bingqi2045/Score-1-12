@@ -1,7 +1,6 @@
 package org.oagi.score.export.model;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jooq.types.ULong;
 import org.oagi.score.export.impl.XMLExportSchemaModuleVisitor;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 

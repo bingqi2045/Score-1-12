@@ -3,8 +3,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class GetContextCategoryRequest extends Request {
 
     private String contextCategoryId;

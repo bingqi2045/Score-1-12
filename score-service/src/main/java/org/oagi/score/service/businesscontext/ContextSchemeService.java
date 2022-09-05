@@ -2,7 +2,6 @@ package org.oagi.score.service.businesscontext;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.springframework.beans.factory.annotation.Autowired;

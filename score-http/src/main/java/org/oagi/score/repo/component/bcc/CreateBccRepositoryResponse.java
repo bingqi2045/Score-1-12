@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.bcc;
 
-import java.math.BigInteger;
-
 public class CreateBccRepositoryResponse {
 
     private final String bccManifestId;

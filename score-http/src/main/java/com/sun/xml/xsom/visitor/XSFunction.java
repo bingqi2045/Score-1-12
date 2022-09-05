@@ -40,18 +40,7 @@
 
 package com.sun.xml.xsom.visitor;
 
-import com.sun.xml.xsom.XSAnnotation;
-import com.sun.xml.xsom.XSAttGroupDecl;
-import com.sun.xml.xsom.XSAttributeDecl;
-import com.sun.xml.xsom.XSAttributeUse;
-import com.sun.xml.xsom.XSComplexType;
-import com.sun.xml.xsom.XSFacet;
-import com.sun.xml.xsom.XSNotation;
-import com.sun.xml.xsom.XSSchema;
-import com.sun.xml.xsom.XSIdentityConstraint;
-import com.sun.xml.xsom.XSXPath;
-import com.sun.xml.xsom.impl.IdentityConstraintImpl;
-import com.sun.xml.xsom.impl.XPathImpl;
+import com.sun.xml.xsom.*;
 
 /**
  * Function object that works on the entire XML Schema components.

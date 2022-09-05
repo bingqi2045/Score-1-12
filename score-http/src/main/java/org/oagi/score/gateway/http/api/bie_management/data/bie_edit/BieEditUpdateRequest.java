@@ -6,7 +6,6 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEdit
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditBbieScNodeDetail;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditBbiepNodeDetail;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 

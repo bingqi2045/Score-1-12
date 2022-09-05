@@ -2,8 +2,6 @@ package org.oagi.score.service.common.data;
 
 import org.oagi.score.repo.api.bie.model.BieState;
 
-import java.math.BigInteger;
-
 public enum AccessPrivilege {
 
     CanEdit,

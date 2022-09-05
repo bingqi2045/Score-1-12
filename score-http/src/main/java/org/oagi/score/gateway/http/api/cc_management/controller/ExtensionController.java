@@ -1,12 +1,11 @@
 package org.oagi.score.gateway.http.api.cc_management.controller;
 
 import org.oagi.score.gateway.http.api.cc_management.data.CcActionRequest;
-import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcNode;
 import org.oagi.score.gateway.http.api.cc_management.service.ExtensionService;
+import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.Map;
 
 @RestController

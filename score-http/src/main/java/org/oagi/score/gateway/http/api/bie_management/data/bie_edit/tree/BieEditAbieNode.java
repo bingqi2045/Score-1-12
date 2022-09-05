@@ -5,8 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 import org.oagi.score.service.common.data.AccessPrivilege;
 
-import java.math.BigInteger;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAbieNode extends BieEditNode {

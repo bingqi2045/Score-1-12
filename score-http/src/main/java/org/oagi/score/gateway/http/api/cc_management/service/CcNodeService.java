@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
 import org.oagi.score.data.Xbt;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
@@ -19,16 +18,6 @@ import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
 import org.oagi.score.repo.component.asccp.*;
 import org.oagi.score.repo.component.bcc.*;
-import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryRequest;
-import org.oagi.score.repo.component.bccp.DeleteBccpRepositoryResponse;
-import org.oagi.score.repo.component.bccp.DeletedBccpEvent;
-import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
-import org.oagi.score.repo.component.bccp.UpdateBccpOwnerRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryRequest;
-import org.oagi.score.repo.component.bccp.UpdateBccpPropertiesRepositoryResponse;
-import org.oagi.score.repo.component.bccp.UpdatedBccpOwnerEvent;
-import org.oagi.score.repo.component.bccp.UpdatedBccpPropertiesEvent;
 import org.oagi.score.repo.component.bccp.*;
 import org.oagi.score.repo.component.dt.*;
 import org.oagi.score.repo.component.dt_sc.*;
@@ -53,7 +42,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)

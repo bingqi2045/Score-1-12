@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -17,7 +16,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -514,7 +512,9 @@ public class BieRepository {
         String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
-        return dslContext.insertInto(ASBIEP)
+        String asbiepId = UUID.randomUUID().toString();
+        dslContext.insertInto(ASBIEP)
+                .set(ASBIEP.ASBIEP_ID, asbiepId)
                 .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, asccpManifestId)
                 .set(ASBIEP.ROLE_OF_ABIE_ID, abieId)
@@ -523,7 +523,9 @@ public class BieRepository {
                 .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
-                .returning().fetchOne();
+                .execute();
+
+        return dslContext.selectFrom(ASBIEP).where(ASBIEP.ASBIEP_ID.eq(asbiepId)).fetchOne();
     }
 
     public AsbieRecord createAsbie(AuthenticatedPrincipal user, String fromAbieId, String toAsbiepId,
@@ -548,7 +550,9 @@ public class BieRepository {
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(basedAsccManifestId))
                 .fetchOne().getValue(ASCCP.IS_NILLABLE);
 
-        return dslContext.insertInto(ASBIE)
+        String asbieId = UUID.randomUUID().toString();
+        dslContext.insertInto(ASBIE)
+                .set(ASBIE.ASBIE_ID, asbieId)
                 .set(ASBIE.GUID, ScoreGuid.randomGuid())
                 .set(ASBIE.FROM_ABIE_ID, fromAbieId)
                 .set(ASBIE.TO_ASBIEP_ID, toAsbiepId)
@@ -563,15 +567,18 @@ public class BieRepository {
                 .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
                 .set(ASBIE.IS_USED, (byte) (cardinality.get(ASCC.CARDINALITY_MIN) > 0 ? 1 : 0))
                 .set(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
-                .returning().fetchOne();
+                .execute();
 
+        return dslContext.selectFrom(ASBIE).where(ASBIE.ASBIE_ID.eq(asbieId)).fetchOne();
     }
 
     public BbiepRecord createBbiep(AuthenticatedPrincipal user, String basedBccpManifestId, String topLevelAsbiepId) {
         String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
-        return dslContext.insertInto(BBIEP)
+        String bbiepId = UUID.randomUUID().toString();
+        dslContext.insertInto(BBIEP)
+                .set(BBIEP.BBIEP_ID, bbiepId)
                 .set(BBIEP.GUID, ScoreGuid.randomGuid())
                 .set(BBIEP.BASED_BCCP_MANIFEST_ID, basedBccpManifestId)
                 .set(BBIEP.CREATED_BY, userId)
@@ -579,7 +586,9 @@ public class BieRepository {
                 .set(BBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
-                .returning().fetchOne();
+                .execute();
+
+        return dslContext.selectFrom(BBIEP).where(BBIEP.BBIEP_ID.eq(bbiepId)).fetchOne();
     }
 
     public BbieRecord createBbie(AuthenticatedPrincipal user, String fromAbieId, String toBbiepId,
@@ -609,7 +618,9 @@ public class BieRepository {
                 .where(BCCP.BCCP_ID.eq(bccRecord.getToBccpId()))
                 .fetchOneInto(BccpRecord.class);
 
-        return dslContext.insertInto(BBIE)
+        String bbieId = UUID.randomUUID().toString();
+        dslContext.insertInto(BBIE)
+                .set(BBIE.BBIE_ID, bbieId)
                 .set(BBIE.GUID, ScoreGuid.randomGuid())
                 .set(BBIE.FROM_ABIE_ID, fromAbieId)
                 .set(BBIE.TO_BBIEP_ID, toBbiepId)
@@ -628,7 +639,9 @@ public class BieRepository {
                 .set(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
                 .set(BBIE.DEFAULT_VALUE, StringUtils.defaultIfEmpty(bccRecord.getDefaultValue(), bccpRecord.getDefaultValue()))
                 .set(BBIE.FIXED_VALUE, StringUtils.defaultIfEmpty(bccRecord.getFixedValue(), bccpRecord.getFixedValue()))
-                .returning().fetchOne();
+                .execute();
+
+        return dslContext.selectFrom(BBIE).where(BBIE.BBIE_ID.eq(bbieId)).fetchOne();
     }
 
     public String getDefaultBdtPriRestriIdByBdtId(String bdtManifestId) {

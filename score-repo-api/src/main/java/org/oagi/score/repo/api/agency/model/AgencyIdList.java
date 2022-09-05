@@ -6,7 +6,6 @@ import org.oagi.score.repo.api.corecomponent.model.CoreComponent;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.List;
 
 public class AgencyIdList extends Auditable implements CoreComponent, Serializable {

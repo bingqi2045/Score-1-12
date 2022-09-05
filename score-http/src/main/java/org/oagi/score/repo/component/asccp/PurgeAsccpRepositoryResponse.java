@@ -1,7 +1,5 @@
 package org.oagi.score.repo.component.asccp;
 
-import java.math.BigInteger;
-
 public class PurgeAsccpRepositoryResponse {
 
     private final String asccpManifestId;

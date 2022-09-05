@@ -3,13 +3,13 @@ package org.oagi.score.repo.component.dt_sc;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
-import org.oagi.score.repo.component.dt.*;
+import org.oagi.score.repo.component.dt.UpdateDtStateRepositoryRequest;
+import org.oagi.score.repo.component.dt.UpdateDtStateRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -478,6 +478,7 @@ public class DtScWriteRepository {
             if (restri.getBdtScPriRestriId() == null) {
                 // insert
                 bdtScPriRestriRecord = new BdtScPriRestriRecord();
+                bdtScPriRestriRecord.setBdtScPriRestriId(UUID.randomUUID().toString());
                 bdtScPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
                 bdtScPriRestriRecord.setBdtScId(dtScId);
                 if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
@@ -493,9 +494,11 @@ public class DtScWriteRepository {
                     bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(
                             restri.getCdtScAwdPriXpsTypeMapId());
                 }
-                restri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
+
+                dslContext.insertInto(BDT_SC_PRI_RESTRI)
                         .set(bdtScPriRestriRecord)
-                        .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId());
+                        .execute();
+                restri.setBdtScPriRestriId(bdtScPriRestriRecord.getBdtScPriRestriId());
 
                 insertedList.add(bdtScPriRestriRecord);
             } else {

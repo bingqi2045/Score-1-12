@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Objects;
 
 public class AsccManifest implements CcManifest, CcAssociation, Serializable {
@@ -14,7 +13,7 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
 
     private String asccId;
 
-    private BigInteger seqKeyId;
+    private String seqKeyId;
 
     private String fromAccManifestId;
 
@@ -61,11 +60,11 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
         this.asccId = asccId;
     }
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 
-    public void setSeqKeyId(BigInteger seqKeyId) {
+    public void setSeqKeyId(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 

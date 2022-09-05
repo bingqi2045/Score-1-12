@@ -9,8 +9,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.bie.BieDocument;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
 
-import java.math.BigInteger;
-
 public final class BieDocumentBuilder {
 
     private BieReadRepository bieReadRepository;

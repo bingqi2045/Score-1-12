@@ -8,9 +8,7 @@ import org.oagi.score.service.bie.BieVisitContext;
 import org.oagi.score.service.bie.BieVisitor;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

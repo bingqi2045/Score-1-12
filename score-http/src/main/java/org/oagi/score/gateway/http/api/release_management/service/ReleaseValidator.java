@@ -1,12 +1,10 @@
 package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.NAMESPACE;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ACC_Association;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ACC_BasedACC;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ASCCP_RoleOfAcc;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.*;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Error;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warning;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;

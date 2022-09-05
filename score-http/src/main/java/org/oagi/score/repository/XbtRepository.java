@@ -3,13 +3,11 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record16;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Xbt;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 

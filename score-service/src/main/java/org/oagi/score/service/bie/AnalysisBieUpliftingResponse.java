@@ -8,7 +8,6 @@ import org.oagi.score.repo.api.corecomponent.model.AsccManifest;
 import org.oagi.score.repo.api.corecomponent.model.BccManifest;
 import org.oagi.score.repo.api.corecomponent.model.DtScManifest;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 

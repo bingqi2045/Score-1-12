@@ -3,19 +3,14 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Result;
-import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
-import org.oagi.score.service.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
@@ -28,19 +23,21 @@ import org.oagi.score.repo.component.ascc.CreateAsccRepositoryResponse;
 import org.oagi.score.repo.component.asccp.AsccpWriteRepository;
 import org.oagi.score.repo.component.asccp.CreateAsccpRepositoryRequest;
 import org.oagi.score.repo.component.asccp.CreateAsccpRepositoryResponse;
+import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.boolAnd;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
@@ -183,7 +180,9 @@ public class ExtensionService {
         String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
-        return dslContext.insertInto(Tables.ACC,
+        String accId = UUID.randomUUID().toString();
+        dslContext.insertInto(Tables.ACC,
+                Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
                 Tables.ACC.OBJECT_CLASS_TERM,
                 Tables.ACC.DEN,
@@ -195,6 +194,7 @@ public class ExtensionService {
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
                 Tables.ACC.STATE).values(
+                accId,
                 ScoreGuid.randomGuid(),
                 objectClassTerm,
                 objectClassTerm + ". Details",
@@ -206,24 +206,31 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.WIP.name()
-        ).returning().fetchOne();
+        ).execute();
+        return dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(accId)).fetchOne();
     }
 
     private AccManifestRecord createACCManifestForExtension(AccRecord ueAcc, String releaseId) {
-        return dslContext.insertInto(ACC_MANIFEST,
+        String accManifestId = UUID.randomUUID().toString();
+        dslContext.insertInto(ACC_MANIFEST,
+                ACC_MANIFEST.ACC_MANIFEST_ID,
                 ACC_MANIFEST.ACC_ID,
                 ACC_MANIFEST.RELEASE_ID
         ).values(
+                accManifestId,
                 ueAcc.getAccId(),
                 releaseId
-        ).returning().fetchOne();
+        ).execute();
+        return dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId)).fetchOne();
     }
 
     private AsccpRecord createASCCPForExtension(ACC eAcc, AuthenticatedPrincipal user, AccRecord ueAcc) {
         String userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
-        return dslContext.insertInto(Tables.ASCCP,
+        String asccpId = UUID.randomUUID().toString();
+        dslContext.insertInto(Tables.ASCCP,
+                Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.ASCCP.ROLE_OF_ACC_ID,
@@ -238,6 +245,7 @@ public class ExtensionService {
                 Tables.ASCCP.CREATION_TIMESTAMP,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCCP.STATE).values(
+                asccpId,
                 ScoreGuid.randomGuid(),
                 ueAcc.getObjectClassTerm(),
                 ueAcc.getAccId(),
@@ -252,20 +260,25 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.Production.name()
-        ).returning().fetchOne();
+        ).execute();
+        return dslContext.selectFrom(ASCCP).where(ASCCP.ASCCP_ID.eq(asccpId)).fetchOne();
     }
 
     private AsccpManifestRecord createASCCPManifestForExtension(
             AsccpRecord ueAsccp, AccManifestRecord ueAccManifest, String releaseId) {
-        return dslContext.insertInto(ASCCP_MANIFEST,
+        String asccpManifestId = UUID.randomUUID().toString();
+        dslContext.insertInto(ASCCP_MANIFEST,
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
                 ASCCP_MANIFEST.ASCCP_ID,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                 ASCCP_MANIFEST.RELEASE_ID
         ).values(
+                asccpManifestId,
                 ueAsccp.getAsccpId(),
                 ueAccManifest.getAccManifestId(),
                 releaseId
-        ).returning().fetchOne();
+        ).execute();
+        return dslContext.selectFrom(ASCCP_MANIFEST).where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestId)).fetchOne();
     }
 
     private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, AuthenticatedPrincipal user) {
@@ -310,12 +323,15 @@ public class ExtensionService {
 
     private void createASCCManifestForExtension(
             AsccRecord ueAscc, AccManifestRecord eAccManifest, AsccpManifestRecord ueAsccpManifest, String releaseId) {
+        String asccManifestId = UUID.randomUUID().toString();
         dslContext.insertInto(ASCC_MANIFEST,
+                ASCC_MANIFEST.ASCC_MANIFEST_ID,
                 ASCC_MANIFEST.ASCC_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                 ASCC_MANIFEST.RELEASE_ID
         ).values(
+                asccManifestId,
                 ueAscc.getAsccId(),
                 eAccManifest.getAccManifestId(),
                 ueAsccpManifest.getAsccpManifestId(),
@@ -424,7 +440,7 @@ public class ExtensionService {
                 .where(ASCC.ASCC_ID.eq(asccId))
                 .fetchOne();
 
-        history.setAsccId(null);
+        history.setAsccId(UUID.randomUUID().toString());
         history.setCardinalityMin(ascc.getCardinalityMin());
         history.setCardinalityMax(ascc.getCardinalityMax());
         history.setIsDeprecated((byte) ((ascc.isDeprecated()) ? 1 : 0));
@@ -435,7 +451,7 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
 
-        history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
+        dslContext.insertInto(ASCC).set(history).execute();
         int result = dslContext.update(ASCC_MANIFEST)
                 .set(ASCC_MANIFEST.ASCC_ID, history.getAsccId())
                 .where(and(
@@ -462,7 +478,7 @@ public class ExtensionService {
                 .where(BCC.BCC_ID.eq(bccId))
                 .fetchOne();
 
-        history.setBccId(null);
+        history.setBccId(UUID.randomUUID().toString());
         if (bcc.getEntityType() != null) {
             history.setEntityType(bcc.getEntityType());
         }
@@ -477,7 +493,7 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
 
-        history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
+        dslContext.insertInto(BCC).set(history).execute();
         int result = dslContext.update(BCC_MANIFEST)
                 .set(BCC_MANIFEST.BCC_ID, history.getBccId())
                 .where(and(
@@ -522,14 +538,14 @@ public class ExtensionService {
                 .where(ACC.ACC_ID.eq(accManifest.getAccId()))
                 .fetchOne();
 
-        history.setAccId(null);
+        history.setAccId(UUID.randomUUID().toString());
         history.setCreatedBy(userId);
         history.setLastUpdatedBy(userId);
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
         history.setOwnerUserId(targetAppUserId);
 
-        history = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne();
+        dslContext.insertInto(Tables.ACC).set(history).execute();
         dslContext.update(ACC_MANIFEST)
                 .set(ACC_MANIFEST.ACC_ID, history.getAccId())
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifest.getAccManifestId()))
@@ -559,14 +575,14 @@ public class ExtensionService {
             AsccManifestRecord asccManifestRecord =
                     asccManifestRecordMap.get(history.getAsccId());
 
-            history.setAsccId(null);
+            history.setAsccId(UUID.randomUUID().toString());
             history.setCreatedBy(userId);
             history.setLastUpdatedBy(userId);
             history.setCreationTimestamp(timestamp);
             history.setLastUpdateTimestamp(timestamp);
             history.setOwnerUserId(targetAppUserId);
 
-            history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
+            dslContext.insertInto(ASCC).set(history).execute();
             dslContext.update(ASCC_MANIFEST)
                     .set(ASCC_MANIFEST.ASCC_ID, history.getAsccId())
                     .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId()))
@@ -597,14 +613,14 @@ public class ExtensionService {
             BccManifestRecord bccManifestRecord =
                     bccManifestRecordMap.get(history.getBccId());
 
-            history.setBccId(null);
+            history.setBccId(UUID.randomUUID().toString());
             history.setCreatedBy(userId);
             history.setLastUpdatedBy(userId);
             history.setCreationTimestamp(timestamp);
             history.setLastUpdateTimestamp(timestamp);
             history.setOwnerUserId(targetAppUserId);
 
-            history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
+            dslContext.insertInto(BCC).set(history).execute();
             dslContext.update(BCC_MANIFEST)
                     .set(BCC_MANIFEST.BCC_ID, history.getBccId())
                     .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId()))

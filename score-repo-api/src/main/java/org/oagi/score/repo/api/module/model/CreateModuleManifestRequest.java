@@ -4,7 +4,6 @@ import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class CreateModuleManifestRequest extends Request {

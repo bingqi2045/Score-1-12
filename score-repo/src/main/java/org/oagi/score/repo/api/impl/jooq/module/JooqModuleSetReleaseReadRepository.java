@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
@@ -13,7 +12,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +20,6 @@ import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
 
@@ -333,13 +330,13 @@ public class JooqModuleSetReleaseReadRepository
 
     @Override
     public List<AssignableNode> getAssignableBCCPByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
-        List<ULong> elementBccpManifestList = dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+        List<String> elementBccpManifestList = dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
                 .join(BCC_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCC_MANIFEST.TO_BCCP_MANIFEST_ID))
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                 .where(and(BCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         BCC.ENTITY_TYPE.eq(1)))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
         return dslContext().select(
                 BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.DEN, RELEASE.RELEASE_NUM,
                 BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,

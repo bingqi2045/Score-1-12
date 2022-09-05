@@ -3,11 +3,9 @@ package org.oagi.score.repo.api.corecomponent.seqkey.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class GetSeqKeyRequest extends Request {
 
-    private BigInteger seqKeyId;
+    private String seqKeyId;
 
     private String fromAccManifestId;
 
@@ -15,15 +13,15 @@ public class GetSeqKeyRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 
-    public void setSeqKeyId(BigInteger seqKeyId) {
+    public void setSeqKeyId(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 
-    public GetSeqKeyRequest withSeqKeyId(BigInteger seqKeyId) {
+    public GetSeqKeyRequest withSeqKeyId(String seqKeyId) {
         setSeqKeyId(seqKeyId);
         return this;
     }

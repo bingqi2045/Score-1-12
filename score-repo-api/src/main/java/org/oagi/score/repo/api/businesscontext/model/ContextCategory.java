@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class ContextCategory extends Auditable implements Serializable {
 

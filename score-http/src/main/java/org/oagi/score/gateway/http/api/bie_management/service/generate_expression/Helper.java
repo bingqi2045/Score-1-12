@@ -5,7 +5,6 @@ import org.oagi.score.gateway.http.helper.Utility;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

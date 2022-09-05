@@ -40,9 +40,9 @@
 
 package com.sun.xml.xsom.util;
 
-import java.util.Set;
-
 import com.sun.xml.xsom.XSType;
+
+import java.util.Set;
 
 /**
  * A very simple TypeSet.

@@ -4,7 +4,6 @@ import lombok.Data;
 import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.businesscontext.model.BusinessContext;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
