@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class CoreComponentService {
 
     public List<SeqKeyRecord> getCoreComponents(
-            ULong accManifestId, ImportedDataProvider provider) {
+            String accManifestId, ImportedDataProvider provider) {
         List<SeqKeyRecord> seqKeyList = provider.getSeqKeys(accManifestId);
 
         return sort(seqKeyList);

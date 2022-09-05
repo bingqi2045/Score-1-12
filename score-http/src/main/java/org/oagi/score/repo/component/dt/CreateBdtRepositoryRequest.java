@@ -8,21 +8,21 @@ import java.time.LocalDateTime;
 
 public class CreateBdtRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger basedDdtManifestId;
+    private final String basedDdtManifestId;
     private final String releaseId;
     private final String specId;
 
     private String initialPropertyTerm = "Property Term";
 
     public CreateBdtRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger basedDdtManifestId, String releaseId, String specId) {
+                                      String basedDdtManifestId, String releaseId, String specId) {
         super(user);
         this.basedDdtManifestId = basedDdtManifestId;
         this.releaseId = releaseId;
         this.specId = specId;
     }
 
-    public BigInteger getBasedDdtManifestId() {
+    public String getBasedDdtManifestId() {
         return basedDdtManifestId;
     }
 

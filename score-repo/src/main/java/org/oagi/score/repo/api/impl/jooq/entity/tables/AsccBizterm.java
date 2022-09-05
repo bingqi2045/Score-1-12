@@ -62,7 +62,7 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
      * The column <code>oagi.ascc_bizterm.business_term_id</code>. An internal
      * ID of the associated business term.
      */
-    public final TableField<AsccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36), this, "An internal ID of the associated business term.");
+    public final TableField<AsccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated business term.");
 
     /**
      * The column <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the

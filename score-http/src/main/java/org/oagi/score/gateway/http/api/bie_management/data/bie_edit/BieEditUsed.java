@@ -9,7 +9,7 @@ public class BieEditUsed {
 
     private String hashPath;
     private String bieId;
-    private BigInteger manifestId;
+    private String manifestId;
     private String type;
     private String ownerTopLevelAsbiepId;
 

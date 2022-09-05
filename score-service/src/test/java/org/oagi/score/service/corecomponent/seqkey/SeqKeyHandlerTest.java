@@ -43,7 +43,7 @@ public class SeqKeyHandlerTest {
                 .getSeqKey();
     }
 
-    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+    private String getAccManifestIdByObjectClassTerm(String objectClassTerm) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))

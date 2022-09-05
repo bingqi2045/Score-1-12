@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class CcBdtCreateRequest {
 
     private String releaseId;
-    private BigInteger bdtManifestId;
+    private String bdtManifestId;
     private String specId;
 
 }

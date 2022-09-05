@@ -199,12 +199,12 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
     public void copyWorkingManifestsTo(
             String releaseId,
-            List<BigInteger> accManifestIds,
-            List<BigInteger> asccpManifestIds,
-            List<BigInteger> bccpManifestIds,
-            List<BigInteger> bdtManifestIds,
-            List<BigInteger> codeListManifestIds,
-            List<BigInteger> agencyIdListManifestIds) {
+            List<String> accManifestIds,
+            List<String> asccpManifestIds,
+            List<String> bccpManifestIds,
+            List<String> bdtManifestIds,
+            List<String> codeListManifestIds,
+            List<String> agencyIdListManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(releaseId))
@@ -217,7 +217,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
             throw new IllegalStateException("Cannot find 'Working' release");
         }
 
-        List<BigInteger> xbtManifestIds = Collections.emptyList();
+        List<String> xbtManifestIds = Collections.emptyList();
 
         try {
             // copying manifests from 'Working' release
@@ -281,7 +281,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyAccManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                   List<BigInteger> accManifestIds) {
+                                                   List<String> accManifestIds) {
         dslContext.insertInto(ACC_MANIFEST,
                 ACC_MANIFEST.RELEASE_ID,
                 ACC_MANIFEST.ACC_ID,
@@ -316,7 +316,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyDtManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                  List<BigInteger> dtManifestIds) {
+                                                  List<String> dtManifestIds) {
         dslContext.insertInto(DT_MANIFEST,
                 DT_MANIFEST.RELEASE_ID,
                 DT_MANIFEST.DT_ID,
@@ -351,7 +351,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyAsccpManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                     List<BigInteger> asccpManifestIds) {
+                                                     List<String> asccpManifestIds) {
         dslContext.insertInto(ASCCP_MANIFEST,
                 ASCCP_MANIFEST.RELEASE_ID,
                 ASCCP_MANIFEST.ASCCP_ID,
@@ -386,7 +386,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyBccpManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                    List<BigInteger> bccpManifestIds) {
+                                                    List<String> bccpManifestIds) {
         dslContext.insertInto(BCCP_MANIFEST,
                 BCCP_MANIFEST.RELEASE_ID,
                 BCCP_MANIFEST.BCCP_ID,
@@ -421,7 +421,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyAsccManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                    List<BigInteger> accManifestIds) {
+                                                    List<String> accManifestIds) {
         dslContext.insertInto(ASCC_MANIFEST,
                 ASCC_MANIFEST.RELEASE_ID,
                 ASCC_MANIFEST.ASCC_ID,
@@ -446,7 +446,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyBccManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                   List<BigInteger> accManifestIds) {
+                                                   List<String> accManifestIds) {
         dslContext.insertInto(BCC_MANIFEST,
                 BCC_MANIFEST.RELEASE_ID,
                 BCC_MANIFEST.BCC_ID,
@@ -628,7 +628,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyDtScManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                    List<BigInteger> dtManifestIds) {
+                                                    List<String> dtManifestIds) {
         dslContext.insertInto(DT_SC_MANIFEST,
                 DT_SC_MANIFEST.RELEASE_ID,
                 DT_SC_MANIFEST.DT_SC_ID,
@@ -650,7 +650,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyXbtManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                   List<BigInteger> xbtManifestIds) {
+                                                   List<String> xbtManifestIds) {
         dslContext.insertInto(XBT_MANIFEST,
                 XBT_MANIFEST.RELEASE_ID,
                 XBT_MANIFEST.XBT_ID,
@@ -671,7 +671,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyCodeListManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                        List<BigInteger> codeListManifestIds) {
+                                                        List<String> codeListManifestIds) {
         dslContext.insertInto(CODE_LIST_MANIFEST,
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 CODE_LIST_MANIFEST.CODE_LIST_ID,
@@ -698,7 +698,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyCodeListValueManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                             List<BigInteger> codeListManifestIds) {
+                                                             List<String> codeListManifestIds) {
         dslContext.insertInto(CODE_LIST_VALUE_MANIFEST,
                 CODE_LIST_VALUE_MANIFEST.RELEASE_ID,
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
@@ -722,7 +722,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyAgencyIdListManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                            List<BigInteger> agencyIdListManifestIds) {
+                                                            List<String> agencyIdListManifestIds) {
         dslContext.insertInto(AGENCY_ID_LIST_MANIFEST,
                 AGENCY_ID_LIST_MANIFEST.RELEASE_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
@@ -749,7 +749,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void copyAgencyIdListValueManifestRecordsFromWorking(String releaseId, String workingReleaseId,
-                                                                 List<BigInteger> agencyIdListManifestIds) {
+                                                                 List<String> agencyIdListManifestIds) {
         dslContext.insertInto(AGENCY_ID_LIST_VALUE_MANIFEST,
                 AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID,
                 AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID,
@@ -1014,9 +1014,9 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
     public void unassignManifests(
             String releaseId,
-            List<BigInteger> accManifestIds,
-            List<BigInteger> asccpManifestIds,
-            List<BigInteger> bccpManifestIds) {
+            List<String> accManifestIds,
+            List<String> asccpManifestIds,
+            List<String> bccpManifestIds) {
 
         // ensure all manifests in given request are in 'Candidate' state.
         // check ACCs
@@ -1072,9 +1072,9 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
     private void deleteManifests(
             String releaseId,
-            List<BigInteger> accManifestIds,
-            List<BigInteger> asccpManifestIds,
-            List<BigInteger> bccpManifestIds) {
+            List<String> accManifestIds,
+            List<String> asccpManifestIds,
+            List<String> bccpManifestIds) {
 
         if (accManifestIds != null && !accManifestIds.isEmpty()) {
             dslContext.deleteFrom(ASCC_MANIFEST)
@@ -1124,8 +1124,8 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
         AssignComponents assignComponents = new AssignComponents();
 
         // ACCs
-        Map<ULong, List<Record8<
-                ULong, String, String, LocalDateTime, String,
+        Map<String, List<Record8<
+                String, String, String, LocalDateTime, String,
                 String, UInteger, UInteger>>> map =
                 dslContext.select(
                         ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
@@ -1148,7 +1148,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1188,7 +1188,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1228,7 +1228,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1268,7 +1268,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1308,7 +1308,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1348,7 +1348,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
-            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setManifestId(e.get(0).value1());
             node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
@@ -1429,22 +1429,22 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
         if (fromCcState != null && toCcState != null) {
             if (toCcState == ReleaseDraft) {
                 ReleaseValidationRequest validationRequest = request.getValidationRequest();
-                for (BigInteger accManifestId : validationRequest.getAssignedAccComponentManifestIds()) {
+                for (String accManifestId : validationRequest.getAssignedAccComponentManifestIds()) {
                     ccNodeService.updateAccState(user, accManifestId, fromCcState, toCcState);
                 }
-                for (BigInteger asccpManifestId : validationRequest.getAssignedAsccpComponentManifestIds()) {
+                for (String asccpManifestId : validationRequest.getAssignedAsccpComponentManifestIds()) {
                     ccNodeService.updateAsccpState(user, asccpManifestId, fromCcState, toCcState);
                 }
-                for (BigInteger bccpManifestId : validationRequest.getAssignedBccpComponentManifestIds()) {
+                for (String bccpManifestId : validationRequest.getAssignedBccpComponentManifestIds()) {
                     ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
                 }
-                for (BigInteger codeListManifestId : validationRequest.getAssignedCodeListComponentManifestIds()) {
+                for (String codeListManifestId : validationRequest.getAssignedCodeListComponentManifestIds()) {
                     codeListService.updateCodeListState(user, timestamp, codeListManifestId, toCcState);
                 }
-                for (BigInteger agencyIdListManifestId : validationRequest.getAssignedAgencyIdListComponentManifestIds()) {
+                for (String agencyIdListManifestId : validationRequest.getAssignedAgencyIdListComponentManifestIds()) {
                     agencyIdService.updateAgencyIdListState(user, timestamp, agencyIdListManifestId, toCcState.name());
                 }
-                for (BigInteger dtManifestId : validationRequest.getAssignedDtComponentManifestIds()) {
+                for (String dtManifestId : validationRequest.getAssignedDtComponentManifestIds()) {
                     ccNodeService.updateDtState(user, dtManifestId, fromCcState, toCcState);
                 }
             } else if (toCcState == Candidate) {
@@ -1566,7 +1566,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     }
 
     private void updateCCStates(AuthenticatedPrincipal user, CcState fromCcState, CcState toCcState, LocalDateTime timestamp) {
-        for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+        for (String accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1574,10 +1574,10 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         ACC.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             ccNodeService.updateAccState(user, accManifestId, fromCcState, toCcState);
         }
-        for (BigInteger asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+        for (String asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                 .from(ASCCP_MANIFEST)
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1585,10 +1585,10 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         ASCCP.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             ccNodeService.updateAsccpState(user, asccpManifestId, fromCcState, toCcState);
         }
-        for (BigInteger bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+        for (String bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
                 .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                 .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1596,10 +1596,10 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         BCCP.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
         }
-        for (BigInteger codeListManifestId : dslContext.select(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+        for (String codeListManifestId : dslContext.select(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1607,11 +1607,11 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         CODE_LIST.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             codeListService.updateCodeListState(user, timestamp, codeListManifestId, toCcState);
         }
 
-        for (BigInteger agencyIdListManifestId : dslContext.select(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+        for (String agencyIdListManifestId : dslContext.select(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
                 .from(AGENCY_ID_LIST_MANIFEST)
                 .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
                 .join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1619,11 +1619,11 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         AGENCY_ID_LIST.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             agencyIdService.updateAgencyIdListState(user, timestamp, agencyIdListManifestId, toCcState.toString());
         }
 
-        for (BigInteger dtManifestId : dslContext.select(DT_MANIFEST.DT_MANIFEST_ID)
+        for (String dtManifestId : dslContext.select(DT_MANIFEST.DT_MANIFEST_ID)
                 .from(DT_MANIFEST)
                 .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
                 .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -1631,7 +1631,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         DT.STATE.eq(fromCcState.name()),
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
-                .fetchInto(BigInteger.class)) {
+                .fetchInto(String.class)) {
             ccNodeService.updateDtState(user, dtManifestId, fromCcState, toCcState);
         }
     }

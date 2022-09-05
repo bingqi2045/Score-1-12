@@ -15,7 +15,7 @@ import static org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType.Ver
 
 public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger roleOfAccManifestId;
+    private final String roleOfAccManifestId;
     private final String releaseId;
 
     private String initialPropertyTerm;
@@ -29,7 +29,7 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     private List<String> tags = Collections.emptyList();
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
-                                        BigInteger roleOfAccManifestId, String releaseId) {
+                                        String roleOfAccManifestId, String releaseId) {
         super(user);
         this.roleOfAccManifestId = roleOfAccManifestId;
         this.releaseId = releaseId;
@@ -37,13 +37,13 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
                                         LocalDateTime localDateTime,
-                                        BigInteger roleOfAccManifestId, String releaseId) {
+                                        String roleOfAccManifestId, String releaseId) {
         super(user, localDateTime);
         this.roleOfAccManifestId = roleOfAccManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getRoleOfAccManifestId() {
+    public String getRoleOfAccManifestId() {
         return roleOfAccManifestId;
     }
 

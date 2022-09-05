@@ -133,9 +133,9 @@ public class LogSerializer {
                                    List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
                                    List<SeqKeyRecord> seqKeyRecords) {
 
-        Map<ULong, AsccManifestRecord> asccManifestRecordMap = asccManifestRecords.stream().collect(
+        Map<String, AsccManifestRecord> asccManifestRecordMap = asccManifestRecords.stream().collect(
                 Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
-        Map<ULong, BccManifestRecord> bccManifestRecordMap = bccManifestRecords.stream().collect(
+        Map<String, BccManifestRecord> bccManifestRecordMap = bccManifestRecords.stream().collect(
                 Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
 
         Map<String, AsccRecord> asccRecordMap = asccRecords.stream().collect(

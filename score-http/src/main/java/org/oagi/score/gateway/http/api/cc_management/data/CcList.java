@@ -13,7 +13,7 @@ import java.util.Optional;
 public class CcList {
 
     private CcType type;
-    private BigInteger manifestId;
+    private String manifestId;
     private String guid;
     private String den;
     private String definition;
@@ -38,14 +38,14 @@ public class CcList {
 
     private boolean ownedByDeveloper;
 
-    private BigInteger basedManifestId;
+    private String basedManifestId;
     private String sixDigitId;
     private String defaultValueDomain;
 
     public CcList() {
     }
 
-    public CcList(CcType type, BigInteger manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, String/**/ id, boolean ownedByDeveloper, String sixDigitId, String defaultValueDomain) {
+    public CcList(CcType type, String manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, String/**/ id, boolean ownedByDeveloper, String sixDigitId, String defaultValueDomain) {
         this.type = type;
         this.manifestId = manifestId;
         this.guid = guid;

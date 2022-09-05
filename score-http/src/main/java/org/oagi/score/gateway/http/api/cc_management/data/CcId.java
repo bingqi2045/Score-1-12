@@ -11,9 +11,9 @@ import java.math.BigInteger;
 @AllArgsConstructor
 public class CcId {
     private String type;
-    private BigInteger manifestId;
+    private String manifestId;
 
-    public CcId(CcType type, BigInteger manifestId) {
+    public CcId(CcType type, String manifestId) {
         this.type = type.name().toLowerCase();
         this.manifestId = manifestId;
     }

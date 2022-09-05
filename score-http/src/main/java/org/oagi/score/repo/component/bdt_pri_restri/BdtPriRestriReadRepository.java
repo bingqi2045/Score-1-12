@@ -44,7 +44,7 @@ public class BdtPriRestriReadRepository {
         };
     }
 
-    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(BigInteger bccManifestId) {
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(String bccManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID, DT.DATA_TYPE_TERM,
                 BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME)
@@ -64,13 +64,13 @@ public class BdtPriRestriReadRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .join(DT)
                 .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
                 .collect(Collectors.toList());
     }
 
-    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(BigInteger bccpManifestId) {
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(String bccpManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID, DT.DATA_TYPE_TERM,
                 BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME)
@@ -86,7 +86,7 @@ public class BdtPriRestriReadRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .join(DT)
                 .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
                 .collect(Collectors.toList());

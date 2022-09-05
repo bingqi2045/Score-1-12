@@ -42,11 +42,11 @@ public class CodeListUpliftingService {
         ScoreUser requester = request.getRequester();
 
         CodeListManifestRecord codeListManifest = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId())))
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(request.getCodeListManifestId()))
                 .fetchOptional().orElse(null);
 
         List<CodeListValueManifestRecord> codeListValueManifestList = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
-                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId())))
+                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(request.getCodeListManifestId()))
                 .fetch();
 
         CodeListRecord codeList = dslContext.selectFrom(CODE_LIST)
@@ -97,7 +97,7 @@ public class CodeListUpliftingService {
                                 AGENCY_ID_LIST_VALUE.GUID.eq(agencyIdListValueRecord.getGuid()),
                                 AGENCY_ID_LIST.GUID.eq(agencyIdListRecord.getGuid())
                         ))
-                        .fetchOneInto(ULong.class)
+                        .fetchOneInto(String.class)
         );
 
         CodeListRecord newCodeList;
@@ -105,7 +105,7 @@ public class CodeListUpliftingService {
         // Issue #1073
         // If the source CL has the base CL, all CL values should be copying from the base again.
         if (codeListManifest.getBasedCodeListManifestId() != null) {
-            ULong sourceBasedCodeListManifestId = codeListManifest.getBasedCodeListManifestId();
+            String sourceBasedCodeListManifestId = codeListManifest.getBasedCodeListManifestId();
             CodeListManifestRecord targetBasedCodeListManifest = dslContext.selectFrom(CODE_LIST_MANIFEST)
                     .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(sourceBasedCodeListManifestId))
                     .fetchOptional().orElse(null);
@@ -261,7 +261,7 @@ public class CodeListUpliftingService {
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(newCodeListManifest.getCodeListManifestId()))
                 .execute();
 
-        response.setCodeListManifestId(newCodeListManifest.getCodeListManifestId().toBigInteger());
+        response.setCodeListManifestId(newCodeListManifest.getCodeListManifestId());
         return response;
     }
 

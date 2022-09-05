@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class CcAsccpCreateRequest {
 
     private String releaseId;
-    private BigInteger roleOfAccManifestId;
+    private String roleOfAccManifestId;
     private String asccpType;
     private String initialPropertyTerm;
 

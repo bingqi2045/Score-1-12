@@ -63,7 +63,7 @@ public class AsccpWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord roleOfAccManifest = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getRoleOfAccManifestId())))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getRoleOfAccManifestId()))
                 .fetchOne();
 
         AsccpRecord asccp = new AsccpRecord();
@@ -91,12 +91,13 @@ public class AsccpWriteRepository {
                 .execute();
 
         AsccpManifestRecord asccpManifest = new AsccpManifestRecord();
+        asccpManifest.setAsccpManifestId(UUID.randomUUID().toString());
         asccpManifest.setAsccpId(asccp.getAsccpId());
         asccpManifest.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         asccpManifest.setReleaseId(request.getReleaseId());
-        asccpManifest = dslContext.insertInto(ASCCP_MANIFEST)
+        dslContext.insertInto(ASCCP_MANIFEST)
                 .set(asccpManifest)
-                .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne();
+                .execute();
 
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
@@ -113,10 +114,10 @@ public class AsccpWriteRepository {
             }
         }
 
-        return new CreateAsccpRepositoryResponse(asccpManifest.getAsccpManifestId().toBigInteger());
+        return new CreateAsccpRepositoryResponse(asccpManifest.getAsccpManifestId());
     }
 
-    private void upsertTag(ULong asccpManifestId, String tag) {
+    private void upsertTag(String asccpManifestId, String tag) {
         CcTagRecord ccTag = dslContext.selectFrom(CC_TAG)
                 .where(CC_TAG.TAG_NAME.eq(tag))
                 .fetchOptional().orElse(null);
@@ -142,7 +143,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -211,7 +212,7 @@ public class AsccpWriteRepository {
                         LogAction.Revised,
                         userId, timestamp);
 
-        ULong responseAsccpManifestId;
+        String responseAsccpManifestId;
 
         asccpManifestRecord.setAsccpId(nextAsccpRecord.getAsccpId());
         asccpManifestRecord.setLogId(logRecord.getLogId());
@@ -231,7 +232,7 @@ public class AsccpWriteRepository {
                 ))
                 .execute();
 
-        return new ReviseAsccpRepositoryResponse(responseAsccpManifestId.toBigInteger());
+        return new ReviseAsccpRepositoryResponse(responseAsccpManifestId);
     }
 
     public UpdateAsccpPropertiesRepositoryResponse updateAsccpProperties(UpdateAsccpPropertiesRepositoryRequest request) {
@@ -241,7 +242,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -343,7 +344,7 @@ public class AsccpWriteRepository {
             }
         }
 
-        return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public UpdateAsccpPropertiesRepositoryResponse updateAsccpNamespace(UpdateAsccpPropertiesRepositoryRequest request) {
@@ -353,7 +354,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -394,7 +395,7 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setLogId(logRecord.getLogId());
         asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
-        return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpBdt(UpdateAsccpRoleOfAccRepositoryRequest request) {
@@ -404,7 +405,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -421,7 +422,7 @@ public class AsccpWriteRepository {
         }
 
         // update asccp record.
-        ULong roleOfAccManifestId = ULong.valueOf(request.getRoleOfAccManifestId());
+        String roleOfAccManifestId = request.getRoleOfAccManifestId();
         String roleOfAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
                 .from(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(roleOfAccManifestId))
@@ -446,7 +447,7 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setLogId(logRecord.getLogId());
         asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.LOG_ID);
 
-        return new UpdateAsccpRoleOfAccRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+        return new UpdateAsccpRoleOfAccRepositoryResponse(asccpManifestRecord.getAsccpManifestId(),
                 asccpRecord.getDen());
     }
 
@@ -457,7 +458,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -508,7 +509,7 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setLogId(logRecord.getLogId());
         asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
-        return new UpdateAsccpStateRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new UpdateAsccpStateRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public DeleteAsccpRepositoryResponse deleteAsccp(DeleteAsccpRepositoryRequest request) {
@@ -518,7 +519,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -552,7 +553,7 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setLogId(logRecord.getLogId());
         asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
-        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public PurgeAsccpRepositoryResponse purgeAsccp(PurgeAsccpRepositoryRequest request) {
@@ -562,7 +563,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -614,7 +615,7 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpRecord.getAsccpId()))
                 .execute();
 
-        return new PurgeAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new PurgeAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {
@@ -624,7 +625,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -654,7 +655,7 @@ public class AsccpWriteRepository {
             asccpRecord.delete();
         }
 
-        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public UpdateAsccpOwnerRepositoryResponse updateAsccpOwner(UpdateAsccpOwnerRepositoryRequest request) {
@@ -664,7 +665,7 @@ public class AsccpWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccpManifestId())
+                        request.getAsccpManifestId()
                 ))
                 .fetchOne();
 
@@ -695,7 +696,7 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setLogId(logRecord.getLogId());
         asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
-        return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId());
     }
 
     public CancelRevisionAsccpRepositoryResponse cancelRevisionAsccp(CancelRevisionAsccpRepositoryRequest request) {
@@ -703,7 +704,7 @@ public class AsccpWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(request.getAsccpManifestId())).fetchOne();
 
         if (asccpManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target ASCCP");
@@ -754,7 +755,7 @@ public class AsccpWriteRepository {
 
     public CancelRevisionAsccpRepositoryResponse resetLogAsccp(CancelRevisionAsccpRepositoryRequest request) {
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(request.getAsccpManifestId())).fetchOne();
 
         if (asccpManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target ASCCP");

@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class CreateOagisVerbRequest {
 
-    private BigInteger basedVerbAccManifestId;
+    private String basedVerbAccManifestId;
 
     private String initialObjectClassTerm;
 

@@ -16,7 +16,7 @@ public class Graph {
 
     @XmlTransient
     @JsonIgnore
-    private transient Map<Node.NodeType, List<ULong>> nodeManifestIds = new HashMap();
+    private transient Map<Node.NodeType, List<String>> nodeManifestIds = new HashMap();
 
     private Map<String, Node> nodes = new LinkedHashMap();
     private Map<String, Edge> edges = new LinkedHashMap();
@@ -39,7 +39,7 @@ public class Graph {
         return true;
     }
 
-    public Node getNode(Node.NodeType type, BigInteger manifestId) {
+    public Node getNode(Node.NodeType type, String manifestId) {
         String key = Node.toKey(type, manifestId);
         return nodes.get(key);
     }

@@ -8,21 +8,21 @@ import java.util.List;
 
 public class CreateCodeListRestrictionRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
     private final String releaseId;
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
 
 
 
     public CreateCodeListRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                      BigInteger dtManifestId, String releaseId) {
+                                                      String dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
@@ -30,11 +30,11 @@ public class CreateCodeListRestrictionRepositoryRequest extends RepositoryReques
         return releaseId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 
-    public void setCodeListManifestId(BigInteger codeListManifestId) {
+    public void setCodeListManifestId(String codeListManifestId) {
         this.codeListManifestId = codeListManifestId;
     }
 }

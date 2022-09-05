@@ -13,7 +13,7 @@ public class AbieNode {
 
     @Data
     public class Acc {
-        private BigInteger accManifestId;
+        private String accManifestId;
         private String guid;
         private String objectClassTerm;
         private String den;
@@ -28,7 +28,7 @@ public class AbieNode {
         private boolean used;
         private String path;
         private String hashPath;
-        private BigInteger basedAccManifestId;
+        private String basedAccManifestId;
 
         private String abieId;
         private String guid;

@@ -59,7 +59,7 @@ public class BbieScWriteRepository {
             bbieScRecord = new BbieScRecord();
             bbieScRecord.setBbieScId(UUID.randomUUID().toString());
             bbieScRecord.setGuid(ScoreGuid.randomGuid());
-            bbieScRecord.setBasedDtScManifestId(ULong.valueOf(bbieSc.getBasedDtScManifestId()));
+            bbieScRecord.setBasedDtScManifestId(bbieSc.getBasedDtScManifestId());
             bbieScRecord.setPath(bbieSc.getPath());
             bbieScRecord.setHashPath(hashPath);
             bbieScRecord.setBbieId(dslContext.select(BBIE.BBIE_ID)

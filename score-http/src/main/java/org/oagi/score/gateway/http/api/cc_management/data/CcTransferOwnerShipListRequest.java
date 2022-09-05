@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class CcTransferOwnerShipListRequest {
     private String targetLoginId;
-    private List<BigInteger> accManifestIds;
-    private List<BigInteger> bccpManifestIds;
-    private List<BigInteger> asccpManifestIds;
-    private List<BigInteger> dtManifestIds;
+    private List<String> accManifestIds;
+    private List<String> bccpManifestIds;
+    private List<String> asccpManifestIds;
+    private List<String> dtManifestIds;
 }

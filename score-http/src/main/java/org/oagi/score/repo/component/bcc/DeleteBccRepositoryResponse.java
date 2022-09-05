@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class DeleteBccRepositoryResponse {
 
-    private final BigInteger bccManifestId;
+    private final String bccManifestId;
 
-    public DeleteBccRepositoryResponse(BigInteger bccManifestId) {
+    public DeleteBccRepositoryResponse(String bccManifestId) {
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 }

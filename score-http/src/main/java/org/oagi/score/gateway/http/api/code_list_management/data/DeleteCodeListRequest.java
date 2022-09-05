@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 public class DeleteCodeListRequest {
 
-    private List<BigInteger> codeListManifestIds = Collections.emptyList();
+    private List<String> codeListManifestIds = Collections.emptyList();
 }

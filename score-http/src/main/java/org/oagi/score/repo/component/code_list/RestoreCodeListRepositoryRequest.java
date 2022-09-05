@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 public class RestoreCodeListRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     public RestoreCodeListRepositoryRequest(AuthenticatedPrincipal user,
-                                            BigInteger codeListManifestId) {
+                                            String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
     public RestoreCodeListRepositoryRequest(AuthenticatedPrincipal user,
                                             LocalDateTime localDateTime,
-                                            BigInteger codeListManifestId) {
+                                            String codeListManifestId) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

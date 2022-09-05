@@ -54,7 +54,7 @@ public class DtWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord basedBdtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getBasedDdtManifestId())))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getBasedDdtManifestId()))
                 .fetchOne();
 
         DtRecord basedBdt = dslContext.selectFrom(DT)
@@ -192,7 +192,7 @@ public class DtWriteRepository {
         bdtManifest.setLogId(logRecord.getLogId());
         bdtManifest.update(DT_MANIFEST.LOG_ID);
 
-        return new CreateBdtRepositoryResponse(bdtManifest.getDtManifestId().toBigInteger());
+        return new CreateBdtRepositoryResponse(bdtManifest.getDtManifestId());
     }
 
     private String findCdtSc(String dtScId, Map<String, String> map) {
@@ -268,7 +268,7 @@ public class DtWriteRepository {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -341,7 +341,7 @@ public class DtWriteRepository {
                         LogAction.Revised,
                         userId, timestamp);
 
-        ULong responseDtManifestId;
+        String responseDtManifestId;
         dtManifestRecord.setDtId(nextDtRecord.getDtId());
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.DT_ID, DT_MANIFEST.LOG_ID);
@@ -405,7 +405,7 @@ public class DtWriteRepository {
                             .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(prevDtSc.getDtScId()))).execute();
         }
 
-        return new ReviseDtRepositoryResponse(responseDtManifestId.toBigInteger());
+        return new ReviseDtRepositoryResponse(responseDtManifestId);
     }
 
     public UpdateDtPropertiesRepositoryResponse updateDtProperties(UpdateDtPropertiesRepositoryRequest request) {
@@ -415,7 +415,7 @@ public class DtWriteRepository {
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -524,7 +524,7 @@ public class DtWriteRepository {
             propagateUpdateDtRecord(derivedDtManifestRecord, request, user);
         }
 
-        return new UpdateDtPropertiesRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+        return new UpdateDtPropertiesRepositoryResponse(bdtManifestRecord.getDtManifestId());
     }
 
     private void propagateUpdateDtRecord(DtManifestRecord dtManifestRecord,
@@ -809,7 +809,7 @@ public class DtWriteRepository {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -860,7 +860,7 @@ public class DtWriteRepository {
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
+        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId());
     }
 
     public DeleteDtRepositoryResponse deleteDt(DeleteDtRepositoryRequest request) {
@@ -870,7 +870,7 @@ public class DtWriteRepository {
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -904,7 +904,7 @@ public class DtWriteRepository {
         bdtManifestRecord.setLogId(logRecord.getLogId());
         bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new DeleteDtRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+        return new DeleteDtRepositoryResponse(bdtManifestRecord.getDtManifestId());
     }
 
     public DiscardDtRepositoryResponse purgeDt(PurgeDtRepositoryRequest request) {
@@ -914,7 +914,7 @@ public class DtWriteRepository {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -1027,7 +1027,7 @@ public class DtWriteRepository {
                 .where(DT.DT_ID.eq(dtRecord.getDtId()))
                 .execute();
 
-        return new DiscardDtRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
+        return new DiscardDtRepositoryResponse(dtManifestRecord.getDtManifestId());
     }
 
     public UpdateDtOwnerRepositoryResponse updateDtOwner(UpdateDtOwnerRepositoryRequest request) {
@@ -1037,7 +1037,7 @@ public class DtWriteRepository {
 
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -1068,7 +1068,7 @@ public class DtWriteRepository {
         bdtManifestRecord.setLogId(logRecord.getLogId());
         bdtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new UpdateDtOwnerRepositoryResponse(bdtManifestRecord.getDtManifestId().toBigInteger());
+        return new UpdateDtOwnerRepositoryResponse(bdtManifestRecord.getDtManifestId());
     }
 
     public CancelRevisionDtRepositoryResponse cancelRevisionDt(CancelRevisionDtRepositoryRequest request) {
@@ -1076,7 +1076,7 @@ public class DtWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId()))).fetchOne();
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getDtManifestId())).fetchOne();
 
         List<DtScManifestRecord> dtScManifestRecords = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId())).fetch();
@@ -1134,7 +1134,7 @@ public class DtWriteRepository {
         return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
     }
 
-    private void createDtScForDerived(ULong dtManifestId,DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
+    private void createDtScForDerived(String dtManifestId,DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId)).fetchOne();
@@ -1154,9 +1154,7 @@ public class DtWriteRepository {
         );
 
         dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
-        dtScManifestRecord.setBasedDtScManifestId(ULong.valueOf(
-                dtScManifestRecord.getDtScManifestId().longValue()
-        ));
+        dtScManifestRecord.setBasedDtScManifestId(dtScManifestRecord.getDtScManifestId());
         dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
         dtScManifestRecord.setDtScManifestId(null);
 
@@ -1261,7 +1259,7 @@ public class DtWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getOwnerDdtManifestId()))).fetchOne();
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getOwnerDdtManifestId())).fetchOne();
 
         DtRecord targetDtRecord = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
@@ -1314,13 +1312,13 @@ public class DtWriteRepository {
         dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(ownerDtManifest.getDtManifestId()))
                 .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
 
-        return new CreateDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+        return new CreateDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId());
     }
 
     public void addDtPrimitiveRestriction(CreatePrimitiveRestrictionRepositoryRequest request) {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getDtManifestId()))
                 .fetchOne();
 
         List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
@@ -1341,9 +1339,9 @@ public class DtWriteRepository {
 
         boolean isDefault = bdtPriRestriRecords.size() == 0;
 
-        for (BigInteger xbtManifestId: request.getXbtManifestIdList()) {
+        for (String xbtManifestId: request.getXbtManifestIdList()) {
             XbtManifestRecord xbtManifestRecord = dslContext.selectFrom(XBT_MANIFEST)
-                    .where(XBT_MANIFEST.XBT_MANIFEST_ID.eq(ULong.valueOf(xbtManifestId)))
+                    .where(XBT_MANIFEST.XBT_MANIFEST_ID.eq(xbtManifestId))
                     .fetchOne();
 
             String duplicated = dslContext.select(CDT_PRI.NAME).from(BDT_PRI_RESTRI)
@@ -1384,7 +1382,7 @@ public class DtWriteRepository {
 
     public void addDtCodeListRestriction(CreateCodeListRestrictionRepositoryRequest request) {
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId())))
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(request.getCodeListManifestId()))
                 .fetchOne();
 
         CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
@@ -1392,7 +1390,7 @@ public class DtWriteRepository {
                 .fetchOne();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getDtManifestId()))
                 .fetchOne();
 
         List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)
@@ -1419,7 +1417,7 @@ public class DtWriteRepository {
 
     public void addDtAgencyIdListRestriction(CreateAgencyIdListRestrictionRepositoryRequest request) {
         AgencyIdListManifestRecord agencyIdListManifestRecord = dslContext.selectFrom(AGENCY_ID_LIST_MANIFEST)
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getAgencyIdListManifestId())))
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(request.getAgencyIdListManifestId()))
                 .fetchOne();
 
         AgencyIdListRecord agencyIdListRecord = dslContext.selectFrom(AGENCY_ID_LIST)
@@ -1427,7 +1425,7 @@ public class DtWriteRepository {
                 .fetchOne();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getDtManifestId())))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getDtManifestId()))
                 .fetchOne();
 
         List<BdtPriRestriRecord> bdtPriRestriRecords = dslContext.selectFrom(BDT_PRI_RESTRI)

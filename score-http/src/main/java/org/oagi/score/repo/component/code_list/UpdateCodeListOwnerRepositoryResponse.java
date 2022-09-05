@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class UpdateCodeListOwnerRepositoryResponse {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
-    public UpdateCodeListOwnerRepositoryResponse(BigInteger codeListManifestId) {
+    public UpdateCodeListOwnerRepositoryResponse(String codeListManifestId) {
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

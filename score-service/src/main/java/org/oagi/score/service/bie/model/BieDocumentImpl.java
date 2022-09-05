@@ -80,7 +80,7 @@ public class BieDocumentImpl implements BieDocument {
                         "BCC-" + ((Bbie) e).getBasedBccManifestId()), Function.identity()));
 
         List<BieAssociation> associations = new ArrayList();
-        BigInteger basedAccManifestId = abie.getBasedAccManifestId();
+        String basedAccManifestId = abie.getBasedAccManifestId();
         AccManifest accManifest = ccDocument.getAccManifest(basedAccManifestId);
         Stack<AccManifest> accManifestStack = new Stack();
         while (accManifest != null) {

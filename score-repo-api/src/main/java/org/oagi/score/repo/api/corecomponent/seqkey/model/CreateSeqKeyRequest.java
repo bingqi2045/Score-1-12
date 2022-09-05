@@ -7,25 +7,25 @@ import java.math.BigInteger;
 
 public class CreateSeqKeyRequest extends Request {
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
     private SeqKeyType type;
 
-    private BigInteger manifestId;
+    private String manifestId;
 
     public CreateSeqKeyRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public CreateSeqKeyRequest withFromAccManifestId(BigInteger fromAccManifestId) {
+    public CreateSeqKeyRequest withFromAccManifestId(String fromAccManifestId) {
         setFromAccManifestId(fromAccManifestId);
         return this;
     }
@@ -43,15 +43,15 @@ public class CreateSeqKeyRequest extends Request {
         return this;
     }
 
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return manifestId;
     }
 
-    public void setManifestId(BigInteger manifestId) {
+    public void setManifestId(String manifestId) {
         this.manifestId = manifestId;
     }
 
-    public CreateSeqKeyRequest withManifestId(BigInteger manifestId) {
+    public CreateSeqKeyRequest withManifestId(String manifestId) {
         setManifestId(manifestId);
         return this;
     }

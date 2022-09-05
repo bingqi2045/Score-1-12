@@ -11,7 +11,7 @@ import java.util.List;
 public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private CcType type = CcType.DT_SC;
-    private BigInteger manifestId = BigInteger.ZERO;
+    private String manifestId;
     private String bdtScId;
     private String guid;
     private String den;
@@ -39,7 +39,7 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private int revisionNum;
     private int revisionTrackingNum;
     private String spec;
-    private BigInteger basedDtManifestId;
+    private String basedDtManifestId;
     private String basedDtScId;
 
     private List<CcBdtScPriRestri> bdtScPriRestriList;

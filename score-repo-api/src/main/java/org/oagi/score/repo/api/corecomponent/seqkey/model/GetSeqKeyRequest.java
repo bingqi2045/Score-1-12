@@ -9,7 +9,7 @@ public class GetSeqKeyRequest extends Request {
 
     private BigInteger seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
     public GetSeqKeyRequest(ScoreUser requester) {
         super(requester);
@@ -28,15 +28,15 @@ public class GetSeqKeyRequest extends Request {
         return this;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public GetSeqKeyRequest withFromAccManifestId(BigInteger fromAccManifestId) {
+    public GetSeqKeyRequest withFromAccManifestId(String fromAccManifestId) {
         setFromAccManifestId(fromAccManifestId);
         return this;
     }

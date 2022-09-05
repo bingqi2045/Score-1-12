@@ -11,8 +11,8 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ASCCP implements CoreComponent {
 
-    private BigInteger asccpManifestId = BigInteger.ZERO;
-    private BigInteger roleOfAccManifestId = BigInteger.ZERO;
+    private String asccpManifestId;
+    private String roleOfAccManifestId;
     private String asccpId;
     private String guid;
     private String propertyTerm;

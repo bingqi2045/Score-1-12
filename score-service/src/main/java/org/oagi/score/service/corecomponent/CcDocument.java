@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CcDocument {
 
-    AccManifest getAccManifest(BigInteger accManifestId);
+    AccManifest getAccManifest(String accManifestId);
 
     Acc getAcc(AccManifest accManifest);
 
@@ -17,27 +17,27 @@ public interface CcDocument {
 
     List<CcAssociation> getAssociations(AccManifest accManifest);
 
-    AsccManifest getAsccManifest(BigInteger asccManifestId);
+    AsccManifest getAsccManifest(String asccManifestId);
 
     Ascc getAscc(AsccManifest asccManifest);
 
-    BccManifest getBccManifest(BigInteger bccManifestId);
+    BccManifest getBccManifest(String bccManifestId);
 
     Bcc getBcc(BccManifest bccManifest);
 
-    AsccpManifest getAsccpManifest(BigInteger asccpManifestId);
+    AsccpManifest getAsccpManifest(String asccpManifestId);
 
     Asccp getAsccp(AsccpManifest asccpManifest);
 
-    BccpManifest getBccpManifest(BigInteger bccpManifestId);
+    BccpManifest getBccpManifest(String bccpManifestId);
 
     Bccp getBccp(BccpManifest bccpManifest);
 
-    DtManifest getDtManifest(BigInteger dtManifestId);
+    DtManifest getDtManifest(String dtManifestId);
 
     Dt getDt(DtManifest dtManifest);
 
-    DtScManifest getDtScManifest(BigInteger dtScManifestId);
+    DtScManifest getDtScManifest(String dtScManifestId);
 
     DtSc getDtSc(DtScManifest dtScManifest);
 

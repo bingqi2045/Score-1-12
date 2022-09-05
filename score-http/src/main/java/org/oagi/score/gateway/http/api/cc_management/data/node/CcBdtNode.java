@@ -14,8 +14,8 @@ public class CcBdtNode extends CcNode {
 
     private String bdtId;
 
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger bccManifestId = BigInteger.ZERO;
+    private String manifestId;
+    private String bccManifestId;
     private BigInteger basedManifestId;
     private String den;
     private String prevBccpId;

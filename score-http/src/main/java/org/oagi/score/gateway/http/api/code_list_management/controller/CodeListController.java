@@ -111,7 +111,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CodeList getCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                @PathVariable("manifestId") BigInteger manifestId) {
+                                @PathVariable("manifestId") String manifestId) {
         return service.getCodeList(user, manifestId);
     }
 
@@ -119,7 +119,7 @@ public class CodeListController {
     public CcCreateResponse create(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestBody CodeList codeList) {
-        BigInteger manifestId = service.createCodeList(user, codeList);
+        String manifestId = service.createCodeList(user, codeList);
 
         CcCreateResponse resp = new CcCreateResponse();
         resp.setManifestId(manifestId);
@@ -128,7 +128,7 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("manifestId") BigInteger manifestId,
+            @PathVariable("manifestId") String manifestId,
             @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestBody CodeList codeList) {
         codeList.setCodeListManifestId(manifestId);
@@ -138,7 +138,7 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list/{manifestId}/revision", method = RequestMethod.POST)
     public ResponseEntity makeNewRevision(
-            @PathVariable("manifestId") BigInteger manifestId,
+            @PathVariable("manifestId") String manifestId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
 
         service.makeNewRevision(user, manifestId);
@@ -147,14 +147,14 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list/{manifestId}/revision", method = RequestMethod.GET)
     public CodeList getCodeListRevision(
-            @PathVariable("manifestId") BigInteger manifestId,
+            @PathVariable("manifestId") String manifestId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
         return service.getCodeListRevision(user, manifestId);
     }
 
     @RequestMapping(value = "/code_list/{manifestId}/revision/cancel", method = RequestMethod.POST)
     public ResponseEntity cancelRevision(
-            @PathVariable("manifestId") BigInteger manifestId,
+            @PathVariable("manifestId") String manifestId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
 
         service.cancelRevision(user, manifestId);
@@ -179,9 +179,9 @@ public class CodeListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
             @RequestParam(name = "releaseId") String releaseId,
-            @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
+            @RequestParam(name = "codeListManifestId", required = false) String codeListManifestId,
             @RequestParam(name = "listId") String listId,
-            @RequestParam(name = "agencyIdListValueManifestId") Long agencyIdListValueManifestId,
+            @RequestParam(name = "agencyIdListValueManifestId") String agencyIdListValueManifestId,
             @RequestParam(name = "versionId") String versionId) {
 
         SameCodeListParams params = new SameCodeListParams();
@@ -198,7 +198,7 @@ public class CodeListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkNameUniqueness(
             @RequestParam(name = "releaseId") String releaseId,
-            @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
+            @RequestParam(name = "codeListManifestId", required = false) String codeListManifestId,
             @RequestParam(name = "codeListName") String codeListName) {
 
         SameNameCodeListParams params = new SameNameCodeListParams();
@@ -213,7 +213,7 @@ public class CodeListController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @PathVariable("manifestId") String manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         service.transferOwnership(user, manifestId, targetLoginId);
@@ -224,7 +224,7 @@ public class CodeListController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CodeListUpliftingResponse upliftCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                    @PathVariable("manifestId") BigInteger manifestId,
+                                                    @PathVariable("manifestId") String manifestId,
                                                     @RequestBody CodeListUpliftingRequest request) {
         request.setRequester(sessionService.asScoreUser(user));
         request.setCodeListManifestId(manifestId);

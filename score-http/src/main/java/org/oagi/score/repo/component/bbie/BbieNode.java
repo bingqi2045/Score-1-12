@@ -12,7 +12,7 @@ public class BbieNode {
 
     @Data
     public class Bcc {
-        private BigInteger bccManifestId;
+        private String bccManifestId;
         private String guid;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -37,7 +37,7 @@ public class BbieNode {
         private String fromAbieHashPath;
         private String toBbiepPath;
         private String toBbiepHashPath;
-        private BigInteger basedBccManifestId;
+        private String basedBccManifestId;
 
         private String bbieId;
         private String guid;

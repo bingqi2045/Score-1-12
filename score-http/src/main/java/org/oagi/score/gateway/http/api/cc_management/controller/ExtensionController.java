@@ -27,7 +27,7 @@ public class ExtensionController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                            @PathVariable("manifestId") BigInteger manifestId) {
+                            @PathVariable("manifestId") String manifestId) {
         return service.getExtensionNode(user, manifestId);
     }
 
@@ -35,7 +35,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @PathVariable("manifestId") String manifestId,
                                             @RequestBody CcActionRequest actionRequest) {
 
         switch (actionRequest.getAction()) {
@@ -71,7 +71,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                               @PathVariable("manifestId") BigInteger manifestId,
+                                               @PathVariable("manifestId") String manifestId,
                                                @RequestBody Map<String, Object> body) {
         String strState = (String) body.get("state");
         if ("Purge".equals(strState)) {
@@ -88,7 +88,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                 @PathVariable("manifestId") BigInteger manifestId,
+                                                 @PathVariable("manifestId") String manifestId,
                                                  @RequestBody ExtensionUpdateRequest request) {
         request.setManifestId(manifestId);
         return service.updateDetails(user, request);
@@ -99,7 +99,7 @@ public class ExtensionController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getLastCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                 @PathVariable("type") String type,
-                                @PathVariable("manifestId") BigInteger manifestId) {
+                                @PathVariable("manifestId") String manifestId) {
         return service.getLastRevisionCc(user, type, manifestId);
     }
 }

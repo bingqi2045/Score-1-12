@@ -1,19 +1,20 @@
 package org.oagi.score.repo.component.bcc;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcRefactorValidationResponse;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.*;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIE;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
@@ -35,26 +35,26 @@ public class BccReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public BccRecord getBccByManifestId(BigInteger bccManifestId) {
+    public BccRecord getBccByManifestId(String bccManifestId) {
         return dslContext.select(BCC.fields())
                 .from(BCC)
                 .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestId))
                 .fetchOptionalInto(BccRecord.class).orElse(null);
     }
 
-    public BccManifestRecord getBccManifestById(BigInteger bccManifestId) {
+    public BccManifestRecord getBccManifestById(String bccManifestId) {
         return dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestId))
                 .fetchOptionalInto(BccManifestRecord.class).orElse(null);
     }
 
-    public CcRefactorValidationResponse validateBccRefactoring(AppUser user, BigInteger bccManifestId, BigInteger accManifestId) {
+    public CcRefactorValidationResponse validateBccRefactoring(AppUser user, String bccManifestId, String accManifestId) {
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BccManifest.BCC_MANIFEST)
                 .where(BccManifest.BCC_MANIFEST.BCC_MANIFEST_ID.eq(
-                        ULong.valueOf(bccManifestId)
+                        bccManifestId
                 ))
                 .fetchOne();
 
@@ -69,7 +69,7 @@ public class BccReadRepository {
         response.setType(CcType.BCC.toString());
         response.setManifestId(bccManifestId);
 
-        Map<ULong, List<String>> issueMap = getBlockerReasonMap(user, bccManifestRecord, ULong.valueOf(accManifestId));
+        Map<String, List<String>> issueMap = getBlockerReasonMap(user, bccManifestRecord, accManifestId);
 
         List<CcRefactorValidationResponse.IssuedCc> issuedCcList = dslContext.select(
                 inline("ACC").as("type"),
@@ -102,8 +102,8 @@ public class BccReadRepository {
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.in(issueMap.keySet()))
                 .fetchStream().map(row -> {
                     CcRefactorValidationResponse.IssuedCc issuedCc = new CcRefactorValidationResponse.IssuedCc();
-                    issuedCc.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
-                    issuedCc.setId(row.getValue("id", ULong.class).toBigInteger());
+                    issuedCc.setManifestId(row.getValue("manifest_id", String.class));
+                    issuedCc.setId(row.getValue("id", String.class));
                     issuedCc.setGuid(row.getValue("guid", String.class));
                     issuedCc.setDen(row.getValue("den", String.class));
                     issuedCc.setName(row.getValue("object_class_term", String.class));
@@ -119,7 +119,7 @@ public class BccReadRepository {
                     issuedCc.setLastUpdateUser((String) row.getValue("last_update_user"));
                     issuedCc.setRevision(row.getValue(LOG.REVISION_NUM).toString());
                     issuedCc.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    issuedCc.setReasons(issueMap.get(ULong.valueOf(issuedCc.getManifestId())));
+                    issuedCc.setReasons(issueMap.get(String.valueOf(issuedCc.getManifestId())));
                     return issuedCc;
                 }).collect(Collectors.toList());
 
@@ -128,13 +128,13 @@ public class BccReadRepository {
         return response;
     }
 
-    public Map<ULong, List<String>> getBlockerReasonMap(AppUser requester, BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+    public Map<String, List<String>> getBlockerReasonMap(AppUser requester, BccManifestRecord bccManifestRecord, String targetAccManifestId) {
 
         String releaseId = bccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
+        Map<String, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<String, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
         List<AccRecord> accList = dslContext.selectFrom(ACC).fetch();
@@ -142,20 +142,20 @@ public class BccReadRepository {
 
         List<BccManifestRecord> bccList = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
+        Map<String, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         accManifestIdList.add(targetAccManifestId);
 
-        Set<ULong> accCandidates = new HashSet<>();
+        Set<String> accCandidates = new HashSet<>();
 
-        for (ULong cur : accManifestIdList) {
+        for (String cur : accManifestIdList) {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
 
-        Map<ULong, ULong> groupMap = new HashMap<>();
+        Map<String, String> groupMap = new HashMap<>();
 
         dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
@@ -175,7 +175,7 @@ public class BccReadRepository {
 
         Set<BccManifestRecord> bccResult = new HashSet<>();
 
-        for (ULong acc : accCandidates) {
+        for (String acc : accCandidates) {
             bccResult.addAll(
                     fromAccBccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -184,7 +184,7 @@ public class BccReadRepository {
                             .collect(Collectors.toList()));
         }
 
-        Map<ULong, List<String>> map = new HashMap<>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for (BccManifestRecord bcc : bccResult) {
             AccManifestRecord amr = accManifestMap.get(bcc.getFromAccManifestId());
@@ -226,8 +226,8 @@ public class BccReadRepository {
         return map;
     }
 
-    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
-        List<ULong> result = new ArrayList<>();
+    private List<String> getBaseAccManifestId(String accManifestId, Map<String, List<AccManifestRecord>> baseAccMap) {
+        List<String> result = new ArrayList<>();
         result.add(accManifestId);
         if (baseAccMap.containsKey(accManifestId)) {
             baseAccMap.get(accManifestId).forEach(e -> {

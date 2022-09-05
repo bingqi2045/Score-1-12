@@ -38,7 +38,7 @@ public class AbieReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AbieNode getAbieNode(String topLevelAsbiepId, BigInteger accManifestId, String hashPath) {
+    public AbieNode getAbieNode(String topLevelAsbiepId, String accManifestId, String hashPath) {
         AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestId);
         if (accRecord == null) {
             return null;
@@ -73,7 +73,7 @@ public class AbieReadRepository {
         if (abieRecord != null) {
             abie.setAbieId(abieRecord.getAbieId());
             abie.setGuid(abieRecord.getGuid());
-            abie.setBasedAccManifestId(abieRecord.getBasedAccManifestId().toBigInteger());
+            abie.setBasedAccManifestId(abieRecord.getBasedAccManifestId());
             abie.setRemark(abieRecord.getRemark());
             abie.setBizTerm(abieRecord.getBizTerm());
             abie.setDefinition(abieRecord.getDefinition());

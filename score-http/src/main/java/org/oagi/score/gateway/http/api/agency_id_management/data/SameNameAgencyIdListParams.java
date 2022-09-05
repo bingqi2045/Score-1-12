@@ -6,6 +6,6 @@ import lombok.Data;
 public class SameNameAgencyIdListParams {
 
     private String releaseId;
-    private Long agencyIdListManifestId;
+    private String agencyIdListManifestId;
     private String agencyIdListName;
 }

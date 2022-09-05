@@ -9,7 +9,7 @@ public class BieEditBbieSc {
 
     private String bbieScId;
     private String bbieId;
-    private BigInteger dtScManifestId = BigInteger.ZERO;
+    private String dtScManifestId;
     private boolean used;
 
 }

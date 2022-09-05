@@ -30,7 +30,7 @@ public class GraphController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public FindUsagesResponse findUsages(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @PathVariable("type") String type,
-                                         @PathVariable("id") BigInteger manifestId) {
+                                         @PathVariable("id") String manifestId) {
 
         FindUsagesRequest request = new FindUsagesRequest();
         request.setType(type);
@@ -50,19 +50,19 @@ public class GraphController {
         switch (type.toLowerCase()) {
             case "acc":
             case "extension":
-                graph = graphService.getAccGraph(new BigInteger(id));
+                graph = graphService.getAccGraph(id);
                 break;
 
             case "asccp":
-                graph = graphService.getAsccpGraph(new BigInteger(id), false);
+                graph = graphService.getAsccpGraph(id, false);
                 break;
 
             case "bccp":
-                graph = graphService.getBccpGraph(new BigInteger(id));
+                graph = graphService.getBccpGraph(id);
                 break;
 
             case "dt":
-                graph = graphService.getDtGraph(new BigInteger(id));
+                graph = graphService.getDtGraph(id);
                 break;
 
             case "top_level_asbiep":
@@ -70,7 +70,7 @@ public class GraphController {
                 break;
 
             case "code_list":
-                graph = graphService.getCodeListGraph(new BigInteger(id));
+                graph = graphService.getCodeListGraph(id);
                 break;
 
             default:
@@ -104,7 +104,7 @@ public class GraphController {
 
         AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);
         Graph graph;
-        graph = graphService.getAsccpGraph(asccpManifestRecord.getAsccpManifestId().toBigInteger(), false);
+        graph = graphService.getAsccpGraph(asccpManifestRecord.getAsccpManifestId(), false);
 
         Map<String, Object> response = new HashMap();
         response.put("graph", graph);

@@ -9,8 +9,8 @@ public class CcRefactorRequest {
 
     private String type;
 
-    private BigInteger targetManifestId;
+    private String targetManifestId;
 
-    private BigInteger destinationManifestId;
+    private String destinationManifestId;
 
 }

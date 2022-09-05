@@ -17,8 +17,8 @@ public class CcAsccpNode extends CcNode implements SeqKeySupportable {
     private String asccId;
     private String roleOfAccId;
     private int seqKey;
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger asccManifestId = BigInteger.ZERO;
+    private String manifestId;
+    private String asccManifestId;
     private String asccpType;
 
     @Override

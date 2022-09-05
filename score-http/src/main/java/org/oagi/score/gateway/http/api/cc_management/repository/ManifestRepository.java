@@ -17,43 +17,43 @@ public class ManifestRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AccManifestRecord getAccManifestById(ULong manifestId) {
+    public AccManifestRecord getAccManifestById(String manifestId) {
         return dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public AsccpManifestRecord getAsccpManifestById(ULong manifestId) {
+    public AsccpManifestRecord getAsccpManifestById(String manifestId) {
         return dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public BccpManifestRecord getBccpManifestById(ULong manifestId) {
+    public BccpManifestRecord getBccpManifestById(String manifestId) {
         return dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public AsccManifestRecord getAsccManifestById(BigInteger manifestId) {
+    public AsccManifestRecord getAsccManifestById(String manifestId) {
         return dslContext.selectFrom(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public BccManifestRecord getBccManifestById(BigInteger manifestId) {
+    public BccManifestRecord getBccManifestById(String manifestId) {
         return dslContext.selectFrom(BCC_MANIFEST)
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public DtManifestRecord getDtManifestById(ULong manifestId) {
+    public DtManifestRecord getDtManifestById(String manifestId) {
         return dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public List<BccManifestRecord> getBccManifestByFromAccManifestId(ULong fromAccManifestId) {
+    public List<BccManifestRecord> getBccManifestByFromAccManifestId(String fromAccManifestId) {
         return dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))

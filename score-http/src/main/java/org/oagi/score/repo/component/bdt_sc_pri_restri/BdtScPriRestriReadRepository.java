@@ -44,7 +44,7 @@ public class BdtScPriRestriReadRepository {
         };
     }
 
-    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(BigInteger bdtScManifestId) {
+    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(String bdtScManifestId) {
         return dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
@@ -60,7 +60,7 @@ public class BdtScPriRestriReadRepository {
                 .on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
                 .join(DT_SC_MANIFEST)
                 .on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtScPriRestri::getXbtName))
                 .collect(Collectors.toList());

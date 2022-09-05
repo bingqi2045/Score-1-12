@@ -9,26 +9,26 @@ import java.time.LocalDateTime;
 
 public class RefactorAsccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccManifestId;
-    private final BigInteger accManifestId;
+    private final String asccManifestId;
+    private final String accManifestId;
 
-    public RefactorAsccRepositoryRequest(AuthenticatedPrincipal user, BigInteger asccManifestId, BigInteger accManifestId) {
+    public RefactorAsccRepositoryRequest(AuthenticatedPrincipal user, String asccManifestId, String accManifestId) {
         super(user);
         this.asccManifestId = asccManifestId;
         this.accManifestId = accManifestId;
     }
 
-    public RefactorAsccRepositoryRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime, BigInteger asccManifestId, BigInteger accManifestId) {
+    public RefactorAsccRepositoryRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime, String asccManifestId, String accManifestId) {
         super(user, localDateTime);
         this.asccManifestId = asccManifestId;
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 }

@@ -7,5 +7,5 @@ import java.math.BigInteger;
 @Data
 public class CreateAgencyIdListRequest {
     private String releaseId;
-    private BigInteger basedAgencyIdListManifestId;
+    private String basedAgencyIdListManifestId;
 }

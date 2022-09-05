@@ -10,7 +10,7 @@ public class BBIEP implements BIE {
 
     private String bbiepId;
     private String guid;
-    private BigInteger basedBccpManifestId = BigInteger.ZERO;
+    private String basedBccpManifestId;
     private String definition;
     private String remark;
     private String bizTerm;

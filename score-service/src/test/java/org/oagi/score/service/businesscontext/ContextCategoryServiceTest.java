@@ -30,7 +30,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
 
     @BeforeAll
     void setUp() {
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertNotNull(response.getContextCategoryId());
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(response.getContextCategoryId()))
                 .fetchOne();
 
         assertEquals(request.getName(), ctxCategoryRecord.getName());
@@ -83,7 +83,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertEquals(request.getContextCategoryId(), response.getContextCategoryId());
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(response.getContextCategoryId()))
                 .fetchOne();
 
         assertEquals(contextCategory.getGuid(), ctxCategoryRecord.getGuid());
@@ -119,7 +119,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertTrue(response.contains(contextCategory.getContextCategoryId()));
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                 .fetchOptional().orElse(null);
 
         assertNull(ctxCategoryRecord);
@@ -149,15 +149,15 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertNotNull(contextCategory);
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                 .fetchOne();
 
-        assertEquals(ctxCategoryRecord.getCtxCategoryId().toBigInteger(), contextCategory.getContextCategoryId());
+        assertEquals(ctxCategoryRecord.getCtxCategoryId(), contextCategory.getContextCategoryId());
         assertEquals(ctxCategoryRecord.getGuid(), contextCategory.getGuid());
         assertEquals(ctxCategoryRecord.getName(), contextCategory.getName());
         assertEquals(ctxCategoryRecord.getDescription(), contextCategory.getDescription());
-        assertEquals(ctxCategoryRecord.getCreatedBy().toBigInteger(), contextCategory.getCreatedBy().getUserId());
-        assertEquals(ctxCategoryRecord.getLastUpdatedBy().toBigInteger(), contextCategory.getLastUpdatedBy().getUserId());
+        assertEquals(ctxCategoryRecord.getCreatedBy(), contextCategory.getCreatedBy().getUserId());
+        assertEquals(ctxCategoryRecord.getLastUpdatedBy(), contextCategory.getLastUpdatedBy().getUserId());
     }
 
     @Test

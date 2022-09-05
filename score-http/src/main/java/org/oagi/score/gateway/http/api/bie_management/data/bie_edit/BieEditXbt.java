@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class BieEditXbt {
 
-    private BigInteger priRestriId;
+    private String priRestriId;
     private boolean isDefault;
-    private BigInteger xbtId;
+    private String xbtId;
     private String xbtName;
 
 }

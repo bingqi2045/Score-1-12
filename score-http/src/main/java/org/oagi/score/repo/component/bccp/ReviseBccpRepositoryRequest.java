@@ -7,15 +7,15 @@ import java.math.BigInteger;
 
 public class ReviseBccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
     public ReviseBccpRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger bccpManifestId) {
+                                       String bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 }

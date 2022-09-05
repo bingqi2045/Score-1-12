@@ -117,7 +117,7 @@ public class AgencyIdService {
         return response;
     }
 
-    public AgencyIdList getAgencyIdListDetail(ScoreUser user, BigInteger manifestId) {
+    public AgencyIdList getAgencyIdListDetail(ScoreUser user, String manifestId) {
         AgencyIdList agencyIdList = scoreRepositoryFactory.createAgencyIdListReadRepository().getAgencyIdListByAgencyIdListManifestId(manifestId);
         boolean isWorkingRelease = agencyIdList.getReleaseNum().equals("Working");
         agencyIdList.setAccess(
@@ -136,7 +136,7 @@ public class AgencyIdService {
     }
 
     @Transactional
-    public BigInteger createAgencyIdList(ScoreUser user, CreateAgencyIdListRequest request) {
+    public String createAgencyIdList(ScoreUser user, CreateAgencyIdListRequest request) {
         return scoreRepositoryFactory.createAgencyIdListWriteRepository().createAgencyIdList(user, request.getReleaseId(), request.getBasedAgencyIdListManifestId());
     }
 
@@ -146,28 +146,28 @@ public class AgencyIdService {
     }
 
     @Transactional
-    public void updateAgencyIdListState(ScoreUser user, BigInteger agencyIdListManifestId, CcState toState) {
+    public void updateAgencyIdListState(ScoreUser user, String agencyIdListManifestId, CcState toState) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().updateAgencyIdListState(user, agencyIdListManifestId, toState);
     }
 
     @Transactional
-    public void updateAgencyIdListState(AuthenticatedPrincipal user, LocalDateTime timestamp, BigInteger agencyIdListManifestId, String state) {
+    public void updateAgencyIdListState(AuthenticatedPrincipal user, LocalDateTime timestamp, String agencyIdListManifestId, String state) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().updateAgencyIdListState(sessionService.asScoreUser(user),
                 agencyIdListManifestId, CcState.valueOf(state));
     }
 
     @Transactional
-    public void transferOwnership(ScoreUser user, BigInteger agencyIdListManifestId, String targetLoginId) {
+    public void transferOwnership(ScoreUser user, String agencyIdListManifestId, String targetLoginId) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().transferOwnershipAgencyIdList(user, agencyIdListManifestId, targetLoginId);
     }
 
     @Transactional
-    public void reviseAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) {
+    public void reviseAgencyIdList(ScoreUser user, String agencyIdListManifestId) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().reviseAgencyIdList(user, agencyIdListManifestId);
     }
 
     @Transactional
-    public void cancelAgencyIdList(ScoreUser user, BigInteger agencyIdListManifestId) {
+    public void cancelAgencyIdList(ScoreUser user, String agencyIdListManifestId) {
         scoreRepositoryFactory.createAgencyIdListWriteRepository().cancelAgencyIdList(user, agencyIdListManifestId);
     }
 
@@ -178,7 +178,7 @@ public class AgencyIdService {
                 AGENCY_ID_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
         if (params.getAgencyIdListManifestId() != null) {
-            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getAgencyIdListManifestId())));
+            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(params.getAgencyIdListManifestId()));
         }
         if (params.getAgencyIdListValueManifestId() == null) {
             conditions.add(and(
@@ -194,7 +194,7 @@ public class AgencyIdService {
             AgencyIdListValueRecord valueRecord = dslContext.select(AGENCY_ID_LIST_VALUE.fields())
                     .from(AGENCY_ID_LIST_VALUE_MANIFEST)
                     .join(AGENCY_ID_LIST_VALUE).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
-                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(params.getAgencyIdListValueManifestId())))
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(params.getAgencyIdListValueManifestId()))
                     .fetchOneInto(AgencyIdListValueRecord.class);
 
             conditions.add(and(
@@ -221,7 +221,7 @@ public class AgencyIdService {
         ));
 
         if (params.getAgencyIdListManifestId() != null) {
-            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getAgencyIdListManifestId())));
+            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.ne(params.getAgencyIdListManifestId()));
         }
         conditions.add(AGENCY_ID_LIST.NAME.eq(params.getAgencyIdListName()));
 

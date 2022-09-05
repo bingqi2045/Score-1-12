@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
 
     private String qualifier;
     private String sixDigitId;
@@ -23,19 +23,19 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     private List<CcBdtPriRestri> bdtPriRestriList;
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                               BigInteger dtManifestId) {
+                                               String dtManifestId) {
         super(user);
         this.dtManifestId = dtManifestId;
     }
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                LocalDateTime localDateTime,
-                                               BigInteger dtManifestId) {
+                                               String dtManifestId) {
         super(user, localDateTime);
         this.dtManifestId = dtManifestId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 

@@ -73,7 +73,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which
      * this BBIE contextualizes.
      */
-    public final TableField<BbieRecord, ULong> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
+    public final TableField<BbieRecord, String> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
 
     /**
      * The column <code>oagi.bbie.path</code>.

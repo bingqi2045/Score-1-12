@@ -187,7 +187,7 @@ public class CcListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("type") String type,
-                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @PathVariable("manifestId") String manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         service.transferOwnership(user, type, manifestId, targetLoginId);
@@ -235,7 +235,7 @@ public class CcListController {
             @RequestParam(name = "asccpManifestIdList", required = true) String asccpManifestIdList) throws Exception {
 
         File output = moduleSetReleaseService.exportStandaloneSchema(sessionService.asScoreUser(user),
-                Arrays.stream(asccpManifestIdList.split(",")).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+                Arrays.stream(asccpManifestIdList.split(",")).collect(Collectors.toList()));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.getName() + "\"")

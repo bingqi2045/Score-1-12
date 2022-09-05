@@ -7,32 +7,32 @@ import java.math.BigInteger;
 
 public class AsccpManifest implements CcManifest, Serializable {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 
     private String releaseId;
 
     private String asccpId;
 
-    private BigInteger roleOfAccManifestId;
+    private String roleOfAccManifestId;
 
     private boolean conflict;
 
     private String logId;
 
-    private BigInteger prevAsccpManifestId;
+    private String prevAsccpManifestId;
 
-    private BigInteger nextAsccpManifestId;
+    private String nextAsccpManifestId;
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 
-    public void setAsccpManifestId(BigInteger asccpManifestId) {
+    public void setAsccpManifestId(String asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getAsccpManifestId();
     }
 
@@ -58,11 +58,11 @@ public class AsccpManifest implements CcManifest, Serializable {
         this.asccpId = asccpId;
     }
 
-    public BigInteger getRoleOfAccManifestId() {
+    public String getRoleOfAccManifestId() {
         return roleOfAccManifestId;
     }
 
-    public void setRoleOfAccManifestId(BigInteger roleOfAccManifestId) {
+    public void setRoleOfAccManifestId(String roleOfAccManifestId) {
         this.roleOfAccManifestId = roleOfAccManifestId;
     }
 
@@ -82,19 +82,19 @@ public class AsccpManifest implements CcManifest, Serializable {
         this.logId = logId;
     }
 
-    public BigInteger getPrevAsccpManifestId() {
+    public String getPrevAsccpManifestId() {
         return prevAsccpManifestId;
     }
 
-    public void setPrevAsccpManifestId(BigInteger prevAsccpManifestId) {
+    public void setPrevAsccpManifestId(String prevAsccpManifestId) {
         this.prevAsccpManifestId = prevAsccpManifestId;
     }
 
-    public BigInteger getNextAsccpManifestId() {
+    public String getNextAsccpManifestId() {
         return nextAsccpManifestId;
     }
 
-    public void setNextAsccpManifestId(BigInteger nextAsccpManifestId) {
+    public void setNextAsccpManifestId(String nextAsccpManifestId) {
         this.nextAsccpManifestId = nextAsccpManifestId;
     }
 }

@@ -65,7 +65,7 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
      * a BIE.
      */
-    public final TableField<DtUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
+    public final TableField<DtUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
 
     /**
      * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to

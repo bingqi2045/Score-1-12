@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function7;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtManifestRecord;
@@ -53,9 +51,10 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.xbt_manifest.xbt_manifest_id</code>.
+     * The column <code>oagi.xbt_manifest.xbt_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<XbtManifestRecord, ULong> XBT_MANIFEST_ID = createField(DSL.name("xbt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<XbtManifestRecord, String> XBT_MANIFEST_ID = createField(DSL.name("xbt_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.xbt_manifest.release_id</code>. Foreign key to the
@@ -84,12 +83,12 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     /**
      * The column <code>oagi.xbt_manifest.prev_xbt_manifest_id</code>.
      */
-    public final TableField<XbtManifestRecord, ULong> PREV_XBT_MANIFEST_ID = createField(DSL.name("prev_xbt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<XbtManifestRecord, String> PREV_XBT_MANIFEST_ID = createField(DSL.name("prev_xbt_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.xbt_manifest.next_xbt_manifest_id</code>.
      */
-    public final TableField<XbtManifestRecord, ULong> NEXT_XBT_MANIFEST_ID = createField(DSL.name("next_xbt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<XbtManifestRecord, String> NEXT_XBT_MANIFEST_ID = createField(DSL.name("next_xbt_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private XbtManifest(Name alias, Table<XbtManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -127,11 +126,6 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<XbtManifestRecord, ULong> getIdentity() {
-        return (Identity<XbtManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -246,21 +240,21 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, Byte, String, ULong, ULong> fieldsRow() {
+    public Row7<String, String, String, Byte, String, String, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super String, ? super String, ? super Byte, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

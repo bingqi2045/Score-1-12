@@ -7,32 +7,32 @@ import java.math.BigInteger;
 
 public class DtManifest implements CcManifest, Serializable {
 
-    private BigInteger dtManifestId;
+    private String dtManifestId;
 
     private String releaseId;
 
     private String dtId;
 
-    private BigInteger basedDtManifestId;
+    private String basedDtManifestId;
 
     private boolean conflict;
 
     private String logId;
 
-    private BigInteger prevDtManifestId;
+    private String prevDtManifestId;
 
-    private BigInteger nextDtManifestId;
+    private String nextDtManifestId;
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
-    public void setDtManifestId(BigInteger dtManifestId) {
+    public void setDtManifestId(String dtManifestId) {
         this.dtManifestId = dtManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getDtManifestId();
     }
 
@@ -58,11 +58,11 @@ public class DtManifest implements CcManifest, Serializable {
         this.dtId = dtId;
     }
 
-    public BigInteger getBasedDtManifestId() {
+    public String getBasedDtManifestId() {
         return basedDtManifestId;
     }
 
-    public void setBasedDtManifestId(BigInteger basedDtManifestId) {
+    public void setBasedDtManifestId(String basedDtManifestId) {
         this.basedDtManifestId = basedDtManifestId;
     }
 
@@ -82,19 +82,19 @@ public class DtManifest implements CcManifest, Serializable {
         this.logId = logId;
     }
 
-    public BigInteger getPrevDtManifestId() {
+    public String getPrevDtManifestId() {
         return prevDtManifestId;
     }
 
-    public void setPrevDtManifestId(BigInteger prevDtManifestId) {
+    public void setPrevDtManifestId(String prevDtManifestId) {
         this.prevDtManifestId = prevDtManifestId;
     }
 
-    public BigInteger getNextDtManifestId() {
+    public String getNextDtManifestId() {
         return nextDtManifestId;
     }
 
-    public void setNextDtManifestId(BigInteger nextDtManifestId) {
+    public void setNextDtManifestId(String nextDtManifestId) {
         this.nextDtManifestId = nextDtManifestId;
     }
 }

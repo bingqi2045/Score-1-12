@@ -36,7 +36,7 @@ public class BbieScReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BbieScNode getBbieScNode(String topLevelAsbiepId, BigInteger dtScManifestId, String hashPath) {
+    public BbieScNode getBbieScNode(String topLevelAsbiepId, String dtScManifestId, String hashPath) {
         DtScRecord dtScRecord = dtScReadRepository.getDtScByManifestId(dtScManifestId);
         if (dtScRecord == null) {
             return null;
@@ -78,8 +78,8 @@ public class BbieScReadRepository {
         return bbieScNode;
     }
 
-    public String getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
-        ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
+    public String getDefaultDtScPriRestriIdByDtScId(String dtScManifestId) {
+        String bdtScManifestId = dtScManifestId;
         String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
                 .from(DT_SC)
                 .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
@@ -126,7 +126,7 @@ public class BbieScReadRepository {
                             BBIE.BBIE_ID.eq(bbieScRecord.getBbieId())
                     ))
                     .fetchOneInto(String.class));
-            bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
+            bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId());
             bbieSc.setUsed(bbieScRecord.getIsUsed() == 1);
             bbieSc.setGuid(bbieScRecord.getGuid());
             bbieSc.setCardinalityMin(bbieScRecord.getCardinalityMin());
@@ -167,7 +167,7 @@ public class BbieScReadRepository {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("BBIE_SC");
                     bieEditUsed.setBieId(record.get(BBIE_SC.BBIE_SC_ID));
-                    bieEditUsed.setManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID).toBigInteger());
+                    bieEditUsed.setManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID));
                     bieEditUsed.setHashPath(record.get(BBIE_SC.HASH_PATH));
                     bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID));
                     return bieEditUsed;

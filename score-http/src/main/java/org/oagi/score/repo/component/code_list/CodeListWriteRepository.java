@@ -12,7 +12,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +56,13 @@ public class CodeListWriteRepository {
         CodeListManifestRecord basedCodeListManifestRecord = null;
         AgencyIdListValueManifestRecord agencyIdListValueManifestRecord;
 
-        if (request.getbasedCodeListManifestId() != null) {
+        if (request.getBasedCodeListManifestId() != null) {
             basedCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                     .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID
-                            .eq(ULong.valueOf(request.getbasedCodeListManifestId())))
+                            .eq(request.getBasedCodeListManifestId()))
                     .fetchOne();
             if (basedCodeListManifestRecord == null) {
-                throw new IllegalArgumentException("Cannot find a based Code List [codeListManifestId=" + request.getbasedCodeListManifestId() + "]");
+                throw new IllegalArgumentException("Cannot find a based Code List [codeListManifestId=" + request.getBasedCodeListManifestId() + "]");
             }
 
             CodeListRecord basedCodeListRecord = dslContext.selectFrom(CODE_LIST)
@@ -189,7 +188,7 @@ public class CodeListWriteRepository {
         codeListManifest.setLogId(logRecord.getLogId());
         codeListManifest.update(CODE_LIST_MANIFEST.LOG_ID);
 
-        return new CreateCodeListRepositoryResponse(codeListManifest.getCodeListManifestId().toBigInteger());
+        return new CreateCodeListRepositoryResponse(codeListManifest.getCodeListManifestId());
     }
 
     public UpdateCodeListPropertiesRepositoryResponse updateCodeListProperties(UpdateCodeListPropertiesRepositoryRequest request) {
@@ -199,7 +198,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -216,7 +215,7 @@ public class CodeListWriteRepository {
         }
 
         if (request.getAgencyIdListValueManifestId() != null) {
-            ULong agencyIdListValueManifestId = ULong.valueOf(request.getAgencyIdListValueManifestId());
+            String agencyIdListValueManifestId = request.getAgencyIdListValueManifestId();
             String agencyIdListValueId = dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)
                     .from(AGENCY_ID_LIST_VALUE_MANIFEST)
                     .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(agencyIdListValueManifestId))
@@ -256,7 +255,7 @@ public class CodeListWriteRepository {
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID, CODE_LIST_MANIFEST.LOG_ID);
 
-        return new UpdateCodeListPropertiesRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+        return new UpdateCodeListPropertiesRepositoryResponse(codeListManifestRecord.getCodeListManifestId());
     }
 
     public UpdateCodeListStateRepositoryResponse updateCodeListState(UpdateCodeListStateRepositoryRequest request) {
@@ -266,7 +265,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -307,7 +306,7 @@ public class CodeListWriteRepository {
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
 
-        return new UpdateCodeListStateRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+        return new UpdateCodeListStateRepositoryResponse(codeListManifestRecord.getCodeListManifestId());
     }
 
     public ModifyCodeListValuesRepositoryResponse modifyCodeListValues(ModifyCodeListValuesRepositoryRequest request) {
@@ -317,7 +316,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -328,7 +327,7 @@ public class CodeListWriteRepository {
         List<CodeListValueManifestRecord> codeListValueManifestRecordList =
                 dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
                         .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                                ULong.valueOf(request.getCodeListManifestId())))
+                                request.getCodeListManifestId()))
                         .fetch();
 
         List<CodeListValueRecord> codeListValueRecordList =
@@ -476,7 +475,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -510,7 +509,7 @@ public class CodeListWriteRepository {
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
 
-        return new DeleteCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+        return new DeleteCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId());
     }
 
     public RestoreCodeListRepositoryResponse restoreCodeList(RestoreCodeListRepositoryRequest request) {
@@ -520,7 +519,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -565,7 +564,7 @@ public class CodeListWriteRepository {
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
 
-        return new RestoreCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+        return new RestoreCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId());
     }
 
     public ReviseCodeListRepositoryResponse reviseCodeList(ReviseCodeListRepositoryRequest request) {
@@ -575,7 +574,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())))
+                        request.getCodeListManifestId()))
                 .fetchOne();
 
         CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
@@ -646,7 +645,7 @@ public class CodeListWriteRepository {
                         LogAction.Revised,
                         userId, timestamp);
 
-        ULong responseCodeListManifestId;
+        String responseCodeListManifestId;
         codeListManifestRecord.setCodeListId(nextCodeListRecord.getCodeListId());
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.LOG_ID);
@@ -658,7 +657,7 @@ public class CodeListWriteRepository {
                 prevCodeListRecord.getCodeListId(),
                 nextCodeListRecord.getCodeListId());
 
-        return new ReviseCodeListRepositoryResponse(responseCodeListManifestId.toBigInteger());
+        return new ReviseCodeListRepositoryResponse(responseCodeListManifestId);
     }
 
     public CancelRevisionCodeListRepositoryResponse cancelRevisionCodeList(CancelRevisionCodeListRepositoryRequest request) {
@@ -666,7 +665,7 @@ public class CodeListWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId()))).fetchOne();
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(request.getCodeListManifestId())).fetchOne();
 
         if (codeListManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target Code List");
@@ -807,7 +806,7 @@ public class CodeListWriteRepository {
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getCodeListManifestId())
+                        request.getCodeListManifestId()
                 ))
                 .fetchOne();
 
@@ -850,6 +849,6 @@ public class CodeListWriteRepository {
         codeListManifestRecord.setLogId(logRecord.getLogId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
 
-        return new UpdateCodeListOwnerRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+        return new UpdateCodeListOwnerRepositoryResponse(codeListManifestRecord.getCodeListManifestId());
     }
 }

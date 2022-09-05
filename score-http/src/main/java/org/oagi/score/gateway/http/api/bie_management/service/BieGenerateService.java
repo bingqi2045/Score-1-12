@@ -181,7 +181,7 @@ public class BieGenerateService {
          * Issue 566
          */
         String rootAsbiepId = topLevelAsbiep.getAsbiepId();
-        Record2<String, ULong> result = dslContext.select(ASBIEP.GUID, ASBIEP.BASED_ASCCP_MANIFEST_ID)
+        Record2<String, String> result = dslContext.select(ASBIEP.GUID, ASBIEP.BASED_ASCCP_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .where(and(ASBIEP.ASBIEP_ID

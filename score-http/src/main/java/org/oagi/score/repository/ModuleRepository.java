@@ -44,7 +44,7 @@ public class ModuleRepository {
     }
 
     public ScoreModule findByModuleSetReleaseIdAndAsccpManifestId(
-            String moduleSetReleaseId, ULong asccpManifestId) {
+            String moduleSetReleaseId, String asccpManifestId) {
         return dslContext.select(
                         MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID,
                         MODULE_SET_RELEASE.MODULE_SET_ID,
@@ -74,7 +74,7 @@ public class ModuleRepository {
                 .fetchOneInto(ScoreModule.class);
     }
 
-    public String getModuleSetReleaseIdByAsccpManifestId(ULong asccpManifestId) {
+    public String getModuleSetReleaseIdByAsccpManifestId(String asccpManifestId) {
         return dslContext.select(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
                 .from(MODULE_SET_RELEASE)
                 .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
@@ -85,7 +85,7 @@ public class ModuleRepository {
                 .fetchOneInto(String.class);
     }
 
-    public String getModulePathByDtManifestId(String moduleSetReleaseId, ULong dtManifestId) {
+    public String getModulePathByDtManifestId(String moduleSetReleaseId, String dtManifestId) {
         return dslContext.select(MODULE.PATH)
                 .from(MODULE)
                 .join(MODULE_DT_MANIFEST).on(MODULE.MODULE_ID.eq(MODULE_DT_MANIFEST.MODULE_ID))

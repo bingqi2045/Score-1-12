@@ -15,7 +15,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Ascc {
-        private BigInteger manifestId = BigInteger.ZERO;
+        private String manifestId;
         private String asccId;
         private String guid;
         private String den;
@@ -36,7 +36,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Asccp {
-        private BigInteger manifestId = BigInteger.ZERO;
+        private String manifestId;
         private String asccpId;
         private String guid;
         private String propertyTerm;

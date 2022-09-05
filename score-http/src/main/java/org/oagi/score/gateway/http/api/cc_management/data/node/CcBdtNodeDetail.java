@@ -13,7 +13,7 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private CcType type = CcType.DT;
 
     private String bdtId;
-    private BigInteger manifestId;
+    private String manifestId;
     private String guid;
     private String dataTypeTerm;
     private String representationTerm;

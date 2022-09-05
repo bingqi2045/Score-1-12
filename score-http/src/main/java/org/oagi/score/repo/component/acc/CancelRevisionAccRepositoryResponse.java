@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class CancelRevisionAccRepositoryResponse {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
-    public CancelRevisionAccRepositoryResponse(BigInteger accManifestId) {
+    public CancelRevisionAccRepositoryResponse(String accManifestId) {
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 }

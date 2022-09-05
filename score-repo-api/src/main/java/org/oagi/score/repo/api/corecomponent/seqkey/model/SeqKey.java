@@ -11,11 +11,11 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
 
     private BigInteger seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
-    private BigInteger asccManifestId;
+    private String asccManifestId;
 
-    private BigInteger bccManifestId;
+    private String bccManifestId;
 
     private EntityType entityType;
 
@@ -31,27 +31,27 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 
-    public void setAsccManifestId(BigInteger asccManifestId) {
+    public void setAsccManifestId(String asccManifestId) {
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 
-    public void setBccManifestId(BigInteger bccManifestId) {
+    public void setBccManifestId(String bccManifestId) {
         this.bccManifestId = bccManifestId;
     }
 

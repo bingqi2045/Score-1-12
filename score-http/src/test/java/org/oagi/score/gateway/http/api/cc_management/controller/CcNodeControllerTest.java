@@ -10,6 +10,7 @@ import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcAccNode;
 import org.oagi.score.gateway.http.configuration.WithMockScoreUser;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -62,11 +63,11 @@ public class CcNodeControllerTest {
                 .build();
     }
 
-    private BigInteger getReleaseId(String releaseNum) {
+    private String getReleaseId(String releaseNum) {
         return dslContext.select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchOneInto(BigInteger.class);
+                .fetchOneInto(String.class);
     }
 
     @Test
@@ -76,7 +77,7 @@ public class CcNodeControllerTest {
         ccAccCreateRequest.setReleaseId(getReleaseId("Working"));
         MvcResult accMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse ccAccResponse = objectMapping(accMvcResult, CcCreateResponse.class);
-        if (ccAccResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
+        if (ccAccResponse.getManifestId() == null) {
             fail("Create Acc fail: " + ccAccResponse.getManifestId());
         }
     }
@@ -96,11 +97,11 @@ public class CcNodeControllerTest {
                                 ACC.OBJECT_CLASS_TERM.eq("All Extension"),
                                 RELEASE.RELEASE_ID.eq(releaseId)
                         ))
-                        .fetchOneInto(BigInteger.class)
+                        .fetchOneInto(String.class)
         );
         MvcResult asccpMvcResult = this.callApi("/core_component/asccp", ccAsccpCreateRequest, METHOD_POST);
         CcCreateResponse ccAsccpResponse = objectMapping(asccpMvcResult, CcCreateResponse.class);
-        if (ccAsccpResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
+        if (ccAsccpResponse.getManifestId() == null) {
             fail("Create Asccp fail: " + ccAsccpResponse.getManifestId());
         }
     }
@@ -120,11 +121,11 @@ public class CcNodeControllerTest {
                                 DT.DEN.eq("Action_ Code. Type"),
                                 RELEASE.RELEASE_ID.eq(releaseId)
                         ))
-                        .fetchOneInto(BigInteger.class)
+                        .fetchOneInto(String.class)
         );
         MvcResult bccpMvcResult = this.callApi("/core_component/bccp", ccBccpCreateRequest, METHOD_POST);
         CcCreateResponse ccBccpResponse = objectMapping(bccpMvcResult, CcCreateResponse.class);
-        if (ccBccpResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
+        if (ccBccpResponse.getManifestId() == null) {
             fail("Create Bccp fail: " + ccBccpResponse.getManifestId());
         }
     }
@@ -158,15 +159,15 @@ public class CcNodeControllerTest {
         ccAccCreateRequest.setReleaseId(releaseId);
         MvcResult accMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse ccAccResponse = objectMapping(accMvcResult, CcCreateResponse.class);
-        BigInteger accManifestId = ccAccResponse.getManifestId();
-        if (accManifestId.compareTo(BigInteger.ZERO) <= -1) {
+        String accManifestId = ccAccResponse.getManifestId();
+        if (accManifestId == null) {
             fail("Create Acc fail: " + accManifestId);
         }
 
         MvcResult baseAccMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse baseCcAccResponse = objectMapping(baseAccMvcResult, CcCreateResponse.class);
-        BigInteger baseAccManifestId = baseCcAccResponse.getManifestId();
-        if (baseAccManifestId.compareTo(BigInteger.ZERO) <= -1) {
+        String baseAccManifestId = baseCcAccResponse.getManifestId();
+        if (baseAccManifestId == null) {
             fail("Create Base Acc fail: " + accManifestId);
         }
 
@@ -174,7 +175,7 @@ public class CcNodeControllerTest {
         LinkedMultiValueMap params = new LinkedMultiValueMap();
         MvcResult currentAccMvcResult = this.callApi("/core_component/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode currentAccNode = objectMapping(currentAccMvcResult, CcAccNode.class);
-        BigInteger lastAccId = currentAccNode.getAccId();
+        String lastAccId = currentAccNode.getAccId();
 
         // set baseAcc
         CcSetBaseAccRequest ccSetBaseAccRequest = new CcSetBaseAccRequest();
@@ -182,7 +183,7 @@ public class CcNodeControllerTest {
         MvcResult setBaseAccMvcResult = this.callApi("/core_component/acc/" + accManifestId + "/base", ccSetBaseAccRequest, METHOD_POST);
         CcAccNode accNode = objectMapping(setBaseAccMvcResult, CcAccNode.class);
 
-        if (currentAccNode.getManifestId() != accNode.getManifestId()) {
+        if (!StringUtils.equals(currentAccNode.getManifestId(), accNode.getManifestId())) {
             fail("Acc ManifestId changed");
         }
         checkCcIdStack(lastAccId, accNode.getAccId());
@@ -220,7 +221,7 @@ public class CcNodeControllerTest {
                                 DT.DEN.eq("Action_ Code. Type"),
                                 RELEASE.RELEASE_ID.eq(releaseId)
                         ))
-                        .fetchOneInto(BigInteger.class)
+                        .fetchOneInto(String.class)
         );
         MvcResult bccpMvcResult = this.callApi("/core_component/bccp", ccBccpCreateRequest, METHOD_POST);
         CcCreateResponse ccBccpResponse = objectMapping(bccpMvcResult, CcCreateResponse.class);
@@ -263,8 +264,8 @@ public class CcNodeControllerTest {
         return objectMapper.readValue(response, valueType);
     }
 
-    private void checkCcIdStack(BigInteger originCcId, BigInteger newCcId) {
-        if (originCcId.equals(newCcId)) {
+    private void checkCcIdStack(String originCcId, String newCcId) {
+        if (!StringUtils.equals(originCcId, newCcId)) {
             fail("CcId not changed (given: " + originCcId + ", " + newCcId + ")");
         }
     }

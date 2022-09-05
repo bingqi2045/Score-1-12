@@ -6,6 +6,6 @@ import lombok.Data;
 public class SameNameCodeListParams {
 
     private String releaseId;
-    private Long codeListManifestId;
+    private String codeListManifestId;
     private String codeListName;
 }

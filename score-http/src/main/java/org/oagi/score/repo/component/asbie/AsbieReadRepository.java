@@ -45,11 +45,11 @@ public class AsbieReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsbieNode getAsbieNode(String topLevelAsbiepId, BigInteger asccManifestId, String hashPath) {
+    public AsbieNode getAsbieNode(String topLevelAsbiepId, String asccManifestId, String hashPath) {
         AsccManifestRecord asccManifestRecord = asccReadRepository.getAsccManifestById(asccManifestId);
         AsccRecord asccRecord = asccReadRepository.getAsccByManifestId(asccManifestId);
 
-        AsccpRecord asccpRecord = asccpReadRepository.getAsccpByManifestId(asccManifestRecord.getToAsccpManifestId().toBigInteger());
+        AsccpRecord asccpRecord = asccpReadRepository.getAsccpByManifestId(asccManifestRecord.getToAsccpManifestId());
         if (asccRecord == null) {
             return null;
         }
@@ -100,7 +100,7 @@ public class AsbieReadRepository {
                             ASBIEP.ASBIEP_ID.eq(asbieRecord.getToAsbiepId())
                     ))
                     .fetchOneInto(String.class));
-            asbie.setBasedAsccManifestId(asbieRecord.getBasedAsccManifestId().toBigInteger());
+            asbie.setBasedAsccManifestId(asbieRecord.getBasedAsccManifestId());
             asbie.setUsed(asbieRecord.getIsUsed() == 1);
             asbie.setCardinalityMin(asbieRecord.getCardinalityMin());
             asbie.setCardinalityMax(asbieRecord.getCardinalityMax());
@@ -124,7 +124,7 @@ public class AsbieReadRepository {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("ASBIE");
                     bieEditUsed.setBieId(record.get(ASBIE.ASBIE_ID));
-                    bieEditUsed.setManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID).toBigInteger());
+                    bieEditUsed.setManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID));
                     bieEditUsed.setHashPath(record.get(ASBIE.HASH_PATH));
                     bieEditUsed.setOwnerTopLevelAsbiepId(record.get(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID));
                     return bieEditUsed;

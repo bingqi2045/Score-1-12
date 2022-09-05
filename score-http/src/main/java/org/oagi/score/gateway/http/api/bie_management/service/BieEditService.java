@@ -383,9 +383,9 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
-        BigInteger asccpManifestId = extension.getAsccpManifestId();
+        String asccpManifestId = extension.getAsccpManifestId();
         String releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
-        BigInteger roleOfAccManifestId = bieRepository.getRoleOfAccManifestIdByAsccpManifestId(asccpManifestId);
+        String roleOfAccManifestId = bieRepository.getRoleOfAccManifestIdByAsccpManifestId(asccpManifestId);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
 
@@ -419,14 +419,14 @@ public class BieEditService implements InitializingBean {
     @Transactional
     public CreateExtensionResponse createGlobalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
         String releaseId = topLevelAsbiepRepository.findById(extension.getTopLevelAsbiepId()).getReleaseId();
-        BigInteger roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
+        String roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(Tables.ACC_MANIFEST)
                 .join(Tables.ACC).on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
                 .where(and(
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(releaseId),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension")
                 ))
-                .fetchOneInto(BigInteger.class);
+                .fetchOneInto(String.class);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
@@ -455,11 +455,11 @@ public class BieEditService implements InitializingBean {
         return response;
     }
 
-    private BigInteger createAbieExtension(AuthenticatedPrincipal user, BigInteger roleOfAccManifestId, String releaseId) {
+    private String createAbieExtension(AuthenticatedPrincipal user, String roleOfAccManifestId, String releaseId) {
         BieEditAcc eAcc = bieRepository.getAccByAccManifestId(roleOfAccManifestId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
 
-        BigInteger manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
+        String manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return manifestId;
     }
 
@@ -467,7 +467,7 @@ public class BieEditService implements InitializingBean {
     private AbieReadRepository abieReadRepository;
 
     public AbieNode getAbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                  BigInteger accManifestId, String hashPath) {
+                                  String accManifestId, String hashPath) {
         return abieReadRepository.getAbieNode(topLevelAsbiepId, accManifestId, hashPath);
     }
 
@@ -475,7 +475,7 @@ public class BieEditService implements InitializingBean {
     private AsbieReadRepository asbieReadRepository;
 
     public AsbieNode getAsbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                    BigInteger asccManifestId, String hashPath) {
+                                    String asccManifestId, String hashPath) {
         return asbieReadRepository.getAsbieNode(topLevelAsbiepId, asccManifestId, hashPath);
     }
 
@@ -483,7 +483,7 @@ public class BieEditService implements InitializingBean {
     private BbieReadRepository bbieReadRepository;
 
     public BbieNode getBbieDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                  BigInteger bccManifestId, String hashPath) {
+                                  String bccManifestId, String hashPath) {
         return bbieReadRepository.getBbieNode(topLevelAsbiepId, bccManifestId, hashPath);
     }
 
@@ -491,7 +491,7 @@ public class BieEditService implements InitializingBean {
     private AsbiepReadRepository asbiepReadRepository;
 
     public AsbiepNode getAsbiepDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                      BigInteger asccpManifestId, String hashPath) {
+                                      String asccpManifestId, String hashPath) {
         return asbiepReadRepository.getAsbiepNode(topLevelAsbiepId, asccpManifestId, hashPath);
     }
 
@@ -499,7 +499,7 @@ public class BieEditService implements InitializingBean {
     private BbiepReadRepository bbiepReadRepository;
 
     public BbiepNode getBbiepDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                    BigInteger bccpManifestId, String hashPath) {
+                                    String bccpManifestId, String hashPath) {
         return bbiepReadRepository.getBbiepNode(topLevelAsbiepId, bccpManifestId, hashPath);
     }
 
@@ -507,7 +507,7 @@ public class BieEditService implements InitializingBean {
     private BbieScReadRepository bbieScReadRepository;
 
     public BbieScNode getBbieScDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                      BigInteger dtScManifestId, String hashPath) {
+                                      String dtScManifestId, String hashPath) {
         return bbieScReadRepository.getBbieScNode(topLevelAsbiepId, dtScManifestId, hashPath);
     }
 
@@ -515,7 +515,7 @@ public class BieEditService implements InitializingBean {
     private BdtReadRepository bdtReadRepository;
 
     public BdtNode getBdtDetail(AuthenticatedPrincipal user, String topLevelAsbiepId,
-                                BigInteger dtManifestId) {
+                                String dtManifestId) {
         return bdtReadRepository.getBdtNode(topLevelAsbiepId, dtManifestId);
     }
 
@@ -547,7 +547,7 @@ public class BieEditService implements InitializingBean {
     private BdtPriRestriReadRepository bdtPriRestriReadRepository;
 
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bccpManifestId) {
         return bdtPriRestriReadRepository.availableBdtPriRestriListByBccpManifestId(bccpManifestId);
     }
 
@@ -555,7 +555,7 @@ public class BieEditService implements InitializingBean {
     private BdtScPriRestriReadRepository bdtScPriRestriReadRepository;
 
     public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bdtScManifestId) {
         return bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bdtScManifestId);
     }
 
@@ -563,7 +563,7 @@ public class BieEditService implements InitializingBean {
     private CodeListReadRepository codeListReadRepository;
 
     public List<AvailableCodeList> availableCodeListListByBccpManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bccpManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
@@ -573,7 +573,7 @@ public class BieEditService implements InitializingBean {
     }
 
     public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bdtScManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
         List<CodeListState> states = Collections.emptyList();
         if (requester.isDeveloper()) {
@@ -586,12 +586,12 @@ public class BieEditService implements InitializingBean {
     private AgencyIdListReadRepository agencyIdListReadRepository;
 
     public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bccpManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bccpManifestId) {
         return agencyIdListReadRepository.availableAgencyIdListByBccpManifestId(bccpManifestId);
     }
 
     public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
-            AuthenticatedPrincipal user, String topLevelAsbiepId, BigInteger bdtScManifestId) {
+            AuthenticatedPrincipal user, String topLevelAsbiepId, String bdtScManifestId) {
         return agencyIdListReadRepository.availableAgencyIdListByBdtScManifestId(bdtScManifestId);
     }
 
@@ -935,7 +935,7 @@ public class BieEditService implements InitializingBean {
                 bbieRecord.setExample(null);
 
                 List<AvailableBdtPriRestri> bdtPriRestriList =
-                        bdtPriRestriReadRepository.availableBdtPriRestriListByBccManifestId(bbieRecord.getBasedBccManifestId().toBigInteger());
+                        bdtPriRestriReadRepository.availableBdtPriRestriListByBccManifestId(bbieRecord.getBasedBccManifestId());
                 bdtPriRestriList = bdtPriRestriList.stream().filter(e -> e.isDefault())
                         .collect(Collectors.toList());
                 if (bdtPriRestriList.size() != 1) {
@@ -988,7 +988,7 @@ public class BieEditService implements InitializingBean {
                 bbieScRecord.setCardinalityMax(dtScRecord.getCardinalityMax());
 
                 List<AvailableBdtScPriRestri> bdtScPriRestriList =
-                        bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
+                        bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bbieScRecord.getBasedDtScManifestId());
                 bdtScPriRestriList = bdtScPriRestriList.stream().filter(e -> e.isDefault())
                         .collect(Collectors.toList());
                 if (bdtScPriRestriList.size() != 1) {

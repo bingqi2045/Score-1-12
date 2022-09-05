@@ -8,6 +8,6 @@ import java.math.BigInteger;
 public class CcBccpCreateRequest {
 
     private String releaseId;
-    private BigInteger bdtManifestId;
+    private String bdtManifestId;
 
 }

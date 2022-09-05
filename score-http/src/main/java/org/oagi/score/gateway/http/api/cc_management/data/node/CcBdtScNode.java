@@ -13,7 +13,7 @@ public class CcBdtScNode extends CcNode {
     private CcType type = CcType.DT_SC;
 
     private String bdtScId;
-    private BigInteger manifestId = BigInteger.ZERO;
+    private String manifestId;
 
     @Override
     public String getId() {

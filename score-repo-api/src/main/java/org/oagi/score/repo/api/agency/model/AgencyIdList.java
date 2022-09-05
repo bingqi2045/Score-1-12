@@ -21,7 +21,7 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     public String modulePath;
 
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
 
     private String agencyIdListId;
 
@@ -35,11 +35,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private String agencyIdListValueId;
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
 
     private String agencyIdListValueName;
 
-    private BigInteger basedAgencyIdListManifestId;
+    private String basedAgencyIdListManifestId;
 
     private String basedAgencyIdListName;
 
@@ -71,11 +71,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
 
     private List<AgencyIdListValue> values;
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 
@@ -119,11 +119,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.revisionNum = revisionNum;
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
@@ -293,11 +293,11 @@ public class AgencyIdList extends Auditable implements CoreComponent, Serializab
         this.agencyIdListValueName = agencyIdListValueName;
     }
 
-    public BigInteger getBasedAgencyIdListManifestId() {
+    public String getBasedAgencyIdListManifestId() {
         return basedAgencyIdListManifestId;
     }
 
-    public void setBasedAgencyIdListManifestId(BigInteger basedAgencyIdListManifestId) {
+    public void setBasedAgencyIdListManifestId(String basedAgencyIdListManifestId) {
         this.basedAgencyIdListManifestId = basedAgencyIdListManifestId;
     }
 

@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class CreateOagisBodResponse {
 
-    private List<BigInteger> manifestIdList;
+    private List<String> manifestIdList;
 
 }

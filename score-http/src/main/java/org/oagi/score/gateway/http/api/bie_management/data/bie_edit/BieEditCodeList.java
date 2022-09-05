@@ -7,8 +7,8 @@ import java.math.BigInteger;
 @Data
 public class BieEditCodeList {
 
-    private BigInteger codeListManifestId;
-    private BigInteger basedCodeListManifestId;
+    private String codeListManifestId;
+    private String basedCodeListManifestId;
     private String codeListId;
     private String basedCodeListId;
     private boolean isDefault;

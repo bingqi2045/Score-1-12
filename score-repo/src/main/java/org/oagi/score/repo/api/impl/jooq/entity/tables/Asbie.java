@@ -27,7 +27,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -73,7 +72,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which
      * this ASBIE contextualizes.
      */
-    public final TableField<AsbieRecord, ULong> BASED_ASCC_MANIFEST_ID = createField(DSL.name("based_ascc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.");
+    public final TableField<AsbieRecord, String> BASED_ASCC_MANIFEST_ID = createField(DSL.name("based_ascc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.");
 
     /**
      * The column <code>oagi.asbie.path</code>.
@@ -361,21 +360,21 @@ public class Asbie extends TableImpl<AsbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
+    public Row19<String, String, String, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function19<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function19<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function19<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super BigDecimal, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

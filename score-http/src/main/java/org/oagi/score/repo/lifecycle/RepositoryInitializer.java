@@ -111,7 +111,7 @@ public class RepositoryInitializer implements InitializingBean {
     }
 
     private void initSeqKey() {
-        Set<ULong> distinctFromAccManifestIds = new HashSet();
+        Set<String> distinctFromAccManifestIds = new HashSet();
         distinctFromAccManifestIds.addAll(dslContext.selectDistinct(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID)
                 .from(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.SEQ_KEY_ID.isNull())
@@ -121,15 +121,15 @@ public class RepositoryInitializer implements InitializingBean {
                 .where(BCC_MANIFEST.SEQ_KEY_ID.isNull())
                 .fetch(BCC_MANIFEST.FROM_ACC_MANIFEST_ID));
 
-        List<ULong> fromAccManifestIds = new ArrayList(distinctFromAccManifestIds);
+        List<String> fromAccManifestIds = new ArrayList(distinctFromAccManifestIds);
         Collections.sort(fromAccManifestIds);
 
-        for (ULong fromAccManifestId : fromAccManifestIds) {
+        for (String fromAccManifestId : fromAccManifestIds) {
             upsertSeqKey(fromAccManifestId);
         }
     }
 
-    private void upsertSeqKey(ULong fromAccManifestId) {
+    private void upsertSeqKey(String fromAccManifestId) {
         // cleaning data up at first.
         dslContext.deleteFrom(SEQ_KEY)
                 .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
@@ -194,15 +194,15 @@ public class RepositoryInitializer implements InitializingBean {
     private class SeqKeyWrapper {
         private final int seqKey;
         private final LocalDateTime timestamp;
-        private final ULong asccManifestId;
-        private final ULong bccManifestId;
+        private final String asccManifestId;
+        private final String bccManifestId;
 
         private SeqKeyRecord seqKeyRecord;
 
         private SeqKeyWrapper prev;
         private SeqKeyWrapper next;
 
-        SeqKeyWrapper(ULong asccManifestId, ULong bccManifestId, int seqKey, LocalDateTime timestamp) {
+        SeqKeyWrapper(String asccManifestId, String bccManifestId, int seqKey, LocalDateTime timestamp) {
             this.seqKey = seqKey;
             this.timestamp = timestamp;
             this.asccManifestId = asccManifestId;
@@ -217,11 +217,11 @@ public class RepositoryInitializer implements InitializingBean {
             return timestamp;
         }
 
-        public ULong getAsccManifestId() {
+        public String getAsccManifestId() {
             return asccManifestId;
         }
 
-        public ULong getBccManifestId() {
+        public String getBccManifestId() {
             return bccManifestId;
         }
 

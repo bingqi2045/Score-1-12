@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 
 public class UpdateBccpStateRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
     private final CcState fromState;
     private final CcState toState;
 
     public UpdateBccpStateRepositoryRequest(AuthenticatedPrincipal user,
-                                            BigInteger bccpManifestId,
+                                            String bccpManifestId,
                                             CcState fromState,
                                             CcState toState) {
         super(user);
@@ -25,7 +25,7 @@ public class UpdateBccpStateRepositoryRequest extends RepositoryRequest {
 
     public UpdateBccpStateRepositoryRequest(AuthenticatedPrincipal user,
                                             LocalDateTime localDateTime,
-                                            BigInteger bccpManifestId,
+                                            String bccpManifestId,
                                             CcState fromState,
                                             CcState toState) {
         super(user, localDateTime);
@@ -34,7 +34,7 @@ public class UpdateBccpStateRepositoryRequest extends RepositoryRequest {
         this.toState = toState;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 

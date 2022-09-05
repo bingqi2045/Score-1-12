@@ -11,6 +11,6 @@ import java.math.BigInteger;
 public class BieEditBbieScNode extends BieEditNode {
 
     private String bbieScId;
-    private BigInteger dtScManifestId;
+    private String dtScManifestId;
 
 }

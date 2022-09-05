@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtScManifestId;
+    private final String dtScManifestId;
 
     private String propertyTerm;
     private String representationTerm;
@@ -24,19 +24,19 @@ public class UpdateDtScPropertiesRepositoryRequest extends RepositoryRequest {
     private List<CcBdtScPriRestri> ccBdtScPriRestriList;
 
     public UpdateDtScPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                 BigInteger dtScManifestId) {
+                                                 String dtScManifestId) {
         super(user);
         this.dtScManifestId = dtScManifestId;
     }
 
     public UpdateDtScPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
-                                                 BigInteger dtScManifestId) {
+                                                 String dtScManifestId) {
         super(user, localDateTime);
         this.dtScManifestId = dtScManifestId;
     }
 
-    public BigInteger getDtScManifestId() {
+    public String getDtScManifestId() {
         return dtScManifestId;
     }
 

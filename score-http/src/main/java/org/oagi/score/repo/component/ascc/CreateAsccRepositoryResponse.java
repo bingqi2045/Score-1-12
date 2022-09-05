@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class CreateAsccRepositoryResponse {
 
-    private final BigInteger asccManifestId;
+    private final String asccManifestId;
 
-    public CreateAsccRepositoryResponse(BigInteger asccManifestId) {
+    public CreateAsccRepositoryResponse(String asccManifestId) {
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 }

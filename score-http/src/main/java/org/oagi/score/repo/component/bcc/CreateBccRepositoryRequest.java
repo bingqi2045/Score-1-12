@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     private final String releaseId;
-    private final BigInteger accManifestId;
-    private final BigInteger bccpManifestId;
+    private final String accManifestId;
+    private final String bccpManifestId;
     private final boolean attribute;
     private int pos = -1;
     private String logHash;
@@ -22,8 +22,8 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       String releaseId,
-                                      BigInteger accManifestId,
-                                      BigInteger bccpManifestId,
+                                      String accManifestId,
+                                      String bccpManifestId,
                                       boolean attribute) {
         super(user);
         this.releaseId = releaseId;
@@ -35,8 +35,8 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
                                       String releaseId,
-                                      BigInteger accManifestId,
-                                      BigInteger bccpManifestId,
+                                      String accManifestId,
+                                      String bccpManifestId,
                                       boolean attribute) {
         super(user, localDateTime);
         this.releaseId = releaseId;
@@ -49,11 +49,11 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
         return releaseId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 

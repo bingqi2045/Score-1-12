@@ -59,7 +59,7 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
     /**
      * The column <code>oagi.oauth2_app_scope.oauth2_app_id</code>.
      */
-    public final TableField<Oauth2AppScopeRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<Oauth2AppScopeRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app_scope.scope</code>.

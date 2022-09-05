@@ -7,18 +7,18 @@ import java.math.BigInteger;
 
 public class UpdateDtOwnerRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
     private final String ownerId;
 
     public UpdateDtOwnerRepositoryRequest(AuthenticatedPrincipal user,
-                                          BigInteger dtManifestId,
+                                          String dtManifestId,
                                           String ownerId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.ownerId = ownerId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 

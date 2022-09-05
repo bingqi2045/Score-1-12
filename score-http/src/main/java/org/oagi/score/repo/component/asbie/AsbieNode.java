@@ -10,7 +10,7 @@ public class AsbieNode {
 
     @Data
     public class Ascc {
-        private BigInteger asccManifestId;
+        private String asccManifestId;
         private String guid;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -30,7 +30,7 @@ public class AsbieNode {
         private String fromAbieHashPath;
         private String toAsbiepPath;
         private String toAsbiepHashPath;
-        private BigInteger basedAsccManifestId;
+        private String basedAsccManifestId;
 
         private String asbieId;
         private String guid;

@@ -11,7 +11,7 @@ public class BieEditBbie implements Cardinality {
     private String bbieId;
     private String fromAbieId;
     private String toBbiepId;
-    private BigInteger basedBccManifestId;
+    private String basedBccManifestId;
     private boolean used;
 
     private int cardinalityMin;

@@ -20,11 +20,9 @@ import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestTagRecord;
@@ -54,12 +52,12 @@ public class AsccpManifestTag extends TableImpl<AsccpManifestTagRecord> {
     /**
      * The column <code>oagi.asccp_manifest_tag.asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestTagRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestTagRecord, String> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest_tag.cc_tag_id</code>.
      */
-    public final TableField<AsccpManifestTagRecord, String> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.CHAR(36), this, "");
+    public final TableField<AsccpManifestTagRecord, String> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     private AsccpManifestTag(Name alias, Table<AsccpManifestTagRecord> aliased) {
         this(alias, aliased, null);
@@ -97,11 +95,6 @@ public class AsccpManifestTag extends TableImpl<AsccpManifestTagRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public UniqueKey<AsccpManifestTagRecord> getPrimaryKey() {
-        return Keys.KEY_ASCCP_MANIFEST_TAG_PRIMARY;
     }
 
     @Override
@@ -176,21 +169,21 @@ public class AsccpManifestTag extends TableImpl<AsccpManifestTagRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, String> fieldsRow() {
+    public Row2<String, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function2<? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

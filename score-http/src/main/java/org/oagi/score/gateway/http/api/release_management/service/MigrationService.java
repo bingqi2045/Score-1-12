@@ -273,40 +273,40 @@ public class MigrationService {
 
     private void writeInsertStatements(PrintWriter writer, MigrationMetadata metadata) {
         writeInsertStatements(writer, ACC, null);
-        writeInsertStatements(writer, ACC_MANIFEST, ACC_MANIFEST.ACC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAccManifestId())));
+        writeInsertStatements(writer, ACC_MANIFEST, null);
 
         writeInsertStatements(writer, ASCC, null);
-        writeInsertStatements(writer, ASCC_MANIFEST, ASCC_MANIFEST.ASCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccManifestId())));
+        writeInsertStatements(writer, ASCC_MANIFEST, null);
 
         writeInsertStatements(writer, BCC, null);
-        writeInsertStatements(writer, BCC_MANIFEST, BCC_MANIFEST.BCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccManifestId())));
+        writeInsertStatements(writer, BCC_MANIFEST, null);
 
         writeInsertStatements(writer, ASCCP, null);
-        writeInsertStatements(writer, ASCCP_MANIFEST, ASCCP_MANIFEST.ASCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccpManifestId())));
+        writeInsertStatements(writer, ASCCP_MANIFEST, null);
 
         writeInsertStatements(writer, BCCP, null);
-        writeInsertStatements(writer, BCCP_MANIFEST, BCCP_MANIFEST.BCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccpManifestId())));
+        writeInsertStatements(writer, BCCP_MANIFEST, null);
 
         writeInsertStatements(writer, DT, null);
-        writeInsertStatements(writer, DT_MANIFEST, DT_MANIFEST.DT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtManifestId())));
+        writeInsertStatements(writer, DT_MANIFEST, null);
 
         writeInsertStatements(writer, DT_SC, null);
-        writeInsertStatements(writer, DT_SC_MANIFEST, DT_SC_MANIFEST.DT_SC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtScManifestId())));
+        writeInsertStatements(writer, DT_SC_MANIFEST, null);
 
         writeInsertStatements(writer, AGENCY_ID_LIST, null);
-        writeInsertStatements(writer, AGENCY_ID_LIST_MANIFEST, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListManifestId())));
+        writeInsertStatements(writer, AGENCY_ID_LIST_MANIFEST, null);
 
         writeInsertStatements(writer, AGENCY_ID_LIST_VALUE, null);
-        writeInsertStatements(writer, AGENCY_ID_LIST_VALUE_MANIFEST, AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListValueManifestId())));
+        writeInsertStatements(writer, AGENCY_ID_LIST_VALUE_MANIFEST, null);
 
         writeInsertStatements(writer, CODE_LIST, null);
-        writeInsertStatements(writer, CODE_LIST_MANIFEST, CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListManifestId())));
+        writeInsertStatements(writer, CODE_LIST_MANIFEST, null);
 
         writeInsertStatements(writer, CODE_LIST_VALUE, null);
-        writeInsertStatements(writer, CODE_LIST_VALUE_MANIFEST, CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueManifestId())));
+        writeInsertStatements(writer, CODE_LIST_VALUE_MANIFEST, null);
 
         writeInsertStatements(writer, XBT, null);
-        writeInsertStatements(writer, XBT_MANIFEST, XBT_MANIFEST.XBT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxXbtManifestId())));
+        writeInsertStatements(writer, XBT_MANIFEST, null);
 
         writeInsertStatements(writer, MODULE, null);
         writeInsertStatements(writer, MODULE_SET, null);
@@ -566,11 +566,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxAccId(dslContext.select(max(ACC_MANIFEST.ACC_ID))
                 .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAccManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(ACC_MANIFEST.LOG_ID))
                 .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAccManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxAsccManifestId(dslContext.select(max(ASCC_MANIFEST.ASCC_MANIFEST_ID))
@@ -579,11 +577,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxAsccId(dslContext.select(max(ASCC_MANIFEST.ASCC_ID))
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxSeqKeyId(dslContext.select(max(ASCC_MANIFEST.SEQ_KEY_ID))
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxBccManifestId(dslContext.select(max(BCC_MANIFEST.BCC_MANIFEST_ID))
@@ -592,11 +588,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxBccId(dslContext.select(max(BCC_MANIFEST.BCC_ID))
                 .from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxSeqKeyId(dslContext.select(max(BCC_MANIFEST.SEQ_KEY_ID))
                 .from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxAsccpManifestId(dslContext.select(max(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
@@ -605,11 +599,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxAsccpId(dslContext.select(max(ASCCP_MANIFEST.ASCCP_ID))
                 .from(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccpManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(ASCCP_MANIFEST.LOG_ID))
                 .from(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAsccpManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxBccpManifestId(dslContext.select(max(BCCP_MANIFEST.BCCP_MANIFEST_ID))
@@ -618,11 +610,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxBccpId(dslContext.select(max(BCCP_MANIFEST.BCCP_ID))
                 .from(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccpManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(BCCP_MANIFEST.LOG_ID))
                 .from(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxBccpManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxDtManifestId(dslContext.select(max(DT_MANIFEST.DT_MANIFEST_ID))
@@ -631,11 +621,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxDtId(dslContext.select(max(DT_MANIFEST.DT_ID))
                 .from(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(DT_MANIFEST.LOG_ID))
                 .from(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxDtScManifestId(dslContext.select(max(DT_SC_MANIFEST.DT_SC_MANIFEST_ID))
@@ -644,7 +632,6 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxDtScId(dslContext.select(max(DT_SC_MANIFEST.DT_SC_ID))
                 .from(DT_SC_MANIFEST)
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxDtScManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxCodeListManifestId(dslContext.select(max(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
@@ -653,11 +640,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxCodeListId(dslContext.select(max(CODE_LIST_MANIFEST.CODE_LIST_ID))
                 .from(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(CODE_LIST_MANIFEST.LOG_ID))
                 .from(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxCodeListValueManifestId(dslContext.select(max(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID))
@@ -666,7 +651,6 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxCodeListValueId(dslContext.select(max(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID))
                 .from(CODE_LIST_VALUE_MANIFEST)
-                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxCodeListValueManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxAgencyIdListManifestId(dslContext.select(max(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
@@ -675,11 +659,9 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxAgencyIdListId(dslContext.select(max(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
                 .from(AGENCY_ID_LIST_MANIFEST)
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListManifestId())))
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxLogId(dslContext.select(max(AGENCY_ID_LIST_MANIFEST.LOG_ID))
                 .from(AGENCY_ID_LIST_MANIFEST)
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxAgencyIdListValueManifestId(dslContext.select(max(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID))
@@ -688,7 +670,6 @@ public class MigrationService {
                 .fetchOneInto(BigInteger.class));
         metadata.setMaxAgencyIdListValueId(dslContext.select(max(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID))
                 .from(AGENCY_ID_LIST_VALUE_MANIFEST)
-                .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.lessOrEqual(ULong.valueOf(metadata.getMaxAgencyIdListValueManifestId())))
                 .fetchOneInto(BigInteger.class));
 
         metadata.setMaxXbtManifestId(dslContext.select(max(XBT_MANIFEST.XBT_MANIFEST_ID))

@@ -18,7 +18,7 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private boolean deprecated;
     private String definition;
     private String definitionSource;
-    private BigInteger manifestId;
+    private String manifestId;
     private String namespaceId;
 
     private CcState state;

@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class CreateBccpRepositoryResponse {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
-    public CreateBccpRepositoryResponse(BigInteger bccpManifestId) {
+    public CreateBccpRepositoryResponse(String bccpManifestId) {
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 }

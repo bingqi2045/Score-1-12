@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AssignableNode {
-    private BigInteger manifestId;
+    private String manifestId;
     private CcType type;
     private CcState state;
     private String den;

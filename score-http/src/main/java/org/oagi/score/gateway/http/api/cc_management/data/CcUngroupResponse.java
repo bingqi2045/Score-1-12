@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CcUngroupResponse {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
 
 }

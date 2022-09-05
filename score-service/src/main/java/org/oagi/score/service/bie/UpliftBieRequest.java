@@ -15,7 +15,7 @@ public class UpliftBieRequest {
 
     private String topLevelAsbiepId;
 
-    private BigInteger targetAsccpManifestId;
+    private String targetAsccpManifestId;
 
     private List<BieUpliftingMapping> customMappingTable = Collections.emptyList();
 

@@ -10,7 +10,7 @@ public class AsbiepNode {
 
     @Data
     public class Asccp {
-        private BigInteger asccpManifestId;
+        private String asccpManifestId;
         private String guid;
         private String propertyTerm;
         private String den;
@@ -29,7 +29,7 @@ public class AsbiepNode {
         private String hashPath;
         private String roleOfAbiePath;
         private String roleOfAbieHashPath;
-        private BigInteger basedAsccpManifestId;
+        private String basedAsccpManifestId;
         private String refTopLevelAsbiepId;
 
         private String asbiepId;

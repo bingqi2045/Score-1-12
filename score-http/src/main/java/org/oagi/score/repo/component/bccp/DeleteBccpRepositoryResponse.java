@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class DeleteBccpRepositoryResponse {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
-    public DeleteBccpRepositoryResponse(BigInteger bccpManifestId) {
+    public DeleteBccpRepositoryResponse(String bccpManifestId) {
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 }

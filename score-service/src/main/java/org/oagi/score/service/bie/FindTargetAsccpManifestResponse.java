@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class FindTargetAsccpManifestResponse {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 
     private BieDocument bieDocument;
 

@@ -10,7 +10,7 @@ public class ASBIEP implements BIE {
 
     private String asbiepId;
     private String guid;
-    private BigInteger basedAsccpManifestId = BigInteger.ZERO;
+    private String basedAsccpManifestId;
     private String roleOfAbieId;
     private String definition;
     private String remark;

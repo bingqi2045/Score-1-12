@@ -13,5 +13,5 @@ public class UpliftValidationRequest {
     private String topLevelAsbiepId;
     private String targetReleaseId;
     private List<BieUpliftingMapping> mappingList;
-    private BigInteger targetAsccpManifestId;
+    private String targetAsccpManifestId;
 }

@@ -7,15 +7,15 @@ import java.math.BigInteger;
 
 public class CancelRevisionCodeListRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     public CancelRevisionCodeListRepositoryRequest(AuthenticatedPrincipal user,
-                                                   BigInteger codeListManifestId) {
+                                                   String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

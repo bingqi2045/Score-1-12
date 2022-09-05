@@ -45,7 +45,7 @@ public class AbieWriteRepository {
             abieRecord = new AbieRecord();
             abieRecord.setAbieId(UUID.randomUUID().toString());
             abieRecord.setGuid(ScoreGuid.randomGuid());
-            abieRecord.setBasedAccManifestId(ULong.valueOf(abie.getBasedAccManifestId()));
+            abieRecord.setBasedAccManifestId(abie.getBasedAccManifestId());
             abieRecord.setPath(abie.getPath());
             abieRecord.setHashPath(hashPath);
 

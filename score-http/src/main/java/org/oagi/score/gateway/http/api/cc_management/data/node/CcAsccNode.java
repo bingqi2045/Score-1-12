@@ -11,9 +11,9 @@ public class CcAsccNode extends CcNode {
 
     private int seqKey;
     private String asccId;
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger fromAccManifestId = BigInteger.ZERO;
-    private BigInteger toAsccpManifestId = BigInteger.ZERO;
+    private String manifestId;
+    private String fromAccManifestId;
+    private String toAsccpManifestId;
     private BigInteger cardinalityMin = BigInteger.ZERO;
     private BigInteger cardinalityMax = BigInteger.ZERO;
     private boolean deprecated;

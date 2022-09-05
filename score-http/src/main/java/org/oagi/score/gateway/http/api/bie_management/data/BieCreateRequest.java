@@ -9,11 +9,11 @@ import java.util.List;
 @Data
 public class BieCreateRequest {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
     private List<String> bizCtxIds;
 
-    public ULong asccpManifestId() {
-        return ULong.valueOf(asccpManifestId);
+    public String asccpManifestId() {
+        return asccpManifestId;
     }
 
 }

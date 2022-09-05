@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class FindNextAsccpManifestRequest extends Request {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 
     private String nextReleaseId;
 
@@ -15,15 +15,15 @@ public class FindNextAsccpManifestRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 
-    public void setAsccpManifestId(BigInteger asccpManifestId) {
+    public void setAsccpManifestId(String asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 
-    public FindNextAsccpManifestRequest withAsccpManifestId(BigInteger asccpManifestId) {
+    public FindNextAsccpManifestRequest withAsccpManifestId(String asccpManifestId) {
         setAsccpManifestId(asccpManifestId);
         return this;
     }

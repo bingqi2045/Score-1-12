@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
     private String propertyTerm;
     private String defaultValue;
@@ -20,19 +20,19 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
     private String namespaceId;
 
     public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                 BigInteger bccpManifestId) {
+                                                 String bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
     public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
-                                                 BigInteger bccpManifestId) {
+                                                 String bccpManifestId) {
         super(user, localDateTime);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 

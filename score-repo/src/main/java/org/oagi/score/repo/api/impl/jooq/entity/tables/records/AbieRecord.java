@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record15;
 import org.jooq.Row15;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 
 
@@ -25,7 +24,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
  * ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP", etc.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record15<String, String, ULong, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> {
+public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record15<String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,7 +65,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
      * the ACC_MANIFEST table refering to the ACC, on which the business context
      * has been applied to derive this ABIE.
      */
-    public void setBasedAccManifestId(ULong value) {
+    public void setBasedAccManifestId(String value) {
         set(2, value);
     }
 
@@ -75,8 +74,8 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
      * the ACC_MANIFEST table refering to the ACC, on which the business context
      * has been applied to derive this ABIE.
      */
-    public ULong getBasedAccManifestId() {
-        return (ULong) get(2);
+    public String getBasedAccManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -321,12 +320,12 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<String, String, ULong, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> fieldsRow() {
+    public Row15<String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> fieldsRow() {
         return (Row15) super.fieldsRow();
     }
 
     @Override
-    public Row15<String, String, ULong, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> valuesRow() {
+    public Row15<String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> valuesRow() {
         return (Row15) super.valuesRow();
     }
 
@@ -341,7 +340,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return Abie.ABIE.BASED_ACC_MANIFEST_ID;
     }
 
@@ -416,7 +415,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getBasedAccManifestId();
     }
 
@@ -491,7 +490,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getBasedAccManifestId();
     }
 
@@ -568,7 +567,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public AbieRecord value3(ULong value) {
+    public AbieRecord value3(String value) {
         setBasedAccManifestId(value);
         return this;
     }
@@ -646,7 +645,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public AbieRecord values(String value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, String value9, LocalDateTime value10, LocalDateTime value11, Integer value12, String value13, String value14, String value15) {
+    public AbieRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, LocalDateTime value10, LocalDateTime value11, Integer value12, String value13, String value14, String value15) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -679,7 +678,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     /**
      * Create a detached, initialised AbieRecord
      */
-    public AbieRecord(String abieId, String guid, ULong basedAccManifestId, String path, String hashPath, String bizCtxId, String definition, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, String remark, String bizTerm, String ownerTopLevelAsbiepId) {
+    public AbieRecord(String abieId, String guid, String basedAccManifestId, String path, String hashPath, String bizCtxId, String definition, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, String remark, String bizTerm, String ownerTopLevelAsbiepId) {
         super(Abie.ABIE);
 
         setAbieId(abieId);

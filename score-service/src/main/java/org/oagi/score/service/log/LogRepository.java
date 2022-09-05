@@ -48,14 +48,14 @@ public class LogRepository {
         this.serializer = serializer;
     }
 
-    private Log getCurrentStatusAsLog(String type, BigInteger manifestId) {
+    private Log getCurrentStatusAsLog(String type, String manifestId) {
         Log log = null;
         AppUserRecord owner = null;
 
         switch (type) {
             case "ACC":
                 AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -71,7 +71,7 @@ public class LogRepository {
                 break;
             case "ASCCP":
                 AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -87,7 +87,7 @@ public class LogRepository {
                 break;
             case "BCCP":
                 BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -103,7 +103,7 @@ public class LogRepository {
                 break;
             case "DT":
                 DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 DtRecord dtRecord = dslContext.selectFrom(DT)
@@ -200,12 +200,12 @@ public class LogRepository {
     }
 
     public String getSnapshotById(AuthenticatedPrincipal user, String logId,
-                                  String reference, String type, BigInteger manifestId) {
+                                  String reference, String type, String manifestId) {
         if (CURRENT_LOG_HASH.equals(reference)) {
             switch (type) {
                 case "ACC":
                     AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -236,7 +236,7 @@ public class LogRepository {
                             asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords);
                 case "ASCCP":
                     AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -246,7 +246,7 @@ public class LogRepository {
                     return serializer.serialize(asccpManifestRecord, asccpRecord);
                 case "BCCP":
                     BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -256,7 +256,7 @@ public class LogRepository {
                     return serializer.serialize(bccpManifestRecord, bccpRecord);
                 case "DT":
                     DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                            .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     DtRecord dtRecord = dslContext.selectFrom(DT)

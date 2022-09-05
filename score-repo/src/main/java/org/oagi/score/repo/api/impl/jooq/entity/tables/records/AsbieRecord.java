@@ -12,7 +12,6 @@ import org.jooq.Record1;
 import org.jooq.Record19;
 import org.jooq.Row19;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
 
 
@@ -21,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
  * ASBIEP. It is a contextualization of an ASCC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> {
+public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<String, String, String, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +61,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which
      * this ASBIE contextualizes.
      */
-    public void setBasedAsccManifestId(ULong value) {
+    public void setBasedAsccManifestId(String value) {
         set(2, value);
     }
 
@@ -71,8 +70,8 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
      * BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which
      * this ASBIE contextualizes.
      */
-    public ULong getBasedAsccManifestId() {
-        return (ULong) get(2);
+    public String getBasedAsccManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -391,12 +390,12 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
+    public Row19<String, String, String, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> fieldsRow() {
         return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row19<String, String, ULong, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> valuesRow() {
+    public Row19<String, String, String, String, String, String, String, String, Integer, Integer, Byte, String, String, String, LocalDateTime, LocalDateTime, BigDecimal, Byte, String> valuesRow() {
         return (Row19) super.valuesRow();
     }
 
@@ -411,7 +410,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return Asbie.ASBIE.BASED_ASCC_MANIFEST_ID;
     }
 
@@ -506,7 +505,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getBasedAsccManifestId();
     }
 
@@ -601,7 +600,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getBasedAsccManifestId();
     }
 
@@ -698,7 +697,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord value3(ULong value) {
+    public AsbieRecord value3(String value) {
         setBasedAsccManifestId(value);
         return this;
     }
@@ -800,7 +799,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     @Override
-    public AsbieRecord values(String value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, Integer value9, Integer value10, Byte value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, String value19) {
+    public AsbieRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, Integer value9, Integer value10, Byte value11, String value12, String value13, String value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, String value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -837,7 +836,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(String asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, String fromAbieId, String toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
+    public AsbieRecord(String asbieId, String guid, String basedAsccManifestId, String path, String hashPath, String fromAbieId, String toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
         super(Asbie.ASBIE);
 
         setAsbieId(asbieId);

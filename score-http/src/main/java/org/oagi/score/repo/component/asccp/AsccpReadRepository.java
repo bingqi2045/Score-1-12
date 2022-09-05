@@ -19,35 +19,35 @@ public class AsccpReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AsccpRecord getAsccpByManifestId(BigInteger asccpManifestId) {
+    public AsccpRecord getAsccpByManifestId(String asccpManifestId) {
         return dslContext.select(ASCCP.fields())
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestId))
                 .fetchOptionalInto(AsccpRecord.class).orElse(null);
     }
 
-    public AsccpManifestRecord getAsccpManifestById(BigInteger asccpManifestId) {
+    public AsccpManifestRecord getAsccpManifestById(String asccpManifestId) {
         return dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifestId))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 
-    public AsccpManifestRecord getExtensionAsccpManifestByAccManifestId(BigInteger accManifestId) {
+    public AsccpManifestRecord getExtensionAsccpManifestByAccManifestId(String accManifestId) {
         return dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
                 .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId),
                         ASCCP.TYPE.eq(CcASCCPType.Extension.name())))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 
-    public AsccpManifestRecord getUserExtensionAsccpManifestByAccManifestId(BigInteger accManifestId) {
+    public AsccpManifestRecord getUserExtensionAsccpManifestByAccManifestId(String accManifestId) {
         return dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestId))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 }

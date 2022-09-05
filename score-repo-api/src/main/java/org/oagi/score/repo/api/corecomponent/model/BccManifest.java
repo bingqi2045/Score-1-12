@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class BccManifest implements CcManifest, CcAssociation, Serializable {
 
-    private BigInteger bccManifestId;
+    private String bccManifestId;
 
     private String releaseId;
 
@@ -16,26 +16,26 @@ public class BccManifest implements CcManifest, CcAssociation, Serializable {
 
     private BigInteger seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
-    private BigInteger toBccpManifestId;
+    private String toBccpManifestId;
 
     private boolean conflict;
 
-    private BigInteger prevBccManifestId;
+    private String prevBccManifestId;
 
-    private BigInteger nextBccManifestId;
+    private String nextBccManifestId;
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 
-    public void setBccManifestId(BigInteger bccManifestId) {
+    public void setBccManifestId(String bccManifestId) {
         this.bccManifestId = bccManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getBccManifestId();
     }
 
@@ -69,19 +69,19 @@ public class BccManifest implements CcManifest, CcAssociation, Serializable {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public BigInteger getToBccpManifestId() {
+    public String getToBccpManifestId() {
         return toBccpManifestId;
     }
 
-    public void setToBccpManifestId(BigInteger toBccpManifestId) {
+    public void setToBccpManifestId(String toBccpManifestId) {
         this.toBccpManifestId = toBccpManifestId;
     }
 
@@ -93,19 +93,19 @@ public class BccManifest implements CcManifest, CcAssociation, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevBccManifestId() {
+    public String getPrevBccManifestId() {
         return prevBccManifestId;
     }
 
-    public void setPrevBccManifestId(BigInteger prevBccManifestId) {
+    public void setPrevBccManifestId(String prevBccManifestId) {
         this.prevBccManifestId = prevBccManifestId;
     }
 
-    public BigInteger getNextBccManifestId() {
+    public String getNextBccManifestId() {
         return nextBccManifestId;
     }
 
-    public void setNextBccManifestId(BigInteger nextBccManifestId) {
+    public void setNextBccManifestId(String nextBccManifestId) {
         this.nextBccManifestId = nextBccManifestId;
     }
 

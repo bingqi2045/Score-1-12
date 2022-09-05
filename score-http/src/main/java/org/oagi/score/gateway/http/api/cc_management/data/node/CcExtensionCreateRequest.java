@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CcExtensionCreateRequest {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
 
 }

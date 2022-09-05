@@ -128,7 +128,7 @@ public class BusinessInformationEntityRepository {
 
     public class InsertAbieArguments {
         private String userId;
-        private ULong accManifestId;
+        private String accManifestId;
         private String path;
         private String topLevelAsbiepId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
@@ -138,11 +138,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAbieArguments setAccManifestId(BigInteger accManifestId) {
-            return setAccManifestId(ULong.valueOf(accManifestId));
-        }
-
-        public InsertAbieArguments setAccManifestId(ULong accManifestId) {
+        public InsertAbieArguments setAccManifestId(String accManifestId) {
             this.accManifestId = accManifestId;
             return this;
         }
@@ -178,7 +174,7 @@ public class BusinessInformationEntityRepository {
             return userId;
         }
 
-        public ULong getAccManifestId() {
+        public String getAccManifestId() {
             return accManifestId;
         }
 
@@ -261,18 +257,14 @@ public class BusinessInformationEntityRepository {
     }
 
     public class InsertAsbiepArguments {
-        private ULong asccpManifestId;
+        private String asccpManifestId;
         private String roleOfAbieId;
         private String topLevelAsbiepId;
         private String path;
         private String userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertAsbiepArguments setAsccpManifestId(BigInteger asccpManifestId) {
-            return setAsccpManifestId(ULong.valueOf(asccpManifestId));
-        }
-
-        public InsertAsbiepArguments setAsccpManifestId(ULong asccpManifestId) {
+        public InsertAsbiepArguments setAsccpManifestId(String asccpManifestId) {
             this.asccpManifestId = asccpManifestId;
             return this;
         }
@@ -314,7 +306,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public ULong getAsccpManifestId() {
+        public String getAsccpManifestId() {
             return asccpManifestId;
         }
 
@@ -430,9 +422,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setAsccpManifestId(BigInteger asccpManifestId) {
-            if (asccpManifestId != null && asccpManifestId.longValue() > 0L) {
-                conditions.add(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)));
+        public SelectBieListArguments setAsccpManifestId(String asccpManifestId) {
+            if (StringUtils.hasLength(asccpManifestId)) {
+                conditions.add(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(asccpManifestId));
             }
             return this;
         }
@@ -715,7 +707,7 @@ public class BusinessInformationEntityRepository {
                         offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
     }
 
-    public BigInteger getAsccpManifestIdByTopLevelAsbiepId(String topLevelAsbiepId) {
+    public String getAsccpManifestIdByTopLevelAsbiepId(String topLevelAsbiepId) {
         return dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(TOP_LEVEL_ASBIEP).on(and(
@@ -726,7 +718,7 @@ public class BusinessInformationEntityRepository {
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
                 ))
-                .fetchOptionalInto(BigInteger.class).orElse(null);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public AsccpManifestRecord getAsccpManifestIdByTopLevelAsbiepIdAndReleaseId(String topLevelAsbiepId, String releaseId) {

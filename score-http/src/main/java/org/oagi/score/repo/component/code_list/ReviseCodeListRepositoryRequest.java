@@ -8,16 +8,16 @@ import java.time.LocalDateTime;
 
 public class ReviseCodeListRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     public ReviseCodeListRepositoryRequest(AuthenticatedPrincipal user,
-                                           BigInteger codeListManifestId,
+                                           String codeListManifestId,
                                            LocalDateTime localDateTime) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

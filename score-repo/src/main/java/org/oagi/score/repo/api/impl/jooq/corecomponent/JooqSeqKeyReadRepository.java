@@ -10,6 +10,7 @@ import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyResponse;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 
 import java.math.BigInteger;
@@ -33,13 +34,13 @@ public class JooqSeqKeyReadRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetSeqKeyResponse getSeqKey(GetSeqKeyRequest request) throws ScoreDataAccessException {
-        BigInteger fromAccManifestId = null;
+        String fromAccManifestId = null;
         if (!isNull(request.getSeqKeyId())) {
             fromAccManifestId = dslContext().select(SEQ_KEY.FROM_ACC_MANIFEST_ID)
                     .from(SEQ_KEY)
                     .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(request.getSeqKeyId())))
-                    .fetchOptionalInto(BigInteger.class).orElse(null);
-        } else if (!isNull(request.getFromAccManifestId())) {
+                    .fetchOptionalInto(String.class).orElse(null);
+        } else if (StringUtils.hasLength(request.getFromAccManifestId())) {
             fromAccManifestId = request.getFromAccManifestId();
         }
 
@@ -55,7 +56,7 @@ public class JooqSeqKeyReadRepository
                 .from(SEQ_KEY)
                 .leftJoin(BCC_MANIFEST).on(SEQ_KEY.BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
                 .leftJoin(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
 
@@ -83,12 +84,12 @@ public class JooqSeqKeyReadRepository
     private SeqKey mapper(Map<ULong, Record> seqKeyRecordMap, Record node, SeqKey prev) {
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(node.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
-        seqKey.setFromAccManifestId(node.get(SEQ_KEY.FROM_ACC_MANIFEST_ID).toBigInteger());
+        seqKey.setFromAccManifestId(node.get(SEQ_KEY.FROM_ACC_MANIFEST_ID));
         if (node.get(SEQ_KEY.ASCC_MANIFEST_ID) != null) {
-            seqKey.setAsccManifestId(node.get(SEQ_KEY.ASCC_MANIFEST_ID).toBigInteger());
+            seqKey.setAsccManifestId(node.get(SEQ_KEY.ASCC_MANIFEST_ID));
         }
         if (node.get(SEQ_KEY.BCC_MANIFEST_ID) != null) {
-            seqKey.setBccManifestId(node.get(SEQ_KEY.BCC_MANIFEST_ID).toBigInteger());
+            seqKey.setBccManifestId(node.get(SEQ_KEY.BCC_MANIFEST_ID));
             Integer entityType = node.get(BCC.ENTITY_TYPE);
             seqKey.setEntityType(
                     (entityType != null) ?

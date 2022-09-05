@@ -11,7 +11,7 @@ public class BieEditAsbie implements Cardinality {
     private String asbieId;
     private String fromAbieId;
     private String toAsbiepId;
-    private BigInteger basedAsccManifestId;
+    private String basedAsccManifestId;
     private boolean used;
 
     private int cardinalityMin;

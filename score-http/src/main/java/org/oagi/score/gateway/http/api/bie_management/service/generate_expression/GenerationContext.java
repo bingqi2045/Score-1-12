@@ -140,16 +140,16 @@ public class GenerationContext implements InitializingBean {
     private Map<String, Xbt> findXbtMap;
     private Map<String, CodeList> findCodeListMap;
     private Map<String, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
-    private Map<BigInteger, ACC> findACCMap;
-    private Map<BigInteger, BCC> findBCCMap;
-    private Map<BigInteger, BCCP> findBCCPMap;
-    private Map<BigInteger, List<BCC>> findBCCByFromAccIdMap;
+    private Map<String, ACC> findACCMap;
+    private Map<String, BCC> findBCCMap;
+    private Map<String, BCCP> findBCCPMap;
+    private Map<String, List<BCC>> findBCCByFromAccIdMap;
     private Map<String, BCCP> findBccpByBccpIdMap;
-    private Map<BigInteger, ASCC> findASCCMap;
-    private Map<BigInteger, List<ASCC>> findASCCByFromAccIdMap;
-    private Map<BigInteger, ASCCP> findASCCPMap;
+    private Map<String, ASCC> findASCCMap;
+    private Map<String, List<ASCC>> findASCCByFromAccIdMap;
+    private Map<String, ASCCP> findASCCPMap;
     private Map<String, DT> findDTMap;
-    private Map<BigInteger, DTSC> findDtScMap;
+    private Map<String, DTSC> findDtScMap;
     private Map<String, AgencyIdList> findAgencyIdListMap;
     private Map<String, AgencyIdListValue> findAgencyIdListValueMap;
     private Map<String, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
@@ -177,7 +177,7 @@ public class GenerationContext implements InitializingBean {
         private BigInteger seqKeyId;
         private BigInteger prevSeqKeyId;
         private BigInteger nextSeqKeyId;
-        private BigInteger toAsccpManifestId;
+        private String toAsccpManifestId;
     }
 
     public GenerationContext(TopLevelAsbiep topLevelAsbiep) {
@@ -392,32 +392,32 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    public ACC findACC(BigInteger accManifestId) {
-        return (accManifestId != null && accManifestId.longValue() > 0L) ? findACCMap.get(accManifestId) : null;
+    public ACC findACC(String accManifestId) {
+        return (accManifestId != null && StringUtils.hasLength(accManifestId)) ? findACCMap.get(accManifestId) : null;
     }
 
-    public BCC findBCC(BigInteger bccManifestId) {
-        return (bccManifestId != null && bccManifestId.longValue() > 0L) ? findBCCMap.get(bccManifestId) : null;
+    public BCC findBCC(String bccManifestId) {
+        return (bccManifestId != null && StringUtils.hasLength(bccManifestId)) ? findBCCMap.get(bccManifestId) : null;
     }
 
-    public BCCP findBCCP(BigInteger bccpManifestId) {
-        return (bccpManifestId != null && bccpManifestId.longValue() > 0L) ? findBCCPMap.get(bccpManifestId) : null;
+    public BCCP findBCCP(String bccpManifestId) {
+        return (bccpManifestId != null && StringUtils.hasLength(bccpManifestId)) ? findBCCPMap.get(bccpManifestId) : null;
     }
 
-    public ASCC findASCC(BigInteger asccManifestId) {
-        return (asccManifestId != null && asccManifestId.longValue() > 0L) ? findASCCMap.get(asccManifestId) : null;
+    public ASCC findASCC(String asccManifestId) {
+        return (asccManifestId != null && StringUtils.hasLength(asccManifestId)) ? findASCCMap.get(asccManifestId) : null;
     }
 
-    public ASCCP findASCCP(BigInteger asccpManifestId) {
-        return (asccpManifestId != null && asccpManifestId.longValue() > 0L) ? findASCCPMap.get(asccpManifestId) : null;
+    public ASCCP findASCCP(String asccpManifestId) {
+        return (asccpManifestId != null && StringUtils.hasLength(asccpManifestId)) ? findASCCPMap.get(asccpManifestId) : null;
     }
 
     public DT findDT(String dtId) {
         return StringUtils.hasLength(dtId) ? findDTMap.get(dtId) : null;
     }
 
-    public DTSC findDtSc(BigInteger dtScManifestId) {
-        return (dtScManifestId != null && dtScManifestId.longValue() > 0L) ? findDtScMap.get(dtScManifestId) : null;
+    public DTSC findDtSc(String dtScManifestId) {
+        return (dtScManifestId != null && StringUtils.hasLength(dtScManifestId)) ? findDtScMap.get(dtScManifestId) : null;
     }
 
     public AgencyIdList findAgencyIdList(String agencyIdListId) {
@@ -493,7 +493,7 @@ public class GenerationContext implements InitializingBean {
         return (abie != null) ? findACC(abie.getBasedAccManifestId()) : null;
     }
 
-    private List<SeqKey> findChildren(BigInteger accManifestId) {
+    private List<SeqKey> findChildren(String accManifestId) {
         ACC acc = findACCMap.get(accManifestId);
         List<SeqKey> sorted = new ArrayList();
         if (acc == null) {

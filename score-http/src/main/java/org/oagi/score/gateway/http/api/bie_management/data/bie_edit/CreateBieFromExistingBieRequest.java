@@ -9,5 +9,5 @@ public class CreateBieFromExistingBieRequest {
 
     private String asbieHashPath;
     private String topLevelAsbiepId;
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 }

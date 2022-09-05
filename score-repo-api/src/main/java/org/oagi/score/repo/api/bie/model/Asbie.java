@@ -8,7 +8,7 @@ public class Asbie implements BieAssociation {
 
     private String guid;
 
-    private BigInteger basedAsccManifestId;
+    private String basedAsccManifestId;
 
     private String path;
 
@@ -48,11 +48,11 @@ public class Asbie implements BieAssociation {
         this.guid = guid;
     }
 
-    public BigInteger getBasedAsccManifestId() {
+    public String getBasedAsccManifestId() {
         return basedAsccManifestId;
     }
 
-    public void setBasedAsccManifestId(BigInteger basedAsccManifestId) {
+    public void setBasedAsccManifestId(String basedAsccManifestId) {
         this.basedAsccManifestId = basedAsccManifestId;
     }
 

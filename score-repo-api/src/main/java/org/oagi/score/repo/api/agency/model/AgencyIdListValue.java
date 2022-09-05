@@ -9,9 +9,9 @@ import java.math.BigInteger;
 
 public class AgencyIdListValue extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
 
-    private BigInteger basedAgencyIdListValueManifestId;
+    private String basedAgencyIdListValueManifestId;
 
     private String agencyIdListValueId;
 
@@ -44,19 +44,19 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
         return agencyIdListValueId;
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
-    public BigInteger getBasedAgencyIdListValueManifestId() {
+    public String getBasedAgencyIdListValueManifestId() {
         return basedAgencyIdListValueManifestId;
     }
 
-    public void setBasedAgencyIdListValueManifestId(BigInteger basedAgencyIdListValueManifestId) {
+    public void setBasedAgencyIdListValueManifestId(String basedAgencyIdListValueManifestId) {
         this.basedAgencyIdListValueManifestId = basedAgencyIdListValueManifestId;
     }
 

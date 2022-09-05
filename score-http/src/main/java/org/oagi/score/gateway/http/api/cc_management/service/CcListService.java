@@ -68,7 +68,7 @@ public class CcListService {
         return repository.getCcList(request);
     }
 
-    public ACC getAcc(BigInteger manifestId) {
+    public ACC getAcc(String manifestId) {
         List<Field> fields = new ArrayList();
         fields.add(ACC_MANIFEST.ACC_MANIFEST_ID);
         fields.addAll(Arrays.asList(ACC.fields()));
@@ -76,12 +76,12 @@ public class CcListService {
         return dslContext.select(fields)
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                 .fetchOneInto(ACC.class);
     }
 
     @Transactional
-    public void transferOwnership(AuthenticatedPrincipal user, String type, BigInteger manifestId, String targetLoginId) {
+    public void transferOwnership(AuthenticatedPrincipal user, String type, String manifestId, String targetLoginId) {
         AppUser targetUser = sessionService.getAppUserByUsername(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
@@ -89,7 +89,7 @@ public class CcListService {
 
         switch (CcType.valueOf(type.toUpperCase())) {
             case ACC:
-                AccManifestRecord accManifest = manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
+                AccManifestRecord accManifest = manifestRepository.getAccManifestById(manifestId);
                 if (accManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
@@ -98,7 +98,7 @@ public class CcListService {
                 break;
 
             case ASCCP:
-                AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
+                AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(manifestId);
                 if (asccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
@@ -107,7 +107,7 @@ public class CcListService {
                 break;
 
             case BCCP:
-                BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
+                BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(manifestId);
                 if (bccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target BCCP.");
                 }
@@ -115,7 +115,7 @@ public class CcListService {
                 ccNodeService.updateBccpOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
             case DT:
-                DtManifestRecord dtManifest = manifestRepository.getDtManifestById(ULong.valueOf(manifestId));
+                DtManifestRecord dtManifest = manifestRepository.getDtManifestById(manifestId);
                 if (dtManifest == null) {
                     throw new IllegalArgumentException("Not found a target DT.");
                 }

@@ -8,15 +8,15 @@ import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditAcc extends TrackableImpl<BigInteger> {
+public class BieEditAcc extends TrackableImpl<String> {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
     private String guid;
     private int oagisComponentType;
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return accManifestId;
     }
 }

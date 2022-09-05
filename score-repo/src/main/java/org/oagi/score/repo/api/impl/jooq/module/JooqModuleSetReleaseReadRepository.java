@@ -235,7 +235,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     node.setDen(e.get(ACC.DEN));
                     node.setType("ACC");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -262,7 +262,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_ACC_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     node.setDen(e.get(ACC.DEN));
                     node.setType("ACC");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -293,7 +293,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID));
                     node.setDen(e.get(ASCCP.DEN));
                     node.setType("ASCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -320,7 +320,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_ASCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID));
                     node.setDen(e.get(ASCCP.DEN));
                     node.setType("ASCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -358,7 +358,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID));
                     node.setDen(e.get(BCCP.DEN));
                     node.setType("BCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -385,7 +385,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_BCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID));
                     node.setDen(e.get(BCCP.DEN));
                     node.setType("BCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -416,7 +416,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID));
                     node.setDen(e.get(DT.DEN));
                     node.setType("DT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -443,7 +443,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_DT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID));
                     node.setDen(e.get(DT.DEN));
                     node.setType("DT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -473,7 +473,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID));
                     node.setDen(e.get(CODE_LIST.NAME));
                     node.setType("CODE_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -500,7 +500,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID));
                     node.setDen(e.get(CODE_LIST.NAME));
                     node.setType("CODE_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -530,7 +530,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID));
                     node.setDen(e.get(AGENCY_ID_LIST.NAME));
                     node.setType("AGENCY_ID_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -557,7 +557,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID));
                     node.setDen(e.get(AGENCY_ID_LIST.NAME));
                     node.setType("AGENCY_ID_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -587,7 +587,7 @@ public class JooqModuleSetReleaseReadRepository
                         XBT.BUILTIN_TYPE.notLike("xsd:%")))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID));
                     node.setDen(e.get(XBT.NAME));
                     node.setType("XBT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -614,7 +614,7 @@ public class JooqModuleSetReleaseReadRepository
                         MODULE_XBT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID));
                     node.setDen(e.get(XBT.NAME));
                     node.setType("XBT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));

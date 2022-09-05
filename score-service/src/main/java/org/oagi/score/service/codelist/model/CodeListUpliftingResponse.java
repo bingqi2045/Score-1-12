@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class CodeListUpliftingResponse {
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
 
     private List<String> duplicatedValues;
 

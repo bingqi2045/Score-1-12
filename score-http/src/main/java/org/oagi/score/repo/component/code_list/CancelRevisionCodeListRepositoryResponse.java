@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class CancelRevisionCodeListRepositoryResponse {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
-    public CancelRevisionCodeListRepositoryResponse(BigInteger codeListManifestId) {
+    public CancelRevisionCodeListRepositoryResponse(String codeListManifestId) {
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

@@ -7,21 +7,21 @@ import java.math.BigInteger;
 
 public class GetCcPackageRequest extends Request {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 
     public GetCcPackageRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 
-    public void setAsccpManifestId(BigInteger asccpManifestId) {
+    public void setAsccpManifestId(String asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 
-    public GetCcPackageRequest withAsccpManifestId(BigInteger asccpManifestId) {
+    public GetCcPackageRequest withAsccpManifestId(String asccpManifestId) {
         setAsccpManifestId(asccpManifestId);
         return this;
     }

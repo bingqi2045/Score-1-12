@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 public class CreateBccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bdtManifestId;
+    private final String bdtManifestId;
     private final String releaseId;
 
     private String initialPropertyTerm = "Property Term";
 
     public CreateBccpRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger bdtManifestId, String releaseId) {
+                                       String bdtManifestId, String releaseId) {
         super(user);
         this.bdtManifestId = bdtManifestId;
         this.releaseId = releaseId;
@@ -22,13 +22,13 @@ public class CreateBccpRepositoryRequest extends RepositoryRequest {
 
     public CreateBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
-                                       BigInteger bdtManifestId, String releaseId) {
+                                       String bdtManifestId, String releaseId) {
         super(user, localDateTime);
         this.bdtManifestId = bdtManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getBdtManifestId() {
+    public String getBdtManifestId() {
         return bdtManifestId;
     }
 

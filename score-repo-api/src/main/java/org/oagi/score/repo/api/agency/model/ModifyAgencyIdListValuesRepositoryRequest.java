@@ -9,11 +9,11 @@ import java.util.List;
 
 public class ModifyAgencyIdListValuesRepositoryRequest {
 
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
     private String state;
     private List<AgencyIdListValue> agencyIdListValueList = new ArrayList();
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 
@@ -29,7 +29,7 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
 
     public static class AgencyIdListValue {
 
-        private BigInteger agencyIdListValueManifestId;
+        private String agencyIdListValueManifestId;
         private String value;
         private String name;
         private String definition;
@@ -37,11 +37,11 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
         private String definitionSource;
         private boolean deprecated;
 
-        public BigInteger getAgencyIdListValueManifestId() {
+        public String getAgencyIdListValueManifestId() {
             return agencyIdListValueManifestId;
         }
 
-        public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+        public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
             this.agencyIdListValueManifestId = agencyIdListValueManifestId;
         }
 
@@ -86,7 +86,7 @@ public class ModifyAgencyIdListValuesRepositoryRequest {
         }
     }
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 

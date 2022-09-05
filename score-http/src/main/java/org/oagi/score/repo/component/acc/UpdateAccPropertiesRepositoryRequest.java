@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
     private String objectClassTerm;
     private String definition;
@@ -20,19 +20,19 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
     private String namespaceId;
 
     public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger accManifestId) {
+                                                String accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }
 
     public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger accManifestId) {
+                                                String accManifestId) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 

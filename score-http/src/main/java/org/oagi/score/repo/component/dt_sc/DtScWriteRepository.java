@@ -217,7 +217,7 @@ public class DtScWriteRepository {
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtScManifestId())
+                        request.getDtScManifestId()
                 ))
                 .fetchOne();
 
@@ -311,7 +311,7 @@ public class DtScWriteRepository {
                         LogAction.Modified,
                         userId, timestamp);
 
-        return new UpdateDtScPropertiesRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+        return new UpdateDtScPropertiesRepositoryResponse(dtScManifestRecord.getDtScManifestId());
     }
 
     private void deleteDerivedValueDomain(String dtScId, List<BdtScPriRestriRecord> deleteList) {
@@ -574,7 +574,7 @@ public class DtScWriteRepository {
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -625,7 +625,7 @@ public class DtScWriteRepository {
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
+        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId());
     }
 
     public DeleteDtScRepositoryResponse deleteDtSc(DeleteDtScRepositoryRequest request) {
@@ -635,7 +635,7 @@ public class DtScWriteRepository {
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtScManifestId())
+                        request.getDtScManifestId()
                 ))
                 .fetchOne();
 
@@ -644,7 +644,7 @@ public class DtScWriteRepository {
                 .where(DT_SC_MANIFEST.BASED_DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getDtScManifestId()))
                 .fetch()) {
             deleteDtSc(new DeleteDtScRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                    derivedDtScManifestRecord.getDtScManifestId().toBigInteger()));
+                    derivedDtScManifestRecord.getDtScManifestId()));
         }
 
         DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
@@ -774,6 +774,6 @@ public class DtScWriteRepository {
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new DeleteDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+        return new DeleteDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId());
     }
 }

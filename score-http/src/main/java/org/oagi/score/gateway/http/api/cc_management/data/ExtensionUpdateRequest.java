@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class ExtensionUpdateRequest {
 
-    private BigInteger manifestId;
+    private String manifestId;
     private List<CcAsccpNodeDetail> asccpDetails = Collections.emptyList();
     private List<CcBccpNodeDetail> bccpDetails = Collections.emptyList();
 

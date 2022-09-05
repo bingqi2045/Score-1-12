@@ -39,8 +39,8 @@ public class CoreComponentRepository {
     @Autowired
     private LogRepository logRepository;
 
-    public AccManifestRecord getAccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AccManifestRecord getAccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ACC_MANIFEST)
@@ -48,8 +48,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ACC_MANIFEST)
@@ -57,8 +57,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public AsccpManifestRecord getAsccpManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AsccpManifestRecord getAsccpManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP_MANIFEST)
@@ -66,8 +66,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AsccpManifestRecord> getAsccpManifestByRolOfAccManifestId(ULong roleOfAccManifestId) {
-        if (roleOfAccManifestId == null || roleOfAccManifestId.longValue() <= 0L) {
+    public List<AsccpManifestRecord> getAsccpManifestByRolOfAccManifestId(String roleOfAccManifestId) {
+        if (roleOfAccManifestId == null || !StringUtils.hasLength(roleOfAccManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP_MANIFEST)
@@ -75,8 +75,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public BccpManifestRecord getBccpManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public BccpManifestRecord getBccpManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCCP_MANIFEST)
@@ -84,8 +84,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccManifestRecord getAsccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AsccManifestRecord getAsccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -93,8 +93,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(String accManifestId) {
+        if (accManifestId == null || !StringUtils.hasLength(accManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -102,8 +102,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(ULong asccpManifestId) {
-        if (asccpManifestId == null || asccpManifestId.longValue() <= 0L) {
+    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(String asccpManifestId) {
+        if (asccpManifestId == null || !StringUtils.hasLength(asccpManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -111,8 +111,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public BccManifestRecord getBccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public BccManifestRecord getBccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -120,8 +120,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<BccManifestRecord> getBccManifestByFromAccManifestId(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+    public List<BccManifestRecord> getBccManifestByFromAccManifestId(String accManifestId) {
+        if (accManifestId == null || !StringUtils.hasLength(accManifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -129,8 +129,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public List<BccManifestRecord> getBccManifestByToBccpManifestId(ULong bccpManifestId) {
-        if (bccpManifestId == null || bccpManifestId.longValue() <= 0L) {
+    public List<BccManifestRecord> getBccManifestByToBccpManifestId(String bccpManifestId) {
+        if (bccpManifestId == null || !StringUtils.hasLength(bccpManifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -138,8 +138,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public DtManifestRecord getDtManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public DtManifestRecord getDtManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(DT_MANIFEST)
@@ -266,10 +266,10 @@ public class CoreComponentRepository {
                 }).collect(Collectors.toList());
     }
 
-    public BigInteger getGlobalExtensionAccManifestId(BigInteger extensionAccManifestId) {
+    public BigInteger getGlobalExtensionAccManifestId(String extensionAccManifestId) {
         String releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
                 .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(extensionAccManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(extensionAccManifestId))
                 .fetchOneInto(String.class);
 
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)

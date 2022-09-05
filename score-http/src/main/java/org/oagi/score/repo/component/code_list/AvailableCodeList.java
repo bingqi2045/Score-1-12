@@ -10,8 +10,8 @@ import java.math.BigInteger;
 public class AvailableCodeList {
 
     private String codeListId;
-    private BigInteger codeListManifestId;
-    private BigInteger basedCodeListManifestId;
+    private String codeListManifestId;
+    private String basedCodeListManifestId;
     private String codeListName;
     private String state;
     private String versionId;

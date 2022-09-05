@@ -138,7 +138,7 @@ public class BieUpliftingService {
 
         private BieDocument sourceBieDocument;
         private CcDocument targetCcDocument;
-        private BigInteger targetAsccpManifestId;
+        private String targetAsccpManifestId;
 
         private Queue<AsccpManifest> targetAsccpManifestQueue = new LinkedBlockingQueue();
         private Queue<AccManifest> targetAccManifestQueue = new LinkedBlockingQueue();
@@ -153,7 +153,7 @@ public class BieUpliftingService {
         private Map<String, List<DtScManifest>> bbieTargetDtScManifestsMap = new HashMap();
 
         BieDiff(BieDocument sourceBieDocument, CcDocument targetCcDocument,
-                BigInteger targetAsccpManifestId) {
+                String targetAsccpManifestId) {
             this.sourceBieDocument = sourceBieDocument;
             this.targetCcDocument = targetCcDocument;
             this.targetAsccpManifestId = targetAsccpManifestId;
@@ -331,7 +331,7 @@ public class BieUpliftingService {
 
             BccpManifest targetBccpManifest = targetBccpManifestQueue.poll();
             if (targetBccpManifest != null) {
-                BigInteger targetBdtManifestId = targetBccpManifest.getBdtManifestId();
+                String targetBdtManifestId = targetBccpManifest.getBdtManifestId();
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
                 bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
@@ -417,7 +417,7 @@ public class BieUpliftingService {
                 .withIncludingBieDocument(true));
 
         BieDocument sourceBieDocument = targetAsccpManifestResponse.getBieDocument();
-        BigInteger targetAsccpManifestId = targetAsccpManifestResponse.getAsccpManifestId();
+        String targetAsccpManifestId = targetAsccpManifestResponse.getAsccpManifestId();
 
         CcDocument targetCcDocument = new CcDocumentImpl(scoreRepositoryFactory.createCcReadRepository()
                 .getCcPackage(new GetCcPackageRequest(request.getRequester())
@@ -439,7 +439,7 @@ public class BieUpliftingService {
 
         private BieDocument sourceBieDocument;
         private CcDocument targetCcDocument;
-        private BigInteger targetAsccpManifestId;
+        private String targetAsccpManifestId;
 
         private Queue<AsccpManifest> targetAsccpManifestQueue = new LinkedBlockingQueue();
         private Queue<AccManifest> targetAccManifestQueue = new LinkedBlockingQueue();
@@ -478,7 +478,7 @@ public class BieUpliftingService {
         BieUpliftingHandler(ScoreUser requester, List<String> bizCtxIds,
                             BieUpliftingCustomMappingTable customMappingTable,
                             BieDocument sourceBieDocument, CcDocument targetCcDocument,
-                            BigInteger targetAsccpManifestId,
+                            String targetAsccpManifestId,
                             List<CodeList> sourceCodeListList,
                             List<CodeList> targetCodeListList,
                             Map<String, BdtPriRestri> sourceBdtPriRestriMap,
@@ -537,7 +537,7 @@ public class BieUpliftingService {
 
                     // Issue #1287
                     // ABIE path does not end with a group ACC.
-                    BigInteger accManifestId = new BigInteger(tag.substring(tag.indexOf('-') + 1));
+                    String accManifestId = tag.substring(tag.indexOf('-') + 1);
                     AccManifest accManifest = this.targetCcDocument.getAccManifest(accManifestId);
                     Acc acc = this.targetCcDocument.getAcc(accManifest);
                     if (acc.isGroup()) {
@@ -607,7 +607,7 @@ public class BieUpliftingService {
                                 Abie targetFromAbie = getAbieIfExist.apply(targetFromAbiePath);
 
                                 if (targetFromAbie == null) {
-                                    BigInteger targetAccManifestId = extractManifestId(getLastTag(targetFromAbiePath));
+                                    String targetAccManifestId = extractManifestId(getLastTag(targetFromAbiePath));
                                     AccManifest targetAccManifest =
                                             targetCcDocument.getAccManifest(targetAccManifestId);
 
@@ -1070,7 +1070,7 @@ public class BieUpliftingService {
             if (targetBccpManifest != null) {
                 currentTargetPath = currentTargetPath + ">" + "BCCP-" + targetBccpManifest.getBccpManifestId();
 
-                BigInteger targetBdtManifestId = targetBccpManifest.getBdtManifestId();
+                String targetBdtManifestId = targetBccpManifest.getBdtManifestId();
                 DtManifest targetDtManifest = targetCcDocument.getDtManifest(targetBdtManifestId);
                 bbieTargetDtScManifestsMap.put(previousBbie.getBbieId(),
                         targetCcDocument.getDtScManifests(targetDtManifest));
@@ -1153,7 +1153,7 @@ public class BieUpliftingService {
 
         private Bbie setValueDomain(Bbie sourceBbie,
                                     Bbie targetBbie,
-                                    BigInteger dtManifestId,
+                                    String dtManifestId,
                                     Map<String, BdtPriRestri> sourceMap,
                                     Map<String, List<BdtPriRestri>> targetMap,
                                     List<CodeList> codeListSourceList,
@@ -1240,7 +1240,7 @@ public class BieUpliftingService {
 
         private BbieSc setValueDomain(BbieSc sourceBbieSc,
                                       BbieSc targetBbieSc,
-                                      BigInteger dtScManifestId,
+                                      String dtScManifestId,
                                       Map<String, BdtScPriRestri> sourceMap,
                                       Map<String, List<BdtScPriRestri>> targetMap,
                                       List<CodeList> codeListSourceList,
@@ -1327,7 +1327,7 @@ public class BieUpliftingService {
 
     @Transactional
     public UpliftBieResponse upliftBie(UpliftBieRequest request) {
-        BigInteger targetAsccpManifestId = request.getTargetAsccpManifestId();
+        String targetAsccpManifestId = request.getTargetAsccpManifestId();
         BieDocument sourceBieDocument = bieReadService.getBieDocument(request.getRequester(), request.getTopLevelAsbiepId());
         CcDocument targetCcDocument = new CcDocumentImpl(scoreRepositoryFactory.createCcReadRepository()
                 .getCcPackage(new GetCcPackageRequest(request.getRequester())
@@ -1422,7 +1422,7 @@ public class BieUpliftingService {
                     break;
                 case "BBIE":
                     Bbie bbie = sourceBieDocument.getBbie(mapping.getBieId());
-                    BigInteger bccManifestId = mapping.getTargetManifestId();
+                    String bccManifestId = mapping.getTargetManifestId();
                     if (bccManifestId == null) {
                         validation.setValid(true);
                         break;
@@ -1446,7 +1446,7 @@ public class BieUpliftingService {
                     break;
                 case "BBIE_SC":
                     BbieSc bbieSc = sourceBieDocument.getBbieSc(mapping.getBieId());
-                    BigInteger dtScManifestId = mapping.getTargetManifestId();
+                    String dtScManifestId = mapping.getTargetManifestId();
                     if (dtScManifestId == null) {
                         validation.setValid(true);
                         break;

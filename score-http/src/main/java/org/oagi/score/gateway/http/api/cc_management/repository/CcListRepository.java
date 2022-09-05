@@ -134,7 +134,7 @@ public class CcListRepository {
         List<CcList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch()).map((RecordMapper<Record, CcList>) row -> {
             CcList ccList = new CcList();
             ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
-            ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
+            ccList.setManifestId(row.getValue("manifest_id", String.class));
             ccList.setId(row.getValue("id", String.class));
             ccList.setGuid(row.getValue("guid", String.class));
             ccList.setDen(row.getValue("den", String.class));
@@ -155,9 +155,9 @@ public class CcListRepository {
             ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
             ccList.setRevision(row.getValue(LOG.REVISION_NUM).toString());
             ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-            ULong basedManifestId = row.getValue("based_manifest_id", ULong.class);
+            String basedManifestId = row.getValue("based_manifest_id", String.class);
             if (basedManifestId != null) {
-                ccList.setBasedManifestId(basedManifestId.toBigInteger());
+                ccList.setBasedManifestId(basedManifestId);
                 ccList.setDtType(ccList.getType() == CcType.DT ? "BDT" : "");
             } else {
                 ccList.setDtType(ccList.getType() == CcType.DT ? "CDT" : "");
@@ -176,7 +176,7 @@ public class CcListRepository {
         return response;
     }
 
-    private BigInteger getManifestIdByObjectClassTermAndReleaseId(String objectClassTerm, String releaseId) {
+    private String getManifestIdByObjectClassTermAndReleaseId(String objectClassTerm, String releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
@@ -184,10 +184,10 @@ public class CcListRepository {
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
                         ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
-    private List<BigInteger> getManifestIdsByBasedAccManifestIdAndReleaseId(
+    private List<String> getManifestIdsByBasedAccManifestIdAndReleaseId(
             List<BigInteger> basedManifestIds, String releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
@@ -195,7 +195,7 @@ public class CcListRepository {
                         ACC_MANIFEST.BASED_ACC_MANIFEST_ID.in(basedManifestIds),
                         ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
-                .fetchInto(BigInteger.class);
+                .fetchInto(String.class);
     }
 
     private SelectOrderByStep getAccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {

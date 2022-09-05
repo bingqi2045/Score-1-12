@@ -12,9 +12,9 @@ public class CcBccNode extends CcNode {
 
     private int seqKey;
     private String bccId;
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger fromAccManifestId = BigInteger.ZERO;
-    private BigInteger toBccpManifestId = BigInteger.ZERO;
+    private String manifestId;
+    private String fromAccManifestId;
+    private String toBccpManifestId;
     private BCCEntityType entityType;
     private BigInteger cardinalityMin = BigInteger.ZERO;
     private BigInteger cardinalityMax = BigInteger.ZERO;

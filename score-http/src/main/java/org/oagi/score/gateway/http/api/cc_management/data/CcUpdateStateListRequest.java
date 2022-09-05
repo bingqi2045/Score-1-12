@@ -9,8 +9,8 @@ import java.util.List;
 public class CcUpdateStateListRequest {
     private String action;
     private String toState;
-    private List<BigInteger> accManifestIds;
-    private List<BigInteger> bccpManifestIds;
-    private List<BigInteger> asccpManifestIds;
-    private List<BigInteger> dtManifestIds;
+    private List<String> accManifestIds;
+    private List<String> bccpManifestIds;
+    private List<String> asccpManifestIds;
+    private List<String> dtManifestIds;
 }

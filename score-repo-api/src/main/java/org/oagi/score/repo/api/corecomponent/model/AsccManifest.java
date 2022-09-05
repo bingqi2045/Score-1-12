@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class AsccManifest implements CcManifest, CcAssociation, Serializable {
 
-    private BigInteger asccManifestId;
+    private String asccManifestId;
 
     private String releaseId;
 
@@ -16,26 +16,26 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
 
     private BigInteger seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
-    private BigInteger toAsccpManifestId;
+    private String toAsccpManifestId;
 
     private boolean conflict;
 
-    private BigInteger prevAsccManifestId;
+    private String prevAsccManifestId;
 
-    private BigInteger nextAsccManifestId;
+    private String nextAsccManifestId;
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 
-    public void setAsccManifestId(BigInteger asccManifestId) {
+    public void setAsccManifestId(String asccManifestId) {
         this.asccManifestId = asccManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getAsccManifestId();
     }
 
@@ -69,19 +69,19 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public BigInteger getToAsccpManifestId() {
+    public String getToAsccpManifestId() {
         return toAsccpManifestId;
     }
 
-    public void setToAsccpManifestId(BigInteger toAsccpManifestId) {
+    public void setToAsccpManifestId(String toAsccpManifestId) {
         this.toAsccpManifestId = toAsccpManifestId;
     }
 
@@ -93,19 +93,19 @@ public class AsccManifest implements CcManifest, CcAssociation, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevAsccManifestId() {
+    public String getPrevAsccManifestId() {
         return prevAsccManifestId;
     }
 
-    public void setPrevAsccManifestId(BigInteger prevAsccManifestId) {
+    public void setPrevAsccManifestId(String prevAsccManifestId) {
         this.prevAsccManifestId = prevAsccManifestId;
     }
 
-    public BigInteger getNextAsccManifestId() {
+    public String getNextAsccManifestId() {
         return nextAsccManifestId;
     }
 
-    public void setNextAsccManifestId(BigInteger nextAsccManifestId) {
+    public void setNextAsccManifestId(String nextAsccManifestId) {
         this.nextAsccManifestId = nextAsccManifestId;
     }
 

@@ -7,18 +7,18 @@ import java.math.BigInteger;
 
 public class UpdateAccOwnerRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
     private final String ownerId;
 
     public UpdateAccOwnerRepositoryRequest(AuthenticatedPrincipal user,
-                                           BigInteger accManifestId,
+                                           String accManifestId,
                                            String ownerId) {
         super(user);
         this.accManifestId = accManifestId;
         this.ownerId = ownerId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 

@@ -37,7 +37,7 @@ public class BbiepReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BbiepNode getBbiepNode(String topLevelAsbiepId, BigInteger bccpManifestId, String hashPath) {
+    public BbiepNode getBbiepNode(String topLevelAsbiepId, String bccpManifestId, String hashPath) {
         BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(bccpManifestId);
         if (bccpRecord == null) {
             return null;
@@ -83,7 +83,7 @@ public class BbiepReadRepository {
         BbiepRecord bbiepRecord = getBbiepByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbiepRecord != null) {
             bbiep.setBbiepId(bbiepRecord.getBbiepId());
-            bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId().toBigInteger());
+            bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId());
             bbiep.setGuid(bbiepRecord.getGuid());
             bbiep.setRemark(bbiepRecord.getRemark());
             bbiep.setBizTerm(bbiepRecord.getBizTerm());

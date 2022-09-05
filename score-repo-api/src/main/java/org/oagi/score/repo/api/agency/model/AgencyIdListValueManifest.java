@@ -7,13 +7,13 @@ import java.math.BigInteger;
 
 public class AgencyIdListValueManifest implements CcManifest, Serializable {
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
 
     private String releaseId;
 
     private String agencyIdListValueId;
 
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
 
     private boolean conflict;
 
@@ -22,7 +22,7 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
     private BigInteger nextAgencyIdListManifestId;
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return agencyIdListValueManifestId;
     }
 
@@ -31,11 +31,11 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
         return getAgencyIdListValueId();
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
@@ -56,11 +56,11 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
         this.agencyIdListValueId = agencyIdListValueId;
     }
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 

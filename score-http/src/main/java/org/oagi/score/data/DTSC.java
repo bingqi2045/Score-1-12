@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DTSC implements Serializable {
 
-    private BigInteger dtScManifestId = BigInteger.ZERO;
+    private String dtScManifestId;
     private String dtScId;
     private String guid;
     private String propertyTerm;

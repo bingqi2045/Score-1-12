@@ -15,22 +15,22 @@ public class CcDocumentImpl implements CcDocument {
 
     private CcPackage ccPackage;
 
-    private Map<BigInteger, AccManifest> accManifestMap;
+    private Map<String, AccManifest> accManifestMap;
     private Map<String, Acc> accMap;
-    private Map<BigInteger, AsccManifest> asccManifestMap;
+    private Map<String, AsccManifest> asccManifestMap;
     private Map<String, Ascc> asccMap;
-    private Map<BigInteger, BccManifest> bccManifestMap;
+    private Map<String, BccManifest> bccManifestMap;
     private Map<String, Bcc> bccMap;
-    private Map<BigInteger, List<CcAssociationSequence>> sequenceMap;
-    private Map<BigInteger, AsccpManifest> asccpManifestMap;
+    private Map<String, List<CcAssociationSequence>> sequenceMap;
+    private Map<String, AsccpManifest> asccpManifestMap;
     private Map<String, Asccp> asccpMap;
-    private Map<BigInteger, BccpManifest> bccpManifestMap;
+    private Map<String, BccpManifest> bccpManifestMap;
     private Map<String, Bccp> bccpMap;
-    private Map<BigInteger, DtManifest> dtManifestMap;
+    private Map<String, DtManifest> dtManifestMap;
     private Map<String, Dt> dtMap;
-    private Map<BigInteger, DtScManifest> dtScManifestMap;
+    private Map<String, DtScManifest> dtScManifestMap;
     private Map<String, DtSc> dtScMap;
-    private Map<BigInteger, List<DtScManifest>> dtScManifestByDtManifestMap;
+    private Map<String, List<DtScManifest>> dtScManifestByDtManifestMap;
     private Map<String, List<BdtPriRestri>> bdtPriRestriByDtMap;
     private Map<String, List<BdtScPriRestri>> bdtScPriRestriByDtScMap;
 
@@ -74,7 +74,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public AccManifest getAccManifest(BigInteger accManifestId) {
+    public AccManifest getAccManifest(String accManifestId) {
         return (accManifestId != null) ? accManifestMap.get(accManifestId) : null;
     }
 
@@ -123,7 +123,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public AsccManifest getAsccManifest(BigInteger asccManifestId) {
+    public AsccManifest getAsccManifest(String asccManifestId) {
         return (asccManifestId != null) ? asccManifestMap.get(asccManifestId) : null;
     }
 
@@ -137,7 +137,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public BccManifest getBccManifest(BigInteger bccManifestId) {
+    public BccManifest getBccManifest(String bccManifestId) {
         return (bccManifestId != null) ? bccManifestMap.get(bccManifestId) : null;
     }
 
@@ -171,7 +171,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public AsccpManifest getAsccpManifest(BigInteger asccpManifestId) {
+    public AsccpManifest getAsccpManifest(String asccpManifestId) {
         return (asccpManifestId != null) ? asccpManifestMap.get(asccpManifestId) : null;
     }
 
@@ -185,7 +185,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public BccpManifest getBccpManifest(BigInteger bccpManifestId) {
+    public BccpManifest getBccpManifest(String bccpManifestId) {
         return (bccpManifestId != null) ? bccpManifestMap.get(bccpManifestId) : null;
     }
 
@@ -199,7 +199,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public DtManifest getDtManifest(BigInteger dtManifestId) {
+    public DtManifest getDtManifest(String dtManifestId) {
         return (dtManifestId != null) ? dtManifestMap.get(dtManifestId) : null;
     }
 
@@ -213,7 +213,7 @@ public class CcDocumentImpl implements CcDocument {
     }
 
     @Override
-    public DtScManifest getDtScManifest(BigInteger dtScManifestId) {
+    public DtScManifest getDtScManifest(String dtScManifestId) {
         return (dtScManifestId != null) ? dtScManifestMap.get(dtScManifestId) : null;
     }
 

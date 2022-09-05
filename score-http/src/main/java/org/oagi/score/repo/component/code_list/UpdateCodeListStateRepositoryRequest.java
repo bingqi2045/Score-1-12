@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 public class UpdateCodeListStateRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
     private final CcState state;
 
     public UpdateCodeListStateRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger codeListManifestId,
+                                                String codeListManifestId,
                                                 CcState state) {
         super(user);
         this.codeListManifestId = codeListManifestId;
@@ -22,14 +22,14 @@ public class UpdateCodeListStateRepositoryRequest extends RepositoryRequest {
 
     public UpdateCodeListStateRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger codeListManifestId,
+                                                String codeListManifestId,
                                                 CcState state) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
         this.state = state;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 

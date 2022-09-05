@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class DeleteCodeListValueRepositoryResponse {
 
-    private final BigInteger codeListValueManifestId;
+    private final String codeListValueManifestId;
 
-    public DeleteCodeListValueRepositoryResponse(BigInteger codeListValueManifestId) {
+    public DeleteCodeListValueRepositoryResponse(String codeListValueManifestId) {
         this.codeListValueManifestId = codeListValueManifestId;
     }
 
-    public BigInteger getCodeListValueManifestId() {
+    public String getCodeListValueManifestId() {
         return codeListValueManifestId;
     }
 }

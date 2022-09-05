@@ -25,48 +25,48 @@ public class ReleaseValidator {
 
     private final DSLContext dslContext;
 
-    private List<BigInteger> assignedAccComponentManifestIds = Collections.emptyList();
-    private List<BigInteger> assignedAsccpComponentManifestIds = Collections.emptyList();
-    private List<BigInteger> assignedBccpComponentManifestIds = Collections.emptyList();
-    private List<BigInteger> assignedCodeListComponentManifestIds = Collections.emptyList();
-    private List<BigInteger> assignedAgencyIdListComponentManifestIds = Collections.emptyList();
-    private List<BigInteger> assignedDtComponentManifestIds = Collections.emptyList();
+    private List<String> assignedAccComponentManifestIds = Collections.emptyList();
+    private List<String> assignedAsccpComponentManifestIds = Collections.emptyList();
+    private List<String> assignedBccpComponentManifestIds = Collections.emptyList();
+    private List<String> assignedCodeListComponentManifestIds = Collections.emptyList();
+    private List<String> assignedAgencyIdListComponentManifestIds = Collections.emptyList();
+    private List<String> assignedDtComponentManifestIds = Collections.emptyList();
 
     private List<AccManifestRecord> accManifestRecords;
-    private Map<ULong, AccManifestRecord> accManifestRecordMap;
+    private Map<String, AccManifestRecord> accManifestRecordMap;
     private List<AccRecord> accRecords;
     private Map<String, AccRecord> accRecordMap;
 
     private List<AsccManifestRecord> asccManifestRecords;
     private List<AsccRecord> asccRecords;
-    private Map<ULong, AsccRecord> asccRecordMap;
+    private Map<String, AsccRecord> asccRecordMap;
 
     private List<BccManifestRecord> bccManifestRecords;
     private List<BccRecord> bccRecords;
-    private Map<ULong, BccRecord> bccRecordMap;
+    private Map<String, BccRecord> bccRecordMap;
 
     private List<AsccpManifestRecord> asccpManifestRecords;
-    private Map<ULong, AsccpManifestRecord> asccpManifestRecordMap;
+    private Map<String, AsccpManifestRecord> asccpManifestRecordMap;
     private List<AsccpRecord> asccpRecords;
     private Map<String, AsccpRecord> asccpRecordMap;
 
     private List<BccpManifestRecord> bccpManifestRecords;
-    private Map<ULong, BccpManifestRecord> bccpManifestRecordMap;
+    private Map<String, BccpManifestRecord> bccpManifestRecordMap;
     private List<BccpRecord> bccpRecords;
     private Map<String, BccpRecord> bccpRecordMap;
 
     private List<CodeListManifestRecord> codeListManifestRecords;
-    private Map<ULong, CodeListManifestRecord> codeListManifestRecordMap;
+    private Map<String, CodeListManifestRecord> codeListManifestRecordMap;
     private List<CodeListRecord> codeListRecords;
     private Map<String, CodeListRecord> codeListRecordMap;
 
     private List<AgencyIdListManifestRecord> agencyIdListManifestRecords;
-    private Map<ULong, AgencyIdListManifestRecord> agencyIdListManifestRecordMap;
+    private Map<String, AgencyIdListManifestRecord> agencyIdListManifestRecordMap;
     private List<AgencyIdListRecord> agencyIdListRecords;
     private Map<String, AgencyIdListRecord> agencyIdListRecordMap;
 
     private List<DtManifestRecord> dtManifestRecords;
-    private Map<ULong, DtManifestRecord> dtManifestRecordMap;
+    private Map<String, DtManifestRecord> dtManifestRecordMap;
     private List<DtRecord> dtRecords;
     private Map<String, DtRecord> dtRecordMap;
 
@@ -74,23 +74,23 @@ public class ReleaseValidator {
         this.dslContext = dslContext;
     }
 
-    public void setAssignedAccComponentManifestIds(List<BigInteger> assignedAccComponentManifestIds) {
+    public void setAssignedAccComponentManifestIds(List<String> assignedAccComponentManifestIds) {
         this.assignedAccComponentManifestIds = assignedAccComponentManifestIds;
     }
 
-    public void setAssignedAsccpComponentManifestIds(List<BigInteger> assignedAsccpComponentManifestIds) {
+    public void setAssignedAsccpComponentManifestIds(List<String> assignedAsccpComponentManifestIds) {
         this.assignedAsccpComponentManifestIds = assignedAsccpComponentManifestIds;
     }
 
-    public void setAssignedBccpComponentManifestIds(List<BigInteger> assignedBccpComponentManifestIds) {
+    public void setAssignedBccpComponentManifestIds(List<String> assignedBccpComponentManifestIds) {
         this.assignedBccpComponentManifestIds = assignedBccpComponentManifestIds;
     }
 
-    public void setAssignedCodeListComponentManifestIds(List<BigInteger> assignedCodeListComponentManifestIds) {
+    public void setAssignedCodeListComponentManifestIds(List<String> assignedCodeListComponentManifestIds) {
         this.assignedCodeListComponentManifestIds = assignedCodeListComponentManifestIds;
     }
 
-    public void setAssignedDtComponentManifestIds(List<BigInteger> assignedDtComponentManifestIds) {
+    public void setAssignedDtComponentManifestIds(List<String> assignedDtComponentManifestIds) {
         this.assignedDtComponentManifestIds = assignedDtComponentManifestIds;
     }
 
@@ -241,11 +241,11 @@ public class ReleaseValidator {
             AccRecord accRecord = accRecordMap.get(accId);
             CcState state = CcState.valueOf(accRecord.getState());
             if (state != CcState.Published && !assignedAccComponentManifestIds.contains(
-                    accManifestRecord.getAccManifestId().toBigInteger())) {
+                    accManifestRecord.getAccManifestId())) {
                 continue;
             }
             if (accRecord.getNamespaceId() == null) {
-                response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                response.addMessageForAcc(accManifestRecord.getAccManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
 
@@ -255,19 +255,19 @@ public class ReleaseValidator {
                         AccRecord basedAcc = accRecordMap.get(basedAccManifestRecord.getAccId());
                         CcState basedAccstate = CcState.valueOf(basedAcc.getState());
                         if (basedAccstate != CcState.Published) {
-                            if (assignedAccComponentManifestIds.contains(basedAccManifestRecord.getAccManifestId().toBigInteger())) {
+                            if (assignedAccComponentManifestIds.contains(basedAccManifestRecord.getAccManifestId())) {
                                 if (basedAccstate != CcState.Candidate) {
-                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId(),
                                             Error, "'" + basedAcc.getDen() + "' should be in '" + CcState.Candidate + "'.",
                                             ACC_BasedACC);
                                 }
                             } else {
                                 if (basedAccManifestRecord.getPrevAccManifestId() == null) {
-                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId(),
                                             Error, "'" + basedAcc.getDen() + "' is needed in the release assignment due to '" + accRecord.getDen() + "'.",
                                             ACC_BasedACC);
                                 } else {
-                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(basedAccManifestRecord.getAccManifestId(),
                                             Warning, "'" + basedAcc.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_BasedACC);
                                 }
@@ -282,19 +282,19 @@ public class ReleaseValidator {
                         AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
                         if (asccpState != CcState.Published) {
-                            if (assignedAsccpComponentManifestIds.contains(asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
+                            if (assignedAsccpComponentManifestIds.contains(asccpManifestRecord.getAsccpManifestId())) {
                                 if (asccpState != CcState.Candidate) {
-                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId(),
                                             Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
                                             ACC_Association);
                                 }
                             } else {
                                 if (asccpManifestRecord.getPrevAsccpManifestId() == null) {
-                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId(),
                                             Error, "'" + asccpRecord.getDen() + "' is needed in the release assignment due to '" + accRecord.getDen() + "'.",
                                             ACC_Association);
                                 } else {
-                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                                    response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId(),
                                             Warning, "'" + asccpRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_Association);
                                 }
@@ -309,19 +309,19 @@ public class ReleaseValidator {
                         BccpRecord bccpRecord = bccpRecordMap.get(bccpManifestRecord.getBccpId());
                         CcState bccpState = CcState.valueOf(bccpRecord.getState());
                         if (bccpState != CcState.Published) {
-                            if (assignedBccpComponentManifestIds.contains(bccpManifestRecord.getBccpManifestId().toBigInteger())) {
+                            if (assignedBccpComponentManifestIds.contains(bccpManifestRecord.getBccpManifestId())) {
                                 if (bccpState != CcState.Candidate) {
-                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId(),
                                             Error, "'" + bccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
                                             ACC_Association);
                                 }
                             } else {
                                 if (bccpManifestRecord.getPrevBccpManifestId() == null) {
-                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId(),
                                             Error, "'" + bccpRecord.getDen() + "' is needed in the release assignment due to '" + accRecord.getDen() + "'.",
                                             ACC_Association);
                                 } else {
-                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                                    response.addMessageForBccp(bccpManifestRecord.getBccpManifestId(),
                                             Warning, "'" + bccpRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_Association);
                                 }
@@ -337,11 +337,11 @@ public class ReleaseValidator {
             AsccpRecord asccpRecord = asccpRecordMap.get(asccpId);
             CcState state = CcState.valueOf(asccpRecord.getState());
             if (state != CcState.Published && !assignedAsccpComponentManifestIds.contains(
-                    asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
+                    asccpManifestRecord.getAsccpManifestId())) {
                 continue;
             }
             if (asccpRecord.getNamespaceId() == null) {
-                response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
 
@@ -351,19 +351,19 @@ public class ReleaseValidator {
                         AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
                         CcState accState = CcState.valueOf(accRecord.getState());
                         if (accState != CcState.Published) {
-                            if (assignedAccComponentManifestIds.contains(accManifestRecord.getAccManifestId().toBigInteger())) {
+                            if (assignedAccComponentManifestIds.contains(accManifestRecord.getAccManifestId())) {
                                 if (accState != CcState.Candidate) {
-                                    response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(accManifestRecord.getAccManifestId(),
                                             Error, "'" + accRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
                                             ASCCP_RoleOfAcc);
                                 }
                             } else {
                                 if (accManifestRecord.getPrevAccManifestId() == null) {
-                                    response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(accManifestRecord.getAccManifestId(),
                                             Error, "'" + accRecord.getDen() + "' is needed in the release assignment due to '" + asccpRecord.getDen() + "'.",
                                             ASCCP_RoleOfAcc);
                                 } else {
-                                    response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    response.addMessageForAcc(accManifestRecord.getAccManifestId(),
                                             Warning, "'" + accRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ASCCP_RoleOfAcc);
                                 }
@@ -379,11 +379,11 @@ public class ReleaseValidator {
             BccpRecord bccpRecord = bccpRecordMap.get(bccpId);
             CcState state = CcState.valueOf(bccpRecord.getState());
             if (state != CcState.Published && !assignedBccpComponentManifestIds.contains(
-                    bccpManifestRecord.getBccpManifestId().toBigInteger())) {
+                    bccpManifestRecord.getBccpManifestId())) {
                 continue;
             }
             if (bccpRecord.getNamespaceId() == null) {
-                response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                response.addMessageForBccp(bccpManifestRecord.getBccpManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
         }
@@ -395,11 +395,11 @@ public class ReleaseValidator {
             CodeListRecord codeListRecord = codeListRecordMap.get(codeListId);
             CcState state = CcState.valueOf(codeListRecord.getState());
             if (state != CcState.Published && !assignedCodeListComponentManifestIds.contains(
-                    codeListManifestRecord.getCodeListManifestId().toBigInteger())) {
+                    codeListManifestRecord.getCodeListManifestId())) {
                 continue;
             }
             if (codeListRecord.getNamespaceId() == null) {
-                response.addMessageForCodeList(codeListManifestRecord.getCodeListManifestId().toBigInteger(),
+                response.addMessageForCodeList(codeListManifestRecord.getCodeListManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
         }
@@ -411,11 +411,11 @@ public class ReleaseValidator {
             AgencyIdListRecord agencyIdListRecord = agencyIdListRecordMap.get(agencyIdListId);
             CcState state = CcState.valueOf(agencyIdListRecord.getState());
             if (state != CcState.Published && !assignedAgencyIdListComponentManifestIds.contains(
-                    agencyIdListManifestRecord.getAgencyIdListManifestId().toBigInteger())) {
+                    agencyIdListManifestRecord.getAgencyIdListManifestId())) {
                 continue;
             }
             if (agencyIdListRecord.getNamespaceId() == null) {
-                response.addMessageForAgencyIdList(agencyIdListManifestRecord.getAgencyIdListManifestId().toBigInteger(),
+                response.addMessageForAgencyIdList(agencyIdListManifestRecord.getAgencyIdListManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
         }
@@ -427,11 +427,11 @@ public class ReleaseValidator {
             DtRecord dtRecord = dtRecordMap.get(dtId);
             CcState state = CcState.valueOf(dtRecord.getState());
             if (state != CcState.Published && !assignedDtComponentManifestIds.contains(
-                    dtManifestRecord.getDtManifestId().toBigInteger())) {
+                    dtManifestRecord.getDtManifestId())) {
                 continue;
             }
             if (dtRecord.getNamespaceId() == null) {
-                response.addMessageForDt(dtManifestRecord.getDtManifestId().toBigInteger(),
+                response.addMessageForDt(dtManifestRecord.getDtManifestId(),
                         Error, "Namespace is required.", NAMESPACE);
             }
         }

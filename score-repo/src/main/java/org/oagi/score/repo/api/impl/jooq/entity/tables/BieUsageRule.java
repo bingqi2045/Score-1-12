@@ -64,7 +64,7 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
      * a BIE.
      */
-    public final TableField<BieUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
+    public final TableField<BieUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_abie_id</code>. Foreign key

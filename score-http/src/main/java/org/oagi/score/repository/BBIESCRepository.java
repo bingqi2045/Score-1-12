@@ -24,7 +24,7 @@ public class BBIESCRepository implements ScoreRepository<BBIESC, String> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record20<String, String, String, ULong, String,
+    private SelectJoinStep<Record20<String, String, String, String, String,
             String, String, Integer, Integer, ULong,
             ULong, String, String, String, String,
             String, String, String, Byte, String>> getSelectJoinStep() {

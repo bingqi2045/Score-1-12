@@ -39,18 +39,18 @@ public class BbieReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BbieNode getBbieNode(String topLevelAsbiepId, BigInteger bccManifestId, String hashPath) {
+    public BbieNode getBbieNode(String topLevelAsbiepId, String bccManifestId, String hashPath) {
         BccManifestRecord bccManifestRecord = bccReadRepository.getBccManifestById(bccManifestId);
         BccRecord bccRecord = bccReadRepository.getBccByManifestId(bccManifestId);
         if (bccRecord == null) {
             return null;
         }
         BccpManifestRecord bccpManifestRecord = bccpReadRepository.getBccpManifestByManifestId(
-                bccManifestRecord.getToBccpManifestId().toBigInteger());
+                bccManifestRecord.getToBccpManifestId());
         BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(
-                bccpManifestRecord.getBccpManifestId().toBigInteger());
+                bccpManifestRecord.getBccpManifestId());
         List<String> cdtPrimitives = bccpReadRepository.getCdtPrimitivesByManifestId(
-                bccpManifestRecord.getBccpManifestId().toBigInteger());
+                bccpManifestRecord.getBccpManifestId());
 
         BbieNode bbieNode = new BbieNode();
 
@@ -89,15 +89,15 @@ public class BbieReadRepository {
             }
             bbie.setNillable(bccpRecord.getIsNillable() == 1);
             String defaultBdtPriRestriId = getDefaultBdtPriRestriIdByBdtId(
-                    bccpManifestRecord.getBdtManifestId().toBigInteger());
+                    bccpManifestRecord.getBdtManifestId());
             bbie.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
         return bbieNode;
     }
 
-    public String getDefaultBdtPriRestriIdByBdtId(BigInteger bdtManifestId) {
-        ULong dtManifestId = ULong.valueOf(bdtManifestId);
+    public String getDefaultBdtPriRestriIdByBdtId(String bdtManifestId) {
+        String dtManifestId = bdtManifestId;
         String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
@@ -151,7 +151,7 @@ public class BbieReadRepository {
                             BBIEP.BBIEP_ID.eq(bbieRecord.getToBbiepId())
                     ))
                     .fetchOneInto(String.class));
-            bbie.setBasedBccManifestId(bbieRecord.getBasedBccManifestId().toBigInteger());
+            bbie.setBasedBccManifestId(bbieRecord.getBasedBccManifestId());
             bbie.setUsed(bbieRecord.getIsUsed() == 1);
             bbie.setGuid(bbieRecord.getGuid());
             bbie.setCardinalityMin(bbieRecord.getCardinalityMin());
@@ -196,7 +196,7 @@ public class BbieReadRepository {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("BBIE");
                     bieEditUsed.setBieId(record.get(BBIE.BBIE_ID));
-                    bieEditUsed.setManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID).toBigInteger());
+                    bieEditUsed.setManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID));
                     bieEditUsed.setHashPath(record.get(BBIE.HASH_PATH));
                     bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID));
                     return bieEditUsed;

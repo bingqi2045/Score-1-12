@@ -8,7 +8,7 @@ public class Bbie implements BieAssociation {
 
     private String guid;
 
-    private BigInteger basedBccManifestId;
+    private String basedBccManifestId;
 
     private String path;
 
@@ -60,11 +60,11 @@ public class Bbie implements BieAssociation {
         this.guid = guid;
     }
 
-    public BigInteger getBasedBccManifestId() {
+    public String getBasedBccManifestId() {
         return basedBccManifestId;
     }
 
-    public void setBasedBccManifestId(BigInteger basedBccManifestId) {
+    public void setBasedBccManifestId(String basedBccManifestId) {
         this.basedBccManifestId = basedBccManifestId;
     }
 

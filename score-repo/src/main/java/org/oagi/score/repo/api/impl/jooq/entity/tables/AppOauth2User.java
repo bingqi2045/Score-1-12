@@ -68,7 +68,7 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
      * The column <code>oagi.app_oauth2_user.oauth2_app_id</code>. A reference
      * to the record in `oauth2_app`.
      */
-    public final TableField<AppOauth2UserRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36), this, "A reference to the record in `oauth2_app`.");
+    public final TableField<AppOauth2UserRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36).nullable(false), this, "A reference to the record in `oauth2_app`.");
 
     /**
      * The column <code>oagi.app_oauth2_user.sub</code>. `sub` claim defined in

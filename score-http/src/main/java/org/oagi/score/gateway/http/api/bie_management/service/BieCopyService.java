@@ -267,7 +267,7 @@ public class BieCopyService implements InitializingBean {
         private String guid;
         private String path;
         private String hashPath;
-        private BigInteger basedAccManifestId;
+        private String basedAccManifestId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -283,7 +283,7 @@ public class BieCopyService implements InitializingBean {
         private String hashPath;
         private String fromAbieId;
         private String toAsbiepId;
-        private BigInteger basedAsccManifestId;
+        private String basedAsccManifestId;
         private String definition;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -301,7 +301,7 @@ public class BieCopyService implements InitializingBean {
         private String guid;
         private String path;
         private String hashPath;
-        private BigInteger basedBccManifestId;
+        private String basedBccManifestId;
         private String fromAbieId;
         private String toBbiepId;
         private String bdtPriRestriId;
@@ -328,7 +328,7 @@ public class BieCopyService implements InitializingBean {
         private String guid;
         private String path;
         private String hashPath;
-        private BigInteger basedAsccpManifestId;
+        private String basedAsccpManifestId;
         private String roleOfAbieId;
         private String definition;
         private String remark;
@@ -343,7 +343,7 @@ public class BieCopyService implements InitializingBean {
         private String guid;
         private String path;
         private String hashPath;
-        private BigInteger basedBccpManifestId;
+        private String basedBccpManifestId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -358,7 +358,7 @@ public class BieCopyService implements InitializingBean {
         private String path;
         private String hashPath;
         private String bbieId;
-        private BigInteger basedDtScManifestId;
+        private String basedDtScManifestId;
         private String dtScPriRestriId;
         private String codeListId;
         private String agencyIdListId;
@@ -577,7 +577,7 @@ public class BieCopyService implements InitializingBean {
                     .set(ABIE.GUID, ScoreGuid.randomGuid())
                     .set(ABIE.PATH, abie.getPath())
                     .set(ABIE.HASH_PATH, abie.getHashPath())
-                    .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
+                    .set(ABIE.BASED_ACC_MANIFEST_ID, abie.getBasedAccManifestId())
                     .set(ABIE.DEFINITION, abie.getDefinition())
                     .set(ABIE.CREATED_BY, userId)
                     .set(ABIE.LAST_UPDATED_BY, userId)
@@ -598,7 +598,7 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                     .set(ASBIEP.PATH, asbiep.getPath())
                     .set(ASBIEP.HASH_PATH, asbiep.getHashPath())
-                    .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
+                    .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, asbiep.getBasedAsccpManifestId())
                     .set(ASBIEP.ROLE_OF_ABIE_ID, asbiep.getRoleOfAbieId())
                     .set(ASBIEP.DEFINITION, asbiep.getDefinition())
                     .set(ASBIEP.REMARK, asbiep.getRemark())
@@ -620,7 +620,7 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIEP.GUID, ScoreGuid.randomGuid())
                     .set(BBIEP.PATH, bbiep.getPath())
                     .set(BBIEP.HASH_PATH, bbiep.getHashPath())
-                    .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(bbiep.getBasedBccpManifestId()))
+                    .set(BBIEP.BASED_BCCP_MANIFEST_ID, bbiep.getBasedBccpManifestId())
                     .set(BBIEP.DEFINITION, bbiep.getDefinition())
                     .set(BBIEP.REMARK, bbiep.getRemark())
                     .set(BBIEP.BIZ_TERM, bbiep.getBizTerm())
@@ -643,7 +643,7 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIE.HASH_PATH, asbie.getHashPath())
                     .set(ASBIE.FROM_ABIE_ID, asbie.getFromAbieId())
                     .set(ASBIE.TO_ASBIEP_ID, asbie.getToAsbiepId())
-                    .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(asbie.getBasedAsccManifestId()))
+                    .set(ASBIE.BASED_ASCC_MANIFEST_ID, asbie.getBasedAsccManifestId())
                     .set(ASBIE.DEFINITION, asbie.getDefinition())
                     .set(ASBIE.REMARK, asbie.getRemark())
                     .set(ASBIE.CARDINALITY_MIN, asbie.getCardinalityMin())
@@ -670,7 +670,7 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE.HASH_PATH, bbie.getHashPath())
                     .set(BBIE.FROM_ABIE_ID, bbie.getFromAbieId())
                     .set(BBIE.TO_BBIEP_ID, bbie.getToBbiepId())
-                    .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(bbie.getBasedBccManifestId()))
+                    .set(BBIE.BASED_BCC_MANIFEST_ID, bbie.getBasedBccManifestId())
                     .set(BBIE.BDT_PRI_RESTRI_ID, (bbie.getBdtPriRestriId() != null) ? bbie.getBdtPriRestriId() : null)
                     .set(BBIE.CODE_LIST_ID, (bbie.getCodeListId() != null) ? bbie.getCodeListId() : null)
                     .set(BBIE.AGENCY_ID_LIST_ID, (bbie.getAgencyIdListId() != null) ? bbie.getAgencyIdListId() : null)
@@ -703,7 +703,7 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE_SC.PATH, bbieSc.getPath())
                     .set(BBIE_SC.HASH_PATH, bbieSc.getHashPath())
                     .set(BBIE_SC.BBIE_ID, bbieSc.getBbieId())
-                    .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(bbieSc.getBasedDtScManifestId()))
+                    .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, bbieSc.getBasedDtScManifestId())
                     .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, (bbieSc.getDtScPriRestriId() != null) ? bbieSc.getDtScPriRestriId() : null)
                     .set(BBIE_SC.CODE_LIST_ID, (bbieSc.getCodeListId() != null) ? bbieSc.getCodeListId() : null)
                     .set(BBIE_SC.AGENCY_ID_LIST_ID, (bbieSc.getAgencyIdListId() != null) ? bbieSc.getAgencyIdListId() : null)

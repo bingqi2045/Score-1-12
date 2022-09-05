@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class UpdateAccPropertiesRepositoryResponse {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
-    public UpdateAccPropertiesRepositoryResponse(BigInteger accManifestId) {
+    public UpdateAccPropertiesRepositoryResponse(String accManifestId) {
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 }

@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CcCreateResponse {
 
-    private BigInteger manifestId;
+    private String manifestId;
 
 }

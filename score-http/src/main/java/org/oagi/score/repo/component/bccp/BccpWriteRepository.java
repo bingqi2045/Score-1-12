@@ -58,7 +58,7 @@ public class BccpWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord bdtManifest = dslContext.selectFrom(DT_MANIFEST)
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(request.getBdtManifestId())))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(request.getBdtManifestId()))
                 .fetchOne();
 
         DtRecord bdt = dslContext.selectFrom(DT)
@@ -87,12 +87,13 @@ public class BccpWriteRepository {
                 .execute();
 
         BccpManifestRecord bccpManifest = new BccpManifestRecord();
+        bccpManifest.setBccpManifestId(UUID.randomUUID().toString());
         bccpManifest.setBccpId(bccp.getBccpId());
         bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
         bccpManifest.setReleaseId(request.getReleaseId());
-        bccpManifest = dslContext.insertInto(BCCP_MANIFEST)
+        dslContext.insertInto(BCCP_MANIFEST)
                 .set(bccpManifest)
-                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne();
+                .execute();
 
         LogRecord logRecord =
                 logRepository.insertBccpLog(
@@ -103,7 +104,7 @@ public class BccpWriteRepository {
         bccpManifest.setLogId(logRecord.getLogId());
         bccpManifest.update(BCCP_MANIFEST.LOG_ID);
 
-        return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId().toBigInteger());
+        return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId());
     }
 
     public ReviseBccpRepositoryResponse reviseBccp(ReviseBccpRepositoryRequest request) {
@@ -113,7 +114,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -182,7 +183,7 @@ public class BccpWriteRepository {
                         LogAction.Revised,
                         userId, timestamp);
 
-        ULong responseBccpManifestId;
+        String responseBccpManifestId;
         bccpManifestRecord.setBccpId(nextBccpRecord.getBccpId());
         bccpManifestRecord.setLogId(logRecord.getLogId());
         bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.LOG_ID);
@@ -201,7 +202,7 @@ public class BccpWriteRepository {
                 ))
                 .execute();
 
-        return new ReviseBccpRepositoryResponse(responseBccpManifestId.toBigInteger());
+        return new ReviseBccpRepositoryResponse(responseBccpManifestId);
     }
 
     public UpdateBccpPropertiesRepositoryResponse updateBccpProperties(UpdateBccpPropertiesRepositoryRequest request) {
@@ -211,7 +212,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -324,7 +325,7 @@ public class BccpWriteRepository {
             }
         }
 
-        return new UpdateBccpPropertiesRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+        return new UpdateBccpPropertiesRepositoryResponse(bccpManifestRecord.getBccpManifestId());
     }
 
     public UpdateBccpBdtRepositoryResponse updateBccpBdt(UpdateBccpBdtRepositoryRequest request) {
@@ -334,7 +335,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -351,7 +352,7 @@ public class BccpWriteRepository {
         }
 
         // update bccp record.
-        ULong bdtManifestId = ULong.valueOf(request.getBdtManifestId());
+        String bdtManifestId = request.getBdtManifestId();
         Record2<String, String> result = dslContext.select(DT.DT_ID, DT.DATA_TYPE_TERM)
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
@@ -379,7 +380,7 @@ public class BccpWriteRepository {
         bccpManifestRecord.setLogId(logRecord.getLogId());
         bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.LOG_ID);
 
-        return new UpdateBccpBdtRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger(), bccpRecord.getDen());
+        return new UpdateBccpBdtRepositoryResponse(bccpManifestRecord.getBccpManifestId(), bccpRecord.getDen());
     }
 
     public UpdateBccpStateRepositoryResponse updateBccpState(UpdateBccpStateRepositoryRequest request) {
@@ -389,7 +390,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -440,7 +441,7 @@ public class BccpWriteRepository {
         bccpManifestRecord.setLogId(logRecord.getLogId());
         bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
 
-        return new UpdateBccpStateRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+        return new UpdateBccpStateRepositoryResponse(bccpManifestRecord.getBccpManifestId());
     }
 
     public DeleteBccpRepositoryResponse deleteBccp(DeleteBccpRepositoryRequest request) {
@@ -450,7 +451,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -484,7 +485,7 @@ public class BccpWriteRepository {
         bccpManifestRecord.setLogId(logRecord.getLogId());
         bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
 
-        return new DeleteBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+        return new DeleteBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId());
     }
 
     public PurgeBccpRepositoryResponse purgeBccp(PurgeBccpRepositoryRequest request) {
@@ -494,7 +495,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -544,7 +545,7 @@ public class BccpWriteRepository {
                 .where(BCCP.BCCP_ID.eq(bccpRecord.getBccpId()))
                 .execute();
 
-        return new PurgeBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+        return new PurgeBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId());
     }
 
     public UpdateBccpOwnerRepositoryResponse updateBccpOwner(UpdateBccpOwnerRepositoryRequest request) {
@@ -554,7 +555,7 @@ public class BccpWriteRepository {
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
+                        request.getBccpManifestId()
                 ))
                 .fetchOne();
 
@@ -585,7 +586,7 @@ public class BccpWriteRepository {
         bccpManifestRecord.setLogId(logRecord.getLogId());
         bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
 
-        return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+        return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId());
     }
 
     public CancelRevisionBccpRepositoryResponse cancelRevisionBccp(CancelRevisionBccpRepositoryRequest request) {
@@ -593,7 +594,7 @@ public class BccpWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(request.getBccpManifestId())).fetchOne();
 
         if (bccpManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target BCCP");
@@ -643,7 +644,7 @@ public class BccpWriteRepository {
 
     public CancelRevisionBccpRepositoryResponse resetLogBccp(CancelRevisionBccpRepositoryRequest request) {
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(request.getBccpManifestId())).fetchOne();
 
         if (bccpManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target BCCP");

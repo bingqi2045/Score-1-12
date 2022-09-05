@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
@@ -53,9 +51,10 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.bccp_manifest.bccp_manifest_id</code>.
+     * The column <code>oagi.bccp_manifest.bccp_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BccpManifestRecord, ULong> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BccpManifestRecord, String> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bccp_manifest.release_id</code>. Foreign key to the
@@ -71,7 +70,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     /**
      * The column <code>oagi.bccp_manifest.bdt_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> BDT_MANIFEST_ID = createField(DSL.name("bdt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestRecord, String> BDT_MANIFEST_ID = createField(DSL.name("bdt_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.conflict</code>. This indicates that
@@ -89,17 +88,17 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
      * The column <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>.
      * This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<BccpManifestRecord, ULong> REPLACEMENT_BCCP_MANIFEST_ID = createField(DSL.name("replacement_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<BccpManifestRecord, String> REPLACEMENT_BCCP_MANIFEST_ID = createField(DSL.name("replacement_bccp_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.bccp_manifest.prev_bccp_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> PREV_BCCP_MANIFEST_ID = createField(DSL.name("prev_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BccpManifestRecord, String> PREV_BCCP_MANIFEST_ID = createField(DSL.name("prev_bccp_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.next_bccp_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> NEXT_BCCP_MANIFEST_ID = createField(DSL.name("next_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BccpManifestRecord, String> NEXT_BCCP_MANIFEST_ID = createField(DSL.name("next_bccp_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private BccpManifest(Name alias, Table<BccpManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -140,25 +139,20 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     }
 
     @Override
-    public Identity<BccpManifestRecord, ULong> getIdentity() {
-        return (Identity<BccpManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BccpManifestRecord> getPrimaryKey() {
         return Keys.KEY_BCCP_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<BccpManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_LOG_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_LOG_ID_FK, Keys.BCCP_MANIFEST_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
     private transient Bccp _bccp;
     private transient DtManifest _dtManifest;
     private transient Log _log;
-    private transient BccpManifest _bccpReplacementBccpManifestIdFk;
+    private transient BccpManifest _bccpManifestReplacementBccpManifestIdFk;
     private transient BccpManifest _bccpManifestPrevBccpManifestIdFk;
     private transient BccpManifest _bccpManifestNextBccpManifestIdFk;
 
@@ -204,13 +198,13 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     /**
      * Get the implicit join path to the <code>oagi.bccp_manifest</code> table,
-     * via the <code>bccp_replacement_bccp_manifest_id_fk</code> key.
+     * via the <code>bccp_manifest_replacement_bccp_manifest_id_fk</code> key.
      */
-    public BccpManifest bccpReplacementBccpManifestIdFk() {
-        if (_bccpReplacementBccpManifestIdFk == null)
-            _bccpReplacementBccpManifestIdFk = new BccpManifest(this, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK);
+    public BccpManifest bccpManifestReplacementBccpManifestIdFk() {
+        if (_bccpManifestReplacementBccpManifestIdFk == null)
+            _bccpManifestReplacementBccpManifestIdFk = new BccpManifest(this, Keys.BCCP_MANIFEST_REPLACEMENT_BCCP_MANIFEST_ID_FK);
 
-        return _bccpReplacementBccpManifestIdFk;
+        return _bccpManifestReplacementBccpManifestIdFk;
     }
 
     /**
@@ -279,21 +273,21 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
+    public Row9<String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

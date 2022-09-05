@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class UpdateAsccpPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccpManifestId;
+    private final String asccpManifestId;
 
     private String propertyTerm;
     private String definition;
@@ -19,19 +19,19 @@ public class UpdateAsccpPropertiesRepositoryRequest extends RepositoryRequest {
     private String namespaceId;
 
     public UpdateAsccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                  BigInteger asccpManifestId) {
+                                                  String asccpManifestId) {
         super(user);
         this.asccpManifestId = asccpManifestId;
     }
 
     public UpdateAsccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                   LocalDateTime localDateTime,
-                                                  BigInteger asccpManifestId) {
+                                                  String asccpManifestId) {
         super(user, localDateTime);
         this.asccpManifestId = asccpManifestId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 

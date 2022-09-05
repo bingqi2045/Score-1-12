@@ -12,7 +12,6 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
 import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -27,7 +26,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
@@ -62,17 +60,17 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     /**
      * The column <code>oagi.seq_key.from_acc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> FROM_ACC_MANIFEST_ID = createField(DSL.name("from_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<SeqKeyRecord, String> FROM_ACC_MANIFEST_ID = createField(DSL.name("from_acc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.seq_key.ascc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> ASCC_MANIFEST_ID = createField(DSL.name("ascc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, String> ASCC_MANIFEST_ID = createField(DSL.name("ascc_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.seq_key.bcc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, String> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.seq_key.prev_seq_key_id</code>.
@@ -120,11 +118,6 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID);
     }
 
     @Override
@@ -244,21 +237,21 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row6<ULong, String, String, String, ULong, ULong> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

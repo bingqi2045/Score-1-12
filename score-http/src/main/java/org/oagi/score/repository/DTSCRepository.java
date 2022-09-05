@@ -18,7 +18,7 @@ public class DTSCRepository implements ScoreRepository<DTSC, String> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record12<ULong, String, String, String, String, String, String, String, Integer,
+    private SelectOnConditionStep<Record12<String, String, String, String, String, String, String, String, Integer,
             Integer, String, UInteger>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.DT_SC_MANIFEST.DT_SC_MANIFEST_ID,

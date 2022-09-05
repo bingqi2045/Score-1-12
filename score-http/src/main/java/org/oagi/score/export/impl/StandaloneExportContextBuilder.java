@@ -27,19 +27,19 @@ public class StandaloneExportContextBuilder {
     }
 
     public ExportContext build(String moduleSetReleaseId,
-                               BigInteger asccpManifestId) {
+                               String asccpManifestId) {
         DefaultExportContext context = new DefaultExportContext();
         ScoreModule scoreModule = moduleRepository.findByModuleSetReleaseIdAndAsccpManifestId(
-                moduleSetReleaseId, ULong.valueOf(asccpManifestId));
+                moduleSetReleaseId, asccpManifestId);
         SchemaModule schemaModule = new SchemaModule(scoreModule);
         context.addSchemaModule(schemaModule);
 
-        addASCCP(schemaModule, ULong.valueOf(asccpManifestId));
+        addASCCP(schemaModule, asccpManifestId);
 
         return context;
     }
 
-    private void addASCCP(SchemaModule schemaModule, ULong asccpManifestId) {
+    private void addASCCP(SchemaModule schemaModule, String asccpManifestId) {
         AsccpManifestRecord asccpManifest =
                 importedDataProvider.findASCCPManifest(asccpManifestId);
         AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
@@ -71,7 +71,7 @@ public class StandaloneExportContextBuilder {
         addBDT(schemaModule, bccpManifest.getBdtManifestId());
     }
 
-    private void addACC(SchemaModule schemaModule, ULong accManifestId) {
+    private void addACC(SchemaModule schemaModule, String accManifestId) {
         AccManifestRecord accManifest =
                 importedDataProvider.findACCManifest(accManifestId);
 
@@ -101,7 +101,7 @@ public class StandaloneExportContextBuilder {
         });
     }
 
-    private void addBDT(SchemaModule schemaModule, ULong bdtManifestId) {
+    private void addBDT(SchemaModule schemaModule, String bdtManifestId) {
         DtManifestRecord dtManifestRecord = importedDataProvider.findDtManifestByDtManifestId(bdtManifestId);
         if (dtManifestRecord.getBasedDtManifestId() != null) {
             addBDT(schemaModule, dtManifestRecord.getBasedDtManifestId());

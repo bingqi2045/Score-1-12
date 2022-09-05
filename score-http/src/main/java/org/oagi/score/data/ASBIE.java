@@ -12,7 +12,7 @@ public class ASBIE implements BIE {
     private String guid;
     private String fromAbieId;
     private String toAsbiepId;
-    private BigInteger basedAsccManifestId = BigInteger.ZERO;
+    private String basedAsccManifestId;
     private String definition;
     private int cardinalityMin;
     private int cardinalityMax;

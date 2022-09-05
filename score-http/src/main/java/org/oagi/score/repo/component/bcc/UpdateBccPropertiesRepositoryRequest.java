@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccManifestId;
+    private final String bccManifestId;
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
@@ -22,19 +22,19 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
     private String fixedValue;
 
     public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger bccManifestId) {
+                                                String bccManifestId) {
         super(user);
         this.bccManifestId = bccManifestId;
     }
 
     public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger bccManifestId) {
+                                                String bccManifestId) {
         super(user, localDateTime);
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 

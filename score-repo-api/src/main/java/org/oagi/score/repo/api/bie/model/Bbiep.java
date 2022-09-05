@@ -10,7 +10,7 @@ public class Bbiep extends Auditable {
 
     private String guid;
 
-    private BigInteger basedBccpManifestId;
+    private String basedBccpManifestId;
 
     private String path;
 
@@ -40,11 +40,11 @@ public class Bbiep extends Auditable {
         this.guid = guid;
     }
 
-    public BigInteger getBasedBccpManifestId() {
+    public String getBasedBccpManifestId() {
         return basedBccpManifestId;
     }
 
-    public void setBasedBccpManifestId(BigInteger basedBccpManifestId) {
+    public void setBasedBccpManifestId(String basedBccpManifestId) {
         this.basedBccpManifestId = basedBccpManifestId;
     }
 

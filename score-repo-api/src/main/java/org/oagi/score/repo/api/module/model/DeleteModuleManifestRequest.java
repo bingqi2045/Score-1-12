@@ -12,7 +12,7 @@ public class DeleteModuleManifestRequest extends Request {
         super(requester);
     }
 
-    private BigInteger manifestId;
+    private String manifestId;
 
     private CcType type;
 
@@ -20,11 +20,11 @@ public class DeleteModuleManifestRequest extends Request {
 
     private String moduleId;
 
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return manifestId;
     }
 
-    public void setManifestId(BigInteger manifestId) {
+    public void setManifestId(String manifestId) {
         this.manifestId = manifestId;
     }
 

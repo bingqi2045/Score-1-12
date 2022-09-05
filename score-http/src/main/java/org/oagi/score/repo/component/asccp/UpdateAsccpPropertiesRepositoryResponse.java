@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class UpdateAsccpPropertiesRepositoryResponse {
 
-    private final BigInteger asccpManifestId;
+    private final String asccpManifestId;
 
-    public UpdateAsccpPropertiesRepositoryResponse(BigInteger asccpManifestId) {
+    public UpdateAsccpPropertiesRepositoryResponse(String asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 }

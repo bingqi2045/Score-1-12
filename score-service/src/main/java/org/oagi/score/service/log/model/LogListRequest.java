@@ -10,7 +10,7 @@ public class LogListRequest {
 
     private String reference;
     private String type;
-    private BigInteger manifestId;
+    private String manifestId;
 
     private PageRequest pageRequest;
 

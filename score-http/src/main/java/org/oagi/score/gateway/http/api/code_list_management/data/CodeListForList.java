@@ -9,16 +9,16 @@ import java.util.Date;
 @Data
 public class CodeListForList {
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
     private String codeListId;
     private String codeListName;
     private String definition;
     private String definitionSource;
     private String modulePath;
     private String guid;
-    private BigInteger basedCodeListManifestId;
+    private String basedCodeListManifestId;
     private String basedCodeListName;
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
     private String agencyIdListValueValue;
     private String agencyIdListValueName;
     private String listId;

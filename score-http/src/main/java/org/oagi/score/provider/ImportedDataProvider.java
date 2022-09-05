@@ -174,9 +174,9 @@ public class ImportedDataProvider {
     }
 
     private List<SeqKeyRecord> findSeqKeyList;
-    private Map<ULong, List<SeqKeyRecord>> findSeqKeyMap;
+    private Map<String, List<SeqKeyRecord>> findSeqKeyMap;
 
-    public List<SeqKeyRecord> getSeqKeys(ULong accManifestId) {
+    public List<SeqKeyRecord> getSeqKeys(String accManifestId) {
         return findSeqKeyMap.containsKey(accManifestId) ? findSeqKeyMap.get(accManifestId) : Collections.emptyList();
     }
 
@@ -235,13 +235,13 @@ public class ImportedDataProvider {
     }
 
     private List<DtManifestRecord> findDtManifestList;
-    private Map<ULong, DtManifestRecord> findDtManifestMap;
+    private Map<String, DtManifestRecord> findDtManifestMap;
 
     public List<DtManifestRecord> findDtManifest() {
         return Collections.unmodifiableList(this.findDtManifestList);
     }
 
-    public DtManifestRecord findDtManifestByDtManifestId(ULong dtManifestId) {
+    public DtManifestRecord findDtManifestByDtManifestId(String dtManifestId) {
         return this.findDtManifestMap.get(dtManifestId);
     }
 
@@ -360,10 +360,10 @@ public class ImportedDataProvider {
 
     private List<AccManifestRecord> findACCManifestList;
 
-    private Map<ULong, AccManifestRecord> findAccManifestMap;
+    private Map<String, AccManifestRecord> findAccManifestMap;
 
     
-    public AccManifestRecord findACCManifest(ULong accManifestId) {
+    public AccManifestRecord findACCManifest(String accManifestId) {
         return findAccManifestMap.get(accManifestId);
     }
 
@@ -374,10 +374,10 @@ public class ImportedDataProvider {
 
     private List<AsccpManifestRecord> findASCCPManifestList;
 
-    private Map<ULong, AsccpManifestRecord> findAsccpManifestMap;
+    private Map<String, AsccpManifestRecord> findAsccpManifestMap;
 
     
-    public AsccpManifestRecord findASCCPManifest(ULong asccpManifestId) {
+    public AsccpManifestRecord findASCCPManifest(String asccpManifestId) {
         return findAsccpManifestMap.get(asccpManifestId);
     }
 
@@ -388,10 +388,10 @@ public class ImportedDataProvider {
 
     private List<BccpManifestRecord> findBCCPManifestList;
 
-    private Map<ULong, BccpManifestRecord> findBccpManifestMap;
+    private Map<String, BccpManifestRecord> findBccpManifestMap;
 
     
-    public BccpManifestRecord findBCCPManifest(ULong bccpManifestId) {
+    public BccpManifestRecord findBCCPManifest(String bccpManifestId) {
         if (bccpManifestId == null) {
             return null;
         }
@@ -461,30 +461,30 @@ public class ImportedDataProvider {
         return findBccMap.get(bccId);
     }
 
-    private Map<ULong, AsccManifestRecord> findAsccManifestMap;
-    private Map<ULong, List<AsccManifestRecord>> findAsccManifestByAccManifestIdMap;
+    private Map<String, AsccManifestRecord> findAsccManifestMap;
+    private Map<String, List<AsccManifestRecord>> findAsccManifestByAccManifestIdMap;
 
     
-    public AsccManifestRecord findASCCManifest(ULong asccManifestId) {
+    public AsccManifestRecord findASCCManifest(String asccManifestId) {
         return findAsccManifestMap.get(asccManifestId);
     }
 
-    public List<AsccManifestRecord> findASCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+    public List<AsccManifestRecord> findASCCManifestByFromAccManifestId(String fromAccManifestId) {
         if (!findAsccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
             return Collections.emptyList();
         }
         return findAsccManifestByAccManifestIdMap.get(fromAccManifestId);
     }
 
-    private Map<ULong, BccManifestRecord> findBccManifestMap;
-    private Map<ULong, List<BccManifestRecord>> findBccManifestByAccManifestIdMap;
+    private Map<String, BccManifestRecord> findBccManifestMap;
+    private Map<String, List<BccManifestRecord>> findBccManifestByAccManifestIdMap;
 
     
-    public BccManifestRecord findBCCManifest(ULong bccManifestId) {
+    public BccManifestRecord findBCCManifest(String bccManifestId) {
         return findBccManifestMap.get(bccManifestId);
     }
 
-    public List<BccManifestRecord> findBCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+    public List<BccManifestRecord> findBCCManifestByFromAccManifestId(String fromAccManifestId) {
         if (!findBccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
             return Collections.emptyList();
         }

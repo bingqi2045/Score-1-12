@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class UpdateDtOwnerRepositoryResponse {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
 
-    public UpdateDtOwnerRepositoryResponse(BigInteger dtManifestId) {
+    public UpdateDtOwnerRepositoryResponse(String dtManifestId) {
         this.dtManifestId = dtManifestId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 }

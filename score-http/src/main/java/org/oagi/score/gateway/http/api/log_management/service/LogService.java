@@ -23,7 +23,7 @@ public class LogService {
     }
 
     public String getSnapshotById(AuthenticatedPrincipal user, String logId,
-                                  String reference, String type, BigInteger manifestId) {
+                                  String reference, String type, String manifestId) {
         return repository.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }

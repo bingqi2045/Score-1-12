@@ -20,7 +20,7 @@ public class CoreComponentRepositoryTest {
 
     @Test
     public void getAsccpManifestByManifestIdTestWithValidManifestId() {
-        ULong manifestId = ULong.valueOf(1L);
+        String manifestId = ULong.valueOf(1L);
 
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(manifestId);
@@ -31,7 +31,7 @@ public class CoreComponentRepositoryTest {
 
     @Test
     public void getAsccpManifestByManifestIdTestWithInvalidManifestId() {
-        ULong manifestId = ULong.valueOf(0L);
+        String manifestId = ULong.valueOf(0L);
 
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(manifestId);

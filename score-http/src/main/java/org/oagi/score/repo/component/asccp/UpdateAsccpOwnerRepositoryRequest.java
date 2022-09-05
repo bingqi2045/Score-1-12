@@ -7,18 +7,18 @@ import java.math.BigInteger;
 
 public class UpdateAsccpOwnerRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccpManifestId;
+    private final String asccpManifestId;
     private final String ownerId;
 
     public UpdateAsccpOwnerRepositoryRequest(AuthenticatedPrincipal user,
-                                             BigInteger asccpManifestId,
+                                             String asccpManifestId,
                                              String ownerId) {
         super(user);
         this.asccpManifestId = asccpManifestId;
         this.ownerId = ownerId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 

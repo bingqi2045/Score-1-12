@@ -10,7 +10,7 @@ import java.math.BigInteger;
 public class BieEditRef {
 
     private String asbieId;
-    private BigInteger basedAsccManifestId;
+    private String basedAsccManifestId;
     private String hashPath;
     private String topLevelAsbiepId;
     private String refTopLevelAsbiepId;

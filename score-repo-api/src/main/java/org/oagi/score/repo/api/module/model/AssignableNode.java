@@ -6,11 +6,11 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class AssignableNode {
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return manifestId;
     }
 
-    public void setManifestId(BigInteger manifestId) {
+    public void setManifestId(String manifestId) {
         this.manifestId = manifestId;
     }
 
@@ -62,7 +62,7 @@ public class AssignableNode {
         this.revision = revision;
     }
 
-    private BigInteger manifestId;
+    private String manifestId;
     private String type;
     private CcState state;
     private String den;

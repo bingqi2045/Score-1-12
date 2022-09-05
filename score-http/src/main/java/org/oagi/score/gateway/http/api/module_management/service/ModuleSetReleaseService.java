@@ -74,7 +74,7 @@ public class ModuleSetReleaseService {
         return scoreRepositoryFactory.createModuleSetReleaseWriteRepository().deleteModuleSetRelease(request);
     }
 
-    public File exportStandaloneSchema(ScoreUser user, List<BigInteger> asccpManifestIdList) throws Exception {
+    public File exportStandaloneSchema(ScoreUser user, List<String> asccpManifestIdList) throws Exception {
         if (asccpManifestIdList == null || asccpManifestIdList.isEmpty()) {
             throw new IllegalArgumentException();
         }
@@ -89,8 +89,8 @@ public class ModuleSetReleaseService {
         List<File> files = new ArrayList<>();
         Map<String, ImportedDataProvider> dataProviderMap = new HashMap();
 
-        for (BigInteger asccpManifestId : asccpManifestIdList) {
-            String moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId));
+        for (String asccpManifestId : asccpManifestIdList) {
+            String moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(asccpManifestId);
             if (!dataProviderMap.containsKey(moduleSetReleaseId)) {
                 dataProviderMap.put(moduleSetReleaseId, new ImportedDataProvider(ccRepository, moduleSetReleaseId));
             }

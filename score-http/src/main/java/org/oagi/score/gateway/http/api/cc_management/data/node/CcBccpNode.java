@@ -19,8 +19,8 @@ public class CcBccpNode extends CcNode implements SeqKeySupportable {
 
     private String bccpId;
     private String bdtId;
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger bccManifestId = BigInteger.ZERO;
+    private String manifestId;
+    private String bccManifestId;
     private BigInteger prevBccpId;
     private BigInteger nextBccpId;
 

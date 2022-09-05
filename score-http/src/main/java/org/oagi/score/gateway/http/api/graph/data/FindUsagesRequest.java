@@ -8,6 +8,6 @@ import java.math.BigInteger;
 public class FindUsagesRequest {
 
     private String type;
-    private BigInteger manifestId;
+    private String manifestId;
 
 }

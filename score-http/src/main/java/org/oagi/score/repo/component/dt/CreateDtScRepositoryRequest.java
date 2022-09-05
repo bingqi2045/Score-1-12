@@ -8,16 +8,16 @@ import java.time.LocalDateTime;
 
 public class CreateDtScRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger ownerDdtManifestId;
+    private final String ownerDdtManifestId;
 
 
     public CreateDtScRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger ownerDdtManifestId) {
+                                       String ownerDdtManifestId) {
         super(user);
         this.ownerDdtManifestId = ownerDdtManifestId;
     }
 
-    public BigInteger getOwnerDdtManifestId() {
+    public String getOwnerDdtManifestId() {
         return ownerDdtManifestId;
     }
 }

@@ -10,7 +10,7 @@ public class ABIE implements BIE {
 
     private String abieId;
     private String guid;
-    private BigInteger basedAccManifestId = BigInteger.ZERO;
+    private String basedAccManifestId;
     private String definition;
     private String createdBy;
     private String lastUpdatedBy;

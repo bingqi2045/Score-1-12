@@ -13,10 +13,10 @@ import java.math.BigInteger;
 public class BieEditAscc extends TrackableImpl<String> implements SeqKeySupportable, Cardinality {
 
     private String asccId;
-    private BigInteger asccManifestId;
+    private String asccManifestId;
     private String guid;
-    private BigInteger fromAccManifestId;
-    private BigInteger toAsccpManifestId;
+    private String fromAccManifestId;
+    private String toAsccpManifestId;
     private int seqKey;
 
     private int cardinalityMin;

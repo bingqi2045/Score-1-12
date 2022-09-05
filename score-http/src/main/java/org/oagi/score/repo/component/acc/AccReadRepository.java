@@ -32,11 +32,11 @@ public class AccReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AccRecord getAccByManifestId(BigInteger accManifestId) {
+    public AccRecord getAccByManifestId(String accManifestId) {
         return dslContext.select(ACC.fields())
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId))
                 .fetchOptionalInto(AccRecord.class).orElse(null);
     }
 
@@ -49,13 +49,13 @@ public class AccReadRepository {
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
 
-    public AccManifestRecord getAccManifest(BigInteger accManifestId) {
+    public AccManifestRecord getAccManifest(String accManifestId) {
         return dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId))
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
 
-    public List<CcList> getBaseAccList(BigInteger accManifestId, String releaseId) {
+    public List<CcList> getBaseAccList(String accManifestId, String releaseId) {
 
         String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
@@ -67,16 +67,16 @@ public class AccReadRepository {
 
         List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
 
-        AccManifestRecord accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(ULong.valueOf(accManifestId))).findFirst().orElse(null);
+        AccManifestRecord accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(accManifestId)).findFirst().orElse(null);
 
         if (accManifestRecord == null) {
             throw new IllegalArgumentException("Can not found CoreComponent.");
         }
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         while(accManifestRecord.getBasedAccManifestId() != null) {
-            ULong cur = accManifestRecord.getBasedAccManifestId();
+            String cur = accManifestRecord.getBasedAccManifestId();
             accManifestIdList.add(cur);
             accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(cur)).findFirst().orElse(null);
         }
@@ -122,7 +122,7 @@ public class AccReadRepository {
                 .fetch().map(e -> {
                     CcList ccList = new CcList();
                     ccList.setType(CcType.ACC);
-                    ccList.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    ccList.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     ccList.setGuid(e.get(ACC.GUID));
                     ccList.setDen(e.get(ACC.DEN));
                     ccList.setDefinition(e.get(ACC.DEFINITION));

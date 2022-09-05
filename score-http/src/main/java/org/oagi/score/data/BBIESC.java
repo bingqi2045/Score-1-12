@@ -10,7 +10,7 @@ public class BBIESC implements BIE, FacetRestrictionsAware {
     private String bbieScId;
     private String guid;
     private String bbieId;
-    private BigInteger basedDtScManifestId = BigInteger.ZERO;
+    private String basedDtScManifestId;
     private String dtScPriRestriId;
     private String codeListId;
     private String agencyIdListId;

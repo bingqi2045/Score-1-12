@@ -13,13 +13,13 @@ public class CcRefactorValidationResponse {
 
     private String type;
 
-    private BigInteger manifestId;
+    private String manifestId;
 
     private List<IssuedCc> issueList;
 
     @Data
     public static class IssuedCc {
-        private BigInteger manifestId;
+        private String manifestId;
         private String guid;
         private String den;
         private String name;
@@ -32,7 +32,7 @@ public class CcRefactorValidationResponse {
         private String lastUpdateUser;
         private Date lastUpdateTimestamp;
         private String releaseNum;
-        private BigInteger id;
+        private String id;
 
         private List<String> reasons;
     }

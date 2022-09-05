@@ -34,15 +34,15 @@ public class SeqKeyHandler {
         this.requester = requester;
     }
 
-    public void initAscc(BigInteger fromAccManifestId, BigInteger seqKeyId, BigInteger associationId) {
+    public void initAscc(String fromAccManifestId, BigInteger seqKeyId, String associationId) {
         init(fromAccManifestId, seqKeyId, SeqKeyType.ASCC, associationId);
     }
 
-    public void initBcc(BigInteger fromAccManifestId, BigInteger seqKeyId, BigInteger associationId) {
+    public void initBcc(String fromAccManifestId, BigInteger seqKeyId, String associationId) {
         init(fromAccManifestId, seqKeyId, SeqKeyType.BCC, associationId);
     }
 
-    private void init(BigInteger fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationManifestId) {
+    private void init(String fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, String associationManifestId) {
         GetSeqKeyRequest getSeqKeyRequest = new GetSeqKeyRequest(this.requester)
                 .withFromAccManifestId(fromAccManifestId);
         GetSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyReadRepository()

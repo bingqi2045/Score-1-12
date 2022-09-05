@@ -31,7 +31,7 @@ public class BusinessInformationEntityRepositoryTest {
     /*
      * prerequisites
      */
-    private ULong userId = ULong.valueOf(1L);
+    private String userId = "c720c6cf-43ef-44f6-8552-fab526c572c2";
     private String releaseId = "4dfea06e-9ee1-435e-a025-aad37e164ae0";
     private LocalDateTime timestamp = LocalDateTime.now();
 
@@ -49,7 +49,7 @@ public class BusinessInformationEntityRepositoryTest {
         assertEquals(releaseId, topLevelAsbiep.getReleaseId());
     }
 
-    private ULong insertTopLevelAsbiep() {
+    private String insertTopLevelAsbiep() {
         return bieRepository.insertTopLevelAsbiep()
                 .setUserId(userId)
                 .setReleaseId(releaseId)
@@ -62,8 +62,8 @@ public class BusinessInformationEntityRepositoryTest {
         // tested by #insertTopLevelAsbiepTest
         String topLevelAsbiepId = insertTopLevelAsbiep();
 
-        ULong roleOfAccManifestId = ULong.valueOf(1L);
-        ULong abieId = insertAbie(topLevelAsbiepId, roleOfAccManifestId);
+        String roleOfAccManifestId = "7155a590-01f0-47de-b680-453481a64350";
+        String abieId = insertAbie(topLevelAsbiepId, roleOfAccManifestId);
 
         AbieRecord abie = dslContext.selectFrom(ABIE)
                 .where(ABIE.ABIE_ID.eq(abieId))
@@ -76,7 +76,7 @@ public class BusinessInformationEntityRepositoryTest {
         assertEquals(roleOfAccManifestId, abie.getBasedAccManifestId());
     }
 
-    private ULong insertAbie(String topLevelAsbiepId, ULong roleOfAccManifestId) {
+    private String insertAbie(String topLevelAsbiepId, String roleOfAccManifestId) {
         return bieRepository.insertAbie()
                 .setUserId(userId)
                 .setTopLevelAsbiepId(topLevelAsbiepId)
@@ -85,8 +85,8 @@ public class BusinessInformationEntityRepositoryTest {
                 .execute();
     }
 
-    private ULong insertAbie(String topLevelAsbiepId) {
-        return insertAbie(topLevelAsbiepId, ULong.valueOf(1L));
+    private String insertAbie(String topLevelAsbiepId) {
+        return insertAbie(topLevelAsbiepId, "7155a590-01f0-47de-b680-453481a64350");
     }
 
     @Test
@@ -94,9 +94,9 @@ public class BusinessInformationEntityRepositoryTest {
         // tested by #insertTopLevelAsbiepTest
         String topLevelAsbiepId = insertTopLevelAsbiep();
         // tested by #insertAbieTest
-        ULong abieId = insertAbie(topLevelAsbiepId);
+        String abieId = insertAbie(topLevelAsbiepId);
 
-        ULong asccpManifestId = ULong.valueOf(1L);
+        String asccpManifestId = "1086bd04-d289-4aef-8e00-8fa9fe04f412";
         String asbiepId = bieRepository.insertAsbiep()
                 .setAsccpManifestId(asccpManifestId)
                 .setRoleOfAbieId(abieId)

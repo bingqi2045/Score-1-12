@@ -60,7 +60,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the
      * BDT of the based BCC and BCCP.
      */
-    public void setBasedDtScManifestId(ULong value) {
+    public void setBasedDtScManifestId(String value) {
         set(2, value);
     }
 
@@ -69,8 +69,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the
      * BDT of the based BCC and BCCP.
      */
-    public ULong getBasedDtScManifestId() {
-        return (ULong) get(2);
+    public String getBasedDtScManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -536,7 +536,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(String bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, String bbieId, String dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
+    public BbieScRecord(String bbieScId, String guid, String basedDtScManifestId, String path, String hashPath, String bbieId, String dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         setBbieScId(bbieScId);

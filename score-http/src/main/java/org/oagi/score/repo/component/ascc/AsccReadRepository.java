@@ -34,33 +34,33 @@ public class AsccReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AsccRecord getAsccByManifestId(BigInteger asccManifestId) {
+    public AsccRecord getAsccByManifestId(String asccManifestId) {
         return dslContext.select(ASCC.fields())
                 .from(ASCC)
                 .join(ASCC_MANIFEST).on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(asccManifestId))
                 .fetchOptionalInto(AsccRecord.class).orElse(null);
     }
 
-    public AsccManifestRecord getAsccManifestById(BigInteger asccManifestId) {
+    public AsccManifestRecord getAsccManifestById(String asccManifestId) {
         return dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(asccManifestId))
                 .fetchOptionalInto(AsccManifestRecord.class).orElse(null);
     }
 
-    public AsccManifestRecord getUserExtensionAsccManifestByAsccpManifestId(BigInteger asccpManifestId) {
+    public AsccManifestRecord getUserExtensionAsccManifestByAsccpManifestId(String asccpManifestId) {
         return dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestId))
                 .fetchOptionalInto(AsccManifestRecord.class).orElse(null);
     }
 
-    public CcRefactorValidationResponse validateAsccRefactoring(AppUser user, BigInteger asccManifestId, BigInteger accManifestId) {
+    public CcRefactorValidationResponse validateAsccRefactoring(AppUser user, String asccManifestId, String accManifestId) {
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(
-                        ULong.valueOf(asccManifestId)
+                        asccManifestId
                 ))
                 .fetchOne();
 
@@ -75,7 +75,7 @@ public class AsccReadRepository {
         response.setType(CcType.ASCC.toString());
         response.setManifestId(asccManifestId);
 
-        Map<ULong, List<String>> issueMap = getBlockerReasonMap(user, asccManifestRecord, ULong.valueOf(accManifestId));
+        Map<String, List<String>> issueMap = getBlockerReasonMap(user, asccManifestRecord, accManifestId);
 
         List<CcRefactorValidationResponse.IssuedCc> issuedCcList = dslContext.select(
                 inline("ACC").as("type"),
@@ -108,8 +108,8 @@ public class AsccReadRepository {
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.in(issueMap.keySet()))
                 .fetchStream().map(row -> {
                     CcRefactorValidationResponse.IssuedCc issuedCc = new CcRefactorValidationResponse.IssuedCc();
-                    issuedCc.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
-                    issuedCc.setId(row.getValue("id", ULong.class).toBigInteger());
+                    issuedCc.setManifestId(row.getValue("manifest_id", String.class));
+                    issuedCc.setId(row.getValue("id", String.class));
                     issuedCc.setGuid(row.getValue("guid", String.class));
                     issuedCc.setDen(row.getValue("den", String.class));
                     issuedCc.setName(row.getValue("object_class_term", String.class));
@@ -134,13 +134,13 @@ public class AsccReadRepository {
         return response;
     }
 
-    public Map<ULong, List<String>> getBlockerReasonMap(AppUser requester, AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
+    public Map<String, List<String>> getBlockerReasonMap(AppUser requester, AsccManifestRecord asccManifestRecord, String targetAccManifestId) {
 
         String releaseId = asccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
+        Map<String, AccManifestRecord> accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+        Map<String, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
         List<AccRecord> accList = dslContext.selectFrom(ACC).fetch();
@@ -148,20 +148,20 @@ public class AsccReadRepository {
 
         List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
+        Map<String, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         accManifestIdList.add(targetAccManifestId);
 
-        Set<ULong> accCandidates = new HashSet<>();
+        Set<String> accCandidates = new HashSet<>();
 
-        for (ULong cur : accManifestIdList) {
+        for (String cur : accManifestIdList) {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
 
-        Map<ULong, ULong> groupMap = new HashMap<>();
+        Map<String, String> groupMap = new HashMap<>();
 
         dslContext.select(ACC_MANIFEST.as("group").ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
@@ -181,7 +181,7 @@ public class AsccReadRepository {
 
         Set<AsccManifestRecord> asccResult = new HashSet<>();
 
-        for (ULong acc : accCandidates) {
+        for (String acc : accCandidates) {
             asccResult.addAll(
                     fromAccAsccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -190,7 +190,7 @@ public class AsccReadRepository {
                             .collect(Collectors.toList()));
         }
 
-        Map<ULong, List<String>> map = new HashMap<>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for (AsccManifestRecord ascc : asccResult) {
             AccManifestRecord amr = accManifestMap.get(ascc.getFromAccManifestId());
@@ -234,8 +234,8 @@ public class AsccReadRepository {
     }
 
 
-    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
-        List<ULong> result = new ArrayList<>();
+    private List<String> getBaseAccManifestId(String accManifestId, Map<String, List<AccManifestRecord>> baseAccMap) {
+        List<String> result = new ArrayList<>();
         result.add(accManifestId);
         if (baseAccMap.containsKey(accManifestId)) {
             baseAccMap.get(accManifestId).forEach(e -> {

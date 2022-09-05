@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class CcAppendRequest {
     private String releaseId;
-    private BigInteger accManifestId;
-    private BigInteger asccpManifestId;
-    private BigInteger bccpManifestId;
+    private String accManifestId;
+    private String asccpManifestId;
+    private String bccpManifestId;
     private boolean attribute;
     private int pos;
 }

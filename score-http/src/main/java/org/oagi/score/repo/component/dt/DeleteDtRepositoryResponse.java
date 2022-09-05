@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class DeleteDtRepositoryResponse {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
 
-    public DeleteDtRepositoryResponse(BigInteger dtManifestId) {
+    public DeleteDtRepositoryResponse(String dtManifestId) {
         this.dtManifestId = dtManifestId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 }

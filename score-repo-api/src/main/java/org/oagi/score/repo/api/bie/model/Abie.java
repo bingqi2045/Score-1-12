@@ -10,7 +10,7 @@ public class Abie implements Serializable {
 
     private String guid;
 
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 
     private String path;
 
@@ -40,11 +40,11 @@ public class Abie implements Serializable {
         this.guid = guid;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 
-    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+    public void setBasedAccManifestId(String basedAccManifestId) {
         this.basedAccManifestId = basedAccManifestId;
     }
 

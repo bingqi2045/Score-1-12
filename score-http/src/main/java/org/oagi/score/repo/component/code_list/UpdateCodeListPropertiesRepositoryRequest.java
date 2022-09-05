@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 
 public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     private String codeListName;
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
     private String versionId;
     private String listId;
     private String namespaceId;
@@ -22,19 +22,19 @@ public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest
     private boolean deprecated;
 
     public UpdateCodeListPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                     BigInteger codeListManifestId) {
+                                                     String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
     public UpdateCodeListPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                      LocalDateTime localDateTime,
-                                                     BigInteger codeListManifestId) {
+                                                     String codeListManifestId) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 
@@ -46,11 +46,11 @@ public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest
         this.codeListName = codeListName;
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 

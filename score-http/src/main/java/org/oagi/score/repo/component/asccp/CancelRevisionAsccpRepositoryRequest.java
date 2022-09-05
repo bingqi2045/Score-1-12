@@ -7,15 +7,15 @@ import java.math.BigInteger;
 
 public class CancelRevisionAsccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccpManifestId;
+    private final String asccpManifestId;
 
     public CancelRevisionAsccpRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger asccpManifestId) {
+                                                String asccpManifestId) {
         super(user);
         this.asccpManifestId = asccpManifestId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 }

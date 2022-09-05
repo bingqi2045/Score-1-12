@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class CreateCodeListValueRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     private String value;
     private String name;
@@ -20,19 +20,19 @@ public class CreateCodeListValueRepositoryRequest extends RepositoryRequest {
     private boolean extension;
 
     public CreateCodeListValueRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger codeListManifestId) {
+                                                String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
     public CreateCodeListValueRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger codeListManifestId) {
+                                                String codeListManifestId) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 

@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentManifestRecord;
@@ -55,8 +53,9 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     /**
      * The column
      * <code>oagi.blob_content_manifest.blob_content_manifest_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BlobContentManifestRecord, String> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.blob_content_manifest.blob_content_id</code>.
@@ -79,13 +78,13 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
      * The column
      * <code>oagi.blob_content_manifest.prev_blob_content_manifest_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> PREV_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("prev_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BlobContentManifestRecord, String> PREV_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("prev_blob_content_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
      * <code>oagi.blob_content_manifest.next_blob_content_manifest_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> NEXT_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("next_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BlobContentManifestRecord, String> NEXT_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("next_blob_content_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private BlobContentManifest(Name alias, Table<BlobContentManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -123,11 +122,6 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BlobContentManifestRecord, ULong> getIdentity() {
-        return (Identity<BlobContentManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -233,21 +227,21 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, Byte, ULong, ULong> fieldsRow() {
+    public Row6<String, String, String, Byte, String, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

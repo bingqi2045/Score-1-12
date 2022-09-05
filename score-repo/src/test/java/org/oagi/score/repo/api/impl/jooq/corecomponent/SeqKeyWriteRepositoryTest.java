@@ -31,16 +31,16 @@ public class SeqKeyWriteRepositoryTest
 
     private String releaseId;
 
-    private BigInteger allExtensionAccManifestId;
+    private String allExtensionAccManifestId;
 
-    private BigInteger identifierBccManifestId;
-    private BigInteger indicatorBccManifestId;
-    private BigInteger numberBccManifestId;
+    private String identifierBccManifestId;
+    private String indicatorBccManifestId;
+    private String numberBccManifestId;
 
     @BeforeAll
     void setUp() {
         repository = scoreRepositoryFactory().createSeqKeyWriteRepository();
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
 
         releaseId = getReleaseId("10.6");
         allExtensionAccManifestId = getAccManifestIdByObjectClassTerm("All Extension");
@@ -50,7 +50,7 @@ public class SeqKeyWriteRepositoryTest
         numberBccManifestId = createTestBcc("Number", "Number");
     }
 
-    private BigInteger createTestBcc(String propertyTerm, String representationTerm) {
+    private String createTestBcc(String propertyTerm, String representationTerm) {
         BccRecord bccRecord = new BccRecord();
         bccRecord.setBccId(UUID.randomUUID().toString());
         bccRecord.setGuid(UUID.randomUUID().toString().replace("-", ""));
@@ -58,7 +58,7 @@ public class SeqKeyWriteRepositoryTest
         bccRecord.setCardinalityMax(-1);
         bccRecord.setFromAccId(dslContext().select(ACC_MANIFEST.ACC_ID)
                 .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(allExtensionAccManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(allExtensionAccManifestId))
                 .fetchOneInto(String.class));
         bccRecord.setToBccpId(dslContext().select(BCCP.BCCP_ID)
                 .from(BCCP)
@@ -83,14 +83,15 @@ public class SeqKeyWriteRepositoryTest
         String bccId = bccRecord.getBccId();
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
-        bccManifestRecord.setFromAccManifestId(ULong.valueOf(allExtensionAccManifestId));
+        bccManifestRecord.setBccManifestId(UUID.randomUUID().toString());
+        bccManifestRecord.setFromAccManifestId(allExtensionAccManifestId);
         bccManifestRecord.setToBccpManifestId(dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
                 .where(and(
                         BCCP_MANIFEST.RELEASE_ID.eq(releaseId),
                         BCCP_MANIFEST.BCCP_ID.eq(bccRecord.getToBccpId())
                 ))
-                .fetchOneInto(ULong.class));
+                .fetchOneInto(String.class));
         bccManifestRecord.setReleaseId(releaseId);
         bccManifestRecord.setBccId(bccId);
 
@@ -98,7 +99,7 @@ public class SeqKeyWriteRepositoryTest
                 .set(bccManifestRecord)
                 .returning(BCC_MANIFEST.BCC_MANIFEST_ID)
                 .fetchOne()
-                .getBccManifestId().toBigInteger();
+                .getBccManifestId();
     }
 
     @Test
@@ -214,14 +215,14 @@ public class SeqKeyWriteRepositoryTest
         assertNull(seqKeys.get(0).getNextSeqKey());
     }
 
-    private BigInteger getReleaseId(String releaseNum) {
+    private String getReleaseId(String releaseNum) {
         return dslContext().select(RELEASE.RELEASE_ID)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_NUM.eq(releaseNum))
-                .fetchOneInto(BigInteger.class);
+                .fetchOneInto(String.class);
     }
 
-    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+    private String getAccManifestIdByObjectClassTerm(String objectClassTerm) {
         return dslContext().select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
@@ -230,7 +231,7 @@ public class SeqKeyWriteRepositoryTest
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
                         RELEASE.RELEASE_NUM.eq("10.6")
                 ))
-                .fetchOneInto(BigInteger.class);
+                .fetchOneInto(String.class);
     }
 
     @AfterAll
@@ -241,7 +242,7 @@ public class SeqKeyWriteRepositoryTest
                 .execute();
 
         dslContext().deleteFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(allExtensionAccManifestId)))
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(allExtensionAccManifestId))
                 .execute();
 
         List<String> bccIdList = dslContext().select(BCC_MANIFEST.BCC_ID)

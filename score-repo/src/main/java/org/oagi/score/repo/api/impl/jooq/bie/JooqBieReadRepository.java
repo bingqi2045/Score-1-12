@@ -137,7 +137,7 @@ public class JooqBieReadRepository
             Abie abie = new Abie();
             abie.setAbieId(record.get(ABIE.ABIE_ID));
             abie.setGuid(record.get(ABIE.GUID));
-            abie.setBasedAccManifestId(record.get(ABIE.BASED_ACC_MANIFEST_ID).toBigInteger());
+            abie.setBasedAccManifestId(record.get(ABIE.BASED_ACC_MANIFEST_ID));
             abie.setPath(record.get(ABIE.PATH));
             abie.setHashPath(record.get(ABIE.HASH_PATH));
             abie.setDefinition(record.get(ABIE.DEFINITION));
@@ -171,7 +171,7 @@ public class JooqBieReadRepository
             Asbie asbie = new Asbie();
             asbie.setAsbieId(record.get(ASBIE.ASBIE_ID));
             asbie.setGuid(record.get(ASBIE.GUID));
-            asbie.setBasedAsccManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID).toBigInteger());
+            asbie.setBasedAsccManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID));
             asbie.setPath(record.get(ASBIE.PATH));
             asbie.setHashPath(record.get(ASBIE.HASH_PATH));
             asbie.setFromAbieId(record.get(ASBIE.FROM_ABIE_ID));
@@ -217,7 +217,7 @@ public class JooqBieReadRepository
             Bbie bbie = new Bbie();
             bbie.setBbieId(record.get(BBIE.BBIE_ID));
             bbie.setGuid(record.get(BBIE.GUID));
-            bbie.setBasedBccManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID).toBigInteger());
+            bbie.setBasedBccManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID));
             bbie.setPath(record.get(BBIE.PATH));
             bbie.setHashPath(record.get(BBIE.HASH_PATH));
             bbie.setFromAbieId(record.get(BBIE.FROM_ABIE_ID));
@@ -261,7 +261,7 @@ public class JooqBieReadRepository
             Asbiep asbiep = new Asbiep();
             asbiep.setAsbiepId(record.get(ASBIEP.ASBIEP_ID));
             asbiep.setGuid(record.get(ASBIEP.GUID));
-            asbiep.setBasedAsccpManifestId(record.get(ASBIEP.BASED_ASCCP_MANIFEST_ID).toBigInteger());
+            asbiep.setBasedAsccpManifestId(record.get(ASBIEP.BASED_ASCCP_MANIFEST_ID));
             asbiep.setPath(record.get(ASBIEP.PATH));
             asbiep.setHashPath(record.get(ASBIEP.HASH_PATH));
             asbiep.setRoleOfAbieId(record.get(ASBIEP.ROLE_OF_ABIE_ID));
@@ -291,7 +291,7 @@ public class JooqBieReadRepository
             Bbiep bbiep = new Bbiep();
             bbiep.setBbiepId(record.get(BBIEP.BBIEP_ID));
             bbiep.setGuid(record.get(BBIEP.GUID));
-            bbiep.setBasedBccpManifestId(record.get(BBIEP.BASED_BCCP_MANIFEST_ID).toBigInteger());
+            bbiep.setBasedBccpManifestId(record.get(BBIEP.BASED_BCCP_MANIFEST_ID));
             bbiep.setPath(record.get(BBIEP.PATH));
             bbiep.setHashPath(record.get(BBIEP.HASH_PATH));
             bbiep.setDefinition(record.get(BBIEP.DEFINITION));
@@ -330,7 +330,7 @@ public class JooqBieReadRepository
             BbieSc bbieSc = new BbieSc();
             bbieSc.setBbieScId(record.get(BBIE_SC.BBIE_SC_ID));
             bbieSc.setGuid(record.get(BBIE_SC.GUID));
-            bbieSc.setBasedDtScManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID).toBigInteger());
+            bbieSc.setBasedDtScManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID));
             bbieSc.setBbieId(record.get(BBIE_SC.BBIE_ID));
             bbieSc.setPath(record.get(BBIE_SC.PATH));
             bbieSc.setHashPath(record.get(BBIE_SC.HASH_PATH));

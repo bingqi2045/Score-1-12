@@ -62,7 +62,7 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
      * The column <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
      * of the bcc_business_term record.
      */
-    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36), this, "An internal ID of the bcc_business_term record.");
+    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the bcc_business_term record.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the

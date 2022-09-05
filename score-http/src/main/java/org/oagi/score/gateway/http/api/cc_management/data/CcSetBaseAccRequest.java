@@ -6,5 +6,5 @@ import java.math.BigInteger;
 
 @Data
 public class CcSetBaseAccRequest {
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 }

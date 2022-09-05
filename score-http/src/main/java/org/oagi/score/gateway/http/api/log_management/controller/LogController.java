@@ -25,7 +25,7 @@ public class LogController {
     public PageResponse<Log> getLogs(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @PathVariable("reference") String reference,
                                      @RequestParam(name = "type") String type,
-                                     @RequestParam(name = "manifestId") BigInteger manifestId,
+                                     @RequestParam(name = "manifestId") String manifestId,
                                      @RequestParam(name = "sortActive") String sortActive,
                                      @RequestParam(name = "sortDirection") String sortDirection,
                                      @RequestParam(name = "pageIndex") int pageIndex,
@@ -55,7 +55,7 @@ public class LogController {
                               @PathVariable("logId") String logId,
                               @RequestParam(name = "reference") String reference,
                               @RequestParam(name = "type") String type,
-                              @RequestParam(name = "manifestId") BigInteger manifestId) {
+                              @RequestParam(name = "manifestId") String manifestId) {
         return service.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }

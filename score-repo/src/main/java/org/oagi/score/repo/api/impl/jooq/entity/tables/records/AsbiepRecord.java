@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record14;
 import org.jooq.Row14;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
 
 
@@ -20,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
  * an ASCCP.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<String, String, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> {
+public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -61,7 +60,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
      * key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the
      * ASBIEP contextualizes.
      */
-    public void setBasedAsccpManifestId(ULong value) {
+    public void setBasedAsccpManifestId(String value) {
         set(2, value);
     }
 
@@ -70,8 +69,8 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
      * key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the
      * ASBIEP contextualizes.
      */
-    public ULong getBasedAsccpManifestId() {
-        return (ULong) get(2);
+    public String getBasedAsccpManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -296,12 +295,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<String, String, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
+    public Row14<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
         return (Row14) super.fieldsRow();
     }
 
     @Override
-    public Row14<String, String, ULong, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> valuesRow() {
+    public Row14<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> valuesRow() {
         return (Row14) super.valuesRow();
     }
 
@@ -316,7 +315,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return Asbiep.ASBIEP.BASED_ASCCP_MANIFEST_ID;
     }
 
@@ -386,7 +385,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getBasedAsccpManifestId();
     }
 
@@ -456,7 +455,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getBasedAsccpManifestId();
     }
 
@@ -528,7 +527,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public AsbiepRecord value3(ULong value) {
+    public AsbiepRecord value3(String value) {
         setBasedAsccpManifestId(value);
         return this;
     }
@@ -600,7 +599,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     @Override
-    public AsbiepRecord values(String value1, String value2, ULong value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, String value14) {
+    public AsbiepRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, String value8, String value9, String value10, String value11, LocalDateTime value12, LocalDateTime value13, String value14) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -632,7 +631,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     /**
      * Create a detached, initialised AsbiepRecord
      */
-    public AsbiepRecord(String asbiepId, String guid, ULong basedAsccpManifestId, String path, String hashPath, String roleOfAbieId, String definition, String remark, String bizTerm, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
+    public AsbiepRecord(String asbiepId, String guid, String basedAsccpManifestId, String path, String hashPath, String roleOfAbieId, String definition, String remark, String bizTerm, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
         super(Asbiep.ASBIEP);
 
         setAsbiepId(asbiepId);

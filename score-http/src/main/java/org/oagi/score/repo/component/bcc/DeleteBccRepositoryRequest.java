@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 public class DeleteBccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccManifestId;
+    private final String bccManifestId;
 
     public DeleteBccRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger bccManifestId) {
+                                      String bccManifestId) {
         super(user);
         this.bccManifestId = bccManifestId;
     }
 
     public DeleteBccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger bccManifestId) {
+                                      String bccManifestId) {
         super(user, localDateTime);
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 }

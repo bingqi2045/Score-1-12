@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 public class PurgeBccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
     public PurgeBccpRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger bccpManifestId) {
+                                      String bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
     public PurgeBccpRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger bccpManifestId) {
+                                      String bccpManifestId) {
         super(user, localDateTime);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 }

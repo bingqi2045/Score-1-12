@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
@@ -53,9 +51,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.acc_manifest.acc_manifest_id</code>.
+     * The column <code>oagi.acc_manifest.acc_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<AccManifestRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AccManifestRecord, String> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.acc_manifest.release_id</code>. Foreign key to the
@@ -71,7 +70,7 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     /**
      * The column <code>oagi.acc_manifest.based_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, String> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.conflict</code>. This indicates that
@@ -89,17 +88,17 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
      * The column <code>oagi.acc_manifest.replacement_acc_manifest_id</code>.
      * This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AccManifestRecord, ULong> REPLACEMENT_ACC_MANIFEST_ID = createField(DSL.name("replacement_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AccManifestRecord, String> REPLACEMENT_ACC_MANIFEST_ID = createField(DSL.name("replacement_acc_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.acc_manifest.prev_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> PREV_ACC_MANIFEST_ID = createField(DSL.name("prev_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, String> PREV_ACC_MANIFEST_ID = createField(DSL.name("prev_acc_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.next_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> NEXT_ACC_MANIFEST_ID = createField(DSL.name("next_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, String> NEXT_ACC_MANIFEST_ID = createField(DSL.name("next_acc_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private AccManifest(Name alias, Table<AccManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -140,25 +139,20 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     }
 
     @Override
-    public Identity<AccManifestRecord, ULong> getIdentity() {
-        return (Identity<AccManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<AccManifestRecord> getPrimaryKey() {
         return Keys.KEY_ACC_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<AccManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_LOG_ID_FK, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_LOG_ID_FK, Keys.ACC_MANIFEST_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
     private transient Acc _acc;
     private transient AccManifest _accManifestBasedAccManifestIdFk;
     private transient Log _log;
-    private transient AccManifest _accReplacementAccManifestIdFk;
+    private transient AccManifest _accManifestReplacementAccManifestIdFk;
     private transient AccManifest _accManifestPrevAccManifestIdFk;
     private transient AccManifest _accManifestNextAccManifestIdFk;
 
@@ -205,13 +199,13 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     /**
      * Get the implicit join path to the <code>oagi.acc_manifest</code> table,
-     * via the <code>acc_replacement_acc_manifest_id_fk</code> key.
+     * via the <code>acc_manifest_replacement_acc_manifest_id_fk</code> key.
      */
-    public AccManifest accReplacementAccManifestIdFk() {
-        if (_accReplacementAccManifestIdFk == null)
-            _accReplacementAccManifestIdFk = new AccManifest(this, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK);
+    public AccManifest accManifestReplacementAccManifestIdFk() {
+        if (_accManifestReplacementAccManifestIdFk == null)
+            _accManifestReplacementAccManifestIdFk = new AccManifest(this, Keys.ACC_MANIFEST_REPLACEMENT_ACC_MANIFEST_ID_FK);
 
-        return _accReplacementAccManifestIdFk;
+        return _accManifestReplacementAccManifestIdFk;
     }
 
     /**
@@ -280,21 +274,21 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, ULong, Byte, String, ULong, ULong, ULong> fieldsRow() {
+    public Row9<String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super ULong, ? super Byte, ? super String, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

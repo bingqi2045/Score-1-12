@@ -23,25 +23,25 @@ public class CodeListGraphContext implements GraphContext {
     private DSLContext dslContext;
     private String releaseId;
 
-    private Map<ULong, CodeListManifest> codeListManifestMap;
-    private Map<ULong, List<CodeListValueManifest>> codeListValueManifestMap;
+    private Map<String, CodeListManifest> codeListManifestMap;
+    private Map<String, List<CodeListValueManifest>> codeListValueManifestMap;
 
     @Data
     @AllArgsConstructor
     public class CodeListManifest {
-        private ULong codeListManifestId;
-        private ULong basedCodeListManifestId;
+        private String codeListManifestId;
+        private String basedCodeListManifestId;
         private String name;
         private String state;
         private String releaseId;
-        private ULong prevCodeListManifestId;
+        private String prevCodeListManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class CodeListValueManifest {
-        private ULong codeListValueManifestId;
-        private ULong codeListManifestId;
+        private String codeListValueManifestId;
+        private String codeListManifestId;
         private String meaning;
         private String value;
         private String state;

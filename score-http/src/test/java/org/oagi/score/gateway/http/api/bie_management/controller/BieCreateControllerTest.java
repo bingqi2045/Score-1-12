@@ -10,6 +10,7 @@ import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.score.gateway.http.configuration.WithMockScoreUser;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,8 +44,8 @@ public class BieCreateControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private ULong testAsccpManifestId;
-    private ULong testBizCtxId = ULong.valueOf(1L);
+    private String testAsccpManifestId;
+    private String testBizCtxId;
 
     @BeforeAll
     public void prepareRequirements() {
@@ -55,7 +57,7 @@ public class BieCreateControllerTest {
                         ASCCP.PROPERTY_TERM.eq("Sync Purchase Order"),
                         RELEASE.RELEASE_NUM.eq("10.6")
                 ))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
 
         boolean exists = dslContext.selectCount()
@@ -63,17 +65,19 @@ public class BieCreateControllerTest {
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(testBizCtxId))
                 .fetchOptionalInto(Integer.class).orElse(0) == 1;
         if (!exists) {
-            ULong userId = ULong.valueOf(1L);
+            String userId = "c720c6cf-43ef-44f6-8552-fab526c572c2";
             LocalDateTime timestamp = LocalDateTime.now();
 
-            testBizCtxId = dslContext.insertInto(BIZ_CTX)
+            testBizCtxId = UUID.randomUUID().toString();
+            dslContext.insertInto(BIZ_CTX)
+                    .set(BIZ_CTX.BIZ_CTX_ID, testBizCtxId)
                     .set(BIZ_CTX.NAME, "Test Business Context")
                     .set(BIZ_CTX.GUID, ScoreGuid.randomGuid())
                     .set(BIZ_CTX.CREATED_BY, userId)
                     .set(BIZ_CTX.LAST_UPDATED_BY, userId)
                     .set(BIZ_CTX.CREATION_TIMESTAMP, timestamp)
                     .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId();
+                    .execute();
         }
     }
 
@@ -81,8 +85,8 @@ public class BieCreateControllerTest {
     @WithMockScoreUser(username = "oagis", password = "oagis", role = DEVELOPER_GRANTED_AUTHORITY)
     public void shouldCreateBie() throws Exception {
         BieCreateRequest request = new BieCreateRequest();
-        request.setAsccpManifestId(testAsccpManifestId.toBigInteger());
-        request.setBizCtxIds(Arrays.asList(testBizCtxId.toBigInteger()));
+        request.setAsccpManifestId(testAsccpManifestId);
+        request.setBizCtxIds(Arrays.asList(testBizCtxId));
 
         BieCreateResponse response =
                 mapper.readValue(
@@ -95,6 +99,6 @@ public class BieCreateControllerTest {
                 );
 
         assertNotNull(response);
-        assertTrue(response.getTopLevelAsbiepId().longValue() > 0L);
+        assertTrue(StringUtils.hasLength(response.getTopLevelAsbiepId()));
     }
 }

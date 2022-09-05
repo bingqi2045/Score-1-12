@@ -7,32 +7,32 @@ import java.math.BigInteger;
 
 public class AccManifest implements CcManifest, Serializable {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
 
     private String releaseId;
 
     private String accId;
 
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 
     private boolean conflict;
 
     private String logId;
 
-    private BigInteger prevAccManifestId;
+    private String prevAccManifestId;
 
-    private BigInteger nextAccManifestId;
+    private String nextAccManifestId;
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public void setAccManifestId(BigInteger accManifestId) {
+    public void setAccManifestId(String accManifestId) {
         this.accManifestId = accManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getAccManifestId();
     }
 
@@ -58,11 +58,11 @@ public class AccManifest implements CcManifest, Serializable {
         this.accId = accId;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 
-    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+    public void setBasedAccManifestId(String basedAccManifestId) {
         this.basedAccManifestId = basedAccManifestId;
     }
 
@@ -82,19 +82,19 @@ public class AccManifest implements CcManifest, Serializable {
         this.logId = logId;
     }
 
-    public BigInteger getPrevAccManifestId() {
+    public String getPrevAccManifestId() {
         return prevAccManifestId;
     }
 
-    public void setPrevAccManifestId(BigInteger prevAccManifestId) {
+    public void setPrevAccManifestId(String prevAccManifestId) {
         this.prevAccManifestId = prevAccManifestId;
     }
 
-    public BigInteger getNextAccManifestId() {
+    public String getNextAccManifestId() {
         return nextAccManifestId;
     }
 
-    public void setNextAccManifestId(BigInteger nextAccManifestId) {
+    public void setNextAccManifestId(String nextAccManifestId) {
         this.nextAccManifestId = nextAccManifestId;
     }
 }

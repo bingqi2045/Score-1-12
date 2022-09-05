@@ -10,15 +10,15 @@ import java.util.List;
 @Data
 public class CodeList {
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
     private String codeListName;
     private String guid;
-    private BigInteger basedCodeListManifestId;
+    private String basedCodeListManifestId;
     private String basedCodeListName;
     private String namespaceId;
     private String namespaceUri;
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
     private String agencyIdListValueValue;
     private String agencyIdListValueName;
     private String versionId;

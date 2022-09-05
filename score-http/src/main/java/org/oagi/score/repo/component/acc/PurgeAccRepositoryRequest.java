@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 public class PurgeAccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
     public PurgeAccRepositoryRequest(AuthenticatedPrincipal user,
-                                     BigInteger accManifestId) {
+                                     String accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }
 
     public PurgeAccRepositoryRequest(AuthenticatedPrincipal user,
                                      LocalDateTime localDateTime,
-                                     BigInteger accManifestId) {
+                                     String accManifestId) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 }

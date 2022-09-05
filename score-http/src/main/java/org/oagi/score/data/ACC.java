@@ -11,8 +11,8 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ACC implements CoreComponent {
 
-    private BigInteger accManifestId = BigInteger.ZERO;
-    private BigInteger basedAccManifestId = BigInteger.ZERO;
+    private String accManifestId;
+    private String basedAccManifestId;
     private String accId;
     private String guid;
     private String objectClassTerm;

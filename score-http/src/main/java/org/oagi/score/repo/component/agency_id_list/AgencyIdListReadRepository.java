@@ -29,12 +29,12 @@ public class AgencyIdListReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public List<AvailableAgencyIdList> availableAgencyIdListByBccpManifestId(BigInteger bccpManifestId) {
+    public List<AvailableAgencyIdList> availableAgencyIdListByBccpManifestId(String bccpManifestId) {
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetchOneInto(BccpManifestRecord.class);
 
-        Result<Record2<ULong, String>> result = dslContext.selectDistinct(
+        Result<Record2<String, String>> result = dslContext.selectDistinct(
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 BCCP_MANIFEST.RELEASE_ID)
                 .from(BCCP_MANIFEST)
@@ -44,13 +44,13 @@ public class AgencyIdListReadRepository {
                         BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID),
                         BCCP_MANIFEST.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)
                 ))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetch();
 
         if (result.size() > 0) {
             return result.stream().map(e ->
                     availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
-                            e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger(),
+                            e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID),
                             e.get(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)))
                     .flatMap(e -> e.stream())
                     .distinct()
@@ -64,7 +64,7 @@ public class AgencyIdListReadRepository {
     }
 
     private List<AvailableAgencyIdList> availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
-            BigInteger agencyIdListManifestId, String releaseId) {
+            String agencyIdListManifestId, String releaseId) {
         if (agencyIdListManifestId == null) {
             return dslContext.select(
                     AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
@@ -92,10 +92,10 @@ public class AgencyIdListReadRepository {
                 AGENCY_ID_LIST.NAME.as("code_list_name"))
                 .from(AGENCY_ID_LIST)
                 .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
-                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(agencyIdListManifestId)))
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestId))
                 .fetchInto(AvailableAgencyIdList.class);
 
-        List<BigInteger> associatedAgencyIdLists = dslContext.selectDistinct(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+        List<String> associatedAgencyIdLists = dslContext.selectDistinct(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
                 .from(AGENCY_ID_LIST_MANIFEST)
                 .where(AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID.in(
                         availableAgencyIdLists.stream()
@@ -104,11 +104,11 @@ public class AgencyIdListReadRepository {
                                 .distinct()
                                 .collect(Collectors.toList())
                 ))
-                .fetchInto(BigInteger.class);
+                .fetchInto(String.class);
         
         List<AvailableAgencyIdList> mergedAgencyIdLists = new ArrayList();
         mergedAgencyIdLists.addAll(availableAgencyIdLists);
-        for (BigInteger associatedAgencyId : associatedAgencyIdLists) {
+        for (String associatedAgencyId : associatedAgencyIdLists) {
             mergedAgencyIdLists.addAll(
                     availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
                             associatedAgencyId, releaseId)
@@ -117,12 +117,12 @@ public class AgencyIdListReadRepository {
         return mergedAgencyIdLists.stream().distinct().collect(Collectors.toList());
     }
 
-    public List<AvailableAgencyIdList> availableAgencyIdListByBdtScManifestId(BigInteger bdtScManifestId) {
+    public List<AvailableAgencyIdList> availableAgencyIdListByBdtScManifestId(String bdtScManifestId) {
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
                 .fetchOneInto(DtScManifestRecord.class);
 
-        Result<Record2<ULong, String>> result = dslContext.selectDistinct(
+        Result<Record2<String, String>> result = dslContext.selectDistinct(
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 DT_SC_MANIFEST.RELEASE_ID)
                 .from(DT_SC_MANIFEST)
@@ -131,13 +131,13 @@ public class AgencyIdListReadRepository {
                         BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID),
                         DT_SC_MANIFEST.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)
                 ))
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
                 .fetch();
 
         if (result.size() > 0) {
             return result.stream().map(e ->
                 availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
-                        e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger(),
+                        e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID),
                         e.get(AGENCY_ID_LIST_MANIFEST.RELEASE_ID)))
                 .flatMap(e -> e.stream())
                 .distinct()

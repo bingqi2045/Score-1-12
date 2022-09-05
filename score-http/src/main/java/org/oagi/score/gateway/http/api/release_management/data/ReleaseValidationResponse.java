@@ -62,12 +62,12 @@ public class ReleaseValidationResponse {
         }
     }
 
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForAcc = new HashMap();
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForAsccp = new HashMap();
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForBccp = new HashMap();
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForCodeList = new HashMap();
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForAgencyIdList = new HashMap();
-    private Map<BigInteger, Set<ValidationMessage>> statusMapForDt = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForAcc = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForAsccp = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForBccp = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForCodeList = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForAgencyIdList = new HashMap();
+    private Map<String, Set<ValidationMessage>> statusMapForDt = new HashMap();
 
     public boolean isSucceed() {
         return (statusMapForAcc.isEmpty() || statusMapForAcc.values().stream().flatMap(e -> e.stream()).filter(e -> e.getLevel() == Error).count() == 0) &&
@@ -95,32 +95,32 @@ public class ReleaseValidationResponse {
         });
     }
 
-    public void addMessageForAcc(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForAcc(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForAcc, manifestId, level, message, code);
     }
 
-    public void addMessageForAsccp(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForAsccp(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForAsccp, manifestId, level, message, code);
     }
 
-    public void addMessageForBccp(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForBccp(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForBccp, manifestId, level, message, code);
     }
 
-    public void addMessageForCodeList(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForCodeList(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForCodeList, manifestId, level, message, code);
     }
 
-    public void addMessageForAgencyIdList(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForAgencyIdList(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForAgencyIdList, manifestId, level, message, code);
     }
 
-    public void addMessageForDt(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+    public void addMessageForDt(String manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
         addMessage(statusMapForDt, manifestId, level, message, code);
     }
 
-    private void addMessage(Map<BigInteger, Set<ValidationMessage>> statusMap,
-                            BigInteger manifestId, ValidationMessageLevel level, String message,
+    private void addMessage(Map<String, Set<ValidationMessage>> statusMap,
+                            String manifestId, ValidationMessageLevel level, String message,
                             ValidationMessageCode code) {
         Set<ValidationMessage> messages;
         if (!statusMap.containsKey(manifestId)) {

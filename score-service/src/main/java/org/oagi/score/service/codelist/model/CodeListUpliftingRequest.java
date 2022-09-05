@@ -10,7 +10,7 @@ public class CodeListUpliftingRequest {
 
     private ScoreUser requester;
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
 
     private String targetReleaseId;
 

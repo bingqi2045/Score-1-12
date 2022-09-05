@@ -6,6 +6,6 @@ import java.math.BigInteger;
 
 @Data
 public class CcUpdateManifestRequest {
-    private BigInteger accManifestId;
-    private BigInteger bdtManifestId;
+    private String accManifestId;
+    private String bdtManifestId;
 }

@@ -10,7 +10,7 @@ public class BbiepNode {
 
     @Data
     public class Bccp {
-        private BigInteger bccpManifestId;
+        private String bccpManifestId;
         private String guid;
         private String propertyTerm;
         private String den;
@@ -39,7 +39,7 @@ public class BbiepNode {
         private boolean used;
         private String path;
         private String hashPath;
-        private BigInteger basedBccpManifestId;
+        private String basedBccpManifestId;
 
         private String bbiepId;
         private String guid;

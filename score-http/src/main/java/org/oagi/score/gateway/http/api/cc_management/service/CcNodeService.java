@@ -113,28 +113,28 @@ public class CcNodeService extends EventHandler {
     @Autowired
     private GraphContextRepository graphContextRepository;
 
-    public CcAccNode getAccNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcAccNode getAccNode(AuthenticatedPrincipal user, String manifestId) {
         return repository.getAccNodeByAccManifestId(user, manifestId);
     }
 
-    public CcAsccpNode getAsccpNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcAsccpNode getAsccpNode(AuthenticatedPrincipal user, String manifestId) {
         return repository.getAsccpNodeByAsccpManifestId(user, manifestId);
     }
 
-    public CcBccpNode getBccpNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcBccpNode getBccpNode(AuthenticatedPrincipal user, String manifestId) {
         return repository.getBccpNodeByBccpManifestId(user, manifestId);
     }
 
-    public CcBdtNode getBdtNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcBdtNode getBdtNode(AuthenticatedPrincipal user, String manifestId) {
         return repository.getBdtNodeByBdtManifestId(user, manifestId);
     }
 
-    public CcBdtScNode getDtScNode(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcBdtScNode getDtScNode(AuthenticatedPrincipal user, String manifestId) {
         return repository.getDtScNodeByManifestId(user, manifestId);
     }
 
     @Transactional
-    public void deleteAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void deleteAcc(AuthenticatedPrincipal user, String manifestId) {
         DeleteAccRepositoryRequest repositoryRequest =
                 new DeleteAccRepositoryRequest(user, manifestId);
 
@@ -145,7 +145,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void deleteAsccp(AuthenticatedPrincipal user, String manifestId) {
         DeleteAsccpRepositoryRequest repositoryRequest =
                 new DeleteAsccpRepositoryRequest(user, manifestId);
 
@@ -156,7 +156,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void deleteBccp(AuthenticatedPrincipal user, String manifestId) {
         DeleteBccpRepositoryRequest repositoryRequest =
                 new DeleteBccpRepositoryRequest(user, manifestId);
 
@@ -167,17 +167,17 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, boolean ignoreState) {
+    public void deleteAscc(AuthenticatedPrincipal user, String asccManifestId, boolean ignoreState) {
         deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified, ignoreState);
     }
 
     @Transactional
-    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId) {
+    public void deleteAscc(AuthenticatedPrincipal user, String asccManifestId) {
         deleteAscc(user, asccManifestId, LogUtils.generateHash(), LogAction.Modified, false);
     }
 
     @Transactional
-    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, String logHash, LogAction action, boolean ignoreState) {
+    public void deleteAscc(AuthenticatedPrincipal user, String asccManifestId, String logHash, LogAction action, boolean ignoreState) {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
@@ -191,7 +191,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteBcc(AuthenticatedPrincipal user, BigInteger bccManifestId) {
+    public void deleteBcc(AuthenticatedPrincipal user, String bccManifestId) {
         DeleteBccRepositoryRequest request =
                 new DeleteBccRepositoryRequest(user, bccManifestId);
 
@@ -201,7 +201,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+    public void deleteDt(AuthenticatedPrincipal user, String dtManifestId) {
         DeleteDtRepositoryRequest request =
                 new DeleteDtRepositoryRequest(user, dtManifestId);
 
@@ -211,7 +211,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteDtSc(AuthenticatedPrincipal user, BigInteger dtScManifestId) {
+    public void deleteDtSc(AuthenticatedPrincipal user, String dtScManifestId) {
         DeleteDtScRepositoryRequest request =
                 new DeleteDtScRepositoryRequest(user, dtScManifestId);
 
@@ -221,7 +221,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void purgeAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void purgeAcc(AuthenticatedPrincipal user, String manifestId) {
         PurgeAccRepositoryRequest repositoryRequest =
                 new PurgeAccRepositoryRequest(user, manifestId);
 
@@ -232,12 +232,12 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void purgeAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void purgeAsccp(AuthenticatedPrincipal user, String manifestId) {
         purgeAsccp(user, manifestId, false);
     }
 
     @Transactional
-    public void purgeAsccp(AuthenticatedPrincipal user, BigInteger manifestId, boolean ignoreState) {
+    public void purgeAsccp(AuthenticatedPrincipal user, String manifestId, boolean ignoreState) {
         PurgeAsccpRepositoryRequest repositoryRequest =
                 new PurgeAsccpRepositoryRequest(user, manifestId);
 
@@ -250,7 +250,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void purgeBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public void purgeBccp(AuthenticatedPrincipal user, String manifestId) {
         PurgeBccpRepositoryRequest repositoryRequest =
                 new PurgeBccpRepositoryRequest(user, manifestId);
 
@@ -261,7 +261,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void purgeDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+    public void purgeDt(AuthenticatedPrincipal user, String dtManifestId) {
         PurgeDtRepositoryRequest request =
                 new PurgeDtRepositoryRequest(user, dtManifestId);
 
@@ -295,7 +295,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createAcc(AuthenticatedPrincipal user, CcAccCreateRequest request) {
+    public String createAcc(AuthenticatedPrincipal user, CcAccCreateRequest request) {
         isPublishedRelease(request.getReleaseId());
         CreateAccRepositoryRequest repositoryRequest =
                 new CreateAccRepositoryRequest(user, request.getReleaseId());
@@ -309,7 +309,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createAsccp(AuthenticatedPrincipal user, CcAsccpCreateRequest request) {
+    public String createAsccp(AuthenticatedPrincipal user, CcAsccpCreateRequest request) {
         isPublishedRelease(request.getReleaseId());
         CreateAsccpRepositoryRequest repositoryRequest =
                 new CreateAsccpRepositoryRequest(user,
@@ -332,7 +332,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createBccp(AuthenticatedPrincipal user, CcBccpCreateRequest request) {
+    public String createBccp(AuthenticatedPrincipal user, CcBccpCreateRequest request) {
         isPublishedRelease(request.getReleaseId());
         CreateBccpRepositoryRequest repositoryRequest =
                 new CreateBccpRepositoryRequest(user,
@@ -347,7 +347,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createBdt(AuthenticatedPrincipal user, CcBdtCreateRequest request) {
+    public String createBdt(AuthenticatedPrincipal user, CcBdtCreateRequest request) {
         isPublishedRelease(request.getReleaseId());
         CreateBdtRepositoryRequest repositoryRequest =
                 new CreateBdtRepositoryRequest(user,
@@ -362,7 +362,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createAccExtension(AuthenticatedPrincipal user, CcExtensionCreateRequest request) {
+    public String createAccExtension(AuthenticatedPrincipal user, CcExtensionCreateRequest request) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(request.getAccManifestId());
         String releaseId = accManifestRecord.getReleaseId();
@@ -386,13 +386,13 @@ public class CcNodeService extends EventHandler {
         createAccRepositoryRequest.setInitialComponentType(OagisComponentType.Extension);
         createAccRepositoryRequest.setInitialType(CcACCType.Extension);
         createAccRepositoryRequest.setInitialObjectClassTerm(accRecord.getObjectClassTerm() + " Extension");
-        createAccRepositoryRequest.setBasedAccManifestId(allExtension.getAccManifestId().toBigInteger());
+        createAccRepositoryRequest.setBasedAccManifestId(allExtension.getAccManifestId());
         createAccRepositoryRequest.setNamespaceId(accRecord.getNamespaceId());
 
         CreateAccRepositoryResponse createAccRepositoryResponse
                 = accWriteRepository.createAcc(createAccRepositoryRequest);
 
-        BigInteger extensionAccManifestId = createAccRepositoryResponse.getAccManifestId();
+        String extensionAccManifestId = createAccRepositoryResponse.getAccManifestId();
 
         // create extension ASCCP
         CreateAsccpRepositoryRequest createAsccpRepositoryRequest
@@ -410,7 +410,7 @@ public class CcNodeService extends EventHandler {
 
         CreateAsccpRepositoryResponse createAsccpRepositoryResponse
                 = asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
-        BigInteger extensionAsccpManifestId = createAsccpRepositoryResponse.getAsccpManifestId();
+        String extensionAsccpManifestId = createAsccpRepositoryResponse.getAsccpManifestId();
 
         // create ASCC between extension ACC and extension ASCCP
         CreateAsccRepositoryRequest createAsccRepositoryRequest
@@ -425,23 +425,23 @@ public class CcNodeService extends EventHandler {
     private void updateExtensionComponentProperties(AuthenticatedPrincipal user, CcAccNodeDetail accNodeDetail) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accNodeDetail.getManifestId());
-        AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestRecord.getAccManifestId().toBigInteger());
+        AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestRecord.getAccManifestId());
 
         AsccpManifestRecord extensionManifestAsccp = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(
-                accManifestRecord.getAccManifestId().toBigInteger()
+                accManifestRecord.getAccManifestId()
         );
         AsccpRecord extensionAsccp
-                = asccpReadRepository.getAsccpByManifestId(extensionManifestAsccp.getAsccpManifestId().toBigInteger());
+                = asccpReadRepository.getAsccpByManifestId(extensionManifestAsccp.getAsccpManifestId());
 
         AccManifestRecord extensionAcc
-                = accReadRepository.getAccManifest(extensionManifestAsccp.getRoleOfAccManifestId().toBigInteger());
+                = accReadRepository.getAccManifest(extensionManifestAsccp.getRoleOfAccManifestId());
 
         // update extension ACC
         UpdateAccPropertiesRepositoryRequest updateAccPropertiesRepositoryRequest
                 = new UpdateAccPropertiesRepositoryRequest(
                         user,
                         timestamp,
-                        extensionAcc.getAccManifestId().toBigInteger());
+                        extensionAcc.getAccManifestId());
 
         updateAccPropertiesRepositoryRequest.setObjectClassTerm(accRecord.getObjectClassTerm() + " Extension");
         updateAccPropertiesRepositoryRequest.setNamespaceId(accRecord.getNamespaceId());
@@ -452,7 +452,7 @@ public class CcNodeService extends EventHandler {
                 = new UpdateAsccpPropertiesRepositoryRequest(
                 user,
                 timestamp,
-                extensionManifestAsccp.getAsccpManifestId().toBigInteger());
+                extensionManifestAsccp.getAsccpManifestId());
 
         updateAsccpPropertiesRepositoryRequest.setPropertyTerm(extensionAsccp.getPropertyTerm());
         updateAsccpPropertiesRepositoryRequest.setDefinition(extensionAsccp.getDefinition());
@@ -465,10 +465,10 @@ public class CcNodeService extends EventHandler {
     private void updateUserExtensionNamespace(AuthenticatedPrincipal user, CcAccNodeDetail accNodeDetail) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accNodeDetail.getManifestId());
-        AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestRecord.getAccManifestId().toBigInteger());
+        AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestRecord.getAccManifestId());
 
         AsccpManifestRecord extensionManifestAsccp = asccpReadRepository.getUserExtensionAsccpManifestByAccManifestId(
-                accManifestRecord.getAccManifestId().toBigInteger()
+                accManifestRecord.getAccManifestId()
         );
 
         // update extension ASCCP
@@ -476,31 +476,31 @@ public class CcNodeService extends EventHandler {
                 = new UpdateAsccpPropertiesRepositoryRequest(
                 user,
                 timestamp,
-                extensionManifestAsccp.getAsccpManifestId().toBigInteger());
+                extensionManifestAsccp.getAsccpManifestId());
 
         updateAsccpPropertiesRepositoryRequest.setNamespaceId(accRecord.getNamespaceId());
 
         asccpWriteRepository.updateAsccpNamespace(updateAsccpPropertiesRepositoryRequest);
     }
 
-    private void updateExtensionComponentState(AuthenticatedPrincipal user, BigInteger accManifestId,
+    private void updateExtensionComponentState(AuthenticatedPrincipal user, String accManifestId,
                                                CcState fromState, CcState toState) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
 
         AsccpManifestRecord extensionAsccp = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(
-                accManifestRecord.getAccManifestId().toBigInteger()
+                accManifestRecord.getAccManifestId()
         );
 
         AccManifestRecord extensionAcc
-                = accReadRepository.getAccManifest(extensionAsccp.getRoleOfAccManifestId().toBigInteger());
+                = accReadRepository.getAccManifest(extensionAsccp.getRoleOfAccManifestId());
 
         // update extension ACC
         UpdateAccStateRepositoryRequest updateAccStateRepositoryRequest
                 = new UpdateAccStateRepositoryRequest(
                 user,
                 timestamp,
-                extensionAcc.getAccManifestId().toBigInteger(),
+                extensionAcc.getAccManifestId(),
                 fromState,
                 toState);
 
@@ -511,7 +511,7 @@ public class CcNodeService extends EventHandler {
                 = new UpdateAsccpStateRepositoryRequest(
                 user,
                 timestamp,
-                extensionAsccp.getAsccpManifestId().toBigInteger(),
+                extensionAsccp.getAsccpManifestId(),
                 fromState,
                 toState);
 
@@ -538,7 +538,7 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void updateCcSeq(AuthenticatedPrincipal user,
-                            BigInteger accManifestId,
+                            String accManifestId,
                             Pair<CcId, CcId> itemAfterPair) {
 
         UpdateSeqKeyRequest request =
@@ -565,13 +565,13 @@ public class CcNodeService extends EventHandler {
         return updatedAccNodeDetails;
     }
 
-    private boolean hasExtensionAssociation(AuthenticatedPrincipal user, BigInteger accManifestId) {
+    private boolean hasExtensionAssociation(AuthenticatedPrincipal user, String accManifestId) {
         AsccpManifestRecord extension
                 = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(accManifestId);
         return extension != null;
     }
 
-    private boolean isUserExtensionGroup(AuthenticatedPrincipal user, BigInteger accManifestId) {
+    private boolean isUserExtensionGroup(AuthenticatedPrincipal user, String accManifestId) {
         AccRecord acc
                 = accReadRepository.getAccByManifestId(accManifestId);
         return acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue());
@@ -782,16 +782,16 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendAsccp(AuthenticatedPrincipal user, String releaseId,
-                                  BigInteger accManifestId, BigInteger asccpManifestId,
+    public String appendAsccp(AuthenticatedPrincipal user, String releaseId,
+                                  String accManifestId, String asccpManifestId,
                                   int pos) {
         return appendAsccp(user, releaseId, accManifestId, asccpManifestId, pos, LogUtils.generateHash(), LogAction.Modified);
     }
 
     @Transactional
-    public BigInteger appendAsccp(AuthenticatedPrincipal user, String releaseId,
-                                  BigInteger accManifestId, BigInteger asccpManifestId,
-                                  int pos, String logHash, LogAction action) {
+    public String appendAsccp(AuthenticatedPrincipal user, String releaseId,
+                              String accManifestId, String asccpManifestId,
+                              int pos, String logHash, LogAction action) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateAsccRepositoryRequest request =
                 new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
@@ -805,16 +805,16 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendBccp(AuthenticatedPrincipal user, String releaseId,
-                                 BigInteger accManifestId, BigInteger bccpManifestId,
-                                 boolean attribute, int pos) {
+    public String appendBccp(AuthenticatedPrincipal user, String releaseId,
+                             String accManifestId, String bccpManifestId,
+                             boolean attribute, int pos) {
         return appendBccp(user, releaseId, accManifestId, bccpManifestId, attribute, pos, LogUtils.generateHash(), LogAction.Modified);
     }
 
     @Transactional
-    public BigInteger appendBccp(AuthenticatedPrincipal user, String releaseId,
-                                 BigInteger accManifestId, BigInteger bccpManifestId,
-                                 boolean attribute, int pos, String logHash, LogAction action) {
+    public String appendBccp(AuthenticatedPrincipal user, String releaseId,
+                             String accManifestId, String bccpManifestId,
+                             boolean attribute, int pos, String logHash, LogAction action) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateBccRepositoryRequest request =
                 new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId, attribute);
@@ -828,7 +828,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendDtSc(AuthenticatedPrincipal user, BigInteger ownerDtManifestId) {
+    public String appendDtSc(AuthenticatedPrincipal user, String ownerDtManifestId) {
         CreateDtScRepositoryRequest request =
                 new CreateDtScRepositoryRequest(user, ownerDtManifestId);
 
@@ -869,7 +869,7 @@ public class CcNodeService extends EventHandler {
     }
 
     public List<CcBdtScPriRestri> getDefaultPrimitiveValues(AuthenticatedPrincipal user,
-                                                            String representationTerm, BigInteger bdtScManifestId) {
+                                                            String representationTerm, String bdtScManifestId) {
         if (repository.bdtScHasRepresentationTermSameAs(representationTerm, bdtScManifestId)) {
             CcBdtScNode bdtScNode = new CcBdtScNode();
             bdtScNode.setManifestId(bdtScManifestId);
@@ -880,7 +880,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAccBasedAcc(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger basedAccManifestId) {
+    public String updateAccBasedAcc(AuthenticatedPrincipal user, String accManifestId, String basedAccManifestId) {
         UpdateAccBasedAccRepositoryRequest repositoryRequest =
                 new UpdateAccBasedAccRepositoryRequest(user, accManifestId, basedAccManifestId);
 
@@ -893,7 +893,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpRoleOfAcc(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger roleOfAccManifestId) {
+    public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpRoleOfAcc(AuthenticatedPrincipal user, String asccpManifestId, String roleOfAccManifestId) {
         UpdateAsccpRoleOfAccRepositoryRequest repositoryRequest =
                 new UpdateAsccpRoleOfAccRepositoryRequest(user, asccpManifestId, roleOfAccManifestId);
 
@@ -906,7 +906,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public UpdateBccpBdtRepositoryResponse updateBccpBdt(AuthenticatedPrincipal user, BigInteger bccpManifestId, BigInteger bdtManifestId) {
+    public UpdateBccpBdtRepositoryResponse updateBccpBdt(AuthenticatedPrincipal user, String bccpManifestId, String bdtManifestId) {
         UpdateBccpBdtRepositoryRequest repositoryRequest =
                 new UpdateBccpBdtRepositoryRequest(user, bccpManifestId, bdtManifestId);
 
@@ -919,13 +919,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAccState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState toState) {
+    public String updateAccState(AuthenticatedPrincipal user, String accManifestId, CcState toState) {
         CcState fromState = repository.getAccState(accManifestId);
         return updateAccState(user, accManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateAccState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState fromState, CcState toState) {
+    public String updateAccState(AuthenticatedPrincipal user, String accManifestId, CcState fromState, CcState toState) {
         UpdateAccStateRepositoryRequest repositoryRequest =
                 new UpdateAccStateRepositoryRequest(user, accManifestId, fromState, toState);
 
@@ -938,13 +938,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAsccpState(AuthenticatedPrincipal user, BigInteger asccpManifestId, CcState toState) {
+    public String updateAsccpState(AuthenticatedPrincipal user, String asccpManifestId, CcState toState) {
         CcState fromState = repository.getAsccpState(asccpManifestId);
         return updateAsccpState(user, asccpManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateAsccpState(AuthenticatedPrincipal user, BigInteger asccpManifestId, CcState fromState, CcState toState) {
+    public String updateAsccpState(AuthenticatedPrincipal user, String asccpManifestId, CcState fromState, CcState toState) {
         UpdateAsccpStateRepositoryRequest repositoryRequest =
                 new UpdateAsccpStateRepositoryRequest(user, asccpManifestId, fromState, toState);
 
@@ -957,13 +957,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateBccpState(AuthenticatedPrincipal user, BigInteger bccpManifestId, CcState toState) {
+    public String updateBccpState(AuthenticatedPrincipal user, String bccpManifestId, CcState toState) {
         CcState fromState = repository.getBccpState(bccpManifestId);
         return updateBccpState(user, bccpManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateBccpState(AuthenticatedPrincipal user, BigInteger bccpManifestId, CcState fromState, CcState toState) {
+    public String updateBccpState(AuthenticatedPrincipal user, String bccpManifestId, CcState fromState, CcState toState) {
         UpdateBccpStateRepositoryRequest repositoryRequest =
                 new UpdateBccpStateRepositoryRequest(user, bccpManifestId, fromState, toState);
 
@@ -976,13 +976,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState toState) {
+    public String updateDtState(AuthenticatedPrincipal user, String dtManifestId, CcState toState) {
         CcState fromState = repository.getDtState(dtManifestId);
         return updateDtState(user, dtManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateDtState(AuthenticatedPrincipal user, BigInteger dtManifestId, CcState fromState, CcState toState) {
+    public String updateDtState(AuthenticatedPrincipal user, String dtManifestId, CcState fromState, CcState toState) {
         UpdateDtStateRepositoryRequest repositoryRequest =
                 new UpdateDtStateRepositoryRequest(user, dtManifestId, fromState, toState);
 
@@ -995,7 +995,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
+    public String makeNewRevisionForAcc(AuthenticatedPrincipal user, String accManifestId) {
         ReviseAccRepositoryRequest repositoryRequest =
                 new ReviseAccRepositoryRequest(user, accManifestId);
 
@@ -1008,7 +1008,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
+    public String makeNewRevisionForAsccp(AuthenticatedPrincipal user, String asccpManifestId) {
         ReviseAsccpRepositoryRequest repositoryRequest =
                 new ReviseAsccpRepositoryRequest(user, asccpManifestId);
 
@@ -1021,7 +1021,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
+    public String makeNewRevisionForBccp(AuthenticatedPrincipal user, String bccpManifestId) {
         ReviseBccpRepositoryRequest repositoryRequest =
                 new ReviseBccpRepositoryRequest(user, bccpManifestId);
 
@@ -1034,7 +1034,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+    public String makeNewRevisionForDt(AuthenticatedPrincipal user, String dtManifestId) {
         ReviseDtRepositoryRequest repositoryRequest =
                 new ReviseDtRepositoryRequest(user, dtManifestId);
 
@@ -1046,7 +1046,7 @@ public class CcNodeService extends EventHandler {
         return repositoryResponse.getDtManifestId();
     }
 
-    public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, String manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
         String lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1059,7 +1059,7 @@ public class CcNodeService extends EventHandler {
             ccRevisionResponse.setName(accRecord.getObjectClassTerm());
             ccRevisionResponse.setHasBaseCc(accRecord.getBasedAccId() != null);
             List<AsccManifestRecord> asccManifestRecordList
-                    = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
+                    = ccRepository.getAsccManifestByFromAccManifestId(manifestId);
             Map<String, CcNode> associations = new HashMap<>();
             for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
                 String lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId(), CcType.ASCC);
@@ -1074,7 +1074,7 @@ public class CcNodeService extends EventHandler {
                 }
             }
             List<BccManifestRecord> bccManifestRecordList
-                    = ccRepository.getBccManifestByFromAccManifestId(ULong.valueOf(manifestId));
+                    = ccRepository.getBccManifestByFromAccManifestId(manifestId);
             for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
                 String lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId(), CcType.BCC);
                 if (lastBccId != null) {
@@ -1093,7 +1093,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getBccpNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcRevisionResponse getBccpNodeRevision(AuthenticatedPrincipal user, String manifestId) {
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
         String lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), CcType.BCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1110,7 +1110,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getBdtNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcRevisionResponse getBdtNodeRevision(AuthenticatedPrincipal user, String manifestId) {
         CcBdtNode bdtNode = getBdtNode(user, manifestId);
         String lastPublishedCcId = getLastPublishedCcId(bdtNode.getId(), CcType.DT);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1125,7 +1125,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getAsccpNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CcRevisionResponse getAsccpNodeRevision(AuthenticatedPrincipal user, String manifestId) {
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
         String lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), CcType.ASCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1221,7 +1221,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    public void updateAccOwnerUserId(AuthenticatedPrincipal user, BigInteger accManifestId, String ownerUserId) {
+    public void updateAccOwnerUserId(AuthenticatedPrincipal user, String accManifestId, String ownerUserId) {
         UpdateAccOwnerRepositoryRequest request =
                 new UpdateAccOwnerRepositoryRequest(user, accManifestId, ownerUserId);
         accWriteRepository.updateAccOwner(request);
@@ -1229,7 +1229,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAccOwnerEvent());
     }
 
-    public void updateAsccpOwnerUserId(AuthenticatedPrincipal user, BigInteger asccpManifestId, String ownerUserId) {
+    public void updateAsccpOwnerUserId(AuthenticatedPrincipal user, String asccpManifestId, String ownerUserId) {
         UpdateAsccpOwnerRepositoryRequest request =
                 new UpdateAsccpOwnerRepositoryRequest(user, asccpManifestId, ownerUserId);
         asccpWriteRepository.updateAsccpOwner(request);
@@ -1237,7 +1237,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAsccpOwnerEvent());
     }
 
-    public void updateBccpOwnerUserId(AuthenticatedPrincipal user, BigInteger bccpManifestId, String ownerUserId) {
+    public void updateBccpOwnerUserId(AuthenticatedPrincipal user, String bccpManifestId, String ownerUserId) {
         UpdateBccpOwnerRepositoryRequest request =
                 new UpdateBccpOwnerRepositoryRequest(user, bccpManifestId, ownerUserId);
         bccpWriteRepository.updateBccpOwner(request);
@@ -1245,7 +1245,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedBccpOwnerEvent());
     }
 
-    public void updateDtOwnerUserId(AuthenticatedPrincipal user, BigInteger dtManifestId, String ownerUserId) {
+    public void updateDtOwnerUserId(AuthenticatedPrincipal user, String dtManifestId, String ownerUserId) {
         UpdateDtOwnerRepositoryRequest request =
                 new UpdateDtOwnerRepositoryRequest(user, dtManifestId, ownerUserId);
         dtWriteRepository.updateDtOwner(request);
@@ -1254,7 +1254,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void cancelRevisionBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
+    public void cancelRevisionBccp(AuthenticatedPrincipal user, String bccpManifestId) {
         CancelRevisionBccpRepositoryRequest request
                 = new CancelRevisionBccpRepositoryRequest(user, bccpManifestId);
         bccpWriteRepository.cancelRevisionBccp(request);
@@ -1263,7 +1263,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void cancelRevisionDt(AuthenticatedPrincipal user, BigInteger dtManifestId) {
+    public void cancelRevisionDt(AuthenticatedPrincipal user, String dtManifestId) {
         CancelRevisionDtRepositoryRequest request
                 = new CancelRevisionDtRepositoryRequest(user, dtManifestId);
         dtWriteRepository.cancelRevisionDt(request);
@@ -1272,7 +1272,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void cancelRevisionAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
+    public void cancelRevisionAsccp(AuthenticatedPrincipal user, String asccpManifestId) {
         CancelRevisionAsccpRepositoryRequest request
                 = new CancelRevisionAsccpRepositoryRequest(user, asccpManifestId);
         asccpWriteRepository.cancelRevisionAsccp(request);
@@ -1281,7 +1281,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void cancelRevisionAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
+    public void cancelRevisionAcc(AuthenticatedPrincipal user, String accManifestId) {
         CancelRevisionAccRepositoryRequest request
                 = new CancelRevisionAccRepositoryRequest(user, accManifestId);
         accWriteRepository.cancelRevisionAcc(request);
@@ -1296,21 +1296,21 @@ public class CcNodeService extends EventHandler {
 
         CreateOagisBodResponse response = new CreateOagisBodResponse();
 
-        List<BigInteger> bodManifestIdList = _createOagisBod(user, request);
+        List<String> bodManifestIdList = _createOagisBod(user, request);
         response.setManifestIdList(bodManifestIdList);
 
         return response;
     }
 
-    private List<BigInteger> _createOagisBod(AuthenticatedPrincipal user, CreateOagisBodRequest request) {
+    private List<String> _createOagisBod(AuthenticatedPrincipal user, CreateOagisBodRequest request) {
         AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isDeveloper()) {
             throw new IllegalArgumentException();
         }
 
-        List<BigInteger> bodManifestIdList = new ArrayList();
-        for (BigInteger verbManifestId : request.getVerbManifestIdList()) {
-            for (BigInteger nounManifestId : request.getNounManifestIdList()) {
+        List<String> bodManifestIdList = new ArrayList();
+        for (String verbManifestId : request.getVerbManifestIdList()) {
+            for (String nounManifestId : request.getNounManifestIdList()) {
                 AsccpManifestRecord verbManifestRecord = asccpReadRepository.getAsccpManifestById(verbManifestId);
                 String releaseId = verbManifestRecord.getReleaseId();
                 AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(verbManifestId);
@@ -1330,7 +1330,7 @@ public class CcNodeService extends EventHandler {
                 dataAreaAccRequest.setInitialComponentType(OagisComponentType.Semantics);
                 dataAreaAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm(), "Data Area")));
                 dataAreaAccRequest.setNamespaceId(namespaceId);
-                BigInteger dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
+                String dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
 
                 CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
                         dataAreaAccManifestId, verbManifestId);
@@ -1352,23 +1352,23 @@ public class CcNodeService extends EventHandler {
                         .replaceAll(" ", "");
                 dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
                 dataAreaAsccpRequest.setDefinitionSource("http://www.openapplications.org/oagis/10");
-                BigInteger dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
+                String dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
 
-                ULong bodBasedAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                String bodBasedAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                         .where(and(
                                 ACC_MANIFEST.RELEASE_ID.eq(releaseId),
                                 ACC.OBJECT_CLASS_TERM.eq("Business Object Document")
                         ))
-                        .fetchOneInto(ULong.class);
+                        .fetchOneInto(String.class);
 
                 CreateAccRepositoryRequest bodAccRequest = new CreateAccRepositoryRequest(user, releaseId);
-                bodAccRequest.setBasedAccManifestId(bodBasedAccManifestId.toBigInteger());
+                bodAccRequest.setBasedAccManifestId(bodBasedAccManifestId);
                 bodAccRequest.setInitialComponentType(OagisComponentType.Semantics);
                 bodAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm())));
                 bodAccRequest.setNamespaceId(namespaceId);
-                BigInteger bodAccManifestId = accWriteRepository.createAcc(bodAccRequest).getAccManifestId();
+                String bodAccManifestId = accWriteRepository.createAcc(bodAccRequest).getAccManifestId();
 
                 CreateAsccRepositoryRequest dataAreaAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
                         bodAccManifestId, dataAreaAsccpManifestId);
@@ -1382,7 +1382,7 @@ public class CcNodeService extends EventHandler {
                 bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
                 bodAsccpRequest.setNamespaceId(namespaceId);
                 bodAsccpRequest.setTags(Arrays.asList("BOD"));
-                BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
+                String bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
                 bodManifestIdList.add(bodAsccpManifestId);
             }
         }
@@ -1396,14 +1396,14 @@ public class CcNodeService extends EventHandler {
 
         CreateOagisVerbResponse response = new CreateOagisVerbResponse();
 
-        BigInteger verbAsccpManifestId = _createOagisVerb(user, request);
+        String verbAsccpManifestId = _createOagisVerb(user, request);
         response.setBasedVerbAsccpManifestId(verbAsccpManifestId);
 
         return response;
     }
 
-    private BigInteger _createOagisVerb(AuthenticatedPrincipal user,
-                                        CreateOagisVerbRequest request) {
+    private String _createOagisVerb(AuthenticatedPrincipal user,
+                                    CreateOagisVerbRequest request) {
 
         AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isDeveloper()) {
@@ -1411,7 +1411,7 @@ public class CcNodeService extends EventHandler {
         }
 
         AccManifestRecord verbManifestRecord = accReadRepository.getAccManifest(request.getBasedVerbAccManifestId());
-        AccRecord verbRecord = accReadRepository.getAccByManifestId(verbManifestRecord.getAccManifestId().toBigInteger());
+        AccRecord verbRecord = accReadRepository.getAccByManifestId(verbManifestRecord.getAccManifestId());
 
         String releaseId = verbManifestRecord.getReleaseId();
         if (verbRecord.getNamespaceId() == null) {
@@ -1425,12 +1425,12 @@ public class CcNodeService extends EventHandler {
         verbAccRequest.setInitialComponentType(OagisComponentType.Semantics);
         verbAccRequest.setInitialObjectClassTerm(request.getInitialObjectClassTerm());
         verbAccRequest.setNamespaceId(namespaceId);
-        BigInteger verbAccManifestId = accWriteRepository.createAcc(verbAccRequest).getAccManifestId();
+        String verbAccManifestId = accWriteRepository.createAcc(verbAccRequest).getAccManifestId();
 
         CreateAsccpRepositoryRequest verbAsccpRequest = new CreateAsccpRepositoryRequest(user, verbAccManifestId, releaseId);
         verbAsccpRequest.setInitialPropertyTerm(request.getInitialPrpertyTerm());
         verbAsccpRequest.setNamespaceId(namespaceId);
-        BigInteger verbAsccpManifestId = asccpWriteRepository.createAsccp(verbAsccpRequest).getAsccpManifestId();
+        String verbAsccpManifestId = asccpWriteRepository.createAsccp(verbAsccpRequest).getAsccpManifestId();
 
         return verbAsccpManifestId;
     }
@@ -1444,7 +1444,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void refactorAscc(AuthenticatedPrincipal user, BigInteger asccManifestId, BigInteger destinationAccManifestId) {
+    public void refactorAscc(AuthenticatedPrincipal user, String asccManifestId, String destinationAccManifestId) {
         RefactorAsccRepositoryRequest request
                 = new RefactorAsccRepositoryRequest(user, asccManifestId, destinationAccManifestId);
         asccWriteRepository.refactor(request);
@@ -1453,7 +1453,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void refactorBcc(AuthenticatedPrincipal user, BigInteger bccManifestId, BigInteger destinationAccManifestId) {
+    public void refactorBcc(AuthenticatedPrincipal user, String bccManifestId, String destinationAccManifestId) {
         RefactorBccRepositoryRequest request
                 = new RefactorBccRepositoryRequest(user, bccManifestId, destinationAccManifestId);
         bccWriteRepository.refactor(request);
@@ -1461,22 +1461,22 @@ public class CcNodeService extends EventHandler {
         fireEvent(new RefactorBccEvent());
     }
 
-    public CcRefactorValidationResponse validateBccRefactoring(AuthenticatedPrincipal user, BigInteger bccManifestId, BigInteger destinationAccManifestId) {
+    public CcRefactorValidationResponse validateBccRefactoring(AuthenticatedPrincipal user, String bccManifestId, String destinationAccManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
 
         return bccReadRepository.validateBccRefactoring(requester, bccManifestId, destinationAccManifestId);
     }
 
-    public CcRefactorValidationResponse validateAsccRefactoring(AuthenticatedPrincipal user, BigInteger asccManifestId, BigInteger destinationAccManifestId) {
+    public CcRefactorValidationResponse validateAsccRefactoring(AuthenticatedPrincipal user, String asccManifestId, String destinationAccManifestId) {
         AppUser requester = sessionService.getAppUserByUsername(user);
 
         return asccReadRepository.validateAsccRefactoring(requester, asccManifestId, destinationAccManifestId);
     }
 
-    public List<CcList> getBaseAccList(AuthenticatedPrincipal user, BigInteger accManifestId) {
+    public List<CcList> getBaseAccList(AuthenticatedPrincipal user, String accManifestId) {
 
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
-        return accReadRepository.getBaseAccList(accManifestRecord.getAccManifestId().toBigInteger(), accManifestRecord.getReleaseId());
+        return accReadRepository.getBaseAccList(accManifestRecord.getAccManifestId(), accManifestRecord.getReleaseId());
     }
 
     @Transactional
@@ -1494,16 +1494,16 @@ public class CcNodeService extends EventHandler {
         }
 
         AsccpManifestRecord asccpManifestRecord =
-                asccpReadRepository.getAsccpManifestById(asccManifestRecord.getToAsccpManifestId().toBigInteger());
+                asccpReadRepository.getAsccpManifestById(asccManifestRecord.getToAsccpManifestId());
         AccManifestRecord roleOfAccManifestRecord =
-                accReadRepository.getAccManifest(asccpManifestRecord.getRoleOfAccManifestId().toBigInteger());
+                accReadRepository.getAccManifest(asccpManifestRecord.getRoleOfAccManifestId());
 
         Stack<AccManifestRecord> accManifestRecordStack = new Stack();
         accManifestRecordStack.add(roleOfAccManifestRecord);
 
         while (roleOfAccManifestRecord.getBasedAccManifestId() != null) {
             roleOfAccManifestRecord = accReadRepository.getAccManifest(
-                    roleOfAccManifestRecord.getBasedAccManifestId().toBigInteger());
+                    roleOfAccManifestRecord.getBasedAccManifestId());
             accManifestRecordStack.add(roleOfAccManifestRecord);
         }
 
@@ -1521,20 +1521,20 @@ public class CcNodeService extends EventHandler {
             for (Node child : children) {
                 if (child.getType() == Node.NodeType.ASCC) {
                     AsccManifestRecord asccChild =
-                            asccReadRepository.getAsccManifestById(child.getManifestId().toBigInteger());
+                            asccReadRepository.getAsccManifestById(child.getManifestId());
 
                     appendAsccp(user, accManifestRecord.getReleaseId(),
-                            accManifestRecord.getAccManifestId().toBigInteger(),
-                            asccChild.getToAsccpManifestId().toBigInteger(), pos, logHash, LogAction.IGNORE);
+                            accManifestRecord.getAccManifestId(),
+                            asccChild.getToAsccpManifestId(), pos, logHash, LogAction.IGNORE);
                 } else if (child.getType() == Node.NodeType.BCC) {
                     BccManifestRecord bccChild =
-                            bccReadRepository.getBccManifestById(child.getManifestId().toBigInteger());
+                            bccReadRepository.getBccManifestById(child.getManifestId());
                     BccRecord bccRecord =
-                            bccReadRepository.getBccByManifestId(bccChild.getBccManifestId().toBigInteger());
+                            bccReadRepository.getBccByManifestId(bccChild.getBccManifestId());
 
                     appendBccp(user, accManifestRecord.getReleaseId(),
-                            accManifestRecord.getAccManifestId().toBigInteger(),
-                            bccChild.getToBccpManifestId().toBigInteger(),
+                            accManifestRecord.getAccManifestId(),
+                            bccChild.getToBccpManifestId(),
                             EntityType.Attribute.getValue() == bccRecord.getEntityType(),
                             pos, logHash, LogAction.IGNORE);
                 }
@@ -1543,10 +1543,10 @@ public class CcNodeService extends EventHandler {
             }
         }
 
-        deleteAscc(user, asccManifestRecord.getAsccManifestId().toBigInteger(), logHash, LogAction.Ungrouped, false);
+        deleteAscc(user, asccManifestRecord.getAsccManifestId(), logHash, LogAction.Ungrouped, false);
 
         CcUngroupResponse response = new CcUngroupResponse();
-        response.setAccManifestId(accManifestRecord.getAccManifestId().toBigInteger());
+        response.setAccManifestId(accManifestRecord.getAccManifestId());
         return response;
     }
 }

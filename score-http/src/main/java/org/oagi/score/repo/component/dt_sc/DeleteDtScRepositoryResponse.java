@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class DeleteDtScRepositoryResponse {
 
-    private final BigInteger dtScManifestId;
+    private final String dtScManifestId;
 
-    public DeleteDtScRepositoryResponse(BigInteger dtScManifestId) {
+    public DeleteDtScRepositoryResponse(String dtScManifestId) {
         this.dtScManifestId = dtScManifestId;
     }
 
-    public BigInteger getDtScManifestId() {
+    public String getDtScManifestId() {
         return dtScManifestId;
     }
 }

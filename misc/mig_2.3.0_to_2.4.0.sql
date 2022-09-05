@@ -3985,47 +3985,47 @@ ALTER TABLE `usage_rule` DROP COLUMN `usage_rule_id`;
 ALTER TABLE `usage_rule_expression` DROP COLUMN `usage_rule_expression_id`;
 
 -- Rename `*_uuid` TO `*_id`
-ALTER TABLE `app_oauth2_user` CHANGE `app_oauth2_user_uuid` `app_oauth2_user_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `asbie_bizterm` CHANGE `asbie_bizterm_uuid` `asbie_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `ascc_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bbie_bizterm` CHANGE `bbie_bizterm_uuid` `bbie_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bcc_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bdt_pri_restri` CHANGE `bdt_pri_restri_uuid` `bdt_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bdt_sc_pri_restri` CHANGE `bdt_sc_pri_restri_uuid` `bdt_sc_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bie_usage_rule` CHANGE `bie_usage_rule_uuid` `bie_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `bie_user_ext_revision` CHANGE `bie_user_ext_revision_uuid` `bie_user_ext_revision_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `business_term` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `cc_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `cdt_ref_spec` CHANGE `cdt_ref_spec_uuid` `cdt_ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `cdt_sc_ref_spec` CHANGE `cdt_sc_ref_spec_uuid` `cdt_sc_ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `comment` CHANGE `comment_uuid` `comment_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `dt_usage_rule` CHANGE `dt_usage_rule_uuid` `dt_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `exception` CHANGE `exception_uuid` `exception_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `message` CHANGE `message_uuid` `message_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `oauth2_app` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_scope_uuid` `oauth2_app_scope_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `usage_rule` CHANGE `usage_rule_uuid` `usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `usage_rule_expression` CHANGE `usage_rule_expression_uuid` `usage_rule_expression_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `app_oauth2_user` CHANGE `app_oauth2_user_uuid` `app_oauth2_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asbie_bizterm` CHANGE `asbie_bizterm_uuid` `asbie_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ascc_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bbie_bizterm` CHANGE `bbie_bizterm_uuid` `bbie_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bcc_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bdt_pri_restri` CHANGE `bdt_pri_restri_uuid` `bdt_pri_restri_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bdt_sc_pri_restri` CHANGE `bdt_sc_pri_restri_uuid` `bdt_sc_pri_restri_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bie_usage_rule` CHANGE `bie_usage_rule_uuid` `bie_usage_rule_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bie_user_ext_revision` CHANGE `bie_user_ext_revision_uuid` `bie_user_ext_revision_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `business_term` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cc_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cdt_ref_spec` CHANGE `cdt_ref_spec_uuid` `cdt_ref_spec_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `cdt_sc_ref_spec` CHANGE `cdt_sc_ref_spec_uuid` `cdt_sc_ref_spec_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `comment` CHANGE `comment_uuid` `comment_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt_usage_rule` CHANGE `dt_usage_rule_uuid` `dt_usage_rule_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `exception` CHANGE `exception_uuid` `exception_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `message` CHANGE `message_uuid` `message_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `oauth2_app` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_scope_uuid` `oauth2_app_scope_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `usage_rule` CHANGE `usage_rule_uuid` `usage_rule_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `usage_rule_expression` CHANGE `usage_rule_expression_uuid` `usage_rule_expression_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
 
-ALTER TABLE `acc_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `app_oauth2_user` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A reference to the record in `oauth2_app`.';
-ALTER TABLE `asbie_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the ascc_business_term record.';
-ALTER TABLE `ascc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.';
-ALTER TABLE `asccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `app_oauth2_user` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A reference to the record in `oauth2_app`.';
+ALTER TABLE `asbie_bizterm` CHANGE `ascc_bizterm_uuid` `ascc_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the ascc_business_term record.';
+ALTER TABLE `ascc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated business term.';
+ALTER TABLE `asccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `bbie` CHANGE `bdt_pri_restri_uuid` `bdt_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.';
-ALTER TABLE `bbie_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the bcc_business_term record.';
+ALTER TABLE `bbie_bizterm` CHANGE `bcc_bizterm_uuid` `bcc_bizterm_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the bcc_business_term record.';
 ALTER TABLE `bbie_sc` CHANGE `dt_sc_pri_restri_uuid` `dt_sc_pri_restri_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).\n\nIt is the foreign key to the BDT_SC_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.\n\nThis column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot have a value at the same time.';
-ALTER TABLE `bcc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'An internal ID of the associated business term.';
-ALTER TABLE `bccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `bie_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
-ALTER TABLE `cdt_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `cdt_sc_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bcc_bizterm` CHANGE `business_term_uuid` `business_term_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'An internal ID of the associated business term.';
+ALTER TABLE `bccp_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `bie_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
+ALTER TABLE `cdt_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `cdt_sc_ref_spec` CHANGE `ref_spec_uuid` `ref_spec_id` char(36) CHARACTER SET ascii NOT NULL;
 ALTER TABLE `comment` CHANGE `prev_comment_uuid` `prev_comment_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `dt_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `dt_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
-ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `usage_rule_expression` CHANGE `represented_usage_rule_uuid` `represented_usage_rule_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest_tag` CHANGE `cc_tag_uuid` `cc_tag_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `dt_usage_rule` CHANGE `assigned_usage_rule_uuid` `assigned_usage_rule_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.';
+ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_uuid` `oauth2_app_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `usage_rule_expression` CHANGE `represented_usage_rule_uuid` `represented_usage_rule_id` char(36) CHARACTER SET ascii NOT NULL;
 
 -- Add foreign key constraints
 ALTER TABLE `app_oauth2_user` ADD PRIMARY KEY (`app_oauth2_user_id`);
@@ -4069,3 +4069,805 @@ ALTER TABLE `dt_manifest_tag` ADD CONSTRAINT `dt_manifest_tag_cc_tag_id_fk` FORE
 ALTER TABLE `dt_usage_rule` ADD CONSTRAINT `dt_usage_rule_assigned_usage_rule_id_fk` FOREIGN KEY (`assigned_usage_rule_id`) REFERENCES `usage_rule` (`usage_rule_id`);
 ALTER TABLE `oauth2_app_scope` ADD CONSTRAINT `oauth2_app_scope_oauth2_app_id_fk` FOREIGN KEY (`oauth2_app_id`) REFERENCES `oauth2_app` (`oauth2_app_id`);
 ALTER TABLE `usage_rule_expression` ADD CONSTRAINT `usage_rule_expression_represented_usage_rule_id_fk` FOREIGN KEY (`represented_usage_rule_id`) REFERENCES `usage_rule` (`usage_rule_id`);
+
+-- ----------------------------------------------------------------------------------------------
+-- Change `acc_manifest_id`, `agency_id_list_manifest_id`, `agency_id_list_value_manifest_id`, --
+-- `ascc_manifest_id`, `asccp_manifest_id`, `bcc_manifest_id` `bccp_manifest_id`,              --
+-- `blob_content_manifest_id`, `code_list_manifest_id`, `code_list_value_manifest_id`,         --
+-- `dt_manifest_id`, `dt_sc_manifest_id`, `xbt_manifest_id` TO UUID                            --
+-- ----------------------------------------------------------------------------------------------
+ALTER TABLE `acc_manifest` ADD COLUMN `acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `acc_manifest_id`;
+CALL update_uuid('acc_manifest');
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `agency_id_list_manifest_id`;
+CALL update_uuid('agency_id_list_manifest');
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `agency_id_list_value_manifest_id`;
+CALL update_uuid('agency_id_list_value_manifest');
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ascc_manifest_id`;
+CALL update_uuid('ascc_manifest');
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `asccp_manifest_id`;
+CALL update_uuid('asccp_manifest');
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bcc_manifest_id`;
+CALL update_uuid('bcc_manifest');
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `bccp_manifest_id`;
+CALL update_uuid('bccp_manifest');
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `blob_content_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `blob_content_manifest_id`;
+CALL update_uuid('blob_content_manifest');
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `code_list_manifest_id`;
+CALL update_uuid('code_list_manifest');
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `code_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `code_list_value_manifest_id`;
+CALL update_uuid('code_list_value_manifest');
+
+ALTER TABLE `dt_manifest` ADD COLUMN `dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `dt_manifest_id`;
+CALL update_uuid('dt_manifest');
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `dt_sc_manifest_id`;
+CALL update_uuid('dt_sc_manifest');
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `xbt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `xbt_manifest_id`;
+CALL update_uuid('xbt_manifest');
+
+ALTER TABLE `abie` ADD COLUMN `based_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_acc_manifest_id`;
+UPDATE `abie`, `acc_manifest` SET `abie`.`based_acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `abie`.`based_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `based_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_acc_manifest_id`;
+UPDATE `acc_manifest`, `acc_manifest` AS tmp SET `acc_manifest`.`based_acc_manifest_uuid` = tmp.`acc_manifest_uuid`
+WHERE `acc_manifest`.`based_acc_manifest_id` = tmp.`acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `replacement_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_acc_manifest_id`;
+UPDATE `acc_manifest`, `acc_manifest` AS tmp SET `acc_manifest`.`replacement_acc_manifest_uuid` = tmp.`acc_manifest_uuid`
+WHERE `acc_manifest`.`replacement_acc_manifest_id` = tmp.`acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `prev_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_acc_manifest_id`;
+UPDATE `acc_manifest`, `acc_manifest` AS tmp SET `acc_manifest`.`prev_acc_manifest_uuid` = tmp.`acc_manifest_uuid`
+WHERE `acc_manifest`.`prev_acc_manifest_id` = tmp.`acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `next_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_acc_manifest_id`;
+UPDATE `acc_manifest`, `acc_manifest` AS tmp SET `acc_manifest`.`next_acc_manifest_uuid` = tmp.`acc_manifest_uuid`
+WHERE `acc_manifest`.`next_acc_manifest_id` = tmp.`acc_manifest_id`;
+
+ALTER TABLE `acc_manifest_tag` ADD COLUMN `acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `acc_manifest_id`;
+UPDATE `acc_manifest_tag`, `acc_manifest` SET `acc_manifest_tag`.`acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `acc_manifest_tag`.`acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `agency_id_list_value_manifest_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list_value_manifest` SET `agency_id_list_manifest`.`agency_id_list_value_manifest_uuid` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_uuid`
+WHERE `agency_id_list_manifest`.`agency_id_list_value_manifest_id` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `based_agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_agency_id_list_manifest_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list_manifest` AS tmp SET `agency_id_list_manifest`.`based_agency_id_list_manifest_uuid` = tmp.`agency_id_list_manifest_uuid`
+WHERE `agency_id_list_manifest`.`based_agency_id_list_manifest_id` = tmp.`agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `replacement_agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_agency_id_list_manifest_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list_manifest` AS tmp SET `agency_id_list_manifest`.`replacement_agency_id_list_manifest_uuid` = tmp.`agency_id_list_manifest_uuid`
+WHERE `agency_id_list_manifest`.`replacement_agency_id_list_manifest_id` = tmp.`agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `prev_agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_agency_id_list_manifest_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list_manifest` AS tmp SET `agency_id_list_manifest`.`prev_agency_id_list_manifest_uuid` = tmp.`agency_id_list_manifest_uuid`
+WHERE `agency_id_list_manifest`.`prev_agency_id_list_manifest_id` = tmp.`agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `next_agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_agency_id_list_manifest_id`;
+UPDATE `agency_id_list_manifest`, `agency_id_list_manifest` AS tmp SET `agency_id_list_manifest`.`next_agency_id_list_manifest_uuid` = tmp.`agency_id_list_manifest_uuid`
+WHERE `agency_id_list_manifest`.`next_agency_id_list_manifest_id` = tmp.`agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `agency_id_list_manifest_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_manifest` SET `agency_id_list_value_manifest`.`agency_id_list_manifest_uuid` = `agency_id_list_manifest`.`agency_id_list_manifest_uuid`
+WHERE `agency_id_list_value_manifest`.`agency_id_list_manifest_id` = `agency_id_list_manifest`.`agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `based_agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_agency_id_list_value_manifest_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_value_manifest` AS tmp SET `agency_id_list_value_manifest`.`based_agency_id_list_value_manifest_uuid` = tmp.`agency_id_list_value_manifest_uuid`
+WHERE `agency_id_list_value_manifest`.`based_agency_id_list_value_manifest_id` = tmp.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `replacement_agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_agency_id_list_value_manifest_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_value_manifest` AS tmp SET `agency_id_list_value_manifest`.`replacement_agency_id_list_value_manifest_uuid` = tmp.`agency_id_list_value_manifest_uuid`
+WHERE `agency_id_list_value_manifest`.`replacement_agency_id_list_value_manifest_id` = tmp.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `prev_agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_agency_id_list_value_manifest_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_value_manifest` AS tmp SET `agency_id_list_value_manifest`.`prev_agency_id_list_value_manifest_uuid` = tmp.`agency_id_list_value_manifest_uuid`
+WHERE `agency_id_list_value_manifest`.`prev_agency_id_list_value_manifest_id` = tmp.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `next_agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_agency_id_list_value_manifest_id`;
+UPDATE `agency_id_list_value_manifest`, `agency_id_list_value_manifest` AS tmp SET `agency_id_list_value_manifest`.`next_agency_id_list_value_manifest_uuid` = tmp.`agency_id_list_value_manifest_uuid`
+WHERE `agency_id_list_value_manifest`.`next_agency_id_list_value_manifest_id` = tmp.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `asbie` ADD COLUMN `based_ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.' AFTER `based_ascc_manifest_id`;
+UPDATE `asbie`, `ascc_manifest` SET `asbie`.`based_ascc_manifest_uuid` = `ascc_manifest`.`ascc_manifest_uuid`
+WHERE `asbie`.`based_ascc_manifest_id` = `ascc_manifest`.`ascc_manifest_id`;
+
+ALTER TABLE `asbiep` ADD COLUMN `based_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.' AFTER `based_asccp_manifest_id`;
+UPDATE `asbiep`, `asccp_manifest` SET `asbiep`.`based_asccp_manifest_uuid` = `asccp_manifest`.`asccp_manifest_uuid`
+WHERE `asbiep`.`based_asccp_manifest_id` = `asccp_manifest`.`asccp_manifest_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `from_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `from_acc_manifest_id`;
+UPDATE `ascc_manifest`, `acc_manifest` SET `ascc_manifest`.`from_acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `ascc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `to_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `to_asccp_manifest_id`;
+UPDATE `ascc_manifest`, `asccp_manifest` SET `ascc_manifest`.`to_asccp_manifest_uuid` = `asccp_manifest`.`asccp_manifest_uuid`
+WHERE `ascc_manifest`.`to_asccp_manifest_id` = `asccp_manifest`.`asccp_manifest_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `replacement_ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_ascc_manifest_id`;
+UPDATE `ascc_manifest`, `ascc_manifest` AS tmp SET `ascc_manifest`.`replacement_ascc_manifest_uuid` = tmp.`ascc_manifest_uuid`
+WHERE `ascc_manifest`.`replacement_ascc_manifest_id` = tmp.`ascc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `prev_ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_ascc_manifest_id`;
+UPDATE `ascc_manifest`, `ascc_manifest` AS tmp SET `ascc_manifest`.`prev_ascc_manifest_uuid` = tmp.`ascc_manifest_uuid`
+WHERE `ascc_manifest`.`prev_ascc_manifest_id` = tmp.`ascc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `next_ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_ascc_manifest_id`;
+UPDATE `ascc_manifest`, `ascc_manifest` AS tmp SET `ascc_manifest`.`next_ascc_manifest_uuid` = tmp.`ascc_manifest_uuid`
+WHERE `ascc_manifest`.`next_ascc_manifest_id` = tmp.`ascc_manifest_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `role_of_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `role_of_acc_manifest_id`;
+UPDATE `asccp_manifest`, `acc_manifest` SET `asccp_manifest`.`role_of_acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `asccp_manifest`.`role_of_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `replacement_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_asccp_manifest_id`;
+UPDATE `asccp_manifest`, `asccp_manifest` AS tmp SET `asccp_manifest`.`replacement_asccp_manifest_uuid` = tmp.`asccp_manifest_uuid`
+WHERE `asccp_manifest`.`replacement_asccp_manifest_id` = tmp.`asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `prev_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_asccp_manifest_id`;
+UPDATE `asccp_manifest`, `asccp_manifest` AS tmp SET `asccp_manifest`.`prev_asccp_manifest_uuid` = tmp.`asccp_manifest_uuid`
+WHERE `asccp_manifest`.`prev_asccp_manifest_id` = tmp.`asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `next_asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_asccp_manifest_id`;
+UPDATE `asccp_manifest`, `asccp_manifest` AS tmp SET `asccp_manifest`.`next_asccp_manifest_uuid` = tmp.`asccp_manifest_uuid`
+WHERE `asccp_manifest`.`next_asccp_manifest_id` = tmp.`asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest_tag` ADD COLUMN `asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `asccp_manifest_id`;
+UPDATE `asccp_manifest_tag`, `asccp_manifest` SET `asccp_manifest_tag`.`asccp_manifest_uuid` = `asccp_manifest`.`asccp_manifest_uuid`
+WHERE `asccp_manifest_tag`.`asccp_manifest_id` = `asccp_manifest`.`asccp_manifest_id`;
+
+ALTER TABLE `bbie` ADD COLUMN `based_bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.' AFTER `based_bcc_manifest_id`;
+UPDATE `bbie`, `bcc_manifest` SET `bbie`.`based_bcc_manifest_uuid` = `bcc_manifest`.`bcc_manifest_uuid`
+WHERE `bbie`.`based_bcc_manifest_id` = `bcc_manifest`.`bcc_manifest_id`;
+
+ALTER TABLE `bbie_sc` ADD COLUMN `based_dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.' AFTER `based_dt_sc_manifest_id`;
+UPDATE `bbie_sc`, `dt_sc_manifest` SET `bbie_sc`.`based_dt_sc_manifest_uuid` = `dt_sc_manifest`.`dt_sc_manifest_uuid`
+WHERE `bbie_sc`.`based_dt_sc_manifest_id` = `dt_sc_manifest`.`dt_sc_manifest_id`;
+
+ALTER TABLE `bbiep` ADD COLUMN `based_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP contextualizes.' AFTER `based_bccp_manifest_id`;
+UPDATE `bbiep`, `bccp_manifest` SET `bbiep`.`based_bccp_manifest_uuid` = `bccp_manifest`.`bccp_manifest_uuid`
+WHERE `bbiep`.`based_bccp_manifest_id` = `bccp_manifest`.`bccp_manifest_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `from_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `from_acc_manifest_id`;
+UPDATE `bcc_manifest`, `acc_manifest` SET `bcc_manifest`.`from_acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `bcc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `to_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `to_bccp_manifest_id`;
+UPDATE `bcc_manifest`, `bccp_manifest` SET `bcc_manifest`.`to_bccp_manifest_uuid` = `bccp_manifest`.`bccp_manifest_uuid`
+WHERE `bcc_manifest`.`to_bccp_manifest_id` = `bccp_manifest`.`bccp_manifest_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `replacement_bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_bcc_manifest_id`;
+UPDATE `bcc_manifest`, `bcc_manifest` AS tmp SET `bcc_manifest`.`replacement_bcc_manifest_uuid` = tmp.`bcc_manifest_uuid`
+WHERE `bcc_manifest`.`replacement_bcc_manifest_id` = tmp.`bcc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `prev_bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_bcc_manifest_id`;
+UPDATE `bcc_manifest`, `bcc_manifest` AS tmp SET `bcc_manifest`.`prev_bcc_manifest_uuid` = tmp.`bcc_manifest_uuid`
+WHERE `bcc_manifest`.`prev_bcc_manifest_id` = tmp.`bcc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `next_bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_bcc_manifest_id`;
+UPDATE `bcc_manifest`, `bcc_manifest` AS tmp SET `bcc_manifest`.`next_bcc_manifest_uuid` = tmp.`bcc_manifest_uuid`
+WHERE `bcc_manifest`.`next_bcc_manifest_id` = tmp.`bcc_manifest_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `bdt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `bdt_manifest_id`;
+UPDATE `bccp_manifest`, `dt_manifest` SET `bccp_manifest`.`bdt_manifest_uuid` = `dt_manifest`.`dt_manifest_uuid`
+WHERE `bccp_manifest`.`bdt_manifest_id` = `dt_manifest`.`dt_manifest_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `replacement_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_bccp_manifest_id`;
+UPDATE `bccp_manifest`, `bccp_manifest` AS tmp SET `bccp_manifest`.`replacement_bccp_manifest_uuid` = tmp.`bccp_manifest_uuid`
+WHERE `bccp_manifest`.`replacement_bccp_manifest_id` = tmp.`bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `prev_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_bccp_manifest_id`;
+UPDATE `bccp_manifest`, `bccp_manifest` AS tmp SET `bccp_manifest`.`prev_bccp_manifest_uuid` = tmp.`bccp_manifest_uuid`
+WHERE `bccp_manifest`.`prev_bccp_manifest_id` = tmp.`bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `next_bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_bccp_manifest_id`;
+UPDATE `bccp_manifest`, `bccp_manifest` AS tmp SET `bccp_manifest`.`next_bccp_manifest_uuid` = tmp.`bccp_manifest_uuid`
+WHERE `bccp_manifest`.`next_bccp_manifest_id` = tmp.`bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest_tag` ADD COLUMN `bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `bccp_manifest_id`;
+UPDATE `bccp_manifest_tag`, `bccp_manifest` SET `bccp_manifest_tag`.`bccp_manifest_uuid` = `bccp_manifest`.`bccp_manifest_uuid`
+WHERE `bccp_manifest_tag`.`bccp_manifest_id` = `bccp_manifest`.`bccp_manifest_id`;
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `prev_blob_content_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_blob_content_manifest_id`;
+UPDATE `blob_content_manifest`, `blob_content_manifest` AS tmp SET `blob_content_manifest`.`prev_blob_content_manifest_uuid` = tmp.`blob_content_manifest_uuid`
+WHERE `blob_content_manifest`.`prev_blob_content_manifest_id` = tmp.`blob_content_manifest_id`;
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `next_blob_content_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_blob_content_manifest_id`;
+UPDATE `blob_content_manifest`, `blob_content_manifest` AS tmp SET `blob_content_manifest`.`next_blob_content_manifest_uuid` = tmp.`blob_content_manifest_uuid`
+WHERE `blob_content_manifest`.`next_blob_content_manifest_id` = tmp.`blob_content_manifest_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `based_code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_code_list_manifest_id`;
+UPDATE `code_list_manifest`, `code_list_manifest` AS tmp SET `code_list_manifest`.`based_code_list_manifest_uuid` = tmp.`code_list_manifest_uuid`
+WHERE `code_list_manifest`.`based_code_list_manifest_id` = tmp.`code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `agency_id_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `agency_id_list_value_manifest_id`;
+UPDATE `code_list_manifest`, `agency_id_list_value_manifest` SET `code_list_manifest`.`agency_id_list_value_manifest_uuid` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_uuid`
+WHERE `code_list_manifest`.`agency_id_list_value_manifest_id` = `agency_id_list_value_manifest`.`agency_id_list_value_manifest_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `replacement_code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_code_list_manifest_id`;
+UPDATE `code_list_manifest`, `code_list_manifest` AS tmp SET `code_list_manifest`.`replacement_code_list_manifest_uuid` = tmp.`code_list_manifest_uuid`
+WHERE `code_list_manifest`.`replacement_code_list_manifest_id` = tmp.`code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `prev_code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_code_list_manifest_id`;
+UPDATE `code_list_manifest`, `code_list_manifest` AS tmp SET `code_list_manifest`.`prev_code_list_manifest_uuid` = tmp.`code_list_manifest_uuid`
+WHERE `code_list_manifest`.`prev_code_list_manifest_id` = tmp.`code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `next_code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_code_list_manifest_id`;
+UPDATE `code_list_manifest`, `code_list_manifest` AS tmp SET `code_list_manifest`.`next_code_list_manifest_uuid` = tmp.`code_list_manifest_uuid`
+WHERE `code_list_manifest`.`next_code_list_manifest_id` = tmp.`code_list_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `code_list_manifest_id`;
+UPDATE `code_list_value_manifest`, `code_list_manifest` SET `code_list_value_manifest`.`code_list_manifest_uuid` = `code_list_manifest`.`code_list_manifest_uuid`
+WHERE `code_list_value_manifest`.`code_list_manifest_id` = `code_list_manifest`.`code_list_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `based_code_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_code_list_value_manifest_id`;
+UPDATE `code_list_value_manifest`, `code_list_value_manifest` AS tmp SET `code_list_value_manifest`.`based_code_list_value_manifest_uuid` = tmp.`code_list_value_manifest_uuid`
+WHERE `code_list_value_manifest`.`based_code_list_value_manifest_id` = tmp.`code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `replacement_code_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_code_list_value_manifest_id`;
+UPDATE `code_list_value_manifest`, `code_list_value_manifest` AS tmp SET `code_list_value_manifest`.`replacement_code_list_value_manifest_uuid` = tmp.`code_list_value_manifest_uuid`
+WHERE `code_list_value_manifest`.`replacement_code_list_value_manifest_id` = tmp.`code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `prev_code_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_code_list_value_manifest_id`;
+UPDATE `code_list_value_manifest`, `code_list_value_manifest` AS tmp SET `code_list_value_manifest`.`prev_code_list_value_manifest_uuid` = tmp.`code_list_value_manifest_uuid`
+WHERE `code_list_value_manifest`.`prev_code_list_value_manifest_id` = tmp.`code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `next_code_list_value_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_code_list_value_manifest_id`;
+UPDATE `code_list_value_manifest`, `code_list_value_manifest` AS tmp SET `code_list_value_manifest`.`next_code_list_value_manifest_uuid` = tmp.`code_list_value_manifest_uuid`
+WHERE `code_list_value_manifest`.`next_code_list_value_manifest_id` = tmp.`code_list_value_manifest_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `based_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_dt_manifest_id`;
+UPDATE `dt_manifest`, `dt_manifest` AS tmp SET `dt_manifest`.`based_dt_manifest_uuid` = tmp.`dt_manifest_uuid`
+WHERE `dt_manifest`.`based_dt_manifest_id` = tmp.`dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `replacement_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_dt_manifest_id`;
+UPDATE `dt_manifest`, `dt_manifest` AS tmp SET `dt_manifest`.`replacement_dt_manifest_uuid` = tmp.`dt_manifest_uuid`
+WHERE `dt_manifest`.`replacement_dt_manifest_id` = tmp.`dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `prev_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_dt_manifest_id`;
+UPDATE `dt_manifest`, `dt_manifest` AS tmp SET `dt_manifest`.`prev_dt_manifest_uuid` = tmp.`dt_manifest_uuid`
+WHERE `dt_manifest`.`prev_dt_manifest_id` = tmp.`dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `next_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_dt_manifest_id`;
+UPDATE `dt_manifest`, `dt_manifest` AS tmp SET `dt_manifest`.`next_dt_manifest_uuid` = tmp.`dt_manifest_uuid`
+WHERE `dt_manifest`.`next_dt_manifest_id` = tmp.`dt_manifest_id`;
+
+ALTER TABLE `dt_manifest_tag` ADD COLUMN `dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `dt_manifest_id`;
+UPDATE `dt_manifest_tag`, `dt_manifest` SET `dt_manifest_tag`.`dt_manifest_uuid` = `dt_manifest`.`dt_manifest_uuid`
+WHERE `dt_manifest_tag`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `owner_dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `owner_dt_manifest_id`;
+UPDATE `dt_sc_manifest`, `dt_manifest` SET `dt_sc_manifest`.`owner_dt_manifest_uuid` = `dt_manifest`.`dt_manifest_uuid`
+WHERE `dt_sc_manifest`.`owner_dt_manifest_id` = `dt_manifest`.`dt_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `based_dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `based_dt_sc_manifest_id`;
+UPDATE `dt_sc_manifest`, `dt_sc_manifest` AS tmp SET `dt_sc_manifest`.`based_dt_sc_manifest_uuid` = tmp.`dt_sc_manifest_uuid`
+WHERE `dt_sc_manifest`.`based_dt_sc_manifest_id` = tmp.`dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `replacement_dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `replacement_dt_sc_manifest_id`;
+UPDATE `dt_sc_manifest`, `dt_sc_manifest` AS tmp SET `dt_sc_manifest`.`replacement_dt_sc_manifest_uuid` = tmp.`dt_sc_manifest_uuid`
+WHERE `dt_sc_manifest`.`replacement_dt_sc_manifest_id` = tmp.`dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `prev_dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_dt_sc_manifest_id`;
+UPDATE `dt_sc_manifest`, `dt_sc_manifest` AS tmp SET `dt_sc_manifest`.`prev_dt_sc_manifest_uuid` = tmp.`dt_sc_manifest_uuid`
+WHERE `dt_sc_manifest`.`prev_dt_sc_manifest_id` = tmp.`dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `next_dt_sc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_dt_sc_manifest_id`;
+UPDATE `dt_sc_manifest`, `dt_sc_manifest` AS tmp SET `dt_sc_manifest`.`next_dt_sc_manifest_uuid` = tmp.`dt_sc_manifest_uuid`
+WHERE `dt_sc_manifest`.`next_dt_sc_manifest_id` = tmp.`dt_sc_manifest_id`;
+
+ALTER TABLE `module_acc_manifest` ADD COLUMN `acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the acc manifest record.' AFTER `acc_manifest_id`;
+UPDATE `module_acc_manifest`, `acc_manifest` SET `module_acc_manifest`.`acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `module_acc_manifest`.`acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `module_agency_id_list_manifest` ADD COLUMN `agency_id_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the code list manifest record.' AFTER `agency_id_list_manifest_id`;
+UPDATE `module_agency_id_list_manifest`, `agency_id_list_manifest` SET `module_agency_id_list_manifest`.`agency_id_list_manifest_uuid` = `agency_id_list_manifest`.`agency_id_list_manifest_uuid`
+WHERE `module_agency_id_list_manifest`.`agency_id_list_manifest_id` = `agency_id_list_manifest`.`agency_id_list_manifest_id`;
+
+ALTER TABLE `module_asccp_manifest` ADD COLUMN `asccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the asccp manifest record.' AFTER `asccp_manifest_id`;
+UPDATE `module_asccp_manifest`, `asccp_manifest` SET `module_asccp_manifest`.`asccp_manifest_uuid` = `asccp_manifest`.`asccp_manifest_uuid`
+WHERE `module_asccp_manifest`.`asccp_manifest_id` = `asccp_manifest`.`asccp_manifest_id`;
+
+DELETE FROM `module_asccp_manifest` WHERE `asccp_manifest_uuid` IS NULL;
+
+ALTER TABLE `module_bccp_manifest` ADD COLUMN `bccp_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the bccp manifest record.' AFTER `bccp_manifest_id`;
+UPDATE `module_bccp_manifest`, `bccp_manifest` SET `module_bccp_manifest`.`bccp_manifest_uuid` = `bccp_manifest`.`bccp_manifest_uuid`
+WHERE `module_bccp_manifest`.`bccp_manifest_id` = `bccp_manifest`.`bccp_manifest_id`;
+
+ALTER TABLE `module_blob_content_manifest` ADD COLUMN `blob_content_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the blob content manifest record.' AFTER `blob_content_manifest_id`;
+UPDATE `module_blob_content_manifest`, `blob_content_manifest` SET `module_blob_content_manifest`.`blob_content_manifest_uuid` = `blob_content_manifest`.`blob_content_manifest_uuid`
+WHERE `module_blob_content_manifest`.`blob_content_manifest_id` = `blob_content_manifest`.`blob_content_manifest_id`;
+
+ALTER TABLE `module_code_list_manifest` ADD COLUMN `code_list_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the code list manifest record.' AFTER `code_list_manifest_id`;
+UPDATE `module_code_list_manifest`, `code_list_manifest` SET `module_code_list_manifest`.`code_list_manifest_uuid` = `code_list_manifest`.`code_list_manifest_uuid`
+WHERE `module_code_list_manifest`.`code_list_manifest_id` = `code_list_manifest`.`code_list_manifest_id`;
+
+ALTER TABLE `module_dt_manifest` ADD COLUMN `dt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the dt manifest record.' AFTER `dt_manifest_id`;
+UPDATE `module_dt_manifest`, `dt_manifest` SET `module_dt_manifest`.`dt_manifest_uuid` = `dt_manifest`.`dt_manifest_uuid`
+WHERE `module_dt_manifest`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`;
+
+ALTER TABLE `module_xbt_manifest` ADD COLUMN `xbt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key of the xbt manifest record.' AFTER `xbt_manifest_id`;
+UPDATE `module_xbt_manifest`, `xbt_manifest` SET `module_xbt_manifest`.`xbt_manifest_uuid` = `xbt_manifest`.`xbt_manifest_uuid`
+WHERE `module_xbt_manifest`.`xbt_manifest_id` = `xbt_manifest`.`xbt_manifest_id`;
+
+ALTER TABLE `seq_key` ADD COLUMN `from_acc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `from_acc_manifest_id`;
+UPDATE `seq_key`, `acc_manifest` SET `seq_key`.`from_acc_manifest_uuid` = `acc_manifest`.`acc_manifest_uuid`
+WHERE `seq_key`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`;
+
+ALTER TABLE `seq_key` ADD COLUMN `ascc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `ascc_manifest_id`;
+UPDATE `seq_key`, `ascc_manifest` SET `seq_key`.`ascc_manifest_uuid` = `ascc_manifest`.`ascc_manifest_uuid`
+WHERE `seq_key`.`ascc_manifest_id` = `ascc_manifest`.`ascc_manifest_id`;
+
+ALTER TABLE `seq_key` ADD COLUMN `bcc_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `bcc_manifest_id`;
+UPDATE `seq_key`, `bcc_manifest` SET `seq_key`.`bcc_manifest_uuid` = `bcc_manifest`.`bcc_manifest_uuid`
+WHERE `seq_key`.`bcc_manifest_id` = `bcc_manifest`.`bcc_manifest_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `prev_xbt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_xbt_manifest_id`;
+UPDATE `xbt_manifest`, `xbt_manifest` AS tmp SET `xbt_manifest`.`prev_xbt_manifest_uuid` = tmp.`xbt_manifest_uuid`
+WHERE `xbt_manifest`.`prev_xbt_manifest_id` = tmp.`xbt_manifest_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `next_xbt_manifest_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_xbt_manifest_id`;
+UPDATE `xbt_manifest`, `xbt_manifest` AS tmp SET `xbt_manifest`.`prev_xbt_manifest_uuid` = tmp.`xbt_manifest_uuid`
+WHERE `xbt_manifest`.`prev_xbt_manifest_id` = tmp.`xbt_manifest_id`;
+
+-- Drop old `*_id` columns
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_based_acc_manifest_id_fk`;
+ALTER TABLE `abie` DROP COLUMN `based_acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_based_acc_manifest_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `based_acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_replacement_acc_manifest_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `replacement_acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_prev_acc_manifest_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `prev_acc_manifest_id`;
+
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_next_acc_manifest_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `next_acc_manifest_id`;
+
+ALTER TABLE `acc_manifest_tag` DROP FOREIGN KEY `acc_manifest_tag_acc_manifest_id_fk`;
+ALTER TABLE `acc_manifest_tag` DROP COLUMN `acc_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_based_agency_id_list_manifest_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `based_agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_replacement_agency_id_list_manifest_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `replacement_agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_prev_agency_id_list_manifest_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `prev_agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_next_agency_id_list_manifest_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `next_agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_agency_id_list_manifest_id_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `agency_id_list_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_based_agency_id_list_val_mnf_id_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `based_agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_replacement_agency_id_list_manif_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `replacement_agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `prev_agency_id_list_value_manifest_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_next_agency_id_list_value_manif_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `next_agency_id_list_value_manifest_id`;
+
+ALTER TABLE `asbie` DROP FOREIGN KEY `asbie_based_ascc_manifest_id_fk`;
+ALTER TABLE `asbie` DROP COLUMN `based_ascc_manifest_id`;
+
+ALTER TABLE `asbiep` DROP FOREIGN KEY `asbiep_based_asccp_manifest_id_fk`;
+ALTER TABLE `asbiep` DROP COLUMN `based_asccp_manifest_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_from_acc_manifest_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `from_acc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_to_asccp_manifest_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `to_asccp_manifest_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_replacement_ascc_manifest_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `replacement_ascc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_prev_ascc_manifest_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `prev_ascc_manifest_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_next_ascc_manifest_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `next_ascc_manifest_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_role_of_acc_manifest_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `role_of_acc_manifest_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_replacement_asccp_manifest_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `replacement_asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_prev_asccp_manifest_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `prev_asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_next_asccp_manifest_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `next_asccp_manifest_id`;
+
+ALTER TABLE `asccp_manifest_tag` DROP FOREIGN KEY `asccp_manifest_tag_asccp_manifest_id_fk`;
+ALTER TABLE `asccp_manifest_tag` DROP COLUMN `asccp_manifest_id`;
+
+ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_based_bcc_manifest_id_fk`;
+ALTER TABLE `bbie` DROP COLUMN `based_bcc_manifest_id`;
+
+ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_based_dt_sc_manifest_id_fk`;
+ALTER TABLE `bbie_sc` DROP COLUMN `based_dt_sc_manifest_id`;
+
+ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_based_bccp_manifest_id_fk`;
+ALTER TABLE `bbiep` DROP COLUMN `based_bccp_manifest_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_from_acc_manifest_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `from_acc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_to_bccp_manifest_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `to_bccp_manifest_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_replacement_bcc_manifest_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `replacement_bcc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_prev_bcc_manifest_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `prev_bcc_manifest_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_next_bcc_manifest_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `next_bcc_manifest_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_bdt_manifest_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `bdt_manifest_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_replacement_bccp_manifest_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `replacement_bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_prev_bccp_manifest_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `prev_bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_next_bccp_manifest_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `next_bccp_manifest_id`;
+
+ALTER TABLE `bccp_manifest_tag` DROP FOREIGN KEY `bccp_manifest_tag_bccp_manifest_id_fk`;
+ALTER TABLE `bccp_manifest_tag` DROP COLUMN `bccp_manifest_id`;
+
+ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_prev_blob_content_manifest_id_fk`;
+ALTER TABLE `blob_content_manifest` DROP COLUMN `prev_blob_content_manifest_id`;
+
+ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_next_blob_content_manifest_id_fk`;
+ALTER TABLE `blob_content_manifest` DROP COLUMN `next_blob_content_manifest_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_based_code_list_manifest_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `based_code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_agency_id_list_value_manifest_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `agency_id_list_value_manifest_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_replacement_code_list_manifest_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `replacement_code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_prev_code_list_manifest_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `prev_code_list_manifest_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_next_code_list_manifest_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `next_code_list_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_code_list_manifest_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `code_list_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_based_code_list_value_manifest_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `based_code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_replacement_code_list_value_manifest_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `replacement_code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_prev_code_list_value_manifest_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `prev_code_list_value_manifest_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_next_code_list_value_manifest_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `next_code_list_value_manifest_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_based_dt_manifest_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `based_dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_replacement_dt_manifest_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `replacement_dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_prev_dt_manifest_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `prev_dt_manifest_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_next_dt_manifest_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `next_dt_manifest_id`;
+
+ALTER TABLE `dt_manifest_tag` DROP FOREIGN KEY `dt_manifest_tag_dt_manifest_id_fk`;
+ALTER TABLE `dt_manifest_tag` DROP COLUMN `dt_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_manifest_owner_dt_manifest_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `owner_dt_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `based_dt_sc_manifest_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `based_dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_replacement_dt_sc_manifest_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `replacement_dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_prev_dt_sc_manifest_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `prev_dt_sc_manifest_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_next_dt_sc_manifest_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `next_dt_sc_manifest_id`;
+
+ALTER TABLE `module_acc_manifest` DROP FOREIGN KEY `module_acc_manifest_acc_manifest_id_fk`;
+ALTER TABLE `module_acc_manifest` DROP COLUMN `acc_manifest_id`;
+
+ALTER TABLE `module_agency_id_list_manifest` DROP FOREIGN KEY `module_agency_id_list_manifest_agency_id_list_manifest_id_fk`;
+ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `agency_id_list_manifest_id`;
+
+ALTER TABLE `module_asccp_manifest` DROP FOREIGN KEY `module_asccp_manifest_asccp_manifest_id_fk`;
+ALTER TABLE `module_asccp_manifest` DROP COLUMN `asccp_manifest_id`;
+
+ALTER TABLE `module_bccp_manifest` DROP FOREIGN KEY `module_bccp_manifest_bccp_manifest_id_fk`;
+ALTER TABLE `module_bccp_manifest` DROP COLUMN `bccp_manifest_id`;
+
+ALTER TABLE `module_blob_content_manifest` DROP FOREIGN KEY `module_blob_content_manifest_acc_manifest_id_fk`;
+ALTER TABLE `module_blob_content_manifest` DROP COLUMN `blob_content_manifest_id`;
+
+ALTER TABLE `module_code_list_manifest` DROP FOREIGN KEY `module_code_list_manifest_code_list_manifest_id_fk`;
+ALTER TABLE `module_code_list_manifest` DROP COLUMN `code_list_manifest_id`;
+
+ALTER TABLE `module_dt_manifest` DROP FOREIGN KEY `module_dt_manifest_dt_manifest_id_fk`;
+ALTER TABLE `module_dt_manifest` DROP COLUMN `dt_manifest_id`;
+
+ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_bccp_manifest_id_fk`;
+ALTER TABLE `module_xbt_manifest` DROP COLUMN `xbt_manifest_id`;
+
+ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_from_acc_manifest_id_fk`;
+ALTER TABLE `seq_key` DROP COLUMN `from_acc_manifest_id`;
+
+ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_ascc_manifest_id_fk`;
+ALTER TABLE `seq_key` DROP COLUMN `ascc_manifest_id`;
+
+ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_bcc_manifest_id_fk`;
+ALTER TABLE `seq_key` DROP COLUMN `bcc_manifest_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_prev_xbt_manifest_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `prev_xbt_manifest_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_next_xbt_manifest_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `next_xbt_manifest_id`;
+
+ALTER TABLE `acc_manifest` MODIFY COLUMN `acc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `acc_manifest` CHANGE `acc_manifest_id` `acc_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `agency_id_list_manifest` MODIFY COLUMN `agency_id_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_manifest_id` `agency_id_list_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `agency_id_list_value_manifest` MODIFY COLUMN `agency_id_list_value_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_manifest_id` `agency_id_list_value_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `ascc_manifest` MODIFY COLUMN `ascc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ascc_manifest` CHANGE `ascc_manifest_id` `ascc_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `asccp_manifest` MODIFY COLUMN `asccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `asccp_manifest` CHANGE `asccp_manifest_id` `asccp_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `bcc_manifest` MODIFY COLUMN `bcc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bcc_manifest` CHANGE `bcc_manifest_id` `bcc_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `bccp_manifest` MODIFY COLUMN `bccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bccp_manifest` CHANGE `bccp_manifest_id` `bccp_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `blob_content_manifest` MODIFY COLUMN `blob_content_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `blob_content_manifest` CHANGE `blob_content_manifest_id` `blob_content_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `code_list_manifest` MODIFY COLUMN `code_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `code_list_manifest` CHANGE `code_list_manifest_id` `code_list_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `code_list_value_manifest` MODIFY COLUMN `code_list_value_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_manifest_id` `code_list_value_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `dt_manifest` MODIFY COLUMN `dt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `dt_manifest` CHANGE `dt_manifest_id` `dt_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `dt_sc_manifest` MODIFY COLUMN `dt_sc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_manifest_id` `dt_sc_manifest_id_old` BIGINT(20) unsigned;
+
+ALTER TABLE `xbt_manifest` MODIFY COLUMN `xbt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `xbt_manifest` CHANGE `xbt_manifest_id` `xbt_manifest_id_old` BIGINT(20) unsigned;
+
+-- Rename `*_uuid` TO `*_id`
+ALTER TABLE `acc_manifest` CHANGE `acc_manifest_uuid` `acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_manifest_uuid` `agency_id_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_manifest_uuid` `agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `ascc_manifest` CHANGE `ascc_manifest_uuid` `ascc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `asccp_manifest` CHANGE `asccp_manifest_uuid` `asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bcc_manifest` CHANGE `bcc_manifest_uuid` `bcc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `bccp_manifest` CHANGE `bccp_manifest_uuid` `bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `blob_content_manifest` CHANGE `blob_content_manifest_uuid` `blob_content_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `code_list_manifest` CHANGE `code_list_manifest_uuid` `code_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_manifest_uuid` `code_list_value_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt_manifest` CHANGE `dt_manifest_uuid` `dt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_manifest_uuid` `dt_sc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `xbt_manifest` CHANGE `xbt_manifest_uuid` `xbt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+
+ALTER TABLE `abie` CHANGE `based_acc_manifest_uuid` `based_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.';
+ALTER TABLE `acc_manifest` CHANGE `based_acc_manifest_uuid` `based_acc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest` CHANGE `replacement_acc_manifest_uuid` `replacement_acc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `acc_manifest` CHANGE `prev_acc_manifest_uuid` `prev_acc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest` CHANGE `next_acc_manifest_uuid` `next_acc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest_tag` CHANGE `acc_manifest_uuid` `acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_value_manifest_uuid` `agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_manifest` CHANGE `based_agency_id_list_manifest_uuid` `based_agency_id_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_manifest` CHANGE `replacement_agency_id_list_manifest_uuid` `replacement_agency_id_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `prev_agency_id_list_manifest_uuid` `prev_agency_id_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_manifest` CHANGE `next_agency_id_list_manifest_uuid` `next_agency_id_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_manifest_uuid` `agency_id_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `based_agency_id_list_value_manifest_uuid` `based_agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `replacement_agency_id_list_value_manifest_uuid` `replacement_agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `prev_agency_id_list_value_manifest_uuid` `prev_agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `next_agency_id_list_value_manifest_uuid` `next_agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asbie` CHANGE `based_ascc_manifest_uuid` `based_ascc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.';
+ALTER TABLE `asbiep` CHANGE `based_asccp_manifest_uuid` `based_asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.';
+ALTER TABLE `ascc_manifest` CHANGE `from_acc_manifest_uuid` `from_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `ascc_manifest` CHANGE `to_asccp_manifest_uuid` `to_asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `ascc_manifest` CHANGE `replacement_ascc_manifest_uuid` `replacement_ascc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `ascc_manifest` CHANGE `prev_ascc_manifest_uuid` `prev_ascc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `ascc_manifest` CHANGE `next_ascc_manifest_uuid` `next_ascc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asccp_manifest` CHANGE `role_of_acc_manifest_uuid` `role_of_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `asccp_manifest` CHANGE `replacement_asccp_manifest_uuid` `replacement_asccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `asccp_manifest` CHANGE `prev_asccp_manifest_uuid` `prev_asccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asccp_manifest` CHANGE `next_asccp_manifest_uuid` `next_asccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `asccp_manifest_tag` CHANGE `asccp_manifest_uuid` `asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `bbie` CHANGE `based_bcc_manifest_uuid` `based_bcc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.';
+ALTER TABLE `bbie_sc` CHANGE `based_dt_sc_manifest_uuid` `based_dt_sc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.';
+ALTER TABLE `bbiep` CHANGE `based_bccp_manifest_uuid` `based_bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP contextualizes.';
+ALTER TABLE `bcc_manifest` CHANGE `from_acc_manifest_uuid` `from_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `bcc_manifest` CHANGE `to_bccp_manifest_uuid` `to_bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `bcc_manifest` CHANGE `replacement_bcc_manifest_uuid` `replacement_bcc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `bcc_manifest` CHANGE `prev_bcc_manifest_uuid` `prev_bcc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bcc_manifest` CHANGE `next_bcc_manifest_uuid` `next_bcc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bccp_manifest` CHANGE `bdt_manifest_uuid` `bdt_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `bccp_manifest` CHANGE `replacement_bccp_manifest_uuid` `replacement_bccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `bccp_manifest` CHANGE `prev_bccp_manifest_uuid` `prev_bccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bccp_manifest` CHANGE `next_bccp_manifest_uuid` `next_bccp_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `bccp_manifest_tag` CHANGE `bccp_manifest_uuid` `bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `blob_content_manifest` CHANGE `prev_blob_content_manifest_uuid` `prev_blob_content_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `blob_content_manifest` CHANGE `next_blob_content_manifest_uuid` `next_blob_content_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_manifest` CHANGE `based_code_list_manifest_uuid` `based_code_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_manifest` CHANGE `agency_id_list_value_manifest_uuid` `agency_id_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_manifest` CHANGE `replacement_code_list_manifest_uuid` `replacement_code_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `code_list_manifest` CHANGE `prev_code_list_manifest_uuid` `prev_code_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_manifest` CHANGE `next_code_list_manifest_uuid` `next_code_list_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_manifest_uuid` `code_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `code_list_value_manifest` CHANGE `based_code_list_value_manifest_uuid` `based_code_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_value_manifest` CHANGE `replacement_code_list_value_manifest_uuid` `replacement_code_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `code_list_value_manifest` CHANGE `prev_code_list_value_manifest_uuid` `prev_code_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `code_list_value_manifest` CHANGE `next_code_list_value_manifest_uuid` `next_code_list_value_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest` CHANGE `based_dt_manifest_uuid` `based_dt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest` CHANGE `replacement_dt_manifest_uuid` `replacement_dt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `dt_manifest` CHANGE `prev_dt_manifest_uuid` `prev_dt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest` CHANGE `next_dt_manifest_uuid` `next_dt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_manifest_tag` CHANGE `dt_manifest_uuid` `dt_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `dt_sc_manifest` CHANGE `owner_dt_manifest_uuid` `owner_dt_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `dt_sc_manifest` CHANGE `based_dt_sc_manifest_uuid` `based_dt_sc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_sc_manifest` CHANGE `replacement_dt_sc_manifest_uuid` `replacement_dt_sc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.';
+ALTER TABLE `dt_sc_manifest` CHANGE `prev_dt_sc_manifest_uuid` `prev_dt_sc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `dt_sc_manifest` CHANGE `next_dt_sc_manifest_uuid` `next_dt_sc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `module_acc_manifest` CHANGE `acc_manifest_uuid` `acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the acc manifest record.';
+ALTER TABLE `module_agency_id_list_manifest` CHANGE `agency_id_list_manifest_uuid` `agency_id_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the code list manifest record.';
+ALTER TABLE `module_asccp_manifest` CHANGE `asccp_manifest_uuid` `asccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the asccp manifest record.';
+ALTER TABLE `module_bccp_manifest` CHANGE `bccp_manifest_uuid` `bccp_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the bccp manifest record.';
+ALTER TABLE `module_blob_content_manifest` CHANGE `blob_content_manifest_uuid` `blob_content_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the blob content manifest record.';
+ALTER TABLE `module_code_list_manifest` CHANGE `code_list_manifest_uuid` `code_list_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the code list manifest record.';
+ALTER TABLE `module_dt_manifest` CHANGE `dt_manifest_uuid` `dt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the dt manifest record.';
+ALTER TABLE `module_xbt_manifest` CHANGE `xbt_manifest_uuid` `xbt_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'A foreign key of the xbt manifest record.';
+ALTER TABLE `seq_key` CHANGE `from_acc_manifest_uuid` `from_acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL;
+ALTER TABLE `seq_key` CHANGE `ascc_manifest_uuid` `ascc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `seq_key` CHANGE `bcc_manifest_uuid` `bcc_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `xbt_manifest` CHANGE `prev_xbt_manifest_uuid` `prev_xbt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `xbt_manifest` CHANGE `next_xbt_manifest_uuid` `next_xbt_manifest_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+
+-- Add foreign key constraints
+ALTER TABLE `acc_manifest` ADD PRIMARY KEY (`acc_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD PRIMARY KEY (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD PRIMARY KEY (`agency_id_list_value_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD PRIMARY KEY (`ascc_manifest_id`);
+ALTER TABLE `asccp_manifest` ADD PRIMARY KEY (`asccp_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD PRIMARY KEY (`bcc_manifest_id`);
+ALTER TABLE `bccp_manifest` ADD PRIMARY KEY (`bccp_manifest_id`);
+ALTER TABLE `blob_content_manifest` ADD PRIMARY KEY (`blob_content_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD PRIMARY KEY (`code_list_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD PRIMARY KEY (`code_list_value_manifest_id`);
+ALTER TABLE `dt_manifest` ADD PRIMARY KEY (`dt_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD PRIMARY KEY (`dt_sc_manifest_id`);
+ALTER TABLE `xbt_manifest` ADD PRIMARY KEY (`xbt_manifest_id`);
+
+ALTER TABLE `abie` ADD CONSTRAINT `abie_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_replacement_acc_manifest_id_fk` FOREIGN KEY (`replacement_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_prev_acc_manifest_id_fk` FOREIGN KEY (`prev_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_next_acc_manifest_id_fk` FOREIGN KEY (`next_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `acc_manifest_tag` ADD CONSTRAINT `acc_manifest_tag_acc_manifest_id_fk` FOREIGN KEY (`acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_agency_id_list_value_manifest_id_fk` FOREIGN KEY (`agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_based_agency_id_list_manifest_id_fk` FOREIGN KEY (`based_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_replacement_agency_id_list_manifest_i_fk` FOREIGN KEY (`replacement_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_prev_agency_id_list_manifest_id_fk` FOREIGN KEY (`prev_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_next_agency_id_list_manifest_id_fk` FOREIGN KEY (`next_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_agency_id_list_manifest_id_fk` FOREIGN KEY (`agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_based_agency_id_list_value_mani_fk` FOREIGN KEY (`based_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_replacement_agency_id_list_valu_fk` FOREIGN KEY (`replacement_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk` FOREIGN KEY (`prev_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_next_agency_id_list_value_manif_fk` FOREIGN KEY (`next_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `asbie` ADD CONSTRAINT `asbie_based_ascc_manifest_id_fk` FOREIGN KEY (`based_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+ALTER TABLE `asbiep` ADD CONSTRAINT `asbiep_based_asccp_manifest_id_fk` FOREIGN KEY (`based_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_to_asccp_manifest_id_fk` FOREIGN KEY (`to_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_replacement_ascc_manifest_id_fk` FOREIGN KEY (`replacement_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_prev_ascc_manifest_id_fk` FOREIGN KEY (`prev_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_next_ascc_manifest_id_fk` FOREIGN KEY (`next_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_role_of_acc_manifest_id_fk` FOREIGN KEY (`role_of_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_replacement_asccp_manifest_id_fk` FOREIGN KEY (`replacement_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_prev_asccp_manifest_id_fk` FOREIGN KEY (`prev_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_next_asccp_manifest_id_fk` FOREIGN KEY (`next_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `asccp_manifest_tag` ADD CONSTRAINT `asccp_manifest_tag_asccp_manifest_id_fk` FOREIGN KEY (`asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `bbie` ADD CONSTRAINT `bbie_based_bcc_manifest_id_fk` FOREIGN KEY (`based_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+ALTER TABLE `bbiep` ADD CONSTRAINT `bbiep_based_bccp_manifest_id_fk` FOREIGN KEY (`based_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_to_bccp_manifest_id_fk` FOREIGN KEY (`to_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_replacement_bcc_manifest_id_fk` FOREIGN KEY (`replacement_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_prev_bcc_manifest_id_fk` FOREIGN KEY (`prev_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_next_bcc_manifest_id_fk` FOREIGN KEY (`next_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_bdt_manifest_id_fk` FOREIGN KEY (`bdt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_replacement_bccp_manifest_id_fk` FOREIGN KEY (`replacement_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_prev_bccp_manifest_id_fk` FOREIGN KEY (`prev_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_next_bccp_manifest_id_fk` FOREIGN KEY (`next_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `bccp_manifest_tag` ADD CONSTRAINT `bccp_manifest_tag_bccp_manifest_id_fk` FOREIGN KEY (`bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_prev_blob_content_manifest_id_fk` FOREIGN KEY (`prev_blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`);
+ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_next_blob_content_manifest_id_fk` FOREIGN KEY (`next_blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_based_code_list_manifest_id_fk` FOREIGN KEY (`based_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_agency_id_list_value_manifest_id_fk` FOREIGN KEY (`agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_replacement_code_list_manifest_id_fk` FOREIGN KEY (`replacement_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_prev_code_list_manifest_id_fk` FOREIGN KEY (`prev_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_next_code_list_manifest_id_fk` FOREIGN KEY (`next_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_code_list_manifest_id_fk` FOREIGN KEY (`code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_based_code_list_value_manifest_id_fk` FOREIGN KEY (`based_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_replacement_code_list_value_manifest_fk` FOREIGN KEY (`replacement_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_prev_code_list_value_manifest_id_fk` FOREIGN KEY (`prev_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_next_code_list_value_manifest_id_fk` FOREIGN KEY (`next_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_based_dt_manifest_id_fk` FOREIGN KEY (`based_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_replacement_dt_manifest_id_fk` FOREIGN KEY (`replacement_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_prev_dt_manifest_id_fk` FOREIGN KEY (`prev_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_next_dt_manifest_id_fk` FOREIGN KEY (`next_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_manifest_tag` ADD CONSTRAINT `dt_manifest_tag_dt_manifest_id_fk` FOREIGN KEY (`dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_owner_dt_manifest_id_fk` FOREIGN KEY (`owner_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_based_dt_sc_manifest_id_fk` FOREIGN KEY (`based_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_replacement_dt_sc_manifest_id_fk` FOREIGN KEY (`replacement_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_prev_dt_sc_manifest_id_fk` FOREIGN KEY (`prev_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_next_dt_sc_manifest_id_fk` FOREIGN KEY (`next_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+ALTER TABLE `module_acc_manifest` ADD CONSTRAINT `module_acc_manifest_acc_manifest_id_fk` FOREIGN KEY (`acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `module_agency_id_list_manifest` ADD CONSTRAINT `module_agency_id_list_manifest_agency_id_list_manifest_id_fk` FOREIGN KEY (`agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+ALTER TABLE `module_asccp_manifest` ADD CONSTRAINT `module_asccp_manifest_asccp_manifest_id_fk` FOREIGN KEY (`asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+ALTER TABLE `module_bccp_manifest` ADD CONSTRAINT `module_bccp_manifest_bccp_manifest_id_fk` FOREIGN KEY (`bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+ALTER TABLE `module_blob_content_manifest` ADD CONSTRAINT `module_blob_content_manifest_blob_content_manifest_id_fk` FOREIGN KEY (`blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`);
+ALTER TABLE `module_code_list_manifest` ADD CONSTRAINT `module_code_list_manifest_code_list_manifest_id_fk` FOREIGN KEY (`code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+ALTER TABLE `module_dt_manifest` ADD CONSTRAINT `module_dt_manifest_dt_manifest_id_fk` FOREIGN KEY (`dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+ALTER TABLE `module_xbt_manifest` ADD CONSTRAINT `module_xbt_manifest_xbt_manifest_id_fk` FOREIGN KEY (`xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`);
+ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_ascc_manifest_id_fk` FOREIGN KEY (`ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_bcc_manifest_id_fk` FOREIGN KEY (`bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_prev_xbt_manifest_id_fk` FOREIGN KEY (`prev_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_next_xbt_manifest_id_fk` FOREIGN KEY (`next_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`);

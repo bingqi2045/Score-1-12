@@ -25,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAgencyIdListManifestRecord;
@@ -72,7 +71,7 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
      * <code>oagi.module_agency_id_list_manifest.agency_id_list_manifest_id</code>.
      * A foreign key of the code list manifest record.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the code list manifest record.");
+    public final TableField<ModuleAgencyIdListManifestRecord, String> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the code list manifest record.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.module_id</code>.
@@ -263,21 +262,21 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<String, String, ULong, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

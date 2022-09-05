@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class RefactorAsccRepositoryResponse {
 
-    private final BigInteger asccManifestId;
+    private final String asccManifestId;
 
-    public RefactorAsccRepositoryResponse(BigInteger asccManifestId) {
+    public RefactorAsccRepositoryResponse(String asccManifestId) {
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 }

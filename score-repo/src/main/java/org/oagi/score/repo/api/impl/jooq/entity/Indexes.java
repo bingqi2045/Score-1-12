@@ -24,8 +24,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 
 
@@ -65,12 +63,8 @@ public class Indexes {
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("dt_last_update_timestamp_desc_idx"), Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex(DSL.name("dt_sc_guid_idx"), DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
     public static final Index EXCEPTION_EXCEPTION_TAG_IDX = Internal.createIndex(DSL.name("exception_tag_idx"), Exception.EXCEPTION, new OrderField[] { Exception.EXCEPTION.TAG }, false);
-    public static final Index MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK = Internal.createIndex(DSL.name("module_blob_content_manifest_blob_content_manifest_id_fk"), ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, new OrderField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID }, false);
     public static final Index COMMENT_REFERENCE = Internal.createIndex(DSL.name("reference"), Comment.COMMENT, new OrderField[] { Comment.COMMENT.REFERENCE }, false);
     public static final Index LOG_REFERENCE = Internal.createIndex(DSL.name("reference"), Log.LOG, new OrderField[] { Log.LOG.REFERENCE }, false);
-    public static final Index SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_ascc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.ASCC_MANIFEST_ID }, false);
-    public static final Index SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_bcc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.BCC_MANIFEST_ID }, false);
-    public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_from_acc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, false);
     public static final Index XBT_XBT_GUID_IDX = Internal.createIndex(DSL.name("xbt_guid_idx"), Xbt.XBT, new OrderField[] { Xbt.XBT.GUID }, false);
     public static final Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("xbt_last_update_timestamp_desc_idx"), Xbt.XBT, new OrderField[] { Xbt.XBT.LAST_UPDATE_TIMESTAMP }, false);
 }

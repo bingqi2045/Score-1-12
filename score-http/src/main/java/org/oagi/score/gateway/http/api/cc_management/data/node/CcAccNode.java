@@ -15,13 +15,13 @@ public class CcAccNode extends CcNode {
     private String den;
     private String guid;
     private String objectClassTerm;
-    private BigInteger basedAccManifestId = BigInteger.ZERO;
+    private String basedAccManifestId;
     private int oagisComponentType;
     private String definition;
     private boolean group;
     private boolean isDeprecated;
     private boolean isAbstract;
-    private BigInteger manifestId = BigInteger.ZERO;
+    private String manifestId;
     private boolean hasExtension;
     private String accType;
 

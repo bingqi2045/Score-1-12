@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public interface CcManifest {
 
-    BigInteger getManifestId();
+    String getManifestId();
 
     String getReleaseId();
 

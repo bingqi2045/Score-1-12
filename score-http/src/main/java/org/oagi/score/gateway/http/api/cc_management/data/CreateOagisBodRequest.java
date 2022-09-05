@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class CreateOagisBodRequest {
 
-    private List<BigInteger> verbManifestIdList;
+    private List<String> verbManifestIdList;
 
-    private List<BigInteger> nounManifestIdList;
+    private List<String> nounManifestIdList;
 
 }

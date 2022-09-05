@@ -30,11 +30,11 @@ public class JooqSeqKeyWriteRepository
     public CreateSeqKeyResponse createSeqKey(CreateSeqKeyRequest request) throws ScoreDataAccessException {
 
         SeqKeyRecord record = new SeqKeyRecord();
-        record.setFromAccManifestId(ULong.valueOf(request.getFromAccManifestId()));
+        record.setFromAccManifestId(request.getFromAccManifestId());
         if (SeqKeyType.ASCC == request.getType()) {
-            record.setAsccManifestId(ULong.valueOf(request.getManifestId()));
+            record.setAsccManifestId(request.getManifestId());
         } else {
-            record.setBccManifestId(ULong.valueOf(request.getManifestId()));
+            record.setBccManifestId(request.getManifestId());
         }
 
         record.setSeqKeyId(
@@ -62,12 +62,12 @@ public class JooqSeqKeyWriteRepository
 
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(record.getSeqKeyId().toBigInteger());
-        seqKey.setFromAccManifestId(record.getFromAccManifestId().toBigInteger());
+        seqKey.setFromAccManifestId(record.getFromAccManifestId());
         if (record.getAsccManifestId() != null) {
-            seqKey.setAsccManifestId(record.getAsccManifestId().toBigInteger());
+            seqKey.setAsccManifestId(record.getAsccManifestId());
         }
         if (record.getBccManifestId() != null) {
-            seqKey.setBccManifestId(record.getBccManifestId().toBigInteger());
+            seqKey.setBccManifestId(record.getBccManifestId());
         }
 
         return new CreateSeqKeyResponse(seqKey);

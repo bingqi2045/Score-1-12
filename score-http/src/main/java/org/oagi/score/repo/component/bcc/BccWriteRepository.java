@@ -3,17 +3,16 @@ package org.oagi.score.repo.component.bcc;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
-import org.oagi.score.service.corecomponent.seqkey.MoveTo;
-import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.log.LogRepository;
+import org.oagi.score.service.log.model.LogAction;
 import org.oagi.score.service.log.model.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -24,14 +23,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
-import static org.oagi.score.service.common.data.BCCEntityType.Attribute;
-import static org.oagi.score.service.common.data.BCCEntityType.Element;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
+import static org.oagi.score.service.common.data.BCCEntityType.Attribute;
+import static org.oagi.score.service.common.data.BCCEntityType.Element;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST_OF_ATTR;
 
@@ -121,7 +120,7 @@ public class BccWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId()))
                 .fetchOne();
 
         if (accManifestRecord == null) {
@@ -129,7 +128,7 @@ public class BccWriteRepository {
         }
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(request.getBccpManifestId()))
                 .fetchOne();
 
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -172,15 +171,14 @@ public class BccWriteRepository {
                 .execute();
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
+        bccManifestRecord.setBccManifestId(UUID.randomUUID().toString());
         bccManifestRecord.setBccId(bcc.getBccId());
         bccManifestRecord.setReleaseId(request.getReleaseId());
         bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
         bccManifestRecord.setToBccpManifestId(bccpManifestRecord.getBccpManifestId());
-        bccManifestRecord.setBccManifestId(
-                dslContext.insertInto(BCC_MANIFEST)
-                        .set(bccManifestRecord)
-                        .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId()
-        );
+        dslContext.insertInto(BCC_MANIFEST)
+                .set(bccManifestRecord)
+                .execute();
 
         seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(request.getPos());
 
@@ -200,7 +198,7 @@ public class BccWriteRepository {
 
 
 
-        return new CreateBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+        return new CreateBccRepositoryResponse(bccManifestRecord.getBccManifestId());
     }
 
     private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
@@ -236,7 +234,7 @@ public class BccWriteRepository {
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccManifestId())
+                        request.getBccManifestId()
                 ))
                 .fetchOne();
 
@@ -342,7 +340,7 @@ public class BccWriteRepository {
             );
         }
 
-        return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+        return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId());
     }
 
     public DeleteBccRepositoryResponse deleteBcc(DeleteBccRepositoryRequest request) {
@@ -352,7 +350,7 @@ public class BccWriteRepository {
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccManifestId())
+                        request.getBccManifestId()
                 ))
                 .fetchOne();
 
@@ -404,16 +402,16 @@ public class BccWriteRepository {
                 userId, timestamp
         );
 
-        return new DeleteBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+        return new DeleteBccRepositoryResponse(bccManifestRecord.getBccManifestId());
     }
 
     private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccManifestRecord bccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initBcc(
-                bccManifestRecord.getFromAccManifestId().toBigInteger(),
+                bccManifestRecord.getFromAccManifestId(),
                 (bccManifestRecord.getSeqKeyId() != null) ? bccManifestRecord.getSeqKeyId().toBigInteger() : null,
-                bccManifestRecord.getBccManifestId().toBigInteger());
+                bccManifestRecord.getBccManifestId());
         return seqKeyHandler;
     }
 
@@ -424,12 +422,12 @@ public class BccWriteRepository {
 
         BccManifestRecord targetBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccManifestId())
+                        request.getBccManifestId()
                 ))
                 .fetchOne();
 
         AccManifestRecord targetAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId()))
                 .fetchOne();
 
         BccRecord targetBccRecord = dslContext.selectFrom(BCC).where(BCC.BCC_ID.eq(targetBccManifestRecord.getBccId())).fetchOne();
@@ -463,7 +461,7 @@ public class BccWriteRepository {
                     .fetchOne();
 
             AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId()))
                     .fetchOne();
 
             AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -522,7 +520,7 @@ public class BccWriteRepository {
         String bccId = dslContext.insertInto(BCC).set(targetBccRecord).returning().fetchOne().getBccId();
 
         targetBccManifestRecord.setBccManifestId(null);
-        targetBccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
+        targetBccManifestRecord.setFromAccManifestId(request.getAccManifestId());
         targetBccManifestRecord.setBccId(bccId);
         targetBccManifestRecord.setSeqKeyId(null);
         targetBccManifestRecord.setPrevBccManifestId(null);
@@ -537,34 +535,34 @@ public class BccWriteRepository {
                 targetAccManifestRecord.getReleaseId(),
                 userId, timestamp, hash, LogAction.Refactored);
 
-        return new RefactorBccRepositoryResponse(targetBccManifestRecord.getBccManifestId().toBigInteger());
+        return new RefactorBccRepositoryResponse(targetBccManifestRecord.getBccManifestId());
     }
 
-    private List<BccManifestRecord> getRefactorTargetBccManifestList(BccManifestRecord bccManifestRecord, ULong targetAccManifestId) {
+    private List<BccManifestRecord> getRefactorTargetBccManifestList(BccManifestRecord bccManifestRecord, String targetAccManifestId) {
         String releaseId = bccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
+        Map<String, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
         List<BccManifestRecord> bccList = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
+        Map<String, List<BccManifestRecord>> fromAccBccMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         accManifestIdList.add(targetAccManifestId);
 
-        Set<ULong> accCandidates = new HashSet<>();
+        Set<String> accCandidates = new HashSet<>();
 
-        for (ULong cur : accManifestIdList) {
+        for (String cur : accManifestIdList) {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
 
         Set<BccManifestRecord> bccResult = new HashSet<>();
 
-        for (ULong acc : accCandidates) {
+        for (String acc : accCandidates) {
             bccResult.addAll(
                     fromAccBccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -574,8 +572,8 @@ public class BccWriteRepository {
         return new ArrayList<>(bccResult);
     }
 
-    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
-        List<ULong> result = new ArrayList<>();
+    private List<String> getBaseAccManifestId(String accManifestId, Map<String, List<AccManifestRecord>> baseAccMap) {
+        List<String> result = new ArrayList<>();
         result.add(accManifestId);
         if (baseAccMap.containsKey(accManifestId)) {
             baseAccMap.get(accManifestId).forEach(e -> {

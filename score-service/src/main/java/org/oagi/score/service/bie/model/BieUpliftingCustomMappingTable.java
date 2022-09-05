@@ -19,10 +19,10 @@ public class BieUpliftingCustomMappingTable {
 
     private Map<String, BieUpliftingMapping> targetAsccMappingMap;
     private Map<String, BieUpliftingMapping> targetAsccMappingByTargetPathMap;
-    private Map<String, BigInteger> targetAsccpManifestIdBySourcePathMap;
-    private Map<String, BigInteger> targetAccManifestIdBySourcePathMap;
+    private Map<String, String> targetAsccpManifestIdBySourcePathMap;
+    private Map<String, String> targetAccManifestIdBySourcePathMap;
     private Map<String, BieUpliftingMapping> targetBccMappingMap;
-    private Map<String, BigInteger> targetBccpManifestIdBySourcePathMap;
+    private Map<String, String> targetBccpManifestIdBySourcePathMap;
     private Map<String, BieUpliftingMapping> targetDtScMappingMap;
 
     public BieUpliftingCustomMappingTable(CcDocument sourceCcDocument,
@@ -47,11 +47,11 @@ public class BieUpliftingCustomMappingTable {
         targetAsccpManifestIdBySourcePathMap = targetAsccMappingMap.values().stream()
                 .filter(e -> hasLength(e.getSourcePath()) && hasLength(e.getTargetPath()))
                 .collect(Collectors.toMap(e -> {
-                    BigInteger sourceAsccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
+                    String sourceAsccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
                     AsccManifest sourceAsccManifest = sourceCcDocument.getAsccManifest(sourceAsccManifestId);
                     return e.getSourcePath() + ">" + "ASCCP-" + sourceAsccManifest.getToAsccpManifestId();
                 }, e -> {
-                    BigInteger targetAsccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
+                    String targetAsccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
                     AsccManifest targetAsccManifest = targetCcDocument.getAsccManifest(targetAsccManifestId);
                     return targetAsccManifest.getToAsccpManifestId();
                 }, (a1, a2) -> a2));
@@ -59,13 +59,13 @@ public class BieUpliftingCustomMappingTable {
         targetAccManifestIdBySourcePathMap = targetAsccMappingMap.values().stream()
                 .filter(e -> hasLength(e.getSourcePath()) && hasLength(e.getTargetPath()))
                 .collect(Collectors.toMap(e -> {
-                    BigInteger sourceAsccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
+                    String sourceAsccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
                     AsccManifest sourceAsccManifest = sourceCcDocument.getAsccManifest(sourceAsccManifestId);
                     AsccpManifest sourceAsccpManifest = sourceCcDocument.getAsccpManifest(sourceAsccManifest.getToAsccpManifestId());
                     return e.getSourcePath() + ">" + "ASCCP-" + sourceAsccManifest.getToAsccpManifestId() +
                             ">" + "ACC-" + sourceAsccpManifest.getRoleOfAccManifestId();
                 }, e -> {
-                    BigInteger targetAsccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
+                    String targetAsccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
                     AsccManifest targetAsccManifest = targetCcDocument.getAsccManifest(targetAsccManifestId);
                     AsccpManifest targetAsccpManifest = targetCcDocument.getAsccpManifest(targetAsccManifest.getToAsccpManifestId());
                     return targetAsccpManifest.getRoleOfAccManifestId();
@@ -79,11 +79,11 @@ public class BieUpliftingCustomMappingTable {
         targetBccpManifestIdBySourcePathMap = targetBccMappingMap.values().stream()
                 .filter(e -> hasLength(e.getSourcePath()) && hasLength(e.getTargetPath()))
                 .collect(Collectors.toMap(e -> {
-                    BigInteger sourceBccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
+                    String sourceBccManifestId = extractManifestId(getLastTag(e.getSourcePath()));
                     BccManifest sourceBccManifest = sourceCcDocument.getBccManifest(sourceBccManifestId);
                     return e.getSourcePath() + ">" + "BCCP-" + sourceBccManifest.getToBccpManifestId();
                 }, e -> {
-                    BigInteger targetBccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
+                    String targetBccManifestId = extractManifestId(getLastTag(e.getTargetPath()));
                     BccManifest targetBccManifest = targetCcDocument.getBccManifest(targetBccManifestId);
                     return targetBccManifest.getToBccpManifestId();
                 }, (a1, a2) -> a2));
@@ -102,19 +102,19 @@ public class BieUpliftingCustomMappingTable {
         return tags[tags.length - 1];
     }
 
-    public static BigInteger extractManifestId(String tag) {
-        return new BigInteger(tag.substring(tag.indexOf('-') + 1));
+    public static String extractManifestId(String tag) {
+        return tag.substring(tag.indexOf('-') + 1);
     }
 
-    public BigInteger getTargetAccManifestIdBySourcePath(String sourcePath) {
+    public String getTargetAccManifestIdBySourcePath(String sourcePath) {
         return targetAccManifestIdBySourcePathMap.get(sourcePath);
     }
 
-    public BigInteger getTargetAsccpManifestIdBySourcePath(String sourcePath) {
+    public String getTargetAsccpManifestIdBySourcePath(String sourcePath) {
         return targetAsccpManifestIdBySourcePathMap.get(sourcePath);
     }
 
-    public BigInteger getTargetBccpManifestIdBySourcePath(String sourcePath) {
+    public String getTargetBccpManifestIdBySourcePath(String sourcePath) {
         return targetBccpManifestIdBySourcePathMap.get(sourcePath);
     }
 

@@ -17,7 +17,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
     @Data
     public static class Bcc {
         private String bccId;
-        private BigInteger manifestId = BigInteger.ZERO;
+        private String manifestId;
         private String guid;
         private String den;
         private Integer entityType;
@@ -42,7 +42,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
     @Data
     public static class Bccp {
         private String bccpId;
-        private BigInteger manifestId = BigInteger.ZERO;
+        private String manifestId;
         private String guid;
         private String propertyTerm;
         private String den;
@@ -66,7 +66,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
     @Data
     public static class Bdt {
         private String bdtId;
-        private BigInteger manifestId;
+        private String manifestId;
         private String guid;
         private String dataTypeTerm;
         private String qualifier;

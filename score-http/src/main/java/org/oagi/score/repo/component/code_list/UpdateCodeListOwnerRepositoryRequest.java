@@ -7,18 +7,18 @@ import java.math.BigInteger;
 
 public class UpdateCodeListOwnerRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
     private final String ownerId;
 
     public UpdateCodeListOwnerRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger codeListManifestId,
+                                                String codeListManifestId,
                                                 String ownerId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
         this.ownerId = ownerId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 

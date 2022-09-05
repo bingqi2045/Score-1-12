@@ -8,5 +8,5 @@ import java.math.BigInteger;
 public class CreateExtensionResponse {
     public boolean canEdit;
     public boolean canView;
-    public BigInteger extensionId = BigInteger.ZERO;
+    public String extensionId;
 }

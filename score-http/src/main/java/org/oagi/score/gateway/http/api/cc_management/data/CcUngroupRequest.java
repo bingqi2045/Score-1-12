@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class CcUngroupRequest {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
 
-    private BigInteger asccManifestId;
+    private String asccManifestId;
 
     private int pos = -1;
 }

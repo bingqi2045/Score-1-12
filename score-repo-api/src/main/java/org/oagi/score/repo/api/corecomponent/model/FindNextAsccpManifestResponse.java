@@ -6,15 +6,15 @@ import java.math.BigInteger;
 
 public class FindNextAsccpManifestResponse extends Response {
 
-    private final BigInteger nextAsccpManifestId;
+    private final String nextAsccpManifestId;
     private final String releaseNum;
 
-    public FindNextAsccpManifestResponse(BigInteger nextAsccpManifestId, String releaseNum) {
+    public FindNextAsccpManifestResponse(String nextAsccpManifestId, String releaseNum) {
         this.nextAsccpManifestId = nextAsccpManifestId;
         this.releaseNum = releaseNum;
     }
 
-    public BigInteger getNextAsccpManifestId() {
+    public String getNextAsccpManifestId() {
         return nextAsccpManifestId;
     }
 

@@ -12,7 +12,7 @@ public class BbieScNode {
 
     @Data
     public class BdtSc {
-        private BigInteger dtScManifestId;
+        private String dtScManifestId;
         private String guid;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -34,7 +34,7 @@ public class BbieScNode {
         private String hashPath;
         private String bbiePath;
         private String bbieHashPath;
-        private BigInteger basedDtScManifestId;
+        private String basedDtScManifestId;
 
         private String bbieScId;
         private String guid;

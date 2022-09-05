@@ -17,7 +17,7 @@ public class NodeSerializer extends StdSerializer<Node> {
     public void serialize(Node node, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
         gen.writeStringField("type", node.getTypeAsString());
-        gen.writeNumberField("manifestId", node.getManifestId().longValue());
+        gen.writeStringField("manifestId", node.getManifestId());
         for (Map.Entry<String, Object> entry : node.getProperties().entrySet()) {
             gen.writeObjectField(entry.getKey(), entry.getValue());
         }

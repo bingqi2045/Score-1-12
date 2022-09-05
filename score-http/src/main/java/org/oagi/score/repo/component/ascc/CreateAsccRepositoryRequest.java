@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
     private final String releaseId;
-    private final BigInteger accManifestId;
-    private final BigInteger asccpManifestId;
+    private final String accManifestId;
+    private final String asccpManifestId;
     private int pos = -1;
 
     private CcState initialState = CcState.WIP;
@@ -24,8 +24,8 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        String releaseId,
-                                       BigInteger accManifestId,
-                                       BigInteger asccpManifestId) {
+                                       String accManifestId,
+                                       String asccpManifestId) {
         super(user);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
@@ -35,8 +35,8 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
                                        String releaseId,
-                                       BigInteger accManifestId,
-                                       BigInteger asccpManifestId) {
+                                       String accManifestId,
+                                       String asccpManifestId) {
         super(user, localDateTime);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
@@ -47,11 +47,11 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
         return releaseId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 

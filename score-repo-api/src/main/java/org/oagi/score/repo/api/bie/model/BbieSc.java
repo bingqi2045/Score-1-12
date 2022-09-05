@@ -10,7 +10,7 @@ public class BbieSc extends Auditable {
 
     private String guid;
 
-    private BigInteger basedDtScManifestId;
+    private String basedDtScManifestId;
 
     private String path;
 
@@ -62,11 +62,11 @@ public class BbieSc extends Auditable {
         this.guid = guid;
     }
 
-    public BigInteger getBasedDtScManifestId() {
+    public String getBasedDtScManifestId() {
         return basedDtScManifestId;
     }
 
-    public void setBasedDtScManifestId(BigInteger basedDtScManifestId) {
+    public void setBasedDtScManifestId(String basedDtScManifestId) {
         this.basedDtScManifestId = basedDtScManifestId;
     }
 

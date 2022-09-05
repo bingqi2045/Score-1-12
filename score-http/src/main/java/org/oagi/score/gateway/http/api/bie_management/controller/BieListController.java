@@ -39,7 +39,7 @@ public class BieListController {
                                             @RequestParam(name = "den", required = false) String den,
                                             @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
                                             @RequestParam(name = "businessContext", required = false) String businessContext,
-                                            @RequestParam(name = "asccpManifestId", required = false) BigInteger asccpManifestId,
+                                            @RequestParam(name = "asccpManifestId", required = false) String asccpManifestId,
                                             @RequestParam(name = "access", required = false) String access,
                                             @RequestParam(name = "states", required = false) String states,
                                             @RequestParam(name = "excludePropertyTerms", required = false) String excludePropertyTerms,

@@ -64,7 +64,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which
      * this BBIE contextualizes.
      */
-    public void setBasedBccManifestId(ULong value) {
+    public void setBasedBccManifestId(String value) {
         set(2, value);
     }
 
@@ -73,8 +73,8 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
      * BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which
      * this BBIE contextualizes.
      */
-    public ULong getBasedBccManifestId() {
-        return (ULong) get(2);
+    public String getBasedBccManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -590,7 +590,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(String bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, String fromAbieId, String toBbiepId, String bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
+    public BbieRecord(String bbieId, String guid, String basedBccManifestId, String path, String hashPath, String fromAbieId, String toBbiepId, String bdtPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, String ownerTopLevelAsbiepId) {
         super(Bbie.BBIE);
 
         setBbieId(bbieId);

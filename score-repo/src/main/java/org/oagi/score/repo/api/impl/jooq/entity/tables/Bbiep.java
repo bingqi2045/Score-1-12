@@ -26,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -69,10 +68,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
 
     /**
      * The column <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key
-     * pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP
+     * pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP
      * contextualizes.
      */
-    public final TableField<BbiepRecord, ULong> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.");
+    public final TableField<BbiepRecord, String> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP contextualizes.");
 
     /**
      * The column <code>oagi.bbiep.path</code>.
@@ -291,21 +290,21 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<String, String, ULong, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function13<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
      * Convenience mapping calling {@link #convertFrom(Class, Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

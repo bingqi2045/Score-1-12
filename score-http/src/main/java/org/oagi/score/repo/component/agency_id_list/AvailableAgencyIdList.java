@@ -8,8 +8,8 @@ import java.math.BigInteger;
 public class AvailableAgencyIdList {
 
     private String agencyIdListId;
-    private BigInteger agencyIdListManifestId;
-    private BigInteger basedAgencyIdListManifestId;
+    private String agencyIdListManifestId;
+    private String basedAgencyIdListManifestId;
     private String agencyIdListName;
     private String versionId;
     private String state;

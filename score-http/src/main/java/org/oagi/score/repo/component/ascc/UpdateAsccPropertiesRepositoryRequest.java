@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class UpdateAsccPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccManifestId;
+    private final String asccManifestId;
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
@@ -17,19 +17,19 @@ public class UpdateAsccPropertiesRepositoryRequest extends RepositoryRequest {
     private boolean deprecated;
 
     public UpdateAsccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                 BigInteger asccManifestId) {
+                                                 String asccManifestId) {
         super(user);
         this.asccManifestId = asccManifestId;
     }
 
     public UpdateAsccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
-                                                 BigInteger asccManifestId) {
+                                                 String asccManifestId) {
         super(user, localDateTime);
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 

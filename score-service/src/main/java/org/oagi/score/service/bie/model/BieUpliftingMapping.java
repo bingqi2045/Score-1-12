@@ -11,9 +11,9 @@ public class BieUpliftingMapping {
 
     private String bieType;
     private String bieId;
-    private BigInteger sourceManifestId;
+    private String sourceManifestId;
     private String sourcePath;
-    private BigInteger targetManifestId;
+    private String targetManifestId;
     private String targetPath;
     private String refTopLevelAsbiepId;
 
