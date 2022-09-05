@@ -16,8 +16,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>17</maven.compiler.release>
 
-        <lombok.version>1.18.22</lombok.version>
-        <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
+        <lombok.version>1.18.24</lombok.version>
+        <mysql-connector-java.version>8.0.30</mysql-connector-java.version>
         <jOOQ.version>3.17.3</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
 
@@ -25,8 +25,8 @@
         <junit.platform.version>1.8.2</junit.platform.version>
         <junit.jupiter.version>5.8.2</junit.jupiter.version>
         <org.apache.commons.lang3.version>3.12.0</org.apache.commons.lang3.version>
-        <org.springframework.version>5.3.21</org.springframework.version>
-        <gson.version>2.9.0</gson.version>
+        <org.springframework.version>5.3.22</org.springframework.version>
+        <gson.version>2.9.1</gson.version>
     </properties>
 
     <dependencies>
