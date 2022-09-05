@@ -4,14 +4,14 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record22;
 import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
-
-import java.time.LocalDateTime;
 
 
 /**

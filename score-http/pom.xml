@@ -31,7 +31,7 @@
         <lombok.version>1.18.22</lombok.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <log4j.version>2.17.2</log4j.version>
-        <jOOQ.version>3.17.1</jOOQ.version>
+        <jOOQ.version>3.17.3</jOOQ.version>
         <guava.version>31.0.1-jre</guava.version>
         <gson.version>2.9.0</gson.version>
         <jdom2.version>2.0.6.1</jdom2.version>

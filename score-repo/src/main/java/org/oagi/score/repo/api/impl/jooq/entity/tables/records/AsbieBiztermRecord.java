@@ -4,14 +4,14 @@
 package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record9;
 import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsbieBizterm;
-
-import java.time.LocalDateTime;
 
 
 /**

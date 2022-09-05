@@ -8,8 +8,23 @@ import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Comment;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 
 
 /**
