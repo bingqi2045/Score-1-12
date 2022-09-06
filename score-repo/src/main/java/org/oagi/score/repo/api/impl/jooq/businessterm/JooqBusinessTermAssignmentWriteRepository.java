@@ -211,7 +211,7 @@ public class JooqBusinessTermAssignmentWriteRepository
                 }
             }
             return new UpdateBusinessTermAssignmentResponse(
-                    record.getAsbieId().toBigInteger(), "BBIE", !changedField.isEmpty());
+                    record.getAsbieId().toBigInteger(), "ASBIE", !changedField.isEmpty());
         }
         else if (request.getBieType().equals("BBIE")){
             BbieBiztermRecord record = dslContext().selectFrom(BBIE_BIZTERM)
