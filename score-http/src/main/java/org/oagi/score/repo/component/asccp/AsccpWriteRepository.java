@@ -105,7 +105,10 @@ public class AsccpWriteRepository {
                         LogAction.Added,
                         userId, timestamp);
         asccpManifest.setLogId(logRecord.getLogId());
-        asccpManifest.update(ASCCP_MANIFEST.LOG_ID);
+        dslContext.update(ASCCP_MANIFEST)
+                .set(ASCCP_MANIFEST.LOG_ID, asccpManifest.getLogId())
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifest.getAsccpManifestId()))
+                .execute();
 
         if (!request.getTags().isEmpty()) {
             for (String tag : request.getTags()) {

@@ -27,7 +27,7 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private String definitionSource;
 
-    private BigInteger ownerAgencyIdListId;
+    private String ownerAgencyIdListId;
 
     private ScoreUser owner;
 
@@ -116,11 +116,11 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
         this.definitionSource = definitionSource;
     }
 
-    public BigInteger getOwnerAgencyIdListId() {
+    public String getOwnerAgencyIdListId() {
         return ownerAgencyIdListId;
     }
 
-    public void setOwnerAgencyIdListId(BigInteger ownerAgencyIdListId) {
+    public void setOwnerAgencyIdListId(String ownerAgencyIdListId) {
         this.ownerAgencyIdListId = ownerAgencyIdListId;
     }
 

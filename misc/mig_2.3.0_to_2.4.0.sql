@@ -3826,7 +3826,8 @@ CALL update_uuid('oauth2_app_scope');
 ALTER TABLE `ref_spec` ADD COLUMN `ref_spec_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `ref_spec_id`;
 CALL update_uuid('ref_spec');
 
-UPDATE `ref_spec` SET `ref_spec_uuid` = '7294fd33-8315-467b-9416-783c32551a15' WHERE `spec` = 'CCTS DT v3.1';
+UPDATE `ref_spec` SET `ref_spec_uuid` = '7294fd33-8315-467b-9416-783c32551a15' WHERE `ref_spec_id` = 1;
+UPDATE `ref_spec` SET `ref_spec_uuid` = 'dfbc3b2c-ee7f-439d-98f3-4f6e51b9b988' WHERE `ref_spec_id` = 2;
 
 ALTER TABLE `usage_rule` ADD COLUMN `usage_rule_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `usage_rule_id`;
 CALL update_uuid('usage_rule');

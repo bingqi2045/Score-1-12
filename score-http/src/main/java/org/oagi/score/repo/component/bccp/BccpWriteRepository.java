@@ -31,6 +31,7 @@ import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest.ASCCP_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BCCP;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BCCP_MANIFEST;
 
@@ -101,7 +102,10 @@ public class BccpWriteRepository {
                         LogAction.Added,
                         userId, timestamp);
         bccpManifest.setLogId(logRecord.getLogId());
-        bccpManifest.update(BCCP_MANIFEST.LOG_ID);
+        dslContext.update(BCCP_MANIFEST)
+                .set(BCCP_MANIFEST.LOG_ID, bccpManifest.getLogId())
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifest.getBccpManifestId()))
+                .execute();
 
         return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId());
     }

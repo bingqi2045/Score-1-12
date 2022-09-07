@@ -20,7 +20,7 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private String sixDigitId;
     private String qualifier;
     private String basedBdtId;
-    private BigInteger basedBdtManifestId;
+    private String basedBdtManifestId;
     private String basedBdtDen;
     private String contentComponentDefinition;
     private boolean commonlyUsed;

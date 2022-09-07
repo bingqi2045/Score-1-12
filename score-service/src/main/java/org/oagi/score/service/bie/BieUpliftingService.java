@@ -1506,7 +1506,7 @@ public class BieUpliftingService {
 
         List<CodeList> availableCodeLists = codeListMap.stream().filter(codeList -> codeList.getCodeListId().equals(codeListId)).collect(Collectors.toList());
 
-        List<BigInteger> basedCodeListIds = availableCodeLists.stream().map(CodeList::getBasedCodeListId).collect(Collectors.toList());
+        List<String> basedCodeListIds = availableCodeLists.stream().map(CodeList::getBasedCodeListId).collect(Collectors.toList());
 
         List<CodeList> associatedCodeLists = codeListMap.stream().filter(codeList -> basedCodeListIds.contains(codeList.getCodeListId())).collect(Collectors.toList());
 

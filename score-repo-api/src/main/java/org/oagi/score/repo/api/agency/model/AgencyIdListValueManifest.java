@@ -17,9 +17,9 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
 
     private boolean conflict;
 
-    private BigInteger prevAgencyIdListManifestId;
+    private String prevAgencyIdListManifestId;
 
-    private BigInteger nextAgencyIdListManifestId;
+    private String nextAgencyIdListManifestId;
 
     @Override
     public String getManifestId() {
@@ -72,19 +72,19 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevAgencyIdListManifestId() {
+    public String getPrevAgencyIdListManifestId() {
         return prevAgencyIdListManifestId;
     }
 
-    public void setPrevAgencyIdListManifestId(BigInteger prevAgencyIdListManifestId) {
+    public void setPrevAgencyIdListManifestId(String prevAgencyIdListManifestId) {
         this.prevAgencyIdListManifestId = prevAgencyIdListManifestId;
     }
 
-    public BigInteger getNextAgencyIdListManifestId() {
+    public String getNextAgencyIdListManifestId() {
         return nextAgencyIdListManifestId;
     }
 
-    public void setNextAgencyIdListManifestId(BigInteger nextAgencyIdListManifestId) {
+    public void setNextAgencyIdListManifestId(String nextAgencyIdListManifestId) {
         this.nextAgencyIdListManifestId = nextAgencyIdListManifestId;
     }
 }

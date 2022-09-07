@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class BusinessTerm {
 
-    private BigInteger bieBiztermId = BigInteger.ZERO;
+    private String bieBiztermId;
     private String bieId;
     private String primaryIndicator;
     private String typeCode;

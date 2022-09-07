@@ -14,7 +14,7 @@ public class Xbt {
     private String builtinType;
     private String jbtDraft05Map;
     private String openapi30Map;
-    private BigInteger subtypeOfXbtId = BigInteger.ZERO;
+    private String subtypeOfXbtId;
     private String schemaDefinition;
     private String releaseId;
     private Integer state;

@@ -146,6 +146,9 @@
 
                     <generator>
                         <name>org.jooq.codegen.JavaGenerator</name>
+                        <generate>
+                            <routines>true</routines>
+                        </generate>
 
                         <database>
                             <name>org.jooq.meta.mysql.MySQLDatabase</name>

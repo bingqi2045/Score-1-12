@@ -21,7 +21,7 @@ public class ExtensionController {
     @Autowired
     private ExtensionService service;
 
-    @RequestMapping(value = "/core_component/node/extension/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/extension/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -29,7 +29,7 @@ public class ExtensionController {
         return service.getExtensionNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/extension/{manifestId}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -65,7 +65,7 @@ public class ExtensionController {
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/state",
+    @RequestMapping(value = "/core_component/extension/{manifestId}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -82,7 +82,7 @@ public class ExtensionController {
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/detail",
+    @RequestMapping(value = "/core_component/extension/{manifestId}/detail",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -92,7 +92,7 @@ public class ExtensionController {
         return service.updateDetails(user, request);
     }
 
-    @RequestMapping(value = "/core_component/extension//{type}/{manifestId:[\\d]+}/revision",
+    @RequestMapping(value = "/core_component/extension/{type}/{manifestId}/revision",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getLastCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,

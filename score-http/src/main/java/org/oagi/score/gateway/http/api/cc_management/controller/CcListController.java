@@ -180,7 +180,7 @@ public class CcListController {
         return service.getTags();
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/transfer_ownership",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/transfer_ownership",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,

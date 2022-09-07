@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class CodeListValue {
 
-    private BigInteger codeListValueId = BigInteger.ZERO;
+    private String codeListValueId;
     private String codeListId;
     private String value;
     private String meaning;

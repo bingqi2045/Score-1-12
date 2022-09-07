@@ -14,13 +14,13 @@ public class CodeList implements CoreComponent, Serializable {
 
     private String versionId;
 
-    private BigInteger basedCodeListId;
+    private String basedCodeListId;
 
-    public BigInteger getBasedCodeListId() {
+    public String getBasedCodeListId() {
         return basedCodeListId;
     }
 
-    public void setBasedCodeListId(BigInteger basedCodeListId) {
+    public void setBasedCodeListId(String basedCodeListId) {
         this.basedCodeListId = basedCodeListId;
     }
 

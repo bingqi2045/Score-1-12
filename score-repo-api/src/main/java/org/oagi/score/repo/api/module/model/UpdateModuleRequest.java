@@ -9,7 +9,7 @@ public class UpdateModuleRequest extends Request {
 
     private String moduleId;
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
     private String name;
 
@@ -25,11 +25,11 @@ public class UpdateModuleRequest extends Request {
         this.moduleId = moduleId;
     }
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 

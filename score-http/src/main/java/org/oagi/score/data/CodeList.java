@@ -13,12 +13,12 @@ public class CodeList {
     private String enumTypeGuid;
     private String name;
     private String listId;
-    private BigInteger agencyId = BigInteger.ZERO;
+    private String agencyId;
     private String versionId;
     private String definition;
     private String remark;
     private String definitionSource;
-    private BigInteger basedCodeListId = BigInteger.ZERO;
+    private String basedCodeListId;
     private boolean extensibleIndicator;
     private String moduleId;
     private String createdBy;

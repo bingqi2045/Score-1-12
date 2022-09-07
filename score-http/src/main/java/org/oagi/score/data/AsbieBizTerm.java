@@ -8,8 +8,8 @@ import java.util.Date;
 @Data
 public class AsbieBizTerm {
 
-    private BigInteger asbieBiztermId = BigInteger.ZERO;
-    private BigInteger asccBiztermId = BigInteger.ZERO;
+    private String asbieBiztermId;
+    private String asccBiztermId;
     private String asbieId;
     private String primaryIndicator;
     private String typeCode;

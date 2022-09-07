@@ -6,7 +6,6 @@ package org.oagi.score.repo.api.impl.jooq.entity;
 
 import org.jooq.Configuration;
 import org.jooq.Field;
-import org.oagi.score.repo.api.impl.jooq.entity.routines.UpdateUuid;
 import org.oagi.score.repo.api.impl.jooq.entity.routines.UuidV4s;
 
 
@@ -15,19 +14,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.routines.UuidV4s;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Routines {
-
-    /**
-     * Call <code>oagi.update_uuid</code>
-     */
-    public static void updateUuid(
-          Configuration configuration
-        , String tableName
-    ) {
-        UpdateUuid p = new UpdateUuid();
-        p.setTableName(tableName);
-
-        p.execute(configuration);
-    }
 
     /**
      * Call <code>oagi.uuid_v4s</code>

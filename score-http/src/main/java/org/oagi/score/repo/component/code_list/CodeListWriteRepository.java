@@ -186,7 +186,10 @@ public class CodeListWriteRepository {
                         LogAction.Added,
                         userId, timestamp);
         codeListManifest.setLogId(logRecord.getLogId());
-        codeListManifest.update(CODE_LIST_MANIFEST.LOG_ID);
+        dslContext.update(CODE_LIST_MANIFEST)
+                .set(CODE_LIST_MANIFEST.LOG_ID, codeListManifest.getLogId())
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifest.getCodeListManifestId()))
+                .execute();
 
         return new CreateCodeListRepositoryResponse(codeListManifest.getCodeListManifestId());
     }

@@ -6,15 +6,15 @@ import java.math.BigInteger;
 
 public class CopyModuleDirRequest extends Request {
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
     public Boolean getCopySubModules() {
         return copySubModules;
@@ -36,13 +36,13 @@ public class CopyModuleDirRequest extends Request {
 
     private String moduleSetId;
 
-    private BigInteger copyPosDirId;
+    private String copyPosDirId;
 
-    public BigInteger getCopyPosDirId() {
+    public String getCopyPosDirId() {
         return copyPosDirId;
     }
 
-    public void setCopyPosDirId(BigInteger copyPosDirId) {
+    public void setCopyPosDirId(String copyPosDirId) {
         this.copyPosDirId = copyPosDirId;
     }
 }

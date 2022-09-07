@@ -310,7 +310,10 @@ public class JooqAgencyIdListWriteRepository
                         userId, timestamp);
 
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
-        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
+        dslContext().update(AGENCY_ID_LIST_MANIFEST)
+                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, agencyIdListManifestRecord.getLogId())
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                .execute();
     }
 
     @Override
@@ -382,7 +385,10 @@ public class JooqAgencyIdListWriteRepository
                         userId, timestamp);
 
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
-        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
+        dslContext().update(AGENCY_ID_LIST_MANIFEST)
+                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, agencyIdListManifestRecord.getLogId())
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                .execute();
     }
 
     @Override
@@ -464,7 +470,11 @@ public class JooqAgencyIdListWriteRepository
 
         agencyIdListManifestRecord.setAgencyIdListId(nextAgencyIdListRecord.getAgencyIdListId());
         agencyIdListManifestRecord.setLogId(logRecord.getLogId());
-        agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID, AGENCY_ID_LIST_MANIFEST.LOG_ID);
+        dslContext().update(AGENCY_ID_LIST_MANIFEST)
+                .set(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID, agencyIdListManifestRecord.getAgencyIdListId())
+                .set(AGENCY_ID_LIST_MANIFEST.LOG_ID, agencyIdListManifestRecord.getLogId())
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                .execute();
 
         if (agencyIdListManifestRecord.getAgencyIdListValueManifestId() != null) {
             nextAgencyIdListRecord.setAgencyIdListValueId(dslContext().select(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)

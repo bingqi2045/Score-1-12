@@ -30,7 +30,7 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/acc/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getAccNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -38,7 +38,7 @@ public class CcNodeController {
         return service.getAccNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/asccp/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getAsccpNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -46,7 +46,7 @@ public class CcNodeController {
         return service.getAsccpNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/bccp/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/bccp/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getBccpNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -54,7 +54,7 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/dt/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/dt/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getBdtNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -70,7 +70,7 @@ public class CcNodeController {
         return service.updateCcDetails(user, ccUpdateRequest);
     }
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/seq_key",
+    @RequestMapping(value = "/core_component/acc/{manifestId}/seq_key",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateCcSeq(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -80,7 +80,7 @@ public class CcNodeController {
                 Pair.of(request.getItem(), request.getAfter()));
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -116,7 +116,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/state",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse updateState(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -184,7 +184,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/revision",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse makeNewRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -225,7 +225,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -299,7 +299,7 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/append",
+    @RequestMapping(value = "/core_component/acc/{manifestId}/append",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -329,7 +329,7 @@ public class CcNodeController {
         return response;
     }
 
-    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/append_sc",
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId}/append_sc",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendScNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -342,7 +342,7 @@ public class CcNodeController {
         return response;
     }
 
-    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId:[\\d]+}/restriction/add",
+    @RequestMapping(value = "/core_component/dt/{ownerDtManifestId}/restriction/add",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcBdtNodeDetail addRestriction(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -367,7 +367,7 @@ public class CcNodeController {
         return service.getDefaultPrimitiveValues(user, representationTerm, bdtScManifestId);
     }
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
+    @RequestMapping(value = "/core_component/acc/{manifestId}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse setBasedNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -438,7 +438,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/revision", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @PathVariable("type") String type,
@@ -457,7 +457,7 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision/cancel",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/revision/cancel",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse cancelRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -507,7 +507,7 @@ public class CcNodeController {
         return response;
     }
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base_acc_list",
+    @RequestMapping(value = "/core_component/acc/{manifestId}/base_acc_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CcList> baseAccList(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -568,7 +568,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/ungroup",
+    @RequestMapping(value = "/core_component/acc/{manifestId}/ungroup",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcUngroupResponse ungroup(@AuthenticationPrincipal AuthenticatedPrincipal user,

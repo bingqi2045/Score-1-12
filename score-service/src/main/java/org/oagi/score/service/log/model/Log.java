@@ -17,7 +17,7 @@ public class Log {
     private LogAction logAction;
     private String loginId;
     private LocalDateTime timestamp;
-    private BigInteger prevLogId;
+    private String prevLogId;
     private boolean isDeveloper;
 
 }

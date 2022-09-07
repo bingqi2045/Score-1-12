@@ -24,7 +24,7 @@ public class GraphController {
     @Autowired
     private GraphService graphService;
 
-    @RequestMapping(value = "/graphs/find_usages/{type}/{id:[\\d]+}",
+    @RequestMapping(value = "/graphs/find_usages/{type}/{id}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public FindUsagesResponse findUsages(@AuthenticationPrincipal AuthenticatedPrincipal user,
@@ -94,7 +94,7 @@ public class GraphController {
         return response;
     }
 
-    @RequestMapping(value = "/graphs/uplift/{topLevelAsbiepId:[\\d]+}/{targetReleaseId:[\\d]+}",
+    @RequestMapping(value = "/graphs/uplift/{topLevelAsbiepId}/{targetReleaseId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,

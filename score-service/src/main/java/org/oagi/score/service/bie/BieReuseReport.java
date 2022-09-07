@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 @Data
 public class BieReuseReport {
-    private BigInteger reusingTopLevelAsbiepId;
+    private String reusingTopLevelAsbiepId;
     private String reusingState;
     private String reusingPropertyTerm;
     private String reusingGuid;

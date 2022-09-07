@@ -13,7 +13,7 @@ public class GetModuleElementRequest extends Request {
 
     private String moduleSetId;
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
     public String getModuleSetId() {
         return moduleSetId;
@@ -23,11 +23,11 @@ public class GetModuleElementRequest extends Request {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 }
