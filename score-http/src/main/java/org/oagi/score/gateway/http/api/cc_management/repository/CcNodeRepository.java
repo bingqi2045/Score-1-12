@@ -846,16 +846,22 @@ public class CcNodeRepository {
             detail.setBdtPriRestriList(dslContext.select(
                             CDT_AWD_PRI.CDT_AWD_PRI_ID,
                             CDT_AWD_PRI.IS_DEFAULT,
-                            CDT_PRI.NAME)
+                            CDT_PRI.NAME.as("CDT_PRI_NAME"),
+                            XBT.XBT_ID,
+                            XBT.NAME)
                     .from(CDT_AWD_PRI)
                     .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                    .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(CDT_AWD_PRI.CDT_AWD_PRI_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID))
+                    .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
                     .where(CDT_AWD_PRI.CDT_ID.eq(detail.getBdtId()))
                     .fetch().stream().map(e -> {
                         CcBdtPriRestri ccBdtPriRestri = new CcBdtPriRestri();
                         ccBdtPriRestri.setType(PrimitiveRestriType.Primitive);
-                        ccBdtPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME));
+                        ccBdtPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME.as("CDT_PRI_NAME")));
                         ccBdtPriRestri.setCdtAwdPriId(e.get(CDT_AWD_PRI.CDT_AWD_PRI_ID));
                         ccBdtPriRestri.setDefault(e.get(CDT_AWD_PRI.IS_DEFAULT) == (byte) 1);
+                        ccBdtPriRestri.setXbtId(e.get(XBT.XBT_ID));
+                        ccBdtPriRestri.setXbtName(e.get(XBT.NAME));
                         return ccBdtPriRestri;
                     }).collect(Collectors.toList()));
         }
@@ -984,16 +990,22 @@ public class CcNodeRepository {
             detail.setBdtScPriRestriList(dslContext.select(
                             CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID,
                             CDT_SC_AWD_PRI.IS_DEFAULT,
-                            CDT_PRI.NAME)
+                            CDT_PRI.NAME.as("CDT_PRI_NAME"),
+                            XBT.XBT_ID,
+                            XBT.NAME)
                     .from(CDT_SC_AWD_PRI)
                     .join(CDT_PRI).on(CDT_SC_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
+                    .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.eq(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID))
+                    .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
                     .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(detail.getBdtScId()))
                     .fetch().stream().map(e -> {
                         CcBdtScPriRestri ccBdtScPriRestri = new CcBdtScPriRestri();
                         ccBdtScPriRestri.setType(PrimitiveRestriType.Primitive);
-                        ccBdtScPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME));
+                        ccBdtScPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME.as("CDT_PRI_NAME")));
                         ccBdtScPriRestri.setCdtScAwdPriId(e.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID));
                         ccBdtScPriRestri.setDefault(e.get(CDT_SC_AWD_PRI.IS_DEFAULT) == (byte) 1);
+                        ccBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID));
+                        ccBdtScPriRestri.setXbtName(e.get(XBT.NAME));
                         return ccBdtScPriRestri;
                     }).collect(Collectors.toList()));
         }
