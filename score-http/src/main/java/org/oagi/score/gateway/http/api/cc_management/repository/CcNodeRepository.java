@@ -845,7 +845,7 @@ public class CcNodeRepository {
         } else {
             detail.setBdtPriRestriList(dslContext.select(
                             CDT_AWD_PRI.CDT_AWD_PRI_ID,
-                            CDT_AWD_PRI.IS_DEFAULT,
+                            CDT_AWD_PRI_XPS_TYPE_MAP.IS_DEFAULT,
                             CDT_PRI.NAME.as("CDT_PRI_NAME"),
                             XBT.XBT_ID,
                             XBT.NAME)
@@ -989,7 +989,7 @@ public class CcNodeRepository {
         } else {
             detail.setBdtScPriRestriList(dslContext.select(
                             CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID,
-                            CDT_SC_AWD_PRI.IS_DEFAULT,
+                            CDT_SC_AWD_PRI_XPS_TYPE_MAP.IS_DEFAULT,
                             CDT_PRI.NAME.as("CDT_PRI_NAME"),
                             XBT.XBT_ID,
                             XBT.NAME)
@@ -1003,7 +1003,7 @@ public class CcNodeRepository {
                         ccBdtScPriRestri.setType(PrimitiveRestriType.Primitive);
                         ccBdtScPriRestri.setPrimitiveName(e.get(CDT_PRI.NAME.as("CDT_PRI_NAME")));
                         ccBdtScPriRestri.setCdtScAwdPriId(e.get(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID));
-                        ccBdtScPriRestri.setDefault(e.get(CDT_SC_AWD_PRI.IS_DEFAULT) == (byte) 1);
+                        ccBdtScPriRestri.setDefault(e.get(CDT_SC_AWD_PRI_XPS_TYPE_MAP.IS_DEFAULT) == (byte) 1);
                         ccBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID));
                         ccBdtScPriRestri.setXbtName(e.get(XBT.NAME));
                         return ccBdtScPriRestri;

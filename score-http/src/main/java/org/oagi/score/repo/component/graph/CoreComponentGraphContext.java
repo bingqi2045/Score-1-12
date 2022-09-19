@@ -338,6 +338,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
                         .join(DT).on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
                         .where(DT_SC_MANIFEST.RELEASE_ID.eq(this.releaseId))
+                        .orderBy(DT_SC.CREATION_TIMESTAMP, DT_SC.OBJECT_CLASS_TERM, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM)
                         .fetch(record -> new DtScManifest(
                                 record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID),
                                 record.get(DT_SC.BASED_DT_SC_ID),
