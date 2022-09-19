@@ -30,6 +30,11 @@ spring:
   main:
     allow-circular-references: true
 
+score:
+  migration:
+    configuration:
+      location: 'classpath:db/migration/migration.yml'
+
 logging:
   level:
     org.springframework: INFO

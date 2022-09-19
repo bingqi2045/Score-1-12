@@ -13,6 +13,20 @@ DELETE FROM `seq_key` WHERE `seq_key_id` = 85921;
 DELETE FROM `ascc_manifest` WHERE `ascc_manifest_id` = 57206;
 DELETE FROM `ascc` WHERE `ascc_id` = 7311;
 
+-- Add `score_schema_history` table.
+CREATE TABLE `score_schema_history` (
+    `history_id` char(36) NOT NULL,
+    `order` int(10) unsigned NOT NULL,
+    `executed_on` datetime(6) NOT NULL,
+    `result` smallint(2) NOT NULL DEFAULT '-1',
+    `message` text,
+    PRIMARY KEY (`history_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `score_schema_history` (`history_id`, `order`, `executed_on`, `result`, `message`)
+VALUES
+    ('93128fdf-1f4b-46aa-b248-a1d90a36c37c', 1, CURRENT_TIMESTAMP(6), 1, NULL);
+
 -- ----------------
 -- Business Terms -
 -- ----------------
@@ -730,6 +744,21 @@ WHERE `app_user`.`app_user_id` = `xbt`.`owner_user_id`;
 UPDATE `app_user`, `xbt` SET `xbt`.`last_updated_by_uuid` = `app_user`.`app_user_uuid`
 WHERE `app_user`.`app_user_id` = `xbt`.`last_updated_by`;
 
+-- Update `log`.`snapshot` for `app_user_id`
+UPDATE `log`, `app_user` SET `log`.`snapshot` = REPLACE(`log`.`snapshot`, CONCAT('"created_by": ', `app_user`.`app_user_id`, ','), CONCAT('"created_by": "', `app_user`.`app_user_uuid`, '",'));
+
+UPDATE `log`, (
+SELECT `log`.`log_id`,
+       REPLACE(`log`.`snapshot`, CONCAT('"created_by": ', `app_user`.`app_user_id`, ','),
+               CONCAT('"created_by": "', `app_user`.`app_user_uuid`, '",')) AS `snapshot`
+FROM `log`,
+     `app_user`) AS t
+SET `log`.`snapshot` = t.`snapshot`
+WHERE `log`.`log_id` = t.`log_id`;
+
+
+
+
 -- Drop old `app_user_id` columns
 ALTER TABLE `abie` DROP FOREIGN KEY `abie_created_by_fk`;
 ALTER TABLE `abie` DROP COLUMN `created_by`;
@@ -966,7 +995,8 @@ ALTER TABLE `xbt` DROP COLUMN `last_updated_by`;
 ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_owner_user_id_fk`;
 ALTER TABLE `xbt` DROP COLUMN `owner_user_id`;
 
-ALTER TABLE `app_user` DROP COLUMN `app_user_id`;
+ALTER TABLE `app_user` MODIFY COLUMN `app_user_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `app_user` CHANGE `app_user_id` `old_app_user_id` BIGINT(20) unsigned;
 
 -- Rename `app_user_uuid` TO `app_user_id`
 ALTER TABLE `app_user` CHANGE `app_user_uuid` `app_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -1416,7 +1446,8 @@ ALTER TABLE `module` DROP COLUMN `namespace_id`;
 ALTER TABLE `release` DROP FOREIGN KEY `release_namespace_id_fk`;
 ALTER TABLE `release` DROP COLUMN `namespace_id`;
 
-ALTER TABLE `namespace` DROP COLUMN `namespace_id`;
+ALTER TABLE `namespace` MODIFY COLUMN `namespace_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `namespace` CHANGE `namespace_id` `old_namespace_id` BIGINT(20) unsigned;
 
 -- Rename `namespace_uuid` TO `namespace_id`
 ALTER TABLE `namespace` CHANGE `namespace_uuid` `namespace_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -1439,258 +1470,6 @@ ALTER TABLE `code_list` ADD CONSTRAINT `code_list_namespace_id_fk` FOREIGN KEY (
 ALTER TABLE `dt` ADD CONSTRAINT `dt_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
 ALTER TABLE `module` ADD CONSTRAINT `module_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
 ALTER TABLE `release` ADD CONSTRAINT `release_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
-
--- --------------------------------
--- Change `release_id` TO UUID --
--- --------------------------------
-ALTER TABLE `release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `release_id`;
-CALL update_uuid('release');
-
--- Static UUID for 'Working' release.
-UPDATE `release` SET `release_uuid` = 'c6dcd936-4f4c-4c2c-97d0-b0eb62d157e7' WHERE `release_num` = 'Working';
-
-ALTER TABLE `acc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `acc_manifest` SET `acc_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `acc_manifest`.`release_id`;
-
-ALTER TABLE `agency_id_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `agency_id_list_manifest`.`release_id`;
-
-ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `agency_id_list_value_manifest` SET `agency_id_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `agency_id_list_value_manifest`.`release_id`;
-
-ALTER TABLE `ascc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `ascc_manifest` SET `ascc_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `ascc_manifest`.`release_id`;
-
-ALTER TABLE `asccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `asccp_manifest` SET `asccp_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `asccp_manifest`.`release_id`;
-
-ALTER TABLE `bcc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `bcc_manifest` SET `bcc_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `bcc_manifest`.`release_id`;
-
-ALTER TABLE `bccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `bccp_manifest` SET `bccp_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `bccp_manifest`.`release_id`;
-
-ALTER TABLE `blob_content_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `blob_content_manifest` SET `blob_content_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `blob_content_manifest`.`release_id`;
-
-ALTER TABLE `code_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `code_list_manifest` SET `code_list_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `code_list_manifest`.`release_id`;
-
-ALTER TABLE `code_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `code_list_value_manifest` SET `code_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `code_list_value_manifest`.`release_id`;
-
-ALTER TABLE `dt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `dt_manifest` SET `dt_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `dt_manifest`.`release_id`;
-
-ALTER TABLE `dt_sc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `dt_sc_manifest` SET `dt_sc_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `dt_sc_manifest`.`release_id`;
-
-ALTER TABLE `module_set_release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `module_set_release` SET `module_set_release`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `module_set_release`.`release_id`;
-
-ALTER TABLE `top_level_asbiep` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `top_level_asbiep` SET `top_level_asbiep`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `top_level_asbiep`.`release_id`;
-
-ALTER TABLE `xbt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
-UPDATE `release`, `xbt_manifest` SET `xbt_manifest`.`release_uuid` = `release`.`release_uuid`
-WHERE `release`.`release_id` = `xbt_manifest`.`release_id`;
-
--- Drop old `release_id` columns
-ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_release_id_fk`;
-ALTER TABLE `acc_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_release_id_fk`;
-ALTER TABLE `agency_id_list_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_release_id_fk`;
-ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_release_id_fk`;
-ALTER TABLE `ascc_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_release_id_fk`;
-ALTER TABLE `asccp_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_release_id_fk`;
-ALTER TABLE `bcc_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_release_id_fk`;
-ALTER TABLE `bccp_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_release_id_fk`;
-ALTER TABLE `blob_content_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_release_id_fk`;
-ALTER TABLE `code_list_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_release_id_fk`;
-ALTER TABLE `code_list_value_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_release_id_fk`;
-ALTER TABLE `dt_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_manifest_release_id_fk`;
-ALTER TABLE `dt_sc_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_release_id_fk`;
-ALTER TABLE `module_set_release` DROP COLUMN `release_id`;
-
-ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_release_id_fk`;
-ALTER TABLE `top_level_asbiep` DROP COLUMN `release_id`;
-
-ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_release_id_fk`;
-ALTER TABLE `xbt_manifest` DROP COLUMN `release_id`;
-
-ALTER TABLE `release` DROP COLUMN `release_id`;
-
--- Rename `release_uuid` TO `release_id`
-ALTER TABLE `release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `acc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `agency_id_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `agency_id_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `ascc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `asccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `bcc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `bccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `blob_content_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `code_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `code_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `dt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `dt_sc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `module_set_release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `top_level_asbiep` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-ALTER TABLE `xbt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
-
--- Add foreign key constraints
-ALTER TABLE `release` ADD PRIMARY KEY (`release_id`);
-ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `module_set_release` ADD CONSTRAINT `module_set_release_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `top_level_asbiep` ADD CONSTRAINT `top_level_asbiep_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
-
--- --------------------------
--- Change 'log_id' TO UUID --
--- --------------------------
-ALTER TABLE `log` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `log_id`;
-CALL update_uuid('log');
-
-ALTER TABLE `log`
-    ADD COLUMN `prev_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_log_id`,
-    ADD COLUMN `next_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_log_id`;
-
-UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`prev_log_uuid` = tmp2.`log_uuid`
-WHERE tmp2.`log_id` = tmp1.`prev_log_id`;
-UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`next_log_uuid` = tmp2.`log_uuid`
-WHERE tmp2.`log_id` = tmp1.`next_log_id`;
-
-ALTER TABLE `acc_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `acc_manifest` SET `acc_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `acc_manifest`.`log_id`;
-
-ALTER TABLE `agency_id_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `agency_id_list_manifest`.`log_id`;
-
-ALTER TABLE `asccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `asccp_manifest` SET `asccp_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `asccp_manifest`.`log_id`;
-
-ALTER TABLE `bccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `bccp_manifest` SET `bccp_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `bccp_manifest`.`log_id`;
-
-ALTER TABLE `code_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `code_list_manifest` SET `code_list_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `code_list_manifest`.`log_id`;
-
-ALTER TABLE `dt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `dt_manifest` SET `dt_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `dt_manifest`.`log_id`;
-
-ALTER TABLE `xbt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
-UPDATE `log`, `xbt_manifest` SET `xbt_manifest`.`log_uuid` = `log`.`log_uuid`
-WHERE `log`.`log_id` = `xbt_manifest`.`log_id`;
-
--- Drop old `log_id` columns
-ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_log_id_fk`;
-ALTER TABLE `acc_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_log_id_fk`;
-ALTER TABLE `agency_id_list_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_log_id_fk`;
-ALTER TABLE `asccp_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_log_id_fk`;
-ALTER TABLE `bccp_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_log_id_fk`;
-ALTER TABLE `code_list_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_log_id_fk`;
-ALTER TABLE `dt_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_log_id_fk`;
-ALTER TABLE `xbt_manifest` DROP COLUMN `log_id`;
-
-ALTER TABLE `log` DROP FOREIGN KEY `log_prev_log_id_fk`;
-ALTER TABLE `log` DROP COLUMN `prev_log_id`;
-
-ALTER TABLE `log` DROP FOREIGN KEY `log_next_log_id_fk`;
-ALTER TABLE `log` DROP COLUMN `next_log_id`;
-
-ALTER TABLE `log` DROP COLUMN `log_id`;
-
--- Rename `log_uuid` TO `log_id`
-ALTER TABLE `log` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
-ALTER TABLE `log`
-    CHANGE `prev_log_uuid` `prev_log_id` char(36) CHARACTER SET ascii DEFAULT NULL,
-    CHANGE `next_log_uuid` `next_log_id` char(36) CHARACTER SET ascii DEFAULT NULL;
-ALTER TABLE `acc_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `agency_id_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `asccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `bccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `code_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `dt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-ALTER TABLE `xbt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
-
--- Add foreign key constraints
-ALTER TABLE `log` ADD PRIMARY KEY (`log_id`);
-ALTER TABLE `log`
-    ADD CONSTRAINT `log_prev_log_id_fk` FOREIGN KEY (`prev_log_id`) REFERENCES `log` (`log_id`),
-    ADD CONSTRAINT `log_next_log_id_fk` FOREIGN KEY (`next_log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
-ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
 
 -- ---------------------------------------------------------------------------
 -- Change `ctx_category_id`, `ctx_scheme_id`, `ctx_scheme_value_id`,        --
@@ -1759,12 +1538,18 @@ ALTER TABLE `ctx_scheme_value` DROP COLUMN `owner_ctx_scheme_id`;
 ALTER TABLE `ctx_scheme` DROP FOREIGN KEY `ctx_scheme_ctx_category_id_fk`;
 ALTER TABLE `ctx_scheme` DROP COLUMN `ctx_category_id`;
 
-ALTER TABLE `ctx_category` DROP COLUMN `ctx_category_id`;
-ALTER TABLE `ctx_scheme` DROP COLUMN `ctx_scheme_id`;
-ALTER TABLE `ctx_scheme_value` DROP COLUMN `ctx_scheme_value_id`;
-ALTER TABLE `biz_ctx` DROP COLUMN `biz_ctx_id`;
-ALTER TABLE `biz_ctx_value` DROP COLUMN `biz_ctx_value_id`;
-ALTER TABLE `biz_ctx_assignment` DROP COLUMN `biz_ctx_assignment_id`;
+ALTER TABLE `ctx_category` MODIFY COLUMN `ctx_category_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ctx_category` CHANGE `ctx_category_id` `old_ctx_category_id` BIGINT(20) unsigned;
+ALTER TABLE `ctx_scheme` MODIFY COLUMN `ctx_scheme_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ctx_scheme` CHANGE `ctx_scheme_id` `old_ctx_scheme_id` BIGINT(20) unsigned;
+ALTER TABLE `ctx_scheme_value` MODIFY COLUMN `ctx_scheme_value_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ctx_scheme_value` CHANGE `ctx_scheme_value_id` `old_ctx_scheme_value_id` BIGINT(20) unsigned;
+ALTER TABLE `biz_ctx` MODIFY COLUMN `biz_ctx_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `biz_ctx` CHANGE `biz_ctx_id` `old_biz_ctx_id` BIGINT(20) unsigned;
+ALTER TABLE `biz_ctx_value` MODIFY COLUMN `biz_ctx_value_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `biz_ctx_value` CHANGE `biz_ctx_value_id` `old_biz_ctx_value_id` BIGINT(20) unsigned;
+ALTER TABLE `biz_ctx_assignment` MODIFY COLUMN `biz_ctx_assignment_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `biz_ctx_assignment` CHANGE `biz_ctx_assignment_id` `old_biz_ctx_assignment_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `ctx_category` CHANGE `ctx_category_uuid` `ctx_category_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -1948,17 +1733,28 @@ ALTER TABLE `module_dt_manifest` DROP COLUMN `module_id`;
 ALTER TABLE `module_xbt_manifest` DROP FOREIGN KEY `module_xbt_manifest_module_id_fk`;
 ALTER TABLE `module_xbt_manifest` DROP COLUMN `module_id`;
 
-ALTER TABLE `module` DROP COLUMN `module_id`;
-ALTER TABLE `module_acc_manifest` DROP COLUMN `module_acc_manifest_id`;
-ALTER TABLE `module_agency_id_list_manifest` DROP COLUMN `module_agency_id_list_manifest_id`;
-ALTER TABLE `module_asccp_manifest` DROP COLUMN `module_asccp_manifest_id`;
-ALTER TABLE `module_bccp_manifest` DROP COLUMN `module_bccp_manifest_id`;
-ALTER TABLE `module_blob_content_manifest` DROP COLUMN `module_blob_content_manifest_id`;
-ALTER TABLE `module_code_list_manifest` DROP COLUMN `module_code_list_manifest_id`;
-ALTER TABLE `module_dt_manifest` DROP COLUMN `module_dt_manifest_id`;
-ALTER TABLE `module_set` DROP COLUMN `module_set_id`;
-ALTER TABLE `module_set_release` DROP COLUMN `module_set_release_id`;
-ALTER TABLE `module_xbt_manifest` DROP COLUMN `module_xbt_manifest_id`;
+ALTER TABLE `module` MODIFY COLUMN `module_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module` CHANGE `module_id` `old_module_id` BIGINT(20) unsigned;
+ALTER TABLE `module_acc_manifest` MODIFY COLUMN `module_acc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_acc_manifest` CHANGE `module_acc_manifest_id` `old_module_acc_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_agency_id_list_manifest` MODIFY COLUMN `module_agency_id_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_agency_id_list_manifest` CHANGE `module_agency_id_list_manifest_id` `old_module_agency_id_list_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_asccp_manifest` MODIFY COLUMN `module_asccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_asccp_manifest` CHANGE `module_asccp_manifest_id` `old_module_asccp_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_bccp_manifest` MODIFY COLUMN `module_bccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_bccp_manifest` CHANGE `module_bccp_manifest_id` `old_module_bccp_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_blob_content_manifest` MODIFY COLUMN `module_blob_content_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_blob_content_manifest` CHANGE `module_blob_content_manifest_id` `old_module_blob_content_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_code_list_manifest` MODIFY COLUMN `module_code_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_code_list_manifest` CHANGE `module_code_list_manifest_id` `old_module_code_list_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_dt_manifest` MODIFY COLUMN `module_dt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_dt_manifest` CHANGE `module_dt_manifest_id` `old_module_dt_manifest_id` BIGINT(20) unsigned;
+ALTER TABLE `module_set` MODIFY COLUMN `module_set_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_set` CHANGE `module_set_id` `old_module_set_id` BIGINT(20) unsigned;
+ALTER TABLE `module_set_release` MODIFY COLUMN `module_set_release_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_set_release` CHANGE `module_set_release_id` `old_module_set_release_id` BIGINT(20) unsigned;
+ALTER TABLE `module_xbt_manifest` MODIFY COLUMN `module_xbt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `module_xbt_manifest` CHANGE `module_xbt_manifest_id` `old_module_xbt_manifest_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `module` CHANGE `module_uuid` `module_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -2624,18 +2420,30 @@ ALTER TABLE `dt_usage_rule`
     DROP COLUMN `target_dt_id`,
     DROP COLUMN `target_dt_sc_id`;
 
-ALTER TABLE `acc` DROP COLUMN `acc_id`;
-ALTER TABLE `ascc` DROP COLUMN `ascc_id`;
-ALTER TABLE `bcc` DROP COLUMN `bcc_id`;
-ALTER TABLE `asccp` DROP COLUMN `asccp_id`;
-ALTER TABLE `bccp` DROP COLUMN `bccp_id`;
-ALTER TABLE `blob_content` DROP COLUMN `blob_content_id`;
-ALTER TABLE `dt` DROP COLUMN `dt_id`;
-ALTER TABLE `dt_sc` DROP COLUMN `dt_sc_id`;
-ALTER TABLE `code_list` DROP COLUMN `code_list_id`;
-ALTER TABLE `code_list_value` DROP COLUMN `code_list_value_id`;
-ALTER TABLE `agency_id_list` DROP COLUMN `agency_id_list_id`;
-ALTER TABLE `agency_id_list_value` DROP COLUMN `agency_id_list_value_id`;
+ALTER TABLE `acc` MODIFY COLUMN `acc_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `acc` CHANGE `acc_id` `old_acc_id` BIGINT(20) unsigned;
+ALTER TABLE `ascc` MODIFY COLUMN `ascc_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ascc` CHANGE `ascc_id` `old_ascc_id` BIGINT(20) unsigned;
+ALTER TABLE `bcc` MODIFY COLUMN `bcc_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bcc` CHANGE `bcc_id` `old_bcc_id` BIGINT(20) unsigned;
+ALTER TABLE `asccp` MODIFY COLUMN `asccp_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `asccp` CHANGE `asccp_id` `old_asccp_id` BIGINT(20) unsigned;
+ALTER TABLE `bccp` MODIFY COLUMN `bccp_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bccp` CHANGE `bccp_id` `old_bccp_id` BIGINT(20) unsigned;
+ALTER TABLE `blob_content` MODIFY COLUMN `blob_content_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `blob_content` CHANGE `blob_content_id` `old_blob_content_id` BIGINT(20) unsigned;
+ALTER TABLE `dt` MODIFY COLUMN `dt_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `dt` CHANGE `dt_id` `old_dt_id` BIGINT(20) unsigned;
+ALTER TABLE `dt_sc` MODIFY COLUMN `dt_sc_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `dt_sc` CHANGE `dt_sc_id` `old_dt_sc_id` BIGINT(20) unsigned;
+ALTER TABLE `code_list` MODIFY COLUMN `code_list_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `code_list` CHANGE `code_list_id` `old_code_list_id` BIGINT(20) unsigned;
+ALTER TABLE `code_list_value` MODIFY COLUMN `code_list_value_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `code_list_value` CHANGE `code_list_value_id` `old_code_list_value_id` BIGINT(20) unsigned;
+ALTER TABLE `agency_id_list` MODIFY COLUMN `agency_id_list_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `agency_id_list` CHANGE `agency_id_list_id` `old_agency_id_list_id` BIGINT(20) unsigned;
+ALTER TABLE `agency_id_list_value` MODIFY COLUMN `agency_id_list_value_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `agency_id_list_value` CHANGE `agency_id_list_value_id` `old_agency_id_list_value_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `acc` CHANGE `acc_uuid` `acc_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -2918,7 +2726,8 @@ ALTER TABLE `xbt_manifest` DROP COLUMN `xbt_id`;
 ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_subtype_of_xbt_id_fk`;
 ALTER TABLE `xbt` DROP COLUMN `subtype_of_xbt_id`;
 
-ALTER TABLE `xbt` DROP COLUMN `xbt_id`;
+ALTER TABLE `xbt` MODIFY COLUMN `xbt_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `xbt` CHANGE `xbt_id` `old_xbt_id` BIGINT(20) unsigned;
 
 -- Rename `xbt_uuid` TO `xbt_id`
 ALTER TABLE `xbt` CHANGE `xbt_uuid` `xbt_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -2957,7 +2766,8 @@ ALTER TABLE `cdt_awd_pri` DROP COLUMN `cdt_pri_id`;
 ALTER TABLE `cdt_sc_awd_pri` DROP FOREIGN KEY `cdt_sc_awd_pri_cdt_pri_id_fk`;
 ALTER TABLE `cdt_sc_awd_pri` DROP COLUMN `cdt_pri_id`;
 
-ALTER TABLE `cdt_pri` DROP COLUMN `cdt_pri_id`;
+ALTER TABLE `cdt_pri` MODIFY COLUMN `cdt_pri_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_pri` CHANGE `cdt_pri_id` `old_cdt_pri_id` BIGINT(20) unsigned;
 
 -- Rename `cdt_pri_uuid` TO `cdt_pri_id`
 ALTER TABLE `cdt_pri` CHANGE `cdt_pri_uuid` `cdt_pri_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -3019,11 +2829,14 @@ ALTER TABLE `cdt_awd_pri_xps_type_map` DROP COLUMN `cdt_awd_pri_id`;
 ALTER TABLE `cdt_sc_awd_pri_xps_type_map` DROP FOREIGN KEY `cdt_sc_awd_pri_xps_type_map_cdt_sc_awd_pri_id_fk`;
 ALTER TABLE `cdt_sc_awd_pri_xps_type_map` DROP COLUMN `cdt_sc_awd_pri_id`;
 
-ALTER TABLE `cdt_awd_pri` DROP COLUMN `cdt_awd_pri_id`;
-ALTER TABLE `cdt_sc_awd_pri` DROP COLUMN `cdt_sc_awd_pri_id`;
-
-ALTER TABLE `cdt_awd_pri_xps_type_map` DROP COLUMN `cdt_awd_pri_xps_type_map_id`;
-ALTER TABLE `cdt_sc_awd_pri_xps_type_map` DROP COLUMN `cdt_sc_awd_pri_xps_type_map_id`;
+ALTER TABLE `cdt_awd_pri` MODIFY COLUMN `cdt_awd_pri_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_awd_pri` CHANGE `cdt_awd_pri_id` `old_cdt_awd_pri_id` BIGINT(20) unsigned;
+ALTER TABLE `cdt_sc_awd_pri` MODIFY COLUMN `cdt_sc_awd_pri_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_sc_awd_pri` CHANGE `cdt_sc_awd_pri_id` `old_cdt_sc_awd_pri_id` BIGINT(20) unsigned;
+ALTER TABLE `cdt_awd_pri_xps_type_map` MODIFY COLUMN `cdt_awd_pri_xps_type_map_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_awd_pri_xps_type_map` CHANGE `cdt_awd_pri_xps_type_map_id` `old_cdt_awd_pri_xps_type_map_id` BIGINT(20) unsigned;
+ALTER TABLE `cdt_sc_awd_pri_xps_type_map` MODIFY COLUMN `cdt_sc_awd_pri_xps_type_map_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_sc_awd_pri_xps_type_map` CHANGE `cdt_sc_awd_pri_xps_type_map_id` `old_cdt_sc_awd_pri_xps_type_map_id` BIGINT(20) unsigned;
 
 -- Rename `cdt_awd_pri_uuid` TO `cdt_awd_pri_id`
 ALTER TABLE `cdt_awd_pri` CHANGE `cdt_awd_pri_uuid` `cdt_awd_pri_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -3421,44 +3234,298 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO `cdt_awd_pri_xps_type_map` (`cdt_awd_pri_xps_type_map_id`, `cdt_awd_pri_id`, `xbt_id`, `is_default`)
 SELECT uuid_v4s(), `cdt_awd_pri`.`cdt_awd_pri_id`, `xbt`.`xbt_id`, 0
 FROM `xbt`, `cdt_awd_pri`
-JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'Integer'
   AND `xbt`.`name` IN ('non positive integer', 'negative integer', 'long', 'int', 'short', 'byte', 'unsigned long', 'unsigned int', 'unsigned short', 'unsigned byte');
 
 INSERT INTO `cdt_awd_pri_xps_type_map` (`cdt_awd_pri_xps_type_map_id`, `cdt_awd_pri_id`, `xbt_id`, `is_default`)
 SELECT uuid_v4s(), `cdt_awd_pri`.`cdt_awd_pri_id`, `xbt`.`xbt_id`, 0
 FROM `xbt`, `cdt_awd_pri`
-JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'Token'
   AND `xbt`.`name` IN ('name', 'non-colonized name', 'name token', 'name tokens', 'identifier', 'identifier reference', 'identifier references', 'entity', 'entities');
 
 INSERT INTO `cdt_awd_pri_xps_type_map` (`cdt_awd_pri_xps_type_map_id`, `cdt_awd_pri_id`, `xbt_id`, `is_default`)
 SELECT uuid_v4s(), `cdt_awd_pri`.`cdt_awd_pri_id`, `xbt`.`xbt_id`, 0
 FROM `xbt`, `cdt_awd_pri`
-JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'String'
   AND `xbt`.`name` IN ('qualified name', 'notation');
 
 INSERT INTO `cdt_sc_awd_pri_xps_type_map` (`cdt_sc_awd_pri_xps_type_map_id`, `cdt_sc_awd_pri_id`, `xbt_id`)
 SELECT uuid_v4s(), `cdt_sc_awd_pri`.`cdt_sc_awd_pri_id`, `xbt`.`xbt_id`
 FROM `xbt`, `cdt_sc_awd_pri`
-JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'Integer'
   AND `xbt`.`name` IN ('non positive integer', 'negative integer', 'long', 'int', 'short', 'byte', 'unsigned long', 'unsigned int', 'unsigned short', 'unsigned byte');
 
 INSERT INTO `cdt_sc_awd_pri_xps_type_map` (`cdt_sc_awd_pri_xps_type_map_id`, `cdt_sc_awd_pri_id`, `xbt_id`)
 SELECT uuid_v4s(), `cdt_sc_awd_pri`.`cdt_sc_awd_pri_id`, `xbt`.`xbt_id`
 FROM `xbt`, `cdt_sc_awd_pri`
-JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'Token'
   AND `xbt`.`name` IN ('name', 'non-colonized name', 'name token', 'name tokens', 'identifier', 'identifier reference', 'identifier references', 'entity', 'entities');
 
 INSERT INTO `cdt_sc_awd_pri_xps_type_map` (`cdt_sc_awd_pri_xps_type_map_id`, `cdt_sc_awd_pri_id`, `xbt_id`)
 SELECT uuid_v4s(), `cdt_sc_awd_pri`.`cdt_sc_awd_pri_id`, `xbt`.`xbt_id`
 FROM `xbt`, `cdt_sc_awd_pri`
-JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
+                JOIN `cdt_pri` ON `cdt_sc_awd_pri`.`cdt_pri_id` = `cdt_pri`.`cdt_pri_id`
 WHERE `cdt_pri`.`name` = 'String'
   AND `xbt`.`name` IN ('qualified name', 'notation');
+
+-- --------------------------
+-- Change 'log_id' TO UUID --
+-- --------------------------
+ALTER TABLE `log` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `log_id`;
+CALL update_uuid('log');
+
+ALTER TABLE `log`
+    ADD COLUMN `prev_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `prev_log_id`,
+    ADD COLUMN `next_log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL AFTER `next_log_id`;
+
+UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`prev_log_uuid` = tmp2.`log_uuid`
+WHERE tmp2.`log_id` = tmp1.`prev_log_id`;
+UPDATE `log` AS tmp1, `log` AS tmp2 SET tmp1.`next_log_uuid` = tmp2.`log_uuid`
+WHERE tmp2.`log_id` = tmp1.`next_log_id`;
+
+ALTER TABLE `acc_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `acc_manifest` SET `acc_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `acc_manifest`.`log_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `agency_id_list_manifest`.`log_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `asccp_manifest` SET `asccp_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `asccp_manifest`.`log_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `bccp_manifest` SET `bccp_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `bccp_manifest`.`log_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `code_list_manifest` SET `code_list_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `code_list_manifest`.`log_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `dt_manifest` SET `dt_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `dt_manifest`.`log_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `log_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.' AFTER `log_id`;
+UPDATE `log`, `xbt_manifest` SET `xbt_manifest`.`log_uuid` = `log`.`log_uuid`
+WHERE `log`.`log_id` = `xbt_manifest`.`log_id`;
+
+-- Drop old `log_id` columns
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_log_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_log_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_log_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_log_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_log_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_log_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_log_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `log_id`;
+
+ALTER TABLE `log` DROP FOREIGN KEY `log_prev_log_id_fk`;
+ALTER TABLE `log` DROP COLUMN `prev_log_id`;
+
+ALTER TABLE `log` DROP FOREIGN KEY `log_next_log_id_fk`;
+ALTER TABLE `log` DROP COLUMN `next_log_id`;
+
+ALTER TABLE `log` MODIFY COLUMN `log_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `log` CHANGE `log_id` `old_log_id` BIGINT(20) unsigned;
+
+-- Rename `log_uuid` TO `log_id`
+ALTER TABLE `log` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `log`
+    CHANGE `prev_log_uuid` `prev_log_id` char(36) CHARACTER SET ascii DEFAULT NULL,
+    CHANGE `next_log_uuid` `next_log_id` char(36) CHARACTER SET ascii DEFAULT NULL;
+ALTER TABLE `acc_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `asccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `bccp_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `code_list_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `dt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+ALTER TABLE `xbt_manifest` CHANGE `log_uuid` `log_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'A foreign key pointed to a log for the current record.';
+
+-- Add foreign key constraints
+ALTER TABLE `log` ADD PRIMARY KEY (`log_id`);
+ALTER TABLE `log`
+    ADD CONSTRAINT `log_prev_log_id_fk` FOREIGN KEY (`prev_log_id`) REFERENCES `log` (`log_id`),
+    ADD CONSTRAINT `log_next_log_id_fk` FOREIGN KEY (`next_log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_log_id_fk` FOREIGN KEY (`log_id`) REFERENCES `log` (`log_id`);
+
+-- --------------------------------
+-- Change `release_id` TO UUID --
+-- --------------------------------
+ALTER TABLE `release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.' AFTER `release_id`;
+CALL update_uuid('release');
+
+-- Static UUID for 'Working' release.
+UPDATE `release` SET `release_uuid` = 'c6dcd936-4f4c-4c2c-97d0-b0eb62d157e7' WHERE `release_num` = 'Working';
+
+ALTER TABLE `acc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `acc_manifest` SET `acc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `acc_manifest`.`release_id`;
+
+ALTER TABLE `agency_id_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `agency_id_list_manifest` SET `agency_id_list_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `agency_id_list_manifest`.`release_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `agency_id_list_value_manifest` SET `agency_id_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `agency_id_list_value_manifest`.`release_id`;
+
+ALTER TABLE `ascc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `ascc_manifest` SET `ascc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `ascc_manifest`.`release_id`;
+
+ALTER TABLE `asccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `asccp_manifest` SET `asccp_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `asccp_manifest`.`release_id`;
+
+ALTER TABLE `bcc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `bcc_manifest` SET `bcc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `bcc_manifest`.`release_id`;
+
+ALTER TABLE `bccp_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `bccp_manifest` SET `bccp_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `bccp_manifest`.`release_id`;
+
+ALTER TABLE `blob_content_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `blob_content_manifest` SET `blob_content_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `blob_content_manifest`.`release_id`;
+
+ALTER TABLE `code_list_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `code_list_manifest` SET `code_list_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `code_list_manifest`.`release_id`;
+
+ALTER TABLE `code_list_value_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `code_list_value_manifest` SET `code_list_value_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `code_list_value_manifest`.`release_id`;
+
+ALTER TABLE `dt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `dt_manifest` SET `dt_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `dt_manifest`.`release_id`;
+
+ALTER TABLE `dt_sc_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `dt_sc_manifest` SET `dt_sc_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `dt_sc_manifest`.`release_id`;
+
+ALTER TABLE `module_set_release` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `module_set_release` SET `module_set_release`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `module_set_release`.`release_id`;
+
+ALTER TABLE `top_level_asbiep` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `top_level_asbiep` SET `top_level_asbiep`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `top_level_asbiep`.`release_id`;
+
+ALTER TABLE `xbt_manifest` ADD COLUMN `release_uuid` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.' AFTER `release_id`;
+UPDATE `release`, `xbt_manifest` SET `xbt_manifest`.`release_uuid` = `release`.`release_uuid`
+WHERE `release`.`release_id` = `xbt_manifest`.`release_id`;
+
+-- Drop old `release_id` columns
+ALTER TABLE `acc_manifest` DROP FOREIGN KEY `acc_manifest_release_id_fk`;
+ALTER TABLE `acc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `agency_id_list_manifest` DROP FOREIGN KEY `agency_id_list_manifest_release_id_fk`;
+ALTER TABLE `agency_id_list_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `agency_id_list_value_manifest` DROP FOREIGN KEY `agency_id_list_value_manifest_release_id_fk`;
+ALTER TABLE `agency_id_list_value_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `ascc_manifest` DROP FOREIGN KEY `ascc_manifest_release_id_fk`;
+ALTER TABLE `ascc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `asccp_manifest` DROP FOREIGN KEY `asccp_manifest_release_id_fk`;
+ALTER TABLE `asccp_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `bcc_manifest` DROP FOREIGN KEY `bcc_manifest_release_id_fk`;
+ALTER TABLE `bcc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `bccp_manifest` DROP FOREIGN KEY `bccp_manifest_release_id_fk`;
+ALTER TABLE `bccp_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `blob_content_manifest` DROP FOREIGN KEY `blob_content_manifest_release_id_fk`;
+ALTER TABLE `blob_content_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `code_list_manifest` DROP FOREIGN KEY `code_list_manifest_release_id_fk`;
+ALTER TABLE `code_list_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `code_list_value_manifest` DROP FOREIGN KEY `code_list_value_manifest_release_id_fk`;
+ALTER TABLE `code_list_value_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `dt_manifest` DROP FOREIGN KEY `dt_manifest_release_id_fk`;
+ALTER TABLE `dt_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `dt_sc_manifest` DROP FOREIGN KEY `dt_sc_manifest_release_id_fk`;
+ALTER TABLE `dt_sc_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `module_set_release` DROP FOREIGN KEY `module_set_release_release_id_fk`;
+ALTER TABLE `module_set_release` DROP COLUMN `release_id`;
+
+ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_release_id_fk`;
+ALTER TABLE `top_level_asbiep` DROP COLUMN `release_id`;
+
+ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_release_id_fk`;
+ALTER TABLE `xbt_manifest` DROP COLUMN `release_id`;
+
+ALTER TABLE `release` MODIFY COLUMN `release_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `release` CHANGE `release_id` `old_release_id` BIGINT(20) unsigned;
+
+-- Rename `release_uuid` TO `release_id`
+ALTER TABLE `release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
+ALTER TABLE `acc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `agency_id_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `ascc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `asccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `bcc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `bccp_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `blob_content_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `code_list_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `code_list_value_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `dt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `dt_sc_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `module_set_release` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `top_level_asbiep` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+ALTER TABLE `xbt_manifest` CHANGE `release_uuid` `release_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Foreign key to the RELEASE table.';
+
+-- Add foreign key constraints
+ALTER TABLE `release` ADD PRIMARY KEY (`release_id`);
+ALTER TABLE `acc_manifest` ADD CONSTRAINT `acc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `agency_id_list_manifest` ADD CONSTRAINT `agency_id_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `agency_id_list_value_manifest` ADD CONSTRAINT `agency_id_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `asccp_manifest` ADD CONSTRAINT `asccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `bccp_manifest` ADD CONSTRAINT `bccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `blob_content_manifest` ADD CONSTRAINT `blob_content_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `code_list_manifest` ADD CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `code_list_value_manifest` ADD CONSTRAINT `code_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `dt_manifest` ADD CONSTRAINT `dt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `dt_sc_manifest` ADD CONSTRAINT `dt_sc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `module_set_release` ADD CONSTRAINT `module_set_release_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `top_level_asbiep` ADD CONSTRAINT `top_level_asbiep_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
+ALTER TABLE `xbt_manifest` ADD CONSTRAINT `xbt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`);
 
 -- ------------------------------------------------
 -- Change `abie_id`, `asbie_id`, `bbie_id`,      --
@@ -3573,7 +3640,7 @@ ALTER TABLE `top_level_asbiep` ADD COLUMN `asbiep_uuid` char(36) CHARACTER SET a
 UPDATE `top_level_asbiep`, `asbiep` SET `top_level_asbiep`.`asbiep_uuid` = `asbiep`.`asbiep_uuid`
 WHERE `top_level_asbiep`.`asbiep_id` = `asbiep`.`asbiep_id`;
 
--- Drop old `xbt_id` columns
+-- Drop old `*_id` columns
 ALTER TABLE `abie` DROP FOREIGN KEY `abie_owner_top_level_asbiep_id_fk`;
 ALTER TABLE `abie` DROP COLUMN `owner_top_level_asbiep_id`;
 
@@ -3647,13 +3714,20 @@ ALTER TABLE `biz_ctx_assignment` DROP COLUMN `top_level_asbiep_id`;
 ALTER TABLE `top_level_asbiep` DROP FOREIGN KEY `top_level_asbiep_asbiep_id_fk`;
 ALTER TABLE `top_level_asbiep` DROP COLUMN `asbiep_id`;
 
-ALTER TABLE `abie` DROP COLUMN `abie_id`;
-ALTER TABLE `asbie` DROP COLUMN `asbie_id`;
-ALTER TABLE `bbie` DROP COLUMN `bbie_id`;
-ALTER TABLE `asbiep` DROP COLUMN `asbiep_id`;
-ALTER TABLE `bbiep` DROP COLUMN `bbiep_id`;
-ALTER TABLE `bbie_sc` DROP COLUMN `bbie_sc_id`;
-ALTER TABLE `top_level_asbiep` DROP COLUMN `top_level_asbiep_id`;
+ALTER TABLE `abie` MODIFY COLUMN `abie_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `abie` CHANGE `abie_id` `old_abie_id` BIGINT(20) unsigned;
+ALTER TABLE `asbie` MODIFY COLUMN `asbie_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `asbie` CHANGE `asbie_id` `old_asbie_id` BIGINT(20) unsigned;
+ALTER TABLE `bbie` MODIFY COLUMN `bbie_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bbie` CHANGE `bbie_id` `old_bbie_id` BIGINT(20) unsigned;
+ALTER TABLE `asbiep` MODIFY COLUMN `asbiep_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `asbiep` CHANGE `asbiep_id` `old_asbiep_id` BIGINT(20) unsigned;
+ALTER TABLE `bbiep` MODIFY COLUMN `bbiep_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bbiep` CHANGE `bbiep_id` `old_bbiep_id` BIGINT(20) unsigned;
+ALTER TABLE `bbie_sc` MODIFY COLUMN `bbie_sc_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bbie_sc` CHANGE `bbie_sc_id` `old_bbie_sc_id` BIGINT(20) unsigned;
+ALTER TABLE `top_level_asbiep` MODIFY COLUMN `top_level_asbiep_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `top_level_asbiep` CHANGE `top_level_asbiep_id` `old_top_level_asbiep_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `abie` CHANGE `abie_uuid` `abie_id` char(36) CHARACTER SET ascii DEFAULT NULL COMMENT 'Primary, internal database key.';
@@ -3962,28 +4036,50 @@ ALTER TABLE `oauth2_app_scope` DROP COLUMN `oauth2_app_id`;
 ALTER TABLE `usage_rule_expression` DROP FOREIGN KEY `usage_rule_expression_represented_usage_rule_id_fk`;
 ALTER TABLE `usage_rule_expression` DROP COLUMN `represented_usage_rule_id`;
 
-ALTER TABLE `app_oauth2_user` DROP COLUMN `app_oauth2_user_id`;
-ALTER TABLE `asbie_bizterm` DROP COLUMN `asbie_bizterm_id`;
-ALTER TABLE `ascc_bizterm` DROP COLUMN `ascc_bizterm_id`;
-ALTER TABLE `bbie_bizterm` DROP COLUMN `bbie_bizterm_id`;
-ALTER TABLE `bcc_bizterm` DROP COLUMN `bcc_bizterm_id`;
-ALTER TABLE `bdt_pri_restri` DROP COLUMN `bdt_pri_restri_id`;
-ALTER TABLE `bdt_sc_pri_restri` DROP COLUMN `bdt_sc_pri_restri_id`;
-ALTER TABLE `bie_usage_rule` DROP COLUMN `bie_usage_rule_id`;
-ALTER TABLE `bie_user_ext_revision` DROP COLUMN `bie_user_ext_revision_id`;
-ALTER TABLE `business_term` DROP COLUMN `business_term_id`;
-ALTER TABLE `cc_tag` DROP COLUMN `cc_tag_id`;
-ALTER TABLE `cdt_ref_spec` DROP COLUMN `cdt_ref_spec_id`;
-ALTER TABLE `cdt_sc_ref_spec` DROP COLUMN `cdt_sc_ref_spec_id`;
-ALTER TABLE `comment` DROP COLUMN `comment_id`;
-ALTER TABLE `dt_usage_rule` DROP COLUMN `dt_usage_rule_id`;
-ALTER TABLE `exception` DROP COLUMN `exception_id`;
-ALTER TABLE `message` DROP COLUMN `message_id`;
-ALTER TABLE `oauth2_app` DROP COLUMN `oauth2_app_id`;
-ALTER TABLE `oauth2_app_scope` DROP COLUMN `oauth2_app_scope_id`;
-ALTER TABLE `ref_spec` DROP COLUMN `ref_spec_id`;
-ALTER TABLE `usage_rule` DROP COLUMN `usage_rule_id`;
-ALTER TABLE `usage_rule_expression` DROP COLUMN `usage_rule_expression_id`;
+ALTER TABLE `app_oauth2_user` MODIFY COLUMN `app_oauth2_user_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `app_oauth2_user` CHANGE `app_oauth2_user_id` `old_app_oauth2_user_id` BIGINT(20) unsigned;
+ALTER TABLE `asbie_bizterm` MODIFY COLUMN `asbie_bizterm_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `asbie_bizterm` CHANGE `asbie_bizterm_id` `old_asbie_bizterm_id` BIGINT(20) unsigned;
+ALTER TABLE `ascc_bizterm` MODIFY COLUMN `ascc_bizterm_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ascc_bizterm` CHANGE `ascc_bizterm_id` `old_ascc_bizterm_id` BIGINT(20) unsigned;
+ALTER TABLE `bbie_bizterm` MODIFY COLUMN `bbie_bizterm_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bbie_bizterm` CHANGE `bbie_bizterm_id` `old_bbie_bizterm_id` BIGINT(20) unsigned;
+ALTER TABLE `bcc_bizterm` MODIFY COLUMN `bcc_bizterm_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bcc_bizterm` CHANGE `bcc_bizterm_id` `old_bcc_bizterm_id` BIGINT(20) unsigned;
+ALTER TABLE `bdt_pri_restri` MODIFY COLUMN `bdt_pri_restri_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bdt_pri_restri` CHANGE `bdt_pri_restri_id` `old_bdt_pri_restri_id` BIGINT(20) unsigned;
+ALTER TABLE `bdt_sc_pri_restri` MODIFY COLUMN `bdt_sc_pri_restri_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bdt_sc_pri_restri` CHANGE `bdt_sc_pri_restri_id` `old_bdt_sc_pri_restri_id` BIGINT(20) unsigned;
+ALTER TABLE `bie_usage_rule` MODIFY COLUMN `bie_usage_rule_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bie_usage_rule` CHANGE `bie_usage_rule_id` `old_bie_usage_rule_id` BIGINT(20) unsigned;
+ALTER TABLE `bie_user_ext_revision` MODIFY COLUMN `bie_user_ext_revision_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `bie_user_ext_revision` CHANGE `bie_user_ext_revision_id` `old_bie_user_ext_revision_id` BIGINT(20) unsigned;
+ALTER TABLE `business_term` MODIFY COLUMN `business_term_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `business_term` CHANGE `business_term_id` `old_business_term_id` BIGINT(20) unsigned;
+ALTER TABLE `cc_tag` MODIFY COLUMN `cc_tag_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cc_tag` CHANGE `cc_tag_id` `old_cc_tag_id` BIGINT(20) unsigned;
+ALTER TABLE `cdt_ref_spec` MODIFY COLUMN `cdt_ref_spec_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_ref_spec` CHANGE `cdt_ref_spec_id` `old_cdt_ref_spec_id` BIGINT(20) unsigned;
+ALTER TABLE `cdt_sc_ref_spec` MODIFY COLUMN `cdt_sc_ref_spec_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `cdt_sc_ref_spec` CHANGE `cdt_sc_ref_spec_id` `old_cdt_sc_ref_spec_id` BIGINT(20) unsigned;
+ALTER TABLE `comment` MODIFY COLUMN `comment_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `comment` CHANGE `comment_id` `old_comment_id` BIGINT(20) unsigned;
+ALTER TABLE `dt_usage_rule` MODIFY COLUMN `dt_usage_rule_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `dt_usage_rule` CHANGE `dt_usage_rule_id` `old_dt_usage_rule_id` BIGINT(20) unsigned;
+ALTER TABLE `exception` MODIFY COLUMN `exception_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `exception` CHANGE `exception_id` `old_exception_id` BIGINT(20) unsigned;
+ALTER TABLE `message` MODIFY COLUMN `message_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `message` CHANGE `message_id` `old_message_id` BIGINT(20) unsigned;
+ALTER TABLE `oauth2_app` MODIFY COLUMN `oauth2_app_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `oauth2_app` CHANGE `oauth2_app_id` `old_oauth2_app_id` BIGINT(20) unsigned;
+ALTER TABLE `oauth2_app_scope` MODIFY COLUMN `oauth2_app_scope_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `oauth2_app_scope` CHANGE `oauth2_app_scope_id` `old_oauth2_app_scope_id` BIGINT(20) unsigned;
+ALTER TABLE `ref_spec` MODIFY COLUMN `ref_spec_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `ref_spec` CHANGE `ref_spec_id` `old_ref_spec_id` BIGINT(20) unsigned;
+ALTER TABLE `usage_rule` MODIFY COLUMN `usage_rule_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `usage_rule` CHANGE `usage_rule_id` `old_usage_rule_id` BIGINT(20) unsigned;
+ALTER TABLE `usage_rule_expression` MODIFY COLUMN `usage_rule_expression_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `usage_rule_expression` CHANGE `usage_rule_expression_id` `old_usage_rule_expression_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `app_oauth2_user` CHANGE `app_oauth2_user_uuid` `app_oauth2_user_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -4652,43 +4748,34 @@ ALTER TABLE `xbt_manifest` DROP FOREIGN KEY `xbt_manifest_next_xbt_manifest_id_f
 ALTER TABLE `xbt_manifest` DROP COLUMN `next_xbt_manifest_id`;
 
 ALTER TABLE `acc_manifest` MODIFY COLUMN `acc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `acc_manifest` CHANGE `acc_manifest_id` `acc_manifest_id_old` BIGINT(20) unsigned;
+ALTER TABLE `acc_manifest` CHANGE `old_acc_manifest_id` `acc_manifest_id` BIGINT(20) unsigned;
 
 ALTER TABLE `agency_id_list_manifest` MODIFY COLUMN `agency_id_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `agency_id_list_manifest` CHANGE `agency_id_list_manifest_id` `agency_id_list_manifest_id_old` BIGINT(20) unsigned;
+ALTER TABLE `agency_id_list_manifest` CHANGE `old_agency_id_list_manifest_id` `agency_id_list_manifest_id` BIGINT(20) unsigned;
 
 ALTER TABLE `agency_id_list_value_manifest` MODIFY COLUMN `agency_id_list_value_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `agency_id_list_value_manifest` CHANGE `agency_id_list_value_manifest_id` `agency_id_list_value_manifest_id_old` BIGINT(20) unsigned;
+ALTER TABLE `agency_id_list_value_manifest` CHANGE `old_agency_id_list_value_manifest_id` `agency_id_list_value_manifest_id` BIGINT(20) unsigned;
 
 ALTER TABLE `ascc_manifest` MODIFY COLUMN `ascc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `ascc_manifest` CHANGE `ascc_manifest_id` `ascc_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `ascc_manifest` CHANGE `ascc_manifest_id` `old_ascc_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `asccp_manifest` MODIFY COLUMN `asccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `asccp_manifest` CHANGE `asccp_manifest_id` `asccp_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `asccp_manifest` CHANGE `asccp_manifest_id` `old_asccp_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `bcc_manifest` MODIFY COLUMN `bcc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `bcc_manifest` CHANGE `bcc_manifest_id` `bcc_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `bcc_manifest` CHANGE `bcc_manifest_id` `old_bcc_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `bccp_manifest` MODIFY COLUMN `bccp_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `bccp_manifest` CHANGE `bccp_manifest_id` `bccp_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `bccp_manifest` CHANGE `bccp_manifest_id` `old_bccp_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `blob_content_manifest` MODIFY COLUMN `blob_content_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `blob_content_manifest` CHANGE `blob_content_manifest_id` `blob_content_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `blob_content_manifest` CHANGE `blob_content_manifest_id` `old_blob_content_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `code_list_manifest` MODIFY COLUMN `code_list_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `code_list_manifest` CHANGE `code_list_manifest_id` `code_list_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `code_list_manifest` CHANGE `code_list_manifest_id` `old_code_list_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `code_list_value_manifest` MODIFY COLUMN `code_list_value_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_manifest_id` `code_list_value_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `code_list_value_manifest` CHANGE `code_list_value_manifest_id` `old_code_list_value_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `dt_manifest` MODIFY COLUMN `dt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `dt_manifest` CHANGE `dt_manifest_id` `dt_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `dt_manifest` CHANGE `dt_manifest_id` `old_dt_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `dt_sc_manifest` MODIFY COLUMN `dt_sc_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_manifest_id` `dt_sc_manifest_id_old` BIGINT(20) unsigned;
-
+ALTER TABLE `dt_sc_manifest` CHANGE `dt_sc_manifest_id` `old_dt_sc_manifest_id` BIGINT(20) unsigned;
 ALTER TABLE `xbt_manifest` MODIFY COLUMN `xbt_manifest_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
-ALTER TABLE `xbt_manifest` CHANGE `xbt_manifest_id` `xbt_manifest_id_old` BIGINT(20) unsigned;
+ALTER TABLE `xbt_manifest` CHANGE `xbt_manifest_id` `old_xbt_manifest_id` BIGINT(20) unsigned;
 
 -- Rename `*_uuid` TO `*_id`
 ALTER TABLE `acc_manifest` CHANGE `acc_manifest_uuid` `acc_manifest_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -4913,7 +5000,8 @@ ALTER TABLE `seq_key` DROP COLUMN `prev_seq_key_id`;
 ALTER TABLE `seq_key` DROP FOREIGN KEY `seq_key_next_seq_key_id_fk`;
 ALTER TABLE `seq_key` DROP COLUMN `next_seq_key_id`;
 
-ALTER TABLE `seq_key` DROP COLUMN `seq_key_id`;
+ALTER TABLE `seq_key` MODIFY COLUMN `seq_key_id` BIGINT(20) unsigned, DROP PRIMARY KEY;
+ALTER TABLE `seq_key` CHANGE `seq_key_id` `old_seq_key_id` BIGINT(20) unsigned;
 
 -- Rename `seq_key_uuid` TO `seq_key_id`
 ALTER TABLE `seq_key` CHANGE `seq_key_uuid` `seq_key_id` char(36) CHARACTER SET ascii NOT NULL COMMENT 'Primary, internal database key.';
@@ -4930,3 +5018,5 @@ ALTER TABLE `ascc_manifest` ADD CONSTRAINT `ascc_manifest_seq_key_id_fk` FOREIGN
 ALTER TABLE `bcc_manifest` ADD CONSTRAINT `bcc_manifest_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
 ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
 ALTER TABLE `seq_key` ADD CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+
+DROP PROCEDURE IF EXISTS `update_uuid`;
