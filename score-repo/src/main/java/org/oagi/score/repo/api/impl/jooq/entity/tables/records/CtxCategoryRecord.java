@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
  * described in the CCTS are business process, industry, etc.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Internal,
-     * primary, database key.
+     * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Primary,
+     * internal database key.
      */
-    public void setCtxCategoryId(ULong value) {
+    public void setCtxCategoryId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_category.ctx_category_id</code>. Internal,
-     * primary, database key.
+     * Getter for <code>oagi.ctx_category.ctx_category_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getCtxCategoryId() {
-        return (ULong) get(0);
+    public String getCtxCategoryId() {
+        return (String) get(0);
     }
 
     /**
@@ -92,7 +91,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
      * Setter for <code>oagi.ctx_category.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created the context category.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(4, value);
     }
 
@@ -100,8 +99,8 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
      * Getter for <code>oagi.ctx_category.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created the context category.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(4);
+    public String getCreatedBy() {
+        return (String) get(4);
     }
 
     /**
@@ -109,7 +108,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
      * the APP_USER table. It identifies the user who last updated the context
      * category.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(5, value);
     }
 
@@ -118,8 +117,8 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
      * the APP_USER table. It identifies the user who last updated the context
      * category.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(5);
+    public String getLastUpdatedBy() {
+        return (String) get(5);
     }
 
     /**
@@ -159,7 +158,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -168,17 +167,17 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     @Override
-    public Row8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row8) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID;
     }
 
@@ -198,12 +197,12 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<String> field5() {
         return CtxCategory.CTX_CATEGORY.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return CtxCategory.CTX_CATEGORY.LAST_UPDATED_BY;
     }
 
@@ -218,7 +217,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCtxCategoryId();
     }
 
@@ -238,12 +237,12 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong component5() {
+    public String component5() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getLastUpdatedBy();
     }
 
@@ -258,7 +257,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCtxCategoryId();
     }
 
@@ -278,12 +277,12 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public ULong value5() {
+    public String value5() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getLastUpdatedBy();
     }
 
@@ -298,7 +297,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public CtxCategoryRecord value1(ULong value) {
+    public CtxCategoryRecord value1(String value) {
         setCtxCategoryId(value);
         return this;
     }
@@ -322,13 +321,13 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public CtxCategoryRecord value5(ULong value) {
+    public CtxCategoryRecord value5(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public CtxCategoryRecord value6(ULong value) {
+    public CtxCategoryRecord value6(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -346,7 +345,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     @Override
-    public CtxCategoryRecord values(ULong value1, String value2, String value3, String value4, ULong value5, ULong value6, LocalDateTime value7, LocalDateTime value8) {
+    public CtxCategoryRecord values(String value1, String value2, String value3, String value4, String value5, String value6, LocalDateTime value7, LocalDateTime value8) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -372,7 +371,7 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     /**
      * Create a detached, initialised CtxCategoryRecord
      */
-    public CtxCategoryRecord(ULong ctxCategoryId, String guid, String name, String description, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public CtxCategoryRecord(String ctxCategoryId, String guid, String name, String description, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxCategory.CTX_CATEGORY);
 
         setCtxCategoryId(ctxCategoryId);

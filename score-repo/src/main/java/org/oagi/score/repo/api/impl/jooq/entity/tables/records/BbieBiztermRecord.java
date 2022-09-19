@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record9;
 import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
 
 
@@ -20,47 +19,47 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
  * bbie_bizterm and BBIE. TODO: Placeholder, definition is missing.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> implements Record9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> implements Record9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
-     * primary database key of an bbie_bizterm record.
+     * Setter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public void setBbieBiztermId(ULong value) {
+    public void setBbieBiztermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
-     * primary database key of an bbie_bizterm record.
+     * Getter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public ULong getBbieBiztermId() {
-        return (ULong) get(0);
+    public String getBbieBiztermId() {
+        return (String) get(0);
     }
 
     /**
      * Setter for <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bbie_bizterm record.
+     * of the bcc_business_term record.
      */
-    public void setBccBiztermId(ULong value) {
+    public void setBccBiztermId(String value) {
         set(1, value);
     }
 
     /**
      * Getter for <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bbie_bizterm record.
+     * of the bcc_business_term record.
      */
-    public ULong getBccBiztermId() {
-        return (ULong) get(1);
+    public String getBccBiztermId() {
+        return (String) get(1);
     }
 
     /**
      * Setter for <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
      * associated BBIE
      */
-    public void setBbieId(ULong value) {
+    public void setBbieId(String value) {
         set(2, value);
     }
 
@@ -68,8 +67,8 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
      * Getter for <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
      * associated BBIE
      */
-    public ULong getBbieId() {
-        return (ULong) get(2);
+    public String getBbieId() {
+        return (String) get(2);
     }
 
     /**
@@ -106,38 +105,38 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Setter for <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bbie_bizterm record. The creator of
-     * the asbie_bizterm is also its owner by default.
+     * referring to the user who creates the BBIE_BIZTERM record. The creator of
+     * the ASBIE_BIZTERM is also its owner by default.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(5, value);
     }
 
     /**
      * Getter for <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bbie_bizterm record. The creator of
-     * the asbie_bizterm is also its owner by default.
+     * referring to the user who creates the BBIE_BIZTERM record. The creator of
+     * the ASBIE_BIZTERM is also its owner by default.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(5);
+    public String getCreatedBy() {
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bbie_bizterm record. This
+     * referring to the last user who has updated the BBIE_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(6, value);
     }
 
     /**
      * Getter for <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bbie_bizterm record. This
+     * referring to the last user who has updated the BBIE_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(6);
+    public String getLastUpdatedBy() {
+        return (String) get(6);
     }
 
     /**
@@ -177,7 +176,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -186,27 +185,27 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row9) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BbieBizterm.BBIE_BIZTERM.BBIE_BIZTERM_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BbieBizterm.BBIE_BIZTERM.BCC_BIZTERM_ID;
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return BbieBizterm.BBIE_BIZTERM.BBIE_ID;
     }
 
@@ -221,12 +220,12 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return BbieBizterm.BBIE_BIZTERM.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return BbieBizterm.BBIE_BIZTERM.LAST_UPDATED_BY;
     }
 
@@ -241,17 +240,17 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBbieBiztermId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getBccBiztermId();
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getBbieId();
     }
 
@@ -266,12 +265,12 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getLastUpdatedBy();
     }
 
@@ -286,17 +285,17 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBbieBiztermId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getBccBiztermId();
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getBbieId();
     }
 
@@ -311,12 +310,12 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getLastUpdatedBy();
     }
 
@@ -331,19 +330,19 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public BbieBiztermRecord value1(ULong value) {
+    public BbieBiztermRecord value1(String value) {
         setBbieBiztermId(value);
         return this;
     }
 
     @Override
-    public BbieBiztermRecord value2(ULong value) {
+    public BbieBiztermRecord value2(String value) {
         setBccBiztermId(value);
         return this;
     }
 
     @Override
-    public BbieBiztermRecord value3(ULong value) {
+    public BbieBiztermRecord value3(String value) {
         setBbieId(value);
         return this;
     }
@@ -361,13 +360,13 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public BbieBiztermRecord value6(ULong value) {
+    public BbieBiztermRecord value6(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BbieBiztermRecord value7(ULong value) {
+    public BbieBiztermRecord value7(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -385,7 +384,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     }
 
     @Override
-    public BbieBiztermRecord values(ULong value1, ULong value2, ULong value3, String value4, String value5, ULong value6, ULong value7, LocalDateTime value8, LocalDateTime value9) {
+    public BbieBiztermRecord values(String value1, String value2, String value3, String value4, String value5, String value6, String value7, LocalDateTime value8, LocalDateTime value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -412,7 +411,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     /**
      * Create a detached, initialised BbieBiztermRecord
      */
-    public BbieBiztermRecord(ULong bbieBiztermId, ULong bccBiztermId, ULong bbieId, String primaryIndicator, String typeCode, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public BbieBiztermRecord(String bbieBiztermId, String bccBiztermId, String bbieId, String primaryIndicator, String typeCode, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BbieBizterm.BBIE_BIZTERM);
 
         setBbieBiztermId(bbieBiztermId);

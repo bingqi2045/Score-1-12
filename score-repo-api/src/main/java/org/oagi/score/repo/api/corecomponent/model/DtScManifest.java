@@ -3,66 +3,65 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class DtScManifest implements CcManifest, Serializable {
 
-    private BigInteger dtScManifestId;
+    private String dtScManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger dtScId;
+    private String dtScId;
 
-    private BigInteger ownerDtManifestId;
+    private String ownerDtManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevDtScManifestId;
+    private String prevDtScManifestId;
 
-    private BigInteger nextDtScManifestId;
+    private String nextDtScManifestId;
 
-    public BigInteger getDtScManifestId() {
+    public String getDtScManifestId() {
         return dtScManifestId;
     }
 
-    public void setDtScManifestId(BigInteger dtScManifestId) {
+    public void setDtScManifestId(String dtScManifestId) {
         this.dtScManifestId = dtScManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getDtScManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getDtScId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtScId() {
+    public String getDtScId() {
         return dtScId;
     }
 
-    public void setDtScId(BigInteger dtScId) {
+    public void setDtScId(String dtScId) {
         this.dtScId = dtScId;
     }
 
-    public BigInteger getOwnerDtManifestId() {
+    public String getOwnerDtManifestId() {
         return ownerDtManifestId;
     }
 
-    public void setOwnerDtManifestId(BigInteger ownerDtManifestId) {
+    public void setOwnerDtManifestId(String ownerDtManifestId) {
         this.ownerDtManifestId = ownerDtManifestId;
     }
 
@@ -74,27 +73,27 @@ public class DtScManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevDtScManifestId() {
+    public String getPrevDtScManifestId() {
         return prevDtScManifestId;
     }
 
-    public void setPrevDtScManifestId(BigInteger prevDtScManifestId) {
+    public void setPrevDtScManifestId(String prevDtScManifestId) {
         this.prevDtScManifestId = prevDtScManifestId;
     }
 
-    public BigInteger getNextDtScManifestId() {
+    public String getNextDtScManifestId() {
         return nextDtScManifestId;
     }
 
-    public void setNextDtScManifestId(BigInteger nextDtScManifestId) {
+    public void setNextDtScManifestId(String nextDtScManifestId) {
         this.nextDtScManifestId = nextDtScManifestId;
     }
 }

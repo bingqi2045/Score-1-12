@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.acc;
 
-import java.math.BigInteger;
-
 public class CreateAccRepositoryResponse {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
-    public CreateAccRepositoryResponse(BigInteger accManifestId) {
+    public CreateAccRepositoryResponse(String accManifestId) {
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 }

@@ -1,16 +1,11 @@
 package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Request;
-import org.oagi.score.repo.api.businesscontext.model.BusinessContextValue;
 import org.oagi.score.repo.api.user.model.ScoreUser;
-
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
 
 public class UpdateBusinessTermRequest extends Request {
 
-    private BigInteger businessTermId;
+    private String businessTermId;
 
     private String businessTerm;
 
@@ -24,15 +19,15 @@ public class UpdateBusinessTermRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 
-    public UpdateBusinessTermRequest withBusinessTermId(BigInteger businessTermId) {
+    public UpdateBusinessTermRequest withBusinessTermId(String businessTermId) {
         this.setBusinessTermId(businessTermId);
         return this;
     }

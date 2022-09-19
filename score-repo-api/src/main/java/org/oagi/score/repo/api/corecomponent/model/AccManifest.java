@@ -3,66 +3,65 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class AccManifest implements CcManifest, Serializable {
 
-    private BigInteger accManifestId;
+    private String accManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger accId;
+    private String accId;
 
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevAccManifestId;
+    private String prevAccManifestId;
 
-    private BigInteger nextAccManifestId;
+    private String nextAccManifestId;
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public void setAccManifestId(BigInteger accManifestId) {
+    public void setAccManifestId(String accManifestId) {
         this.accManifestId = accManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getAccManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getAccId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAccId() {
+    public String getAccId() {
         return accId;
     }
 
-    public void setAccId(BigInteger accId) {
+    public void setAccId(String accId) {
         this.accId = accId;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 
-    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+    public void setBasedAccManifestId(String basedAccManifestId) {
         this.basedAccManifestId = basedAccManifestId;
     }
 
@@ -74,27 +73,27 @@ public class AccManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevAccManifestId() {
+    public String getPrevAccManifestId() {
         return prevAccManifestId;
     }
 
-    public void setPrevAccManifestId(BigInteger prevAccManifestId) {
+    public void setPrevAccManifestId(String prevAccManifestId) {
         this.prevAccManifestId = prevAccManifestId;
     }
 
-    public BigInteger getNextAccManifestId() {
+    public String getNextAccManifestId() {
         return nextAccManifestId;
     }
 
-    public void setNextAccManifestId(BigInteger nextAccManifestId) {
+    public void setNextAccManifestId(String nextAccManifestId) {
         this.nextAccManifestId = nextAccManifestId;
     }
 }

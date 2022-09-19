@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BdtPriRestriRecord;
@@ -62,34 +60,32 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
      * The column <code>oagi.bdt_pri_restri.bdt_pri_restri_id</code>. Primary,
      * internal database key.
      */
-    public final TableField<BdtPriRestriRecord, ULong> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BdtPriRestriRecord, String> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.bdt_id</code>. Foreign key to the DT
      * table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public final TableField<BdtPriRestriRecord, ULong> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
+    public final TableField<BdtPriRestriRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
 
     /**
      * The column <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
-     * for a primitive restriction based on a built-in type of schema
-     * expressions.
+     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
      */
-    public final TableField<BdtPriRestriRecord, ULong> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows for a primitive restriction based on a built-in type of schema expressions.");
+    public final TableField<BdtPriRestriRecord, String> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.code_list_id</code>. Foreign key to
      * the CODE_LIST table.
      */
-    public final TableField<BdtPriRestriRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the CODE_LIST table.");
+    public final TableField<BdtPriRestriRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST table.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.agency_id_list_id</code>. This is a
      * foreign key to the AGENCY_ID_LIST table. It is used in the case that the
      * BDT content can be restricted to an agency identification.
      */
-    public final TableField<BdtPriRestriRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
+    public final TableField<BdtPriRestriRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.is_default</code>. This allows
@@ -135,11 +131,6 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BdtPriRestriRecord, ULong> getIdentity() {
-        return (Identity<BdtPriRestriRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -242,21 +233,22 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row6<String, String, String, String, String, Byte> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,9 +38,9 @@ public class CommentService {
 
     @Transactional
     public void postComments(AuthenticatedPrincipal user, PostCommentRequest request) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
 
-        long commentId = repository.insertComment()
+        String commentId = repository.insertComment()
                 .setReference(request.getReference())
                 .setText(request.getText())
                 .setPrevCommentId(request.getPrevCommentId())
@@ -65,9 +64,9 @@ public class CommentService {
 
     @Transactional
     public void updateComments(AuthenticatedPrincipal user, UpdateCommentRequest request) {
-        BigInteger userId = sessionService.userId(user);
-        BigInteger ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
-        if (ownerId.equals(BigInteger.ZERO)) {
+        String userId = sessionService.userId(user);
+        String ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
+        if (ownerId == null) {
             throw new EmptyResultDataAccessException(1);
         }
 

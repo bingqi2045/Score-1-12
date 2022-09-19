@@ -3,7 +3,6 @@ package org.oagi.score.service.bie;
 import org.oagi.score.repo.api.bie.model.*;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,11 +16,11 @@ public interface BieDocument {
 
     Asbiep getAsbiep(Asbie asbie);
 
-    Bbie getBbie(BigInteger bbieId);
+    Bbie getBbie(String bbieId);
 
     Bbiep getBbiep(Bbie bbie);
 
-    BbieSc getBbieSc(BigInteger bbieScId);
+    BbieSc getBbieSc(String bbieScId);
 
     List<BbieSc> getBbieScList(Bbie bbie);
 

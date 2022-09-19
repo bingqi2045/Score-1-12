@@ -5,14 +5,13 @@ import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.model.LogAction;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class CreateBccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
-    private final BigInteger accManifestId;
-    private final BigInteger bccpManifestId;
+    private final String releaseId;
+    private final String accManifestId;
+    private final String bccpManifestId;
     private final boolean attribute;
     private int pos = -1;
     private String logHash;
@@ -21,9 +20,9 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     private CcState initialState = CcState.WIP;
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
-                                      BigInteger releaseId,
-                                      BigInteger accManifestId,
-                                      BigInteger bccpManifestId,
+                                      String releaseId,
+                                      String accManifestId,
+                                      String bccpManifestId,
                                       boolean attribute) {
         super(user);
         this.releaseId = releaseId;
@@ -34,9 +33,9 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     public CreateBccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger releaseId,
-                                      BigInteger accManifestId,
-                                      BigInteger bccpManifestId,
+                                      String releaseId,
+                                      String accManifestId,
+                                      String bccpManifestId,
                                       boolean attribute) {
         super(user, localDateTime);
         this.releaseId = releaseId;
@@ -45,15 +44,15 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
         this.attribute = attribute;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 

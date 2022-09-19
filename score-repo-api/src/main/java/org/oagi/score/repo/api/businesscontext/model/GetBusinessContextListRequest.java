@@ -3,15 +3,14 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
 public class GetBusinessContextListRequest extends PaginationRequest<BusinessContext> {
 
-    private Collection<BigInteger> businessContextIdList;
-    private Collection<BigInteger> topLevelAsbiepIdList;
+    private Collection<String> businessContextIdList;
+    private Collection<String> topLevelAsbiepIdList;
     private String name;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
@@ -21,28 +20,28 @@ public class GetBusinessContextListRequest extends PaginationRequest<BusinessCon
         super(requester, BusinessContext.class);
     }
 
-    public Collection<BigInteger> getBusinessContextIdList() {
+    public Collection<String> getBusinessContextIdList() {
         return (businessContextIdList == null) ? Collections.emptyList() : businessContextIdList;
     }
 
-    public void setBusinessContextIdList(Collection<BigInteger> businessContextIdList) {
+    public void setBusinessContextIdList(Collection<String> businessContextIdList) {
         this.businessContextIdList = businessContextIdList;
     }
 
-    public GetBusinessContextListRequest withBusinessContextIdList(Collection<BigInteger> businessContextIdList) {
+    public GetBusinessContextListRequest withBusinessContextIdList(Collection<String> businessContextIdList) {
         this.setBusinessContextIdList(businessContextIdList);
         return this;
     }
 
-    public Collection<BigInteger> getTopLevelAsbiepIdList() {
+    public Collection<String> getTopLevelAsbiepIdList() {
         return (topLevelAsbiepIdList == null) ? Collections.emptyList() : topLevelAsbiepIdList;
     }
 
-    public void setTopLevelAsbiepIdList(Collection<BigInteger> topLevelAsbiepIdList) {
+    public void setTopLevelAsbiepIdList(Collection<String> topLevelAsbiepIdList) {
         this.topLevelAsbiepIdList = topLevelAsbiepIdList;
     }
 
-    public GetBusinessContextListRequest withTopLevelAsbiepIdList(Collection<BigInteger> topLevelAsbiepIdList) {
+    public GetBusinessContextListRequest withTopLevelAsbiepIdList(Collection<String> topLevelAsbiepIdList) {
         this.setTopLevelAsbiepIdList(topLevelAsbiepIdList);
         return this;
     }

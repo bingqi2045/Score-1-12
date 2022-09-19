@@ -1,15 +1,13 @@
 package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
-
-import java.math.BigInteger;
+import org.oagi.score.service.common.data.CcState;
 
 @Data
 public class CcAccNodeDetail implements CcNodeDetail {
     private CcType type = CcType.ACC;
-    private BigInteger accId;
+    private String accId;
     private String guid;
     private String objectClassTerm;
     private String den;
@@ -18,14 +16,14 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private boolean deprecated;
     private String definition;
     private String definitionSource;
-    private BigInteger manifestId;
-    private BigInteger namespaceId;
+    private String manifestId;
+    private String namespaceId;
 
     private CcState state;
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
 }

@@ -17,7 +17,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -133,19 +136,19 @@ public class LogSerializer {
                                    List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
                                    List<SeqKeyRecord> seqKeyRecords) {
 
-        Map<ULong, AsccManifestRecord> asccManifestRecordMap = asccManifestRecords.stream().collect(
+        Map<String, AsccManifestRecord> asccManifestRecordMap = asccManifestRecords.stream().collect(
                 Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
-        Map<ULong, BccManifestRecord> bccManifestRecordMap = bccManifestRecords.stream().collect(
+        Map<String, BccManifestRecord> bccManifestRecordMap = bccManifestRecords.stream().collect(
                 Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
 
-        Map<ULong, AsccRecord> asccRecordMap = asccRecords.stream().collect(
+        Map<String, AsccRecord> asccRecordMap = asccRecords.stream().collect(
                 Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
-        Map<ULong, BccRecord> bccRecordMap = bccRecords.stream().collect(
+        Map<String, BccRecord> bccRecordMap = bccRecords.stream().collect(
                 Collectors.toMap(BccRecord::getBccId, Function.identity()));
 
         List<AssocRecord> sortedRecords = new ArrayList();
         if (!seqKeyRecords.isEmpty()) {
-            Map<ULong, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
+            Map<String, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
                     Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
             SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
             while (node != null) {
@@ -336,7 +339,7 @@ public class LogSerializer {
         List<Map<String, Object>> supplementaryComponents = new ArrayList();
         properties.put("supplementaryComponents", supplementaryComponents);
 
-        Map<ULong, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
+        Map<String, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
                 Collectors.toMap(DtScRecord::getDtScId, Function.identity()));
         for (DtScManifestRecord dtScManifestRecord : dtScManifestRecords) {
             DtScRecord dtScRecord = dtScRecordMap.get(dtScManifestRecord.getDtScId());
@@ -358,7 +361,7 @@ public class LogSerializer {
         List<Map<String, Object>> supplementaryComponents = new ArrayList();
         metadata.put("supplementaryComponents", supplementaryComponents);
 
-        Map<ULong, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
+        Map<String, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
                 Collectors.toMap(DtScRecord::getDtScId, Function.identity()));
         for (DtScManifestRecord dtScManifestRecord : dtScManifestRecords) {
             DtScRecord dtScRecord = dtScRecordMap.get(dtScManifestRecord.getDtScId());
@@ -417,7 +420,7 @@ public class LogSerializer {
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
 
-        Map<ULong, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
+        Map<String, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
                 Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
         for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecords) {
             CodeListValueRecord codeListValueRecord = codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
@@ -441,7 +444,7 @@ public class LogSerializer {
         List<Map<String, Object>> values = new ArrayList();
         metadata.put("values", values);
 
-        Map<ULong, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
+        Map<String, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
                 Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
         for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecords) {
             CodeListValueRecord codeListValueRecord = codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
@@ -493,7 +496,7 @@ public class LogSerializer {
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
 
-        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
+        Map<String, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
                 Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
         for (AgencyIdListValueManifestRecord agencyIdListValueManifestRecord : agencyIdListValueManifestRecords) {
             AgencyIdListValueRecord agencyIdListValueRecord = agencyIdListValueRecordMap.get(agencyIdListValueManifestRecord.getAgencyIdListValueId());
@@ -517,7 +520,7 @@ public class LogSerializer {
         List<Map<String, Object>> values = new ArrayList();
         metadata.put("values", values);
 
-        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
+        Map<String, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
                 Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
         for (AgencyIdListValueManifestRecord agencyIdListValueManifestRecord : agencyIdListValueManifestRecords) {
             AgencyIdListValueRecord agencyIdListValueRecord = agencyIdListValueRecordMap.get(agencyIdListValueManifestRecord.getAgencyIdListValueId());

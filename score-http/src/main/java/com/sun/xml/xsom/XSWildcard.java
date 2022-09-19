@@ -40,11 +40,11 @@
 
 package com.sun.xml.xsom;
 
-import java.util.Iterator;
-import java.util.Collection;
-
 import com.sun.xml.xsom.visitor.XSWildcardFunction;
 import com.sun.xml.xsom.visitor.XSWildcardVisitor;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Wildcard schema component (used for both attribute wildcard

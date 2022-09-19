@@ -3,66 +3,65 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class BccpManifest implements CcManifest, Serializable {
 
-    private BigInteger bccpManifestId;
+    private String bccpManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger bccpId;
+    private String bccpId;
 
-    private BigInteger bdtManifestId;
+    private String bdtManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevBccpManifestId;
+    private String prevBccpManifestId;
 
-    private BigInteger nextBccpManifestId;
+    private String nextBccpManifestId;
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 
-    public void setBccpManifestId(BigInteger bccpManifestId) {
+    public void setBccpManifestId(String bccpManifestId) {
         this.bccpManifestId = bccpManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getBccpManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getBccpId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getBccpId() {
+    public String getBccpId() {
         return bccpId;
     }
 
-    public void setBccpId(BigInteger bccpId) {
+    public void setBccpId(String bccpId) {
         this.bccpId = bccpId;
     }
 
-    public BigInteger getBdtManifestId() {
+    public String getBdtManifestId() {
         return bdtManifestId;
     }
 
-    public void setBdtManifestId(BigInteger bdtManifestId) {
+    public void setBdtManifestId(String bdtManifestId) {
         this.bdtManifestId = bdtManifestId;
     }
 
@@ -74,27 +73,27 @@ public class BccpManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevBccpManifestId() {
+    public String getPrevBccpManifestId() {
         return prevBccpManifestId;
     }
 
-    public void setPrevBccpManifestId(BigInteger prevBccpManifestId) {
+    public void setPrevBccpManifestId(String prevBccpManifestId) {
         this.prevBccpManifestId = prevBccpManifestId;
     }
 
-    public BigInteger getNextBccpManifestId() {
+    public String getNextBccpManifestId() {
         return nextBccpManifestId;
     }
 
-    public void setNextBccpManifestId(BigInteger nextBccpManifestId) {
+    public void setNextBccpManifestId(String nextBccpManifestId) {
         this.nextBccpManifestId = nextBccpManifestId;
     }
 }

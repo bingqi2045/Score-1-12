@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -21,7 +20,7 @@ public class XbtListController {
 
     @RequestMapping(value = "/xbt/simple_list/{releaseId}", method = RequestMethod.GET)
     public List<Xbt> getSimpleXbtList(
-            @PathVariable("releaseId") BigInteger releaseId,
+            @PathVariable("releaseId") String releaseId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
         return service.getXbtSimpleList(user, releaseId);
     }

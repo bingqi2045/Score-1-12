@@ -3,11 +3,10 @@ package org.oagi.score.repo.api.release.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Release extends Auditable implements Comparable<Release>, Serializable {
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String guid;
 
@@ -19,11 +18,11 @@ public class Release extends Auditable implements Comparable<Release>, Serializa
 
     private ReleaseState state;
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -69,6 +68,6 @@ public class Release extends Auditable implements Comparable<Release>, Serializa
 
     @Override
     public int compareTo(Release o) {
-        return this.releaseId.compareTo(o.getReleaseId());
+        return this.getLastUpdateTimestamp().compareTo(o.getLastUpdateTimestamp());
     }
 }

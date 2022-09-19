@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function8;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleBccpManifestRecord;
@@ -55,41 +53,41 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
 
     /**
      * The column
-     * <code>oagi.module_bccp_manifest.module_bccp_manifest_id</code>. Primary
-     * key.
+     * <code>oagi.module_bccp_manifest.module_bccp_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_BCCP_MANIFEST_ID = createField(DSL.name("module_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_BCCP_MANIFEST_ID = createField(DSL.name("module_bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.module_set_release_id</code>.
      * A foreign key of the module set release record.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.bccp_manifest_id</code>. A
      * foreign key of the bccp manifest record.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the bccp manifest record.");
+    public final TableField<ModuleBccpManifestRecord, String> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the bccp manifest record.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.module_id</code>. This
      * indicates a module.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This indicates a module.");
+    public final TableField<ModuleBccpManifestRecord, String> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.CHAR(36).nullable(false), this, "This indicates a module.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.created_by</code>. Foreign key
      * to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleBccpManifestRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.last_updated_by</code>.
      * Foreign key to the APP_USER table referring to the last user who updated
      * the record.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleBccpManifestRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_bccp_manifest.creation_timestamp</code>. The
@@ -139,11 +137,6 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<ModuleBccpManifestRecord, ULong> getIdentity() {
-        return (Identity<ModuleBccpManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -259,21 +252,22 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row8<String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

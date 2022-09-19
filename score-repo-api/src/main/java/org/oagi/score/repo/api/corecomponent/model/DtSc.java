@@ -1,11 +1,10 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class DtSc implements CoreComponent, Serializable {
 
-    private BigInteger dtScId;
+    private String dtScId;
 
     private String guid;
 
@@ -27,20 +26,20 @@ public class DtSc implements CoreComponent, Serializable {
 
     private String fixedValue;
 
-    private BigInteger prevDtScId;
+    private String prevDtScId;
 
-    private BigInteger nextDtScId;
+    private String nextDtScId;
 
-    public BigInteger getDtScId() {
+    public String getDtScId() {
         return dtScId;
     }
 
-    public void setDtScId(BigInteger dtScId) {
+    public void setDtScId(String dtScId) {
         this.dtScId = dtScId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getDtScId();
     }
 
@@ -125,19 +124,19 @@ public class DtSc implements CoreComponent, Serializable {
         this.fixedValue = fixedValue;
     }
 
-    public BigInteger getPrevDtScId() {
+    public String getPrevDtScId() {
         return prevDtScId;
     }
 
-    public void setPrevDtScId(BigInteger prevDtScId) {
+    public void setPrevDtScId(String prevDtScId) {
         this.prevDtScId = prevDtScId;
     }
 
-    public BigInteger getNextDtScId() {
+    public String getNextDtScId() {
         return nextDtScId;
     }
 
-    public void setNextDtScId(BigInteger nextDtScId) {
+    public void setNextDtScId(String nextDtScId) {
         this.nextDtScId = nextDtScId;
     }
 }

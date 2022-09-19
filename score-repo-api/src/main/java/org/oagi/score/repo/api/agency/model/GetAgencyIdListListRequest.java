@@ -4,7 +4,6 @@ import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +18,7 @@ public class GetAgencyIdListListRequest extends PaginationRequest<AgencyIdList> 
     private String name;
     private String definition;
     private String module;
-    private BigInteger releaseId;
+    private String releaseId;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
@@ -109,11 +108,11 @@ public class GetAgencyIdListListRequest extends PaginationRequest<AgencyIdList> 
         this.updateEndDate = updateEndDate;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 }

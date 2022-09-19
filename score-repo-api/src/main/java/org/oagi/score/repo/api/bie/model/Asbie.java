@@ -1,22 +1,20 @@
 package org.oagi.score.repo.api.bie.model;
 
-import java.math.BigInteger;
-
 public class Asbie implements BieAssociation {
 
-    private BigInteger asbieId;
+    private String asbieId;
 
     private String guid;
 
-    private BigInteger basedAsccManifestId;
+    private String basedAsccManifestId;
 
     private String path;
 
     private String hashPath;
 
-    private BigInteger fromAbieId;
+    private String fromAbieId;
 
-    private BigInteger toAsbiepId;
+    private String toAsbiepId;
 
     private int cardinalityMin;
 
@@ -30,13 +28,13 @@ public class Asbie implements BieAssociation {
 
     private boolean used;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getAsbieId() {
+    public String getAsbieId() {
         return asbieId;
     }
 
-    public void setAsbieId(BigInteger asbieId) {
+    public void setAsbieId(String asbieId) {
         this.asbieId = asbieId;
     }
 
@@ -48,11 +46,11 @@ public class Asbie implements BieAssociation {
         this.guid = guid;
     }
 
-    public BigInteger getBasedAsccManifestId() {
+    public String getBasedAsccManifestId() {
         return basedAsccManifestId;
     }
 
-    public void setBasedAsccManifestId(BigInteger basedAsccManifestId) {
+    public void setBasedAsccManifestId(String basedAsccManifestId) {
         this.basedAsccManifestId = basedAsccManifestId;
     }
 
@@ -72,19 +70,19 @@ public class Asbie implements BieAssociation {
         this.hashPath = hashPath;
     }
 
-    public BigInteger getFromAbieId() {
+    public String getFromAbieId() {
         return fromAbieId;
     }
 
-    public void setFromAbieId(BigInteger fromAbieId) {
+    public void setFromAbieId(String fromAbieId) {
         this.fromAbieId = fromAbieId;
     }
 
-    public BigInteger getToAsbiepId() {
+    public String getToAsbiepId() {
         return toAsbiepId;
     }
 
-    public void setToAsbiepId(BigInteger toAsbiepId) {
+    public void setToAsbiepId(String toAsbiepId) {
         this.toAsbiepId = toAsbiepId;
     }
 
@@ -136,11 +134,11 @@ public class Asbie implements BieAssociation {
         this.used = used;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 

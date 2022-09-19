@@ -3,16 +3,14 @@ package org.oagi.score.service.bie;
 import lombok.Data;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 @Data
 public class FindTargetAsccpManifestRequest {
 
     private ScoreUser requester;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
     private boolean includingBieDocument;
 
@@ -23,12 +21,12 @@ public class FindTargetAsccpManifestRequest {
         this.requester = requester;
     }
 
-    public FindTargetAsccpManifestRequest withTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public FindTargetAsccpManifestRequest withTopLevelAsbiepId(String topLevelAsbiepId) {
         this.setTopLevelAsbiepId(topLevelAsbiepId);
         return this;
     }
 
-    public FindTargetAsccpManifestRequest withTargetReleaseId(BigInteger targetReleaseId) {
+    public FindTargetAsccpManifestRequest withTargetReleaseId(String targetReleaseId) {
         this.setTargetReleaseId(targetReleaseId);
         return this;
     }

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
+public abstract class DatabaseCacheWatchdog<T, PK> extends DatabaseCacheHandler
         implements InitializingBean, DisposableBean, Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,7 +40,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
     @Autowired
     private RedissonClient redissonClient;
 
-    private final ScoreRepository<T> delegate;
+    private final ScoreRepository<T, PK> delegate;
 
     private long delay = 2L;
     private TimeUnit unit = TimeUnit.SECONDS;
@@ -48,7 +48,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
     private ScheduledExecutorService scheduledExecutorService;
 
     public DatabaseCacheWatchdog(String tableName, Class<T> mappedClass,
-                                 ScoreRepository<T> delegate) {
+                                 ScoreRepository<T, PK> delegate) {
         super(tableName, mappedClass);
         this.delegate = delegate;
     }

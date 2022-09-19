@@ -41,24 +41,18 @@
 package com.sun.xml.xsom.impl.parser;
 
 import com.sun.xml.xsom.XSDeclaration;
-import com.sun.xml.xsom.XmlString;
 import com.sun.xml.xsom.XSSimpleType;
+import com.sun.xml.xsom.XmlString;
+import com.sun.xml.xsom.impl.Const;
 import com.sun.xml.xsom.impl.ForeignAttributesImpl;
 import com.sun.xml.xsom.impl.SchemaImpl;
 import com.sun.xml.xsom.impl.UName;
-import com.sun.xml.xsom.impl.Const;
 import com.sun.xml.xsom.impl.parser.state.NGCCRuntime;
 import com.sun.xml.xsom.impl.parser.state.Schema;
 import com.sun.xml.xsom.impl.util.Uri;
 import com.sun.xml.xsom.parser.AnnotationParser;
 import org.relaxng.datatype.ValidationContext;
-import org.xml.sax.Attributes;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 import org.xml.sax.helpers.LocatorImpl;
 
 import java.io.IOException;

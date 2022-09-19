@@ -3,19 +3,17 @@ package org.oagi.score.repo.component.code_list;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
-
 public class CancelRevisionCodeListRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
     public CancelRevisionCodeListRepositoryRequest(AuthenticatedPrincipal user,
-                                                   BigInteger codeListManifestId) {
+                                                   String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

@@ -24,19 +24,19 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary
-     * database key of a BBIE_SC.
+     * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. Primary, internal
+     * database key.
      */
-    public void setBbieScId(ULong value) {
+    public void setBbieScId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary
-     * database key of a BBIE_SC.
+     * Getter for <code>oagi.bbie_sc.bbie_sc_id</code>. Primary, internal
+     * database key.
      */
-    public ULong getBbieScId() {
-        return (ULong) get(0);
+    public String getBbieScId() {
+        return (String) get(0);
     }
 
     /**
@@ -60,7 +60,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the
      * BDT of the based BCC and BCCP.
      */
-    public void setBasedDtScManifestId(ULong value) {
+    public void setBasedDtScManifestId(String value) {
         set(2, value);
     }
 
@@ -69,8 +69,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the
      * BDT of the based BCC and BCCP.
      */
-    public ULong getBasedDtScManifestId() {
-        return (ULong) get(2);
+    public String getBasedDtScManifestId() {
+        return (String) get(2);
     }
 
     /**
@@ -109,7 +109,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Setter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC
      * applies to.
      */
-    public void setBbieId(ULong value) {
+    public void setBbieId(String value) {
         set(5, value);
     }
 
@@ -117,8 +117,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Getter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC
      * applies to.
      */
-    public ULong getBbieId() {
-        return (ULong) get(5);
+    public String getBbieId() {
+        return (String) get(5);
     }
 
     /**
@@ -135,7 +135,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot
      * have a value at the same time.
      */
-    public void setDtScPriRestriId(ULong value) {
+    public void setDtScPriRestriId(String value) {
         set(6, value);
     }
 
@@ -153,8 +153,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the CODE_LIST_ID column, and AGENCY_ID_LIST_ID column cannot
      * have a value at the same time.
      */
-    public ULong getDtScPriRestriId() {
-        return (ULong) get(6);
+    public String getDtScPriRestriId() {
+        return (String) get(6);
     }
 
     /**
@@ -170,7 +170,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID
      * column cannot have a value at the same time.
      */
-    public void setCodeListId(ULong value) {
+    public void setCodeListId(String value) {
         set(7, value);
     }
 
@@ -187,8 +187,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column is, the DT_SC_PRI_RESTRI_ID column, and AGENCY_ID_LIST_ID
      * column cannot have a value at the same time.
      */
-    public ULong getCodeListId() {
-        return (ULong) get(7);
+    public String getCodeListId() {
+        return (String) get(7);
     }
 
     /**
@@ -204,7 +204,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column
      * cannot have a value at the same time.
      */
-    public void setAgencyIdListId(ULong value) {
+    public void setAgencyIdListId(String value) {
         set(8, value);
     }
 
@@ -221,8 +221,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column
      * cannot have a value at the same time.
      */
-    public ULong getAgencyIdListId() {
-        return (ULong) get(8);
+    public String getAgencyIdListId() {
+        return (String) get(8);
     }
 
     /**
@@ -436,7 +436,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the user who creates the BBIE_SC. The creator of the BBIE_SC is also
      * its owner by default.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(21, value);
     }
 
@@ -445,15 +445,15 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * to the user who creates the BBIE_SC. The creator of the BBIE_SC is also
      * its owner by default.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(21);
+    public String getCreatedBy() {
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.bbie_sc.last_updated_by</code>. A foreign key
      * referring to the user who has last updated the BBIE_SC record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(22, value);
     }
 
@@ -461,8 +461,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Getter for <code>oagi.bbie_sc.last_updated_by</code>. A foreign key
      * referring to the user who has last updated the BBIE_SC record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(22);
+    public String getLastUpdatedBy() {
+        return (String) get(22);
     }
 
     /**
@@ -501,7 +501,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Setter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAsbiepId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(String value) {
         set(25, value);
     }
 
@@ -509,8 +509,8 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
      * Getter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAsbiepId() {
-        return (ULong) get(25);
+    public String getOwnerTopLevelAsbiepId() {
+        return (String) get(25);
     }
 
     // -------------------------------------------------------------------------
@@ -518,7 +518,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -536,7 +536,7 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
+    public BbieScRecord(String bbieScId, String guid, String basedDtScManifestId, String path, String hashPath, String bbieId, String dtScPriRestriId, String codeListId, String agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, ULong facetMinLength, ULong facetMaxLength, String facetPattern, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         setBbieScId(bbieScId);

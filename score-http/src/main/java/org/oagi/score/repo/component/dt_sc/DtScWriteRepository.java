@@ -3,13 +3,13 @@ package org.oagi.score.repo.component.dt_sc;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtScPriRestri;
 import org.oagi.score.gateway.http.api.cc_management.data.node.PrimitiveRestriType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
-import org.oagi.score.repo.component.dt.*;
+import org.oagi.score.repo.component.dt.UpdateDtStateRepositoryRequest;
+import org.oagi.score.repo.component.dt.UpdateDtStateRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.LogRepository;
@@ -18,7 +18,6 @@ import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,25 +97,25 @@ public class DtScWriteRepository {
                 });
     }
 
-    private void deleteCdtScAwdPriByDtScId(ULong dtScId) {
-        for (ULong derivedDtScId : dslContext.select(DT_SC.DT_SC_ID)
+    private void deleteCdtScAwdPriByDtScId(String dtScId) {
+        for (String derivedDtScId : dslContext.select(DT_SC.DT_SC_ID)
                 .from(DT_SC)
                 .where(DT_SC.BASED_DT_SC_ID.eq(dtScId))
-                .fetchInto(ULong.class)) {
+                .fetchInto(String.class)) {
             deleteCdtScAwdPriByDtScId(derivedDtScId);
         }
 
-        List<ULong> cdtScAwdPriIdList = dslContext.select(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID)
+        List<String> cdtScAwdPriIdList = dslContext.select(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID)
                 .from(CDT_SC_AWD_PRI)
                 .where(CDT_SC_AWD_PRI.CDT_SC_ID.eq(dtScId))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         if (!cdtScAwdPriIdList.isEmpty()) {
-            List<ULong> cdtScAwdPriXpsTypeMapIdList =
+            List<String> cdtScAwdPriXpsTypeMapIdList =
                     dslContext.select(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID)
                             .from(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
                             .where(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID.in(cdtScAwdPriIdList))
-                            .fetchInto(ULong.class);
+                            .fetchInto(String.class);
 
             dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
                     .where(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.in(cdtScAwdPriXpsTypeMapIdList))
@@ -133,7 +132,11 @@ public class DtScWriteRepository {
     }
 
     private void ensureUniquenessOfPropertyTerm(DtScRecord dtScRecord, String propertyTerm) {
-        ULong dtId = dtScRecord.getOwnerDtId();
+        if (dtScRecord.getPropertyTerm().equals(propertyTerm)) {
+            return;
+        }
+
+        String dtId = dtScRecord.getOwnerDtId();
         int cnt = dslContext.selectCount()
                 .from(DT_SC)
                 .where(and(
@@ -151,6 +154,12 @@ public class DtScWriteRepository {
                                        String objectClassTerm,
                                        String propertyTerm,
                                        String representationTerm) {
+        if (dtScRecord.getPropertyTerm().equals(propertyTerm) &&
+                dtScRecord.getRepresentationTerm().equals(representationTerm) &&
+                dtScRecord.getObjectClassTerm().equals(objectClassTerm)) {
+            return;
+        }
+
         while (dtScRecord.getBasedDtScId() != null) {
             dtScRecord = dslContext.selectFrom(DT_SC)
                     .where(DT_SC.DT_SC_ID.eq(dtScRecord.getBasedDtScId()))
@@ -160,7 +169,7 @@ public class DtScWriteRepository {
         Queue<DtScRecord> dtScHierarchy = new LinkedList();
         dtScHierarchy.add(dtScRecord);
 
-        Set<ULong> dtScIdSet = new HashSet();
+        Set<String> dtScIdSet = new HashSet();
         while (!dtScHierarchy.isEmpty()) {
             dtScRecord = dtScHierarchy.poll();
             dtScIdSet.add(dtScRecord.getDtScId());
@@ -202,13 +211,13 @@ public class DtScWriteRepository {
     }
 
     public UpdateDtScPropertiesRepositoryResponse updateDtScProperties(UpdateDtScPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtScManifestId())
+                        request.getDtScManifestId()
                 ))
                 .fetchOne();
 
@@ -302,19 +311,19 @@ public class DtScWriteRepository {
                         LogAction.Modified,
                         userId, timestamp);
 
-        return new UpdateDtScPropertiesRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+        return new UpdateDtScPropertiesRepositoryResponse(dtScManifestRecord.getDtScManifestId());
     }
 
-    private void deleteDerivedValueDomain(ULong dtScId, List<BdtScPriRestriRecord> deleteList) {
+    private void deleteDerivedValueDomain(String dtScId, List<BdtScPriRestriRecord> deleteList) {
         List<DtScRecord> derivedDtScList = dslContext.selectFrom(DT_SC).where(DT_SC.BASED_DT_SC_ID.eq(dtScId)).fetch();
 
-        List<ULong> cdtScAwdPriXpsTypeMapIdList = deleteList.stream().filter(e -> e.getCdtScAwdPriXpsTypeMapId() != null)
+        List<String> cdtScAwdPriXpsTypeMapIdList = deleteList.stream().filter(e -> e.getCdtScAwdPriXpsTypeMapId() != null)
                 .map(BdtScPriRestriRecord::getCdtScAwdPriXpsTypeMapId).collect(Collectors.toList());
 
-        List<ULong> codeListId = deleteList.stream().filter(e -> e.getCodeListId() != null)
+        List<String> codeListId = deleteList.stream().filter(e -> e.getCodeListId() != null)
                 .map(BdtScPriRestriRecord::getCodeListId).collect(Collectors.toList());
 
-        List<ULong> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
+        List<String> agencyIdList = deleteList.stream().filter(e -> e.getAgencyIdListId() != null)
                 .map(BdtScPriRestriRecord::getAgencyIdListId).collect(Collectors.toList());
 
         for (DtScRecord dtSc : derivedDtScList) {
@@ -359,7 +368,7 @@ public class DtScWriteRepository {
         }
     }
 
-    private void insertDerivedValueDomain(ULong dtScId, List<BdtScPriRestriRecord> insertList) {
+    private void insertDerivedValueDomain(String dtScId, List<BdtScPriRestriRecord> insertList) {
         List<DtScRecord> derivedDtScList = dslContext.selectFrom(DT_SC).where(DT_SC.BASED_DT_SC_ID.eq(dtScId)).fetch();
 
         for (DtScRecord dtSc : derivedDtScList) {
@@ -370,6 +379,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID, bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();
@@ -383,6 +393,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(bdtScPriRestriRecord.getCodeListId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.CODE_LIST_ID, bdtScPriRestriRecord.getCodeListId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();
@@ -396,6 +407,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(bdtScPriRestriRecord.getAgencyIdListId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID, bdtScPriRestriRecord.getAgencyIdListId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();
@@ -406,11 +418,11 @@ public class DtScWriteRepository {
         }
     }
 
-    private CdtScAwdPriXpsTypeMapRecord createCdtScAwdPriXpsTypeMap(CcBdtScPriRestri restri, ULong dtScId) {
+    private CdtScAwdPriXpsTypeMapRecord createCdtScAwdPriXpsTypeMap(CcBdtScPriRestri restri, String dtScId) {
 
-        ULong cdtPriId = dslContext.select(CDT_PRI.CDT_PRI_ID)
+        String cdtPriId = dslContext.select(CDT_PRI.CDT_PRI_ID)
                 .from(CDT_PRI).where(CDT_PRI.NAME.eq(restri.getPrimitiveName()))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
 
         CdtScAwdPriRecord cdtScAwdPriRecord = dslContext.selectFrom(CDT_SC_AWD_PRI)
                 .where(and(
@@ -421,31 +433,25 @@ public class DtScWriteRepository {
 
         if (cdtScAwdPriRecord == null) {
             cdtScAwdPriRecord = new CdtScAwdPriRecord();
+            cdtScAwdPriRecord.setCdtScAwdPriId(UUID.randomUUID().toString());
             cdtScAwdPriRecord.setCdtPriId(cdtPriId);
             cdtScAwdPriRecord.setCdtScId(dtScId);
             cdtScAwdPriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
-            cdtScAwdPriRecord.setCdtScAwdPriId(
-                    dslContext.insertInto(CDT_SC_AWD_PRI)
-                            .set(cdtScAwdPriRecord)
-                            .returning(CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID)
-                            .fetchOne().getCdtScAwdPriId()
-            );
+            dslContext.insertInto(CDT_SC_AWD_PRI)
+                    .set(cdtScAwdPriRecord).execute();
         }
 
         CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMapRecord = new CdtScAwdPriXpsTypeMapRecord();
+        cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriXpsTypeMapId(UUID.randomUUID().toString());
         cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriId(cdtScAwdPriRecord.getCdtScAwdPriId());
-        cdtScAwdPriXpsTypeMapRecord.setXbtId(ULong.valueOf(restri.getXbtId()));
-        cdtScAwdPriXpsTypeMapRecord.setCdtScAwdPriXpsTypeMapId(
-                dslContext.insertInto(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
-                        .set(cdtScAwdPriXpsTypeMapRecord)
-                        .returning(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID)
-                        .fetchOne().getCdtScAwdPriXpsTypeMapId()
-        );
+        cdtScAwdPriXpsTypeMapRecord.setXbtId(restri.getXbtId());
+        dslContext.insertInto(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                .set(cdtScAwdPriXpsTypeMapRecord).execute();
 
         return cdtScAwdPriXpsTypeMapRecord;
     }
 
-    private void updateBdtScPriList(ULong dtScId, List<CcBdtScPriRestri> list) {
+    private void updateBdtScPriList(String dtScId, List<CcBdtScPriRestri> list) {
         List<BdtScPriRestriRecord> records = dslContext
                 .selectFrom(BDT_SC_PRI_RESTRI)
                 .where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId)).fetch();
@@ -454,7 +460,7 @@ public class DtScWriteRepository {
 
         records.forEach(r -> {
             if (!list.stream().map(CcBdtScPriRestri::getBdtScPriRestriId).collect(Collectors.toList())
-                    .contains(r.getBdtScPriRestriId().toBigInteger())) {
+                    .contains(r.getBdtScPriRestriId())) {
                 deleteList.add(r);
             }
         });
@@ -475,44 +481,47 @@ public class DtScWriteRepository {
             if (restri.getBdtScPriRestriId() == null) {
                 // insert
                 bdtScPriRestriRecord = new BdtScPriRestriRecord();
+                bdtScPriRestriRecord.setBdtScPriRestriId(UUID.randomUUID().toString());
                 bdtScPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
                 bdtScPriRestriRecord.setBdtScId(dtScId);
                 if (restri.getType().equals(PrimitiveRestriType.CodeList)) {
-                    bdtScPriRestriRecord.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    bdtScPriRestriRecord.setCodeListId(restri.getCodeListId());
                 } else if (restri.getType().equals(PrimitiveRestriType.AgencyIdList)) {
-                    bdtScPriRestriRecord.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                    bdtScPriRestriRecord.setAgencyIdListId(restri.getAgencyIdListId());
                 } else {
                     if (restri.getCdtScAwdPriXpsTypeMapId() == null) {
                         CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMapRecord = createCdtScAwdPriXpsTypeMap(restri, dtScId);
-                        restri.setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapRecord.getCdtScAwdPriXpsTypeMapId().toBigInteger());
+                        restri.setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapRecord.getCdtScAwdPriXpsTypeMapId());
                     }
 
                     bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(
-                            ULong.valueOf(restri.getCdtScAwdPriXpsTypeMapId()));
+                            restri.getCdtScAwdPriXpsTypeMapId());
                 }
-                restri.setBdtScPriRestriId(dslContext.insertInto(BDT_SC_PRI_RESTRI)
+
+                dslContext.insertInto(BDT_SC_PRI_RESTRI)
                         .set(bdtScPriRestriRecord)
-                        .returning(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).fetchOne().getBdtScPriRestriId().toBigInteger());
+                        .execute();
+                restri.setBdtScPriRestriId(bdtScPriRestriRecord.getBdtScPriRestriId());
 
                 insertedList.add(bdtScPriRestriRecord);
             } else {
                 // update
                 bdtScPriRestriRecord = dslContext.selectFrom(BDT_SC_PRI_RESTRI)
-                        .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(restri.getBdtScPriRestriId())))
+                        .where(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(restri.getBdtScPriRestriId()))
                         .fetchOne();
 
                 if (restri.getCdtScAwdPriXpsTypeMapId() != null) {
-                    bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(ULong.valueOf(restri.getCdtScAwdPriXpsTypeMapId()));
+                    bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(restri.getCdtScAwdPriXpsTypeMapId());
                     bdtScPriRestriRecord.setCodeListId(null);
                     bdtScPriRestriRecord.setAgencyIdListId(null);
                 } else if (restri.getCodeListId() != null) {
                     bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(null);
-                    bdtScPriRestriRecord.setCodeListId(ULong.valueOf(restri.getCodeListId()));
+                    bdtScPriRestriRecord.setCodeListId(restri.getCodeListId());
                     bdtScPriRestriRecord.setAgencyIdListId(null);
                 } else if (restri.getAgencyIdListId() != null) {
                     bdtScPriRestriRecord.setCdtScAwdPriXpsTypeMapId(null);
                     bdtScPriRestriRecord.setCodeListId(null);
-                    bdtScPriRestriRecord.setAgencyIdListId(ULong.valueOf(restri.getAgencyIdListId()));
+                    bdtScPriRestriRecord.setAgencyIdListId(restri.getAgencyIdListId());
                 }
 
                 bdtScPriRestriRecord.setIsDefault((byte) (restri.isDefault() ? 1 : 0));
@@ -532,7 +541,7 @@ public class DtScWriteRepository {
         updateValueDomain(dtScId, defaultBdtScPriRestriRecord);
     }
 
-    private void updateValueDomain(ULong dtScId, BdtScPriRestriRecord defaultBdtScPriRestriRecord) {
+    private void updateValueDomain(String dtScId, BdtScPriRestriRecord defaultBdtScPriRestriRecord) {
         for (BdtScPriRestriRecord bdtScPriRestriRecord :
                 dslContext.selectFrom(BDT_SC_PRI_RESTRI).where(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(dtScId))) {
             if (defaultBdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId() != null) {
@@ -565,13 +574,13 @@ public class DtScWriteRepository {
     }
 
     public UpdateDtStateRepositoryResponse updateDtState(UpdateDtStateRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtManifestId())
+                        request.getDtManifestId()
                 ))
                 .fetchOne();
 
@@ -622,17 +631,17 @@ public class DtScWriteRepository {
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId().toBigInteger());
+        return new UpdateDtStateRepositoryResponse(dtManifestRecord.getDtManifestId());
     }
 
     public DeleteDtScRepositoryResponse deleteDtSc(DeleteDtScRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         DtScManifestRecord dtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getDtScManifestId())
+                        request.getDtScManifestId()
                 ))
                 .fetchOne();
 
@@ -641,7 +650,7 @@ public class DtScWriteRepository {
                 .where(DT_SC_MANIFEST.BASED_DT_SC_MANIFEST_ID.eq(dtScManifestRecord.getDtScManifestId()))
                 .fetch()) {
             deleteDtSc(new DeleteDtScRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                    derivedDtScManifestRecord.getDtScManifestId().toBigInteger()));
+                    derivedDtScManifestRecord.getDtScManifestId()));
         }
 
         DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
@@ -771,6 +780,6 @@ public class DtScWriteRepository {
         dtManifestRecord.setLogId(logRecord.getLogId());
         dtManifestRecord.update(DT_MANIFEST.LOG_ID);
 
-        return new DeleteDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId().toBigInteger());
+        return new DeleteDtScRepositoryResponse(dtScManifestRecord.getDtScManifestId());
     }
 }

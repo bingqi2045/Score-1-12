@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record20;
 import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
 
 
@@ -20,24 +19,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
  * ASCCP. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
+public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<String, String, Integer, Integer, Integer, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database
-     * key of an ASCC.
+     * Setter for <code>oagi.ascc.ascc_id</code>. Primary, internal database
+     * key.
      */
-    public void setAsccId(ULong value) {
+    public void setAsccId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.ascc_id</code>. An internal, primary database
-     * key of an ASCC.
+     * Getter for <code>oagi.ascc.ascc_id</code>. Primary, internal database
+     * key.
      */
-    public ULong getAsccId() {
-        return (ULong) get(0);
+    public String getAsccId() {
+        return (String) get(0);
     }
 
     /**
@@ -117,7 +116,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * key pointing to an ACC record. It is basically pointing to a parent data
      * element (type) of the TO_ASCCP_ID.
      */
-    public void setFromAccId(ULong value) {
+    public void setFromAccId(String value) {
         set(5, value);
     }
 
@@ -126,26 +125,26 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * key pointing to an ACC record. It is basically pointing to a parent data
      * element (type) of the TO_ASCCP_ID.
      */
-    public ULong getFromAccId() {
-        return (ULong) get(5);
+    public String getFromAccId() {
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID. 
+     * element of the FROM_ACC_ID.
      */
-    public void setToAsccpId(ULong value) {
+    public void setToAsccpId(String value) {
         set(6, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID. 
+     * element of the FROM_ACC_ID.
      */
-    public ULong getToAsccpId() {
-        return (ULong) get(6);
+    public String getToAsccpId() {
+        return (String) get(6);
     }
 
     /**
@@ -232,7 +231,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * Setter for <code>oagi.ascc.replacement_ascc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public void setReplacementAsccId(ULong value) {
+    public void setReplacementAsccId(String value) {
         set(11, value);
     }
 
@@ -240,8 +239,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * Getter for <code>oagi.ascc.replacement_ascc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public ULong getReplacementAsccId() {
-        return (ULong) get(11);
+    public String getReplacementAsccId() {
+        return (String) get(11);
     }
 
     /**
@@ -252,7 +251,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(12, value);
     }
 
@@ -264,8 +263,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * given revision. The history record should have the same value as that of
      * its current record.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(12);
+    public String getCreatedBy() {
+        return (String) get(12);
     }
 
     /**
@@ -274,9 +273,9 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(13, value);
     }
 
@@ -286,10 +285,10 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership. 
+     * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(13);
+    public String getOwnerUserId() {
+        return (String) get(13);
     }
 
     /**
@@ -299,7 +298,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(14, value);
     }
 
@@ -310,8 +309,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(14);
+    public String getLastUpdatedBy() {
+        return (String) get(14);
     }
 
     /**
@@ -386,7 +385,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * Setter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public void setPrevAsccId(ULong value) {
+    public void setPrevAsccId(String value) {
         set(18, value);
     }
 
@@ -394,15 +393,15 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * Getter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public ULong getPrevAsccId() {
-        return (ULong) get(18);
+    public String getPrevAsccId() {
+        return (String) get(18);
     }
 
     /**
      * Setter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public void setNextAsccId(ULong value) {
+    public void setNextAsccId(String value) {
         set(19, value);
     }
 
@@ -410,8 +409,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * Getter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public ULong getNextAsccId() {
-        return (ULong) get(19);
+    public String getNextAsccId() {
+        return (String) get(19);
     }
 
     // -------------------------------------------------------------------------
@@ -419,7 +418,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -428,17 +427,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+    public Row20<String, String, Integer, Integer, Integer, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row20) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
+    public Row20<String, String, Integer, Integer, Integer, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> valuesRow() {
         return (Row20) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Ascc.ASCC.ASCC_ID;
     }
 
@@ -463,12 +462,12 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return Ascc.ASCC.FROM_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Ascc.ASCC.TO_ASCCP_ID;
     }
 
@@ -493,22 +492,22 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field12() {
+    public Field<String> field12() {
         return Ascc.ASCC.REPLACEMENT_ASCC_ID;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<String> field13() {
         return Ascc.ASCC.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<String> field14() {
         return Ascc.ASCC.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field15() {
+    public Field<String> field15() {
         return Ascc.ASCC.LAST_UPDATED_BY;
     }
 
@@ -528,17 +527,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<String> field19() {
         return Ascc.ASCC.PREV_ASCC_ID;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<String> field20() {
         return Ascc.ASCC.NEXT_ASCC_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getAsccId();
     }
 
@@ -563,12 +562,12 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getFromAccId();
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getToAsccpId();
     }
 
@@ -593,22 +592,22 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong component12() {
+    public String component12() {
         return getReplacementAsccId();
     }
 
     @Override
-    public ULong component13() {
+    public String component13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component14() {
+    public String component14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component15() {
+    public String component15() {
         return getLastUpdatedBy();
     }
 
@@ -628,17 +627,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong component19() {
+    public String component19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong component20() {
+    public String component20() {
         return getNextAsccId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getAsccId();
     }
 
@@ -663,12 +662,12 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getFromAccId();
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getToAsccpId();
     }
 
@@ -693,22 +692,22 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong value12() {
+    public String value12() {
         return getReplacementAsccId();
     }
 
     @Override
-    public ULong value13() {
+    public String value13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value14() {
+    public String value14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value15() {
+    public String value15() {
         return getLastUpdatedBy();
     }
 
@@ -728,17 +727,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public ULong value19() {
+    public String value19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong value20() {
+    public String value20() {
         return getNextAsccId();
     }
 
     @Override
-    public AsccRecord value1(ULong value) {
+    public AsccRecord value1(String value) {
         setAsccId(value);
         return this;
     }
@@ -768,13 +767,13 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public AsccRecord value6(ULong value) {
+    public AsccRecord value6(String value) {
         setFromAccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value7(ULong value) {
+    public AsccRecord value7(String value) {
         setToAsccpId(value);
         return this;
     }
@@ -804,25 +803,25 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public AsccRecord value12(ULong value) {
+    public AsccRecord value12(String value) {
         setReplacementAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value13(ULong value) {
+    public AsccRecord value13(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsccRecord value14(ULong value) {
+    public AsccRecord value14(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value15(ULong value) {
+    public AsccRecord value15(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -846,19 +845,19 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     @Override
-    public AsccRecord value19(ULong value) {
+    public AsccRecord value19(String value) {
         setPrevAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value20(ULong value) {
+    public AsccRecord value20(String value) {
         setNextAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, ULong value15, LocalDateTime value16, LocalDateTime value17, String value18, ULong value19, ULong value20) {
+    public AsccRecord values(String value1, String value2, Integer value3, Integer value4, Integer value5, String value6, String value7, String value8, String value9, String value10, Byte value11, String value12, String value13, String value14, String value15, LocalDateTime value16, LocalDateTime value17, String value18, String value19, String value20) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -896,7 +895,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
+    public AsccRecord(String asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, String fromAccId, String toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, String replacementAsccId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, String prevAsccId, String nextAsccId) {
         super(Ascc.ASCC);
 
         setAsccId(asccId);

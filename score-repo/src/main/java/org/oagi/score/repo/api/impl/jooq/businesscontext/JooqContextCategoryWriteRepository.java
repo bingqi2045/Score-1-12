@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -12,11 +11,10 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
@@ -37,11 +35,12 @@ public class JooqContextCategoryWriteRepository
             CreateContextCategoryRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxCategoryRecord record = new CtxCategoryRecord();
 
+        record.setCtxCategoryId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setName(request.getName());
         record.setDescription(request.getDescription());
@@ -50,12 +49,11 @@ public class JooqContextCategoryWriteRepository
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        BigInteger contextCategoryId = dslContext().insertInto(CTX_CATEGORY)
+        dslContext().insertInto(CTX_CATEGORY)
                 .set(record)
-                .returning(CTX_CATEGORY.CTX_CATEGORY_ID)
-                .fetchOne().getCtxCategoryId().toBigInteger();
+                .execute();
 
-        return new CreateContextCategoryResponse(contextCategoryId);
+        return new CreateContextCategoryResponse(record.getCtxCategoryId());
     }
 
     @Override
@@ -64,11 +62,11 @@ public class JooqContextCategoryWriteRepository
             UpdateContextCategoryRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxCategoryRecord record = dslContext().selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(request.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(request.getContextCategoryId()))
                 .fetchOptional().orElse(null);
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
@@ -97,7 +95,7 @@ public class JooqContextCategoryWriteRepository
         }
 
         return new UpdateContextCategoryResponse(
-                record.getCtxCategoryId().toBigInteger(),
+                record.getCtxCategoryId(),
                 !changedField.isEmpty());
     }
 
@@ -110,9 +108,7 @@ public class JooqContextCategoryWriteRepository
             throw new IllegalArgumentException("Not allow with empty parameters.");
         }
 
-        List<ULong> contextCategoryIdList =
-                request.getContextCategoryIdList().stream()
-                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList());
+        List<String> contextCategoryIdList = request.getContextCategoryIdList();
 
         int affectedRows = dslContext().deleteFrom(CTX_CATEGORY)
                 .where(

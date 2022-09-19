@@ -9,9 +9,13 @@ import java.math.BigInteger;
 
 public class AgencyIdListValue extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
 
-    private BigInteger basedAgencyIdListValueManifestId;
+    private String basedAgencyIdListValueManifestId;
+
+    private String agencyIdListValueId;
+
+    private String basedAgencyIdListValueId;
 
     private String guid;
 
@@ -23,7 +27,7 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private String definitionSource;
 
-    private BigInteger ownerAgencyIdListId;
+    private String ownerAgencyIdListId;
 
     private ScoreUser owner;
 
@@ -31,29 +35,45 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
 
     private boolean used;
 
-    private BigInteger prevAgencyIdListValueId;
+    private String prevAgencyIdListValueId;
 
-    private BigInteger nextAgencyIdListValueId;
+    private String nextAgencyIdListValueId;
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
+        return agencyIdListValueId;
+    }
+
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
-        return agencyIdListValueManifestId;
-    }
-
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
-    public BigInteger getBasedAgencyIdListValueManifestId() {
+    public String getBasedAgencyIdListValueManifestId() {
         return basedAgencyIdListValueManifestId;
     }
 
-    public void setBasedAgencyIdListValueManifestId(BigInteger basedAgencyIdListValueManifestId) {
+    public void setBasedAgencyIdListValueManifestId(String basedAgencyIdListValueManifestId) {
         this.basedAgencyIdListValueManifestId = basedAgencyIdListValueManifestId;
+    }
+
+    public String getAgencyIdListValueId() {
+        return agencyIdListValueId;
+    }
+
+    public void setAgencyIdListValueId(String agencyIdListValueId) {
+        this.agencyIdListValueId = agencyIdListValueId;
+    }
+
+    public String getBasedAgencyIdListValueId() {
+        return basedAgencyIdListValueId;
+    }
+
+    public void setBasedAgencyIdListValueId(String basedAgencyIdListValueId) {
+        this.basedAgencyIdListValueId = basedAgencyIdListValueId;
     }
 
     public String getGuid() {
@@ -96,11 +116,11 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
         this.definitionSource = definitionSource;
     }
 
-    public BigInteger getOwnerAgencyIdListId() {
+    public String getOwnerAgencyIdListId() {
         return ownerAgencyIdListId;
     }
 
-    public void setOwnerAgencyIdListId(BigInteger ownerAgencyIdListId) {
+    public void setOwnerAgencyIdListId(String ownerAgencyIdListId) {
         this.ownerAgencyIdListId = ownerAgencyIdListId;
     }
 
@@ -128,19 +148,19 @@ public class AgencyIdListValue extends Auditable implements CoreComponent, Seria
         this.used = used;
     }
 
-    public BigInteger getPrevAgencyIdListValueId() {
+    public String getPrevAgencyIdListValueId() {
         return prevAgencyIdListValueId;
     }
 
-    public void setPrevAgencyIdListValueId(BigInteger prevAgencyIdListValueId) {
+    public void setPrevAgencyIdListValueId(String prevAgencyIdListValueId) {
         this.prevAgencyIdListValueId = prevAgencyIdListValueId;
     }
 
-    public BigInteger getNextAgencyIdListValueId() {
+    public String getNextAgencyIdListValueId() {
         return nextAgencyIdListValueId;
     }
 
-    public void setNextAgencyIdListValueId(BigInteger nextAgencyIdListValueId) {
+    public void setNextAgencyIdListValueId(String nextAgencyIdListValueId) {
         this.nextAgencyIdListValueId = nextAgencyIdListValueId;
     }
 }

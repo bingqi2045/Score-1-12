@@ -4,11 +4,10 @@ import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Dt extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger dtId;
+    private String dtId;
 
     private String guid;
 
@@ -28,7 +27,7 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
 
     private String contentComponentDefinition;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private ScoreUser owner;
 
@@ -38,20 +37,20 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
 
     private boolean commonlyUsed;
 
-    private BigInteger prevDtId;
+    private String prevDtId;
 
-    private BigInteger nextDtId;
+    private String nextDtId;
 
-    public BigInteger getDtId() {
+    public String getDtId() {
         return dtId;
     }
 
-    public void setDtId(BigInteger dtId) {
+    public void setDtId(String dtId) {
         this.dtId = dtId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getDtId();
     }
 
@@ -128,11 +127,11 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
         this.contentComponentDefinition = contentComponentDefinition;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 
@@ -168,19 +167,19 @@ public class Dt extends Auditable implements CoreComponent, Serializable {
         this.commonlyUsed = commonlyUsed;
     }
 
-    public BigInteger getPrevDtId() {
+    public String getPrevDtId() {
         return prevDtId;
     }
 
-    public void setPrevDtId(BigInteger prevDtId) {
+    public void setPrevDtId(String prevDtId) {
         this.prevDtId = prevDtId;
     }
 
-    public BigInteger getNextDtId() {
+    public String getNextDtId() {
         return nextDtId;
     }
 
-    public void setNextDtId(BigInteger nextDtId) {
+    public void setNextDtId(String nextDtId) {
         this.nextDtId = nextDtId;
     }
 }

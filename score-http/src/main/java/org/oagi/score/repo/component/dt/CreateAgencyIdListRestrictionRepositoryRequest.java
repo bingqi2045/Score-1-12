@@ -3,37 +3,35 @@ package org.oagi.score.repo.component.dt;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
-
 public class CreateAgencyIdListRestrictionRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
-    private final BigInteger releaseId;
+    private final String dtManifestId;
+    private final String releaseId;
     
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
 
 
 
     public CreateAgencyIdListRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                          BigInteger dtManifestId, BigInteger releaseId) {
+                                                          String dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 }

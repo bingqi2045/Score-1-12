@@ -18,9 +18,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,14 +38,14 @@ public class AgencyIdController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetSimpleAgencyIdListValuesResponse getSimpleAgencyIdListValues(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("releaseId") BigInteger releaseId) {
+            @PathVariable("releaseId") String releaseId) {
         return service.getSimpleAgencyIdListValues(sessionService.asScoreUser(user), releaseId);
     }
 
     @RequestMapping(value = "/agency_id_list/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AgencyIdList getAgencyIdListDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                              @PathVariable("id") BigInteger manifestId) {
+                                              @PathVariable("id") String manifestId) {
         return service.getAgencyIdListDetail(sessionService.asScoreUser(user), manifestId);
     }
 
@@ -59,7 +61,7 @@ public class AgencyIdController {
                                                            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                            @RequestParam(name = "updateStart", required = false) String updateStart,
                                                            @RequestParam(name = "updateEnd", required = false) String updateEnd,
-                                                           @RequestParam(name = "releaseId", required = true) BigInteger releaseId,
+                                                           @RequestParam(name = "releaseId", required = true) String releaseId,
                                                            @RequestParam(name = "sortActive") String sortActive,
                                                            @RequestParam(name = "sortDirection") String sortDirection,
                                                            @RequestParam(name = "pageIndex") int pageIndex,
@@ -113,7 +115,7 @@ public class AgencyIdController {
     public void deleteAgencyIdLists(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                @RequestBody UpdateAgencyIdListListRequest request) {
         ScoreUser requester = sessionService.asScoreUser(user);
-        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
+        for (String agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
             service.updateAgencyIdListState(requester, agencyIdListManifestId, CcState.Deleted);
         }
     }
@@ -123,7 +125,7 @@ public class AgencyIdController {
     public void restoreAgencyIdLists(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                     @RequestBody UpdateAgencyIdListListRequest request) {
         ScoreUser requester = sessionService.asScoreUser(user);
-        for (BigInteger agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
+        for (String agencyIdListManifestId : request.getAgencyIdListManifestIds()) {
             service.updateAgencyIdListState(requester, agencyIdListManifestId, CcState.WIP);
         }
     }
@@ -132,7 +134,7 @@ public class AgencyIdController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @PathVariable("manifestId") String manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         ScoreUser requester = sessionService.asScoreUser(user);
@@ -144,7 +146,7 @@ public class AgencyIdController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AgencyIdList updateAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                           @PathVariable("manifestId") BigInteger manifestId,
+                                           @PathVariable("manifestId") String manifestId,
                                            @RequestBody AgencyIdList agencyIdList) {
         ScoreUser requester = sessionService.asScoreUser(user);
         return service.updateAgencyIdListProperty(requester, agencyIdList);
@@ -154,7 +156,7 @@ public class AgencyIdController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateAgencyIdListState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                           @PathVariable("manifestId") BigInteger manifestId,
+                                           @PathVariable("manifestId") String manifestId,
                                            @RequestBody Map<String, String> request) {
         ScoreUser requester = sessionService.asScoreUser(user);
         String toState = request.get("toState");
@@ -165,7 +167,7 @@ public class AgencyIdController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reviseAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                        @PathVariable("manifestId") BigInteger manifestId) {
+                                        @PathVariable("manifestId") String manifestId) {
         ScoreUser requester = sessionService.asScoreUser(user);
         service.reviseAgencyIdList(requester, manifestId);
     }
@@ -174,7 +176,7 @@ public class AgencyIdController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void cancelAgencyIdList(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                   @PathVariable("manifestId") BigInteger manifestId) {
+                                   @PathVariable("manifestId") String manifestId) {
         ScoreUser requester = sessionService.asScoreUser(user);
         service.cancelAgencyIdList(requester, manifestId);
     }
@@ -182,10 +184,10 @@ public class AgencyIdController {
     @RequestMapping(value = "/agency_id_list/check_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
-            @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
+            @RequestParam(name = "releaseId") String releaseId,
+            @RequestParam(name = "agencyIdListManifestId", required = false) String agencyIdListManifestId,
             @RequestParam(name = "listId") String listId,
-            @RequestParam(name = "agencyIdListValueManifestId", required = false) Long agencyIdListValueManifestId,
+            @RequestParam(name = "agencyIdListValueManifestId", required = false) String agencyIdListValueManifestId,
             @RequestParam(name = "versionId") String versionId) {
 
         SameAgencyIdListParams params = new SameAgencyIdListParams();
@@ -201,8 +203,8 @@ public class AgencyIdController {
     @RequestMapping(value = "/agency_id_list/check_name_uniqueness", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkNameUniqueness(
-            @RequestParam(name = "releaseId") long releaseId,
-            @RequestParam(name = "agencyIdListManifestId", required = false) Long agencyIdListManifestId,
+            @RequestParam(name = "releaseId") String releaseId,
+            @RequestParam(name = "agencyIdListManifestId", required = false) String agencyIdListManifestId,
             @RequestParam(name = "agencyIdListName") String agencyIdListName) {
 
         SameNameAgencyIdListParams params = new SameNameAgencyIdListParams();

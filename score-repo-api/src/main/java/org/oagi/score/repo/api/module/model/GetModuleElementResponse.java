@@ -1,6 +1,5 @@
 package org.oagi.score.repo.api.module.model;
 
-import org.oagi.score.repo.api.base.PaginationResponse;
 import org.oagi.score.repo.api.base.Response;
 
 import java.util.List;

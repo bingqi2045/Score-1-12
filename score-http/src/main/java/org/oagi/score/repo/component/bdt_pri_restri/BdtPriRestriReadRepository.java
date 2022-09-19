@@ -2,11 +2,9 @@ package org.oagi.score.repo.component.bdt_pri_restri;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -23,7 +21,7 @@ public class BdtPriRestriReadRepository {
     private Function<Record, AvailableBdtPriRestri> mapper() {
         return e -> {
             AvailableBdtPriRestri availableBdtPriRestri = new AvailableBdtPriRestri();
-            availableBdtPriRestri.setBdtPriRestriId(e.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID).toBigInteger());
+            availableBdtPriRestri.setBdtPriRestriId(e.get(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID));
             boolean isDefault = e.get(BDT_PRI_RESTRI.IS_DEFAULT) == (byte) 1;
             /*
              * Issue #808
@@ -38,13 +36,13 @@ public class BdtPriRestriReadRepository {
                 isDefault = "time".equalsIgnoreCase(xbtName);
             }
             availableBdtPriRestri.setDefault(isDefault);
-            availableBdtPriRestri.setXbtId(e.get(XBT.XBT_ID).toBigInteger());
+            availableBdtPriRestri.setXbtId(e.get(XBT.XBT_ID));
             availableBdtPriRestri.setXbtName(xbtName);
             return availableBdtPriRestri;
         };
     }
 
-    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(BigInteger bccManifestId) {
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(String bccManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID, DT.DATA_TYPE_TERM,
                 BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME)
@@ -64,13 +62,13 @@ public class BdtPriRestriReadRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .join(DT)
                 .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
                 .collect(Collectors.toList());
     }
 
-    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(BigInteger bccpManifestId) {
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(String bccpManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID, DT.DATA_TYPE_TERM,
                 BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME)
@@ -86,7 +84,7 @@ public class BdtPriRestriReadRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .join(DT)
                 .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
                 .collect(Collectors.toList());

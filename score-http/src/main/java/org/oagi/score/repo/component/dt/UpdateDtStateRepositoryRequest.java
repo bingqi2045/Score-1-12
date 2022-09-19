@@ -4,17 +4,16 @@ import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.service.common.data.CcState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateDtStateRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
     private final CcState fromState;
     private final CcState toState;
 
     public UpdateDtStateRepositoryRequest(AuthenticatedPrincipal user,
-                                          BigInteger dtManifestId,
+                                          String dtManifestId,
                                           CcState fromState,
                                           CcState toState) {
         super(user);
@@ -25,7 +24,7 @@ public class UpdateDtStateRepositoryRequest extends RepositoryRequest {
 
     public UpdateDtStateRepositoryRequest(AuthenticatedPrincipal user,
                                           LocalDateTime localDateTime,
-                                          BigInteger dtManifestId,
+                                          String dtManifestId,
                                           CcState fromState,
                                           CcState toState) {
         super(user, localDateTime);
@@ -34,7 +33,7 @@ public class UpdateDtStateRepositoryRequest extends RepositoryRequest {
         this.toState = toState;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 

@@ -54,14 +54,14 @@ public class BieUpliftingServiceTest extends AbstractServiceTest {
 
         ScoreUser requester = scoreRepositoryFactory.createScoreUserReadRepository()
                 .getScoreUser(new GetScoreUserRequest()
-                        .withUserId(topLevelAsbiepRecord.getOwnerUserId().toBigInteger())
+                        .withUserId(topLevelAsbiepRecord.getOwnerUserId())
                 )
                 .getUser();
 
         AnalysisBieUpliftingRequest request = new AnalysisBieUpliftingRequest();
         request.setRequester(requester);
-        request.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId().toBigInteger());
-        request.setTargetReleaseId(topLevelAsbiepRecord.getReleaseId().toBigInteger());
+        request.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId());
+        request.setTargetReleaseId(topLevelAsbiepRecord.getReleaseId());
 
         assertThrows(IllegalArgumentException.class, () -> {
             bieUpliftingService.analysisBieUplifting(request);
@@ -76,10 +76,10 @@ public class BieUpliftingServiceTest extends AbstractServiceTest {
         AnalysisBieUpliftingRequest request = new AnalysisBieUpliftingRequest();
         request.setRequester(scoreRepositoryFactory.createScoreUserReadRepository()
                 .getScoreUser(new GetScoreUserRequest()
-                        .withUserId(topLevelAsbiepRecord.getOwnerUserId().toBigInteger())
+                        .withUserId(topLevelAsbiepRecord.getOwnerUserId())
                 )
                 .getUser());
-        request.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId().toBigInteger());
+        request.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId());
         request.setTargetReleaseId(scoreRepositoryFactory.createReleaseReadRepository()
                 .getRelease(new GetReleaseRequest(request.getRequester())
                         .withReleaseNum("10.7")

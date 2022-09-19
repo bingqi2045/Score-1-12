@@ -4,16 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CcId {
     private String type;
-    private BigInteger manifestId;
+    private String manifestId;
 
-    public CcId(CcType type, BigInteger manifestId) {
+    public CcId(CcType type, String manifestId) {
         this.type = type.name().toLowerCase();
         this.manifestId = manifestId;
     }

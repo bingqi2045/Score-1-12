@@ -1,13 +1,13 @@
 package org.oagi.score.repo;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.OagisComponentType;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.service.common.data.CcState;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.log.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -38,8 +38,8 @@ public class CoreComponentRepository {
     @Autowired
     private LogRepository logRepository;
 
-    public AccManifestRecord getAccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AccManifestRecord getAccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ACC_MANIFEST)
@@ -47,8 +47,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ACC_MANIFEST)
@@ -56,8 +56,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public AsccpManifestRecord getAsccpManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AsccpManifestRecord getAsccpManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP_MANIFEST)
@@ -65,8 +65,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AsccpManifestRecord> getAsccpManifestByRolOfAccManifestId(ULong roleOfAccManifestId) {
-        if (roleOfAccManifestId == null || roleOfAccManifestId.longValue() <= 0L) {
+    public List<AsccpManifestRecord> getAsccpManifestByRolOfAccManifestId(String roleOfAccManifestId) {
+        if (roleOfAccManifestId == null || !StringUtils.hasLength(roleOfAccManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP_MANIFEST)
@@ -74,8 +74,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public BccpManifestRecord getBccpManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public BccpManifestRecord getBccpManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCCP_MANIFEST)
@@ -83,8 +83,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccManifestRecord getAsccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public AsccManifestRecord getAsccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -92,8 +92,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(String accManifestId) {
+        if (accManifestId == null || !StringUtils.hasLength(accManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -101,8 +101,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(ULong asccpManifestId) {
-        if (asccpManifestId == null || asccpManifestId.longValue() <= 0L) {
+    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(String asccpManifestId) {
+        if (asccpManifestId == null || !StringUtils.hasLength(asccpManifestId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC_MANIFEST)
@@ -110,8 +110,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public BccManifestRecord getBccManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public BccManifestRecord getBccManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -119,8 +119,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public List<BccManifestRecord> getBccManifestByFromAccManifestId(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+    public List<BccManifestRecord> getBccManifestByFromAccManifestId(String accManifestId) {
+        if (accManifestId == null || !StringUtils.hasLength(accManifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -128,8 +128,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public List<BccManifestRecord> getBccManifestByToBccpManifestId(ULong bccpManifestId) {
-        if (bccpManifestId == null || bccpManifestId.longValue() <= 0L) {
+    public List<BccManifestRecord> getBccManifestByToBccpManifestId(String bccpManifestId) {
+        if (bccpManifestId == null || !StringUtils.hasLength(bccpManifestId)) {
             return null;
         }
         return dslContext.selectFrom(BCC_MANIFEST)
@@ -137,8 +137,8 @@ public class CoreComponentRepository {
                 .fetch();
     }
 
-    public DtManifestRecord getDtManifestByManifestId(ULong manifestId) {
-        if (manifestId == null || manifestId.longValue() <= 0L) {
+    public DtManifestRecord getDtManifestByManifestId(String manifestId) {
+        if (manifestId == null || !StringUtils.hasLength(manifestId)) {
             return null;
         }
         return dslContext.selectFrom(DT_MANIFEST)
@@ -146,8 +146,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public DtManifestRecord getBdtManifestByBdtId(ULong bdtId, ULong releaseId) {
-        if (bdtId == null || bdtId.longValue() <= 0L || releaseId == null || releaseId.longValue() <= 0L) {
+    public DtManifestRecord getBdtManifestByBdtId(String bdtId, String releaseId) {
+        if (!StringUtils.hasLength(bdtId) || !StringUtils.hasLength(releaseId)) {
             return null;
         }
         return dslContext.selectFrom(DT_MANIFEST)
@@ -155,8 +155,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AccRecord getAccById(ULong accId) {
-        if (accId == null || accId.longValue() <= 0L) {
+    public AccRecord getAccById(String accId) {
+        if (!StringUtils.hasLength(accId)) {
             return null;
         }
         return dslContext.selectFrom(ACC)
@@ -164,8 +164,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccRecord getAsccById(ULong asccId) {
-        if (asccId == null || asccId.longValue() <= 0L) {
+    public AsccRecord getAsccById(String asccId) {
+        if (!StringUtils.hasLength(asccId)) {
             return null;
         }
         return dslContext.selectFrom(ASCC)
@@ -173,8 +173,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BccRecord getBccById(ULong bccId) {
-        if (bccId == null || bccId.longValue() <= 0L) {
+    public BccRecord getBccById(String bccId) {
+        if (!StringUtils.hasLength(bccId)) {
             return null;
         }
         return dslContext.selectFrom(BCC)
@@ -182,8 +182,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsccpRecord getAsccpById(ULong asccpId) {
-        if (asccpId == null || asccpId.longValue() <= 0L) {
+    public AsccpRecord getAsccpById(String asccpId) {
+        if (!StringUtils.hasLength(asccpId)) {
             return null;
         }
         return dslContext.selectFrom(ASCCP)
@@ -191,8 +191,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BccpRecord getBccpById(ULong bccpId) {
-        if (bccpId == null || bccpId.longValue() <= 0L) {
+    public BccpRecord getBccpById(String bccpId) {
+        if (!StringUtils.hasLength(bccpId)) {
             return null;
         }
         return dslContext.selectFrom(BCCP)
@@ -200,8 +200,8 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public DtRecord getBdtById(ULong bdtId) {
-        if (bdtId == null || bdtId.longValue() <= 0L) {
+    public DtRecord getBdtById(String bdtId) {
+        if (!StringUtils.hasLength(bdtId)) {
             return null;
         }
         return dslContext.selectFrom(DT)
@@ -209,7 +209,7 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public CcBccpNode getBccpNodeByBccpId(AuthenticatedPrincipal user, long bccpId) {
+    public CcBccpNode getBccpNodeByBccpId(AuthenticatedPrincipal user, String bccpId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -220,33 +220,30 @@ public class CoreComponentRepository {
                 BCCP.PREV_BCCP_ID,
                 BCCP.NEXT_BCCP_ID)
                 .from(BCCP)
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(BCCP.BCCP_ID.eq(bccpId))
                 .fetchOneInto(CcBccpNode.class);
     }
 
-    public List<SummaryCcExt> getSummaryCcExtList(BigInteger releaseId) {
-        List<ULong> uegAccIds;
-        if (releaseId.longValue() > 0) {
+    public List<SummaryCcExt> getSummaryCcExtList(String releaseId) {
+        List<String> uegAccIds;
+        if (StringUtils.hasLength(releaseId)) {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
                             .from(ACC)
                             .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                             .where(and(
                                     ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                                    ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                                    ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                             ))
                             .groupBy(ACC.GUID)
-                            .fetchInto(ULong.class);
+                            .fetchInto(String.class);
 
         } else {
             uegAccIds = dslContext.select(max(ACC.ACC_ID).as("id"))
                             .from(ACC)
                             .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                            .where(and(
-                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                                    ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(0))
-                            ))
+                            .where(ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()))
                             .groupBy(ACC.GUID)
-                            .fetchInto(ULong.class);
+                            .fetchInto(String.class);
         }
 
         return dslContext.select(ACC.ACC_ID,
@@ -259,20 +256,20 @@ public class CoreComponentRepository {
                 .where(ACC.ACC_ID.in(uegAccIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(ACC.ACC_ID));
                     item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(ACC.STATE)));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(ACC.OWNER_USER_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(ACC.OWNER_USER_ID));
                     return item;
                 }).collect(Collectors.toList());
     }
 
-    public BigInteger getGlobalExtensionAccManifestId(BigInteger extensionAccManifestId) {
-        ULong releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
+    public BigInteger getGlobalExtensionAccManifestId(String extensionAccManifestId) {
+        String releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
                 .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(extensionAccManifestId)))
-                .fetchOneInto(ULong.class);
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(extensionAccManifestId))
+                .fetchOneInto(String.class);
 
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)

@@ -1,17 +1,14 @@
 package org.oagi.score.repo.component.bbiep;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 import org.oagi.score.repo.component.bccp.BccpReadRepository;
 import org.oagi.score.repo.component.dt.BdtReadRepository;
+import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIEP;
@@ -28,16 +25,16 @@ public class BbiepReadRepository {
     @Autowired
     private BdtReadRepository bdtReadRepository;
 
-    private BbiepRecord getBbiepByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
+    private BbiepRecord getBbiepByTopLevelAsbiepIdAndHashPath(String topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(BBIEP)
                 .where(and(
-                        BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public BbiepNode getBbiepNode(BigInteger topLevelAsbiepId, BigInteger bccpManifestId, String hashPath) {
+    public BbiepNode getBbiepNode(String topLevelAsbiepId, String bccpManifestId, String hashPath) {
         BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(bccpManifestId);
         if (bccpRecord == null) {
             return null;
@@ -75,15 +72,15 @@ public class BbiepReadRepository {
         return bbiepNode;
     }
 
-    public BbiepNode.Bbiep getBbiep(BigInteger topLevelAsbiepId, String hashPath) {
+    public BbiepNode.Bbiep getBbiep(String topLevelAsbiepId, String hashPath) {
         BbiepNode.Bbiep bbiep = new BbiepNode.Bbiep();
         bbiep.setUsed(true);
         bbiep.setHashPath(hashPath);
 
         BbiepRecord bbiepRecord = getBbiepByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbiepRecord != null) {
-            bbiep.setBbiepId(bbiepRecord.getBbiepId().toBigInteger());
-            bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId().toBigInteger());
+            bbiep.setBbiepId(bbiepRecord.getBbiepId());
+            bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId());
             bbiep.setGuid(bbiepRecord.getGuid());
             bbiep.setRemark(bbiepRecord.getRemark());
             bbiep.setBizTerm(bbiepRecord.getBizTerm());

@@ -3,14 +3,13 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
 public class GetContextCategoryListRequest extends PaginationRequest<ContextCategory> {
 
-    private Collection<BigInteger> contextCategoryIds;
+    private Collection<String> contextCategoryIds;
     private String name;
     private String description;
     private Collection<String> updaterUsernameList;
@@ -21,11 +20,11 @@ public class GetContextCategoryListRequest extends PaginationRequest<ContextCate
         super(requester, ContextCategory.class);
     }
 
-    public Collection<BigInteger> getContextCategoryIds() {
+    public Collection<String> getContextCategoryIds() {
         return (contextCategoryIds == null) ? Collections.emptyList() : contextCategoryIds;
     }
 
-    public void setContextCategoryIds(Collection<BigInteger> contextCategoryIds) {
+    public void setContextCategoryIds(Collection<String> contextCategoryIds) {
         this.contextCategoryIds = contextCategoryIds;
     }
 

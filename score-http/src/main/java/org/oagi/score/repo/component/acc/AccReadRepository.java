@@ -1,12 +1,9 @@
 package org.oagi.score.repo.component.acc;
 
-import com.nimbusds.jose.util.ArrayUtils;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcACCType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcList;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
-import org.oagi.score.repo.api.corecomponent.model.Acc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
@@ -15,7 +12,6 @@ import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -32,51 +28,51 @@ public class AccReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AccRecord getAccByManifestId(BigInteger accManifestId) {
+    public AccRecord getAccByManifestId(String accManifestId) {
         return dslContext.select(ACC.fields())
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId))
                 .fetchOptionalInto(AccRecord.class).orElse(null);
     }
 
-    public AccManifestRecord getAllExtensionAccManifest(BigInteger releaseId) {
+    public AccManifestRecord getAllExtensionAccManifest(String releaseId) {
         return dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(releaseId),
                         ACC.TYPE.eq(CcACCType.AllExtension.name())))
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
 
-    public AccManifestRecord getAccManifest(BigInteger accManifestId) {
+    public AccManifestRecord getAccManifest(String accManifestId) {
         return dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId))
                 .fetchOptionalInto(AccManifestRecord.class).orElse(null);
     }
 
-    public List<CcList> getBaseAccList(BigInteger accManifestId, BigInteger releaseId) {
+    public List<CcList> getBaseAccList(String accManifestId, String releaseId) {
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(releaseId)))
                 .fetchOne();
         if (defaultModuleSetRelease != null) {
             defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
         }
 
-        List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).fetch();
+        List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST).where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
 
-        AccManifestRecord accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(ULong.valueOf(accManifestId))).findFirst().orElse(null);
+        AccManifestRecord accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(accManifestId)).findFirst().orElse(null);
 
         if (accManifestRecord == null) {
             throw new IllegalArgumentException("Can not found CoreComponent.");
         }
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         while(accManifestRecord.getBasedAccManifestId() != null) {
-            ULong cur = accManifestRecord.getBasedAccManifestId();
+            String cur = accManifestRecord.getBasedAccManifestId();
             accManifestIdList.add(cur);
             accManifestRecord = accManifestRecordList.stream().filter(e -> e.getAccManifestId().equals(cur)).findFirst().orElse(null);
         }
@@ -122,7 +118,7 @@ public class AccReadRepository {
                 .fetch().map(e -> {
                     CcList ccList = new CcList();
                     ccList.setType(CcType.ACC);
-                    ccList.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    ccList.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     ccList.setGuid(e.get(ACC.GUID));
                     ccList.setDen(e.get(ACC.DEN));
                     ccList.setDefinition(e.get(ACC.DEFINITION));
@@ -137,7 +133,7 @@ public class AccReadRepository {
                     ccList.setLastUpdateUser(e.get(appUserUpdater.LOGIN_ID));
                     ccList.setLastUpdateTimestamp(Date.from(e.getValue("last_update_timestamp", LocalDateTime.class)
                             .atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setId(e.get(ACC.ACC_ID).toBigInteger());
+                    ccList.setId(e.get(ACC.ACC_ID));
                     return  ccList;
                 });
     }

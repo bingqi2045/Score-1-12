@@ -12,8 +12,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
-
 @RestController
 public class LogController {
 
@@ -25,7 +23,7 @@ public class LogController {
     public PageResponse<Log> getLogs(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @PathVariable("reference") String reference,
                                      @RequestParam(name = "type") String type,
-                                     @RequestParam(name = "manifestId") BigInteger manifestId,
+                                     @RequestParam(name = "manifestId") String manifestId,
                                      @RequestParam(name = "sortActive") String sortActive,
                                      @RequestParam(name = "sortDirection") String sortDirection,
                                      @RequestParam(name = "pageIndex") int pageIndex,
@@ -52,10 +50,10 @@ public class LogController {
     @RequestMapping(value = "/logs/{logId}/snapshot", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String getSnapshot(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                              @PathVariable("logId") BigInteger logId,
+                              @PathVariable("logId") String logId,
                               @RequestParam(name = "reference") String reference,
                               @RequestParam(name = "type") String type,
-                              @RequestParam(name = "manifestId") BigInteger manifestId) {
+                              @RequestParam(name = "manifestId") String manifestId) {
         return service.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }

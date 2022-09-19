@@ -3,12 +3,11 @@ package org.oagi.score.repo.api.businessterm.model;
 import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 public class BusinessTerm extends Auditable {
 
-    private BigInteger businessTermId;
+    private String businessTermId;
 
     private String businessTerm;
 
@@ -28,11 +27,11 @@ public class BusinessTerm extends Auditable {
     private ScoreUser lastUpdatedBy;
 
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 
@@ -111,7 +110,7 @@ public class BusinessTerm extends Auditable {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public BusinessTerm(BigInteger businessTermId, String businessTerm, String definition, String comment, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
+    public BusinessTerm(String businessTermId, String businessTerm, String definition, String comment, String externalReferenceUri, String externalReferenceId, String guid, Date lastUpdateTimestamp, ScoreUser createdBy, ScoreUser lastUpdatedBy) {
         this.businessTermId = businessTermId;
         this.businessTerm = businessTerm;
         this.definition = definition;

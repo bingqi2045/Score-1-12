@@ -1,20 +1,12 @@
 package org.oagi.score.provider;
 
-import org.jooq.types.ULong;
-import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
-import org.oagi.score.repository.CcRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
+import org.oagi.score.export.model.ModuleXbtID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repository.CcRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +18,9 @@ public class ImportedDataProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private CcRepository ccRepository;
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    public ImportedDataProvider(CcRepository ccRepository, BigInteger moduleSetReleaseId) {
+    public ImportedDataProvider(CcRepository ccRepository, String moduleSetReleaseId) {
         this.ccRepository = ccRepository;
         this.moduleSetReleaseId = moduleSetReleaseId;
         this.init();
@@ -37,50 +29,50 @@ public class ImportedDataProvider {
     public void init() {
         long s = System.currentTimeMillis();
 
-        findAgencyIdListList = ccRepository.findAllAgencyIdList(ULong.valueOf(moduleSetReleaseId));
-        findModuleAgencyIdListManifestMap = ccRepository.findAllModuleAgencyIdListManifest(ULong.valueOf(moduleSetReleaseId))
+        findAgencyIdListList = ccRepository.findAllAgencyIdList(moduleSetReleaseId);
+        findModuleAgencyIdListMap = ccRepository.findAllModuleAgencyIdList(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
         findAgencyIdListMap = findAgencyIdListList.stream()
                 .collect(Collectors.toMap(AgencyIdListRecord::getAgencyIdListId, Function.identity()));
 
-        findAgencyIdListValueByOwnerListIdMap = ccRepository.findAllAgencyIdListValue(ULong.valueOf(moduleSetReleaseId)).stream()
+        findAgencyIdListValueByOwnerListIdMap = ccRepository.findAllAgencyIdListValue(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(AgencyIdListValueRecord::getOwnerListId));
 
-        findCodeListList = ccRepository.findAllCodeList(ULong.valueOf(moduleSetReleaseId));
+        findCodeListList = ccRepository.findAllCodeList(moduleSetReleaseId);
         findCodeListMap = findCodeListList.stream()
                 .collect(Collectors.toMap(CodeListRecord::getCodeListId, Function.identity()));
 
-        findCodeListValueByCodeListIdMap = ccRepository.findAllCodeListValue(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCodeListValueByCodeListIdMap = ccRepository.findAllCodeListValue(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(CodeListValueRecord::getCodeListId));
 
-        findDtManifestList = ccRepository.findAllDtManifest(ULong.valueOf(moduleSetReleaseId));
+        findDtManifestList = ccRepository.findAllDtManifest(moduleSetReleaseId);
         findDtManifestMap = findDtManifestList.stream()
                 .collect(Collectors.toMap(DtManifestRecord::getDtManifestId, Function.identity()));
 
-        findDtList = ccRepository.findAllDt(ULong.valueOf(moduleSetReleaseId));
+        findDtList = ccRepository.findAllDt(moduleSetReleaseId);
         findDtMap = findDtList.stream()
                 .collect(Collectors.toMap(DtRecord::getDtId, Function.identity()));
 
-        findDtScByOwnerDtIdMap = ccRepository.findAllDtSc(ULong.valueOf(moduleSetReleaseId)).stream()
+        findDtScByOwnerDtIdMap = ccRepository.findAllDtSc(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(DtScRecord::getOwnerDtId));
 
-        List<BdtPriRestriRecord> bdtPriRestriList = ccRepository.findAllBdtPriRestri(ULong.valueOf(moduleSetReleaseId));
+        List<BdtPriRestriRecord> bdtPriRestriList = ccRepository.findAllBdtPriRestri(moduleSetReleaseId);
         findBdtPriRestriListByDtIdMap = bdtPriRestriList.stream()
                 .collect(Collectors.groupingBy(BdtPriRestriRecord::getBdtId));
 
-        cdtAwdPriXpsTypeMapMap = ccRepository.findAllCdtAwdPriXpsTypeMap(ULong.valueOf(moduleSetReleaseId)).stream()
+        cdtAwdPriXpsTypeMapMap = ccRepository.findAllCdtAwdPriXpsTypeMap(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtAwdPriXpsTypeMapRecord::getCdtAwdPriXpsTypeMapId, Function.identity()));
 
-        findBdtScPriRestriListByDtScIdMap = ccRepository.findAllBdtScPriRestri(ULong.valueOf(moduleSetReleaseId)).stream()
+        findBdtScPriRestriListByDtScIdMap = ccRepository.findAllBdtScPriRestri(moduleSetReleaseId).stream()
                 .collect(Collectors.groupingBy(BdtScPriRestriRecord::getBdtScId));
 
-        findCdtScAwdPriXpsTypeMapMap = ccRepository.findAllCdtScAwdPriXpsTypeMap(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCdtScAwdPriXpsTypeMapMap = ccRepository.findAllCdtScAwdPriXpsTypeMap(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtScAwdPriXpsTypeMapRecord::getCdtScAwdPriXpsTypeMapId, Function.identity()));
 
-        findCdtScAwdPriMap = ccRepository.findAllCdtScAwdPri(ULong.valueOf(moduleSetReleaseId)).stream()
+        findCdtScAwdPriMap = ccRepository.findAllCdtScAwdPri(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(CdtScAwdPriRecord::getCdtScAwdPriId, Function.identity()));
 
-        List<CdtAwdPriRecord> cdtAwdPriList = ccRepository.findAllCdtAwdPri(ULong.valueOf(moduleSetReleaseId));
+        List<CdtAwdPriRecord> cdtAwdPriList = ccRepository.findAllCdtAwdPri(moduleSetReleaseId);
         findCdtAwdPriMap = cdtAwdPriList.stream()
                 .collect(Collectors.toMap(CdtAwdPriRecord::getCdtAwdPriId, Function.identity()));
 
@@ -88,41 +80,41 @@ public class ImportedDataProvider {
         findCdtPriMap = cdtPriList.stream()
                 .collect(Collectors.toMap(CdtPriRecord::getCdtPriId, Function.identity()));
 
-        findXbtList = ccRepository.findAllXbt(ULong.valueOf(moduleSetReleaseId));
+        findXbtList = ccRepository.findAllXbt(moduleSetReleaseId);
         findXbtMap = findXbtList.stream()
                 .collect(Collectors.toMap(XbtRecord::getXbtId, Function.identity()));
 
-        findACCList = ccRepository.findAllAcc(ULong.valueOf(moduleSetReleaseId));
+        findACCList = ccRepository.findAllAcc(moduleSetReleaseId);
         findAccMap = findACCList.stream()
                 .collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
-        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(moduleSetReleaseId));
+        findACCManifestList = ccRepository.findAllAccManifest(moduleSetReleaseId);
         findAccManifestMap = findACCManifestList.stream()
                 .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
 
-        findASCCPList = ccRepository.findAllAsccp(ULong.valueOf(moduleSetReleaseId));
+        findASCCPList = ccRepository.findAllAsccp(moduleSetReleaseId);
         findAsccpMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getAsccpId, Function.identity()));
         findAsccpByGuidMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getGuid, Function.identity()));
 
-        findASCCPManifestList = ccRepository.findAllAsccpManifest(ULong.valueOf(moduleSetReleaseId));
+        findASCCPManifestList = ccRepository.findAllAsccpManifest(moduleSetReleaseId);
         findAsccpManifestMap = findASCCPManifestList.stream()
                 .collect(Collectors.toMap(AsccpManifestRecord::getAsccpManifestId, Function.identity()));
 
-        findBCCPManifestList = ccRepository.findAllBccpManifest(ULong.valueOf(moduleSetReleaseId));
+        findBCCPManifestList = ccRepository.findAllBccpManifest(moduleSetReleaseId);
         findBccpManifestMap = findBCCPManifestList.stream()
                 .collect(Collectors.toMap(BccpManifestRecord::getBccpManifestId, Function.identity()));
         
-        findBCCPList = ccRepository.findAllBccp(ULong.valueOf(moduleSetReleaseId));
+        findBCCPList = ccRepository.findAllBccp(moduleSetReleaseId);
         findBccpMap = findBCCPList.stream()
                 .collect(Collectors.toMap(BccpRecord::getBccpId, Function.identity()));
 
-        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(moduleSetReleaseId));
+        findACCManifestList = ccRepository.findAllAccManifest(moduleSetReleaseId);
         findAccManifestMap = findACCManifestList.stream()
                 .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
 
-        List<BccRecord> bccList = ccRepository.findAllBcc(ULong.valueOf(moduleSetReleaseId));
+        List<BccRecord> bccList = ccRepository.findAllBcc(moduleSetReleaseId);
 
         findBCCByToBccpIdMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccRecord::getToBccpId));
@@ -131,44 +123,44 @@ public class ImportedDataProvider {
         findBccMap = bccList.stream()
                 .collect(Collectors.toMap(BccRecord::getBccId, Function.identity()));
 
-        findBccManifestMap = ccRepository.findAllBccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
+        findBccManifestMap = ccRepository.findAllBccManifest(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
         findBccManifestByAccManifestIdMap = findBccManifestMap.values().stream()
                 .collect(Collectors.groupingBy(BccManifestRecord::getFromAccManifestId));
 
-        findAsccManifestMap = ccRepository.findAllAsccManifest(ULong.valueOf(moduleSetReleaseId)).stream()
+        findAsccManifestMap = ccRepository.findAllAsccManifest(moduleSetReleaseId).stream()
                 .collect(Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
         findAsccManifestByAccManifestIdMap = findAsccManifestMap.values().stream()
                 .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
-        List<AsccRecord> asccList = ccRepository.findAllAscc(ULong.valueOf(moduleSetReleaseId));
+        List<AsccRecord> asccList = ccRepository.findAllAscc(moduleSetReleaseId);
         findAsccByFromAccIdMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccRecord::getFromAccId));
 
         findAsccMap = asccList.stream()
                 .collect(Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
 
-        findModuleCodeListManifestMap = ccRepository.findAllModuleCodeListManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleCodeListMap = ccRepository.findAllModuleCodeList(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleAccManifestMap = ccRepository.findAllModuleAccManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleAccMap = ccRepository.findAllModuleAcc(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleAsccpManifestMap = ccRepository.findAllModuleAsccpManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleAsccpMap = ccRepository.findAllModuleAsccp(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleBccpManifestMap = ccRepository.findAllModuleBccpManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleBccpMap = ccRepository.findAllModuleBccp(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleDtManifestMap = ccRepository.findAllModuleDtManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleDtMap = ccRepository.findAllModuleDt(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
-        findModuleXbtManifestMap = ccRepository.findAllModuleXbtManifest(ULong.valueOf(moduleSetReleaseId))
-                .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
+        findModuleXbtMap = ccRepository.findAllModuleXbtManifest(moduleSetReleaseId)
+                .stream().collect(Collectors.toMap(ModuleXbtID::getXbtId, Function.identity()));
 
-        findBlobContentList = ccRepository.findAllBlobContent(ULong.valueOf(moduleSetReleaseId));
+        findBlobContentList = ccRepository.findAllBlobContent(moduleSetReleaseId);
 
-        findModuleBlobContentManifestMap = ccRepository.findAllModuleBlobContentManifest(ULong.valueOf(moduleSetReleaseId))
+        findModuleBlobContentMap = ccRepository.findAllModuleBlobContent(moduleSetReleaseId)
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
 
         findSeqKeyList = ccRepository.findAllSeqKeyRecord();
@@ -181,31 +173,31 @@ public class ImportedDataProvider {
     }
 
     private List<SeqKeyRecord> findSeqKeyList;
-    private Map<ULong, List<SeqKeyRecord>> findSeqKeyMap;
+    private Map<String, List<SeqKeyRecord>> findSeqKeyMap;
 
-    public List<SeqKeyRecord> getSeqKeys(ULong accManifestId) {
+    public List<SeqKeyRecord> getSeqKeys(String accManifestId) {
         return findSeqKeyMap.containsKey(accManifestId) ? findSeqKeyMap.get(accManifestId) : Collections.emptyList();
     }
 
     private List<AgencyIdListRecord> findAgencyIdListList;
-    private Map<ULong, ModuleCCID> findModuleAgencyIdListManifestMap;
-    private Map<ULong, ModuleCCID> findModuleCodeListManifestMap;
-    private Map<ULong, ModuleCCID> findModuleAccManifestMap;
-    private Map<ULong, ModuleCCID> findModuleDtManifestMap;
-    private Map<ULong, ModuleCCID> findModuleAsccpManifestMap;
-    private Map<ULong, ModuleCCID> findModuleBccpManifestMap;
-    private Map<ULong, ModuleCCID> findModuleXbtManifestMap;
-    private Map<ULong, ModuleCCID> findModuleBlobContentManifestMap;
+    private Map<String, ModuleCCID> findModuleAgencyIdListMap;
+    private Map<String, ModuleCCID> findModuleCodeListMap;
+    private Map<String, ModuleCCID> findModuleAccMap;
+    private Map<String, ModuleCCID> findModuleDtMap;
+    private Map<String, ModuleCCID> findModuleAsccpMap;
+    private Map<String, ModuleCCID> findModuleBccpMap;
+    private Map<String, ModuleXbtID> findModuleXbtMap;
+    private Map<String, ModuleCCID> findModuleBlobContentMap;
 
     
     public List<AgencyIdListRecord> findAgencyIdList() {
         return Collections.unmodifiableList(findAgencyIdListList);
     }
 
-    private Map<ULong, AgencyIdListRecord> findAgencyIdListMap;
+    private Map<String, AgencyIdListRecord> findAgencyIdListMap;
 
     
-    public AgencyIdListRecord findAgencyIdList(ULong agencyIdListId) {
+    public AgencyIdListRecord findAgencyIdList(String agencyIdListId) {
         AgencyIdListRecord a = findAgencyIdListMap.get(agencyIdListId);
         if (a == null) {
             throw new IllegalStateException();
@@ -213,10 +205,10 @@ public class ImportedDataProvider {
         return findAgencyIdListMap.get(agencyIdListId);
     }
 
-    private Map<ULong, List<AgencyIdListValueRecord>> findAgencyIdListValueByOwnerListIdMap;
+    private Map<String, List<AgencyIdListValueRecord>> findAgencyIdListValueByOwnerListIdMap;
 
     
-    public List<AgencyIdListValueRecord> findAgencyIdListValueByOwnerListId(ULong ownerListId) {
+    public List<AgencyIdListValueRecord> findAgencyIdListValueByOwnerListId(String ownerListId) {
         return findAgencyIdListValueByOwnerListIdMap.containsKey(ownerListId) ? findAgencyIdListValueByOwnerListIdMap.get(ownerListId) : Collections.emptyList();
     }
 
@@ -227,28 +219,28 @@ public class ImportedDataProvider {
         return Collections.unmodifiableList(findCodeListList);
     }
 
-    private Map<ULong, CodeListRecord> findCodeListMap;
+    private Map<String, CodeListRecord> findCodeListMap;
 
     
-    public CodeListRecord findCodeList(ULong codeListId) {
+    public CodeListRecord findCodeList(String codeListId) {
         return findCodeListMap.get(codeListId);
     }
 
-    private Map<ULong, List<CodeListValueRecord>> findCodeListValueByCodeListIdMap;
+    private Map<String, List<CodeListValueRecord>> findCodeListValueByCodeListIdMap;
 
     
-    public List<CodeListValueRecord> findCodeListValueByCodeListId(ULong codeListId) {
+    public List<CodeListValueRecord> findCodeListValueByCodeListId(String codeListId) {
         return (findCodeListValueByCodeListIdMap.containsKey(codeListId)) ? findCodeListValueByCodeListIdMap.get(codeListId) : Collections.emptyList();
     }
 
     private List<DtManifestRecord> findDtManifestList;
-    private Map<ULong, DtManifestRecord> findDtManifestMap;
+    private Map<String, DtManifestRecord> findDtManifestMap;
 
     public List<DtManifestRecord> findDtManifest() {
         return Collections.unmodifiableList(this.findDtManifestList);
     }
 
-    public DtManifestRecord findDtManifestByDtManifestId(ULong dtManifestId) {
+    public DtManifestRecord findDtManifestByDtManifestId(String dtManifestId) {
         return this.findDtManifestMap.get(dtManifestId);
     }
 
@@ -259,36 +251,36 @@ public class ImportedDataProvider {
         return Collections.unmodifiableList(findDtList);
     }
 
-    private Map<ULong, DtRecord> findDtMap;
+    private Map<String, DtRecord> findDtMap;
 
     
-    public DtRecord findDT(ULong dtId) {
+    public DtRecord findDT(String dtId) {
         return findDtMap.get(dtId);
     }
 
-    private Map<ULong, List<DtScRecord>> findDtScByOwnerDtIdMap;
+    private Map<String, List<DtScRecord>> findDtScByOwnerDtIdMap;
 
     
-    public List<DtScRecord> findDtScByOwnerDtId(ULong ownerDtId) {
+    public List<DtScRecord> findDtScByOwnerDtId(String ownerDtId) {
         return (findDtScByOwnerDtIdMap.containsKey(ownerDtId)) ? findDtScByOwnerDtIdMap.get(ownerDtId) : Collections.emptyList();
     }
 
-    private Map<ULong, List<BdtPriRestriRecord>> findBdtPriRestriListByDtIdMap;
+    private Map<String, List<BdtPriRestriRecord>> findBdtPriRestriListByDtIdMap;
 
     
-    public List<BdtPriRestriRecord> findBdtPriRestriListByDtId(ULong dtId) {
+    public List<BdtPriRestriRecord> findBdtPriRestriListByDtId(String dtId) {
         return (findBdtPriRestriListByDtIdMap.containsKey(dtId)) ? findBdtPriRestriListByDtIdMap.get(dtId) : Collections.emptyList();
     }
 
-    private Map<ULong, CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapMap;
+    private Map<String, CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapMap;
 
     
-    public CdtAwdPriXpsTypeMapRecord findCdtAwdPriXpsTypeMapById(ULong cdtAwdPriXpsTypeMapId) {
+    public CdtAwdPriXpsTypeMapRecord findCdtAwdPriXpsTypeMapById(String cdtAwdPriXpsTypeMapId) {
         return cdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId);
     }
 
     
-    public List<CdtAwdPriXpsTypeMapRecord> findCdtAwdPriXpsTypeMapListByDtId(ULong dtId) {
+    public List<CdtAwdPriXpsTypeMapRecord> findCdtAwdPriXpsTypeMapListByDtId(String dtId) {
         List<BdtPriRestriRecord> bdtPriRestriList = findBdtPriRestriListByDtId(dtId);
         List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapList = bdtPriRestriList.stream()
                 .filter(e -> e.getCdtAwdPriXpsTypeMapId() != null)
@@ -297,24 +289,24 @@ public class ImportedDataProvider {
         return (cdtAwdPriXpsTypeMapList != null) ? cdtAwdPriXpsTypeMapList : Collections.emptyList();
     }
 
-    private Map<ULong, List<BdtScPriRestriRecord>> findBdtScPriRestriListByDtScIdMap;
+    private Map<String, List<BdtScPriRestriRecord>> findBdtScPriRestriListByDtScIdMap;
 
     
-    public List<BdtScPriRestriRecord> findBdtScPriRestriListByDtScId(ULong dtScId) {
+    public List<BdtScPriRestriRecord> findBdtScPriRestriListByDtScId(String dtScId) {
         return (findBdtScPriRestriListByDtScIdMap.containsKey(dtScId)) ? findBdtScPriRestriListByDtScIdMap.get(dtScId) : Collections.emptyList();
     }
 
-    private Map<ULong, CdtScAwdPriXpsTypeMapRecord> findCdtScAwdPriXpsTypeMapMap;
+    private Map<String, CdtScAwdPriXpsTypeMapRecord> findCdtScAwdPriXpsTypeMapMap;
 
     
-    public CdtScAwdPriXpsTypeMapRecord findCdtScAwdPriXpsTypeMap(ULong cdtScAwdPriXpsTypeMapId) {
+    public CdtScAwdPriXpsTypeMapRecord findCdtScAwdPriXpsTypeMap(String cdtScAwdPriXpsTypeMapId) {
         return findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId);
     }
 
-    private Map<ULong, CdtScAwdPriRecord> findCdtScAwdPriMap;
+    private Map<String, CdtScAwdPriRecord> findCdtScAwdPriMap;
 
     
-    public CdtScAwdPriRecord findCdtScAwdPri(ULong cdtScAwdPriId) {
+    public CdtScAwdPriRecord findCdtScAwdPri(String cdtScAwdPriId) {
         return findCdtScAwdPriMap.get(cdtScAwdPriId);
     }
 
@@ -325,23 +317,23 @@ public class ImportedDataProvider {
         return findXbtList;
     }
 
-    private Map<ULong, CdtAwdPriRecord> findCdtAwdPriMap;
+    private Map<String, CdtAwdPriRecord> findCdtAwdPriMap;
 
     
-    public CdtAwdPriRecord findCdtAwdPri(ULong cdtAwdPriId) {
+    public CdtAwdPriRecord findCdtAwdPri(String cdtAwdPriId) {
         return findCdtAwdPriMap.get(cdtAwdPriId);
     }
 
-    private Map<ULong, CdtPriRecord> findCdtPriMap;
+    private Map<String, CdtPriRecord> findCdtPriMap;
 
-    public CdtPriRecord findCdtPri(ULong cdtPriId) {
+    public CdtPriRecord findCdtPri(String cdtPriId) {
         return findCdtPriMap.get(cdtPriId);
     }
 
-    private Map<ULong, XbtRecord> findXbtMap;
+    private Map<String, XbtRecord> findXbtMap;
 
     
-    public XbtRecord findXbt(ULong xbtId) {
+    public XbtRecord findXbt(String xbtId) {
         XbtRecord xbt = findXbtMap.get(xbtId);
         return xbt;
     }
@@ -358,19 +350,19 @@ public class ImportedDataProvider {
         return Collections.unmodifiableList(findACCManifestList);
     }
 
-    private Map<ULong, AccRecord> findAccMap;
+    private Map<String, AccRecord> findAccMap;
 
     
-    public AccRecord findACC(ULong accId) {
+    public AccRecord findACC(String accId) {
         return findAccMap.get(accId);
     }
 
     private List<AccManifestRecord> findACCManifestList;
 
-    private Map<ULong, AccManifestRecord> findAccManifestMap;
+    private Map<String, AccManifestRecord> findAccManifestMap;
 
     
-    public AccManifestRecord findACCManifest(ULong accManifestId) {
+    public AccManifestRecord findACCManifest(String accManifestId) {
         return findAccManifestMap.get(accManifestId);
     }
 
@@ -381,10 +373,10 @@ public class ImportedDataProvider {
 
     private List<AsccpManifestRecord> findASCCPManifestList;
 
-    private Map<ULong, AsccpManifestRecord> findAsccpManifestMap;
+    private Map<String, AsccpManifestRecord> findAsccpManifestMap;
 
     
-    public AsccpManifestRecord findASCCPManifest(ULong asccpManifestId) {
+    public AsccpManifestRecord findASCCPManifest(String asccpManifestId) {
         return findAsccpManifestMap.get(asccpManifestId);
     }
 
@@ -395,10 +387,10 @@ public class ImportedDataProvider {
 
     private List<BccpManifestRecord> findBCCPManifestList;
 
-    private Map<ULong, BccpManifestRecord> findBccpManifestMap;
+    private Map<String, BccpManifestRecord> findBccpManifestMap;
 
     
-    public BccpManifestRecord findBCCPManifest(ULong bccpManifestId) {
+    public BccpManifestRecord findBCCPManifest(String bccpManifestId) {
         if (bccpManifestId == null) {
             return null;
         }
@@ -412,10 +404,10 @@ public class ImportedDataProvider {
         return Collections.unmodifiableList(findASCCPList);
     }
 
-    private Map<ULong, AsccpRecord> findAsccpMap;
+    private Map<String, AsccpRecord> findAsccpMap;
 
     
-    public AsccpRecord findASCCP(ULong asccpId) {
+    public AsccpRecord findASCCP(String asccpId) {
         return findAsccpMap.get(asccpId);
     }
 
@@ -433,111 +425,111 @@ public class ImportedDataProvider {
         return Collections.unmodifiableList(findBCCPList);
     }
 
-    private Map<ULong, BccpRecord> findBccpMap;
+    private Map<String, BccpRecord> findBccpMap;
 
     
-    public BccpRecord findBCCP(ULong bccpId) {
+    public BccpRecord findBCCP(String bccpId) {
         return findBccpMap.get(bccpId);
     }
 
-    private Map<ULong, List<BccRecord>> findBCCByToBccpIdMap;
+    private Map<String, List<BccRecord>> findBCCByToBccpIdMap;
 
     
-    public List<BccRecord> findBCCByToBccpId(ULong toBccpId) {
+    public List<BccRecord> findBCCByToBccpId(String toBccpId) {
         return (findBCCByToBccpIdMap.containsKey(toBccpId)) ? findBCCByToBccpIdMap.get(toBccpId) : Collections.emptyList();
     }
 
-    private Map<ULong, List<BccRecord>> findBccByFromAccIdMap;
+    private Map<String, List<BccRecord>> findBccByFromAccIdMap;
 
     
-    public List<BccRecord> findBCCByFromAccId(ULong fromAccId) {
+    public List<BccRecord> findBCCByFromAccId(String fromAccId) {
         return (findBccByFromAccIdMap.containsKey(fromAccId)) ? findBccByFromAccIdMap.get(fromAccId) : Collections.emptyList();
     }
 
-    private Map<ULong, AsccRecord> findAsccMap;
+    private Map<String, AsccRecord> findAsccMap;
 
     
-    public AsccRecord findASCC(ULong asccId) {
+    public AsccRecord findASCC(String asccId) {
         return findAsccMap.get(asccId);
     }
 
-    private Map<ULong, BccRecord> findBccMap;
+    private Map<String, BccRecord> findBccMap;
 
     
-    public BccRecord findBCC(ULong bccId) {
+    public BccRecord findBCC(String bccId) {
         return findBccMap.get(bccId);
     }
 
-    private Map<ULong, AsccManifestRecord> findAsccManifestMap;
-    private Map<ULong, List<AsccManifestRecord>> findAsccManifestByAccManifestIdMap;
+    private Map<String, AsccManifestRecord> findAsccManifestMap;
+    private Map<String, List<AsccManifestRecord>> findAsccManifestByAccManifestIdMap;
 
     
-    public AsccManifestRecord findASCCManifest(ULong asccId) {
-        return findAsccManifestMap.get(asccId);
+    public AsccManifestRecord findASCCManifest(String asccManifestId) {
+        return findAsccManifestMap.get(asccManifestId);
     }
 
-    public List<AsccManifestRecord> findASCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+    public List<AsccManifestRecord> findASCCManifestByFromAccManifestId(String fromAccManifestId) {
         if (!findAsccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
             return Collections.emptyList();
         }
         return findAsccManifestByAccManifestIdMap.get(fromAccManifestId);
     }
 
-    private Map<ULong, BccManifestRecord> findBccManifestMap;
-    private Map<ULong, List<BccManifestRecord>> findBccManifestByAccManifestIdMap;
+    private Map<String, BccManifestRecord> findBccManifestMap;
+    private Map<String, List<BccManifestRecord>> findBccManifestByAccManifestIdMap;
 
     
-    public BccManifestRecord findBCCManifest(ULong bccId) {
-        return findBccManifestMap.get(bccId);
+    public BccManifestRecord findBCCManifest(String bccManifestId) {
+        return findBccManifestMap.get(bccManifestId);
     }
 
-    public List<BccManifestRecord> findBCCManifestByFromAccManifestId(ULong fromAccManifestId) {
+    public List<BccManifestRecord> findBCCManifestByFromAccManifestId(String fromAccManifestId) {
         if (!findBccManifestByAccManifestIdMap.containsKey(fromAccManifestId)) {
             return Collections.emptyList();
         }
         return findBccManifestByAccManifestIdMap.get(fromAccManifestId);
     }
 
-    private Map<ULong, List<AsccRecord>> findAsccByFromAccIdMap;
+    private Map<String, List<AsccRecord>> findAsccByFromAccIdMap;
 
     
-    public List<AsccRecord> findASCCByFromAccId(ULong fromAccId) {
+    public List<AsccRecord> findASCCByFromAccId(String fromAccId) {
         return (findAsccByFromAccIdMap.containsKey(fromAccId)) ? findAsccByFromAccIdMap.get(fromAccId) : Collections.emptyList();
     }
 
     
-    public ModuleCCID findModuleAgencyIdList(ULong agencyIdListId) {
-        return findModuleAgencyIdListManifestMap.get(agencyIdListId);
+    public ModuleCCID findModuleAgencyIdList(String agencyIdListId) {
+        return findModuleAgencyIdListMap.get(agencyIdListId);
     }
 
     
-    public ModuleCCID findModuleCodeList(ULong codeListId) {
-        return findModuleCodeListManifestMap.get(codeListId);
+    public ModuleCCID findModuleCodeList(String codeListId) {
+        return findModuleCodeListMap.get(codeListId);
     }
 
     
-    public ModuleCCID findModuleAcc(ULong accId) {
-        return findModuleAccManifestMap.get(accId);
+    public ModuleCCID findModuleAcc(String accId) {
+        return findModuleAccMap.get(accId);
     }
 
     
-    public ModuleCCID findModuleAsccp(ULong asccpId) {
-        return findModuleAsccpManifestMap.get(asccpId);
+    public ModuleCCID findModuleAsccp(String asccpId) {
+        return findModuleAsccpMap.get(asccpId);
     }
 
     
-    public ModuleCCID findModuleBccp(ULong bccpId) {
-        return findModuleBccpManifestMap.get(bccpId);
+    public ModuleCCID findModuleBccp(String bccpId) {
+        return findModuleBccpMap.get(bccpId);
     }
 
     
-    public ModuleCCID findModuleDt(ULong dtId) {
-        return findModuleDtManifestMap.get(dtId);
+    public ModuleCCID findModuleDt(String dtId) {
+        return findModuleDtMap.get(dtId);
     }
 
     
-    public ModuleCCID findModuleXbt(ULong xbtId) {
-        return findModuleXbtManifestMap.get(xbtId);
+    public ModuleXbtID findModuleXbt(String xbtId) {
+        return findModuleXbtMap.get(xbtId);
     }
 
     private List<BlobContentRecord> findBlobContentList;
@@ -548,7 +540,7 @@ public class ImportedDataProvider {
     }
 
     
-    public ModuleCCID findModuleBlobContent(ULong blobContentId) {
-        return findModuleBlobContentManifestMap.get(blobContentId);
+    public ModuleCCID findModuleBlobContent(String blobContentId) {
+        return findModuleBlobContentMap.get(blobContentId);
     }
 }

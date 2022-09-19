@@ -2,13 +2,11 @@ package org.oagi.score.gateway.http.api.bie_management.data.bie_edit;
 
 import lombok.Data;
 
-import java.math.BigInteger;
-
 @Data
 public class ReuseBIERequest {
 
-    private BigInteger topLevelAsbiepId;
-    private BigInteger asccpManifestId;
+    private String topLevelAsbiepId;
+    private String asccpManifestId;
     private String asbieHashPath;
-    private BigInteger reuseTopLevelAsbiepId;
+    private String reuseTopLevelAsbiepId;
 }

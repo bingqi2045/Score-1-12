@@ -1,10 +1,8 @@
 package org.oagi.score.gateway.http.api.graph.data;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.jooq.types.ULong;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,16 +28,16 @@ public class Node {
     }
 
     private NodeType type;
-    private ULong manifestId;
+    private String manifestId;
     private CcState state;
 
-    private ULong basedManifestId;
-    private ULong linkedManifestId;
-    private ULong prevManifestId;
+    private String basedManifestId;
+    private String linkedManifestId;
+    private String prevManifestId;
 
     private final Map<String, Object> properties = new HashMap();
 
-    public Node(NodeType type, ULong manifestId, CcState state) {
+    public Node(NodeType type, String manifestId, CcState state) {
         setType(type);
         setManifestId(manifestId);
         setState(state);
@@ -53,11 +51,11 @@ public class Node {
         this.type = type;
     }
 
-    public ULong getManifestId() {
+    public String getManifestId() {
         return manifestId;
     }
 
-    public void setManifestId(ULong manifestId) {
+    public void setManifestId(String manifestId) {
         this.manifestId = manifestId;
     }
 
@@ -69,27 +67,27 @@ public class Node {
         this.state = state;
     }
 
-    public ULong getBasedManifestId() {
+    public String getBasedManifestId() {
         return basedManifestId;
     }
 
-    public void setBasedManifestId(ULong basedManifestId) {
+    public void setBasedManifestId(String basedManifestId) {
         this.basedManifestId = basedManifestId;
     }
 
-    public ULong getLinkedManifestId() {
+    public String getLinkedManifestId() {
         return linkedManifestId;
     }
 
-    public void setLinkedManifestId(ULong linkedManifestId) {
+    public void setLinkedManifestId(String linkedManifestId) {
         this.linkedManifestId = linkedManifestId;
     }
 
-    public ULong getPrevManifestId() {
+    public String getPrevManifestId() {
         return prevManifestId;
     }
 
-    public void setPrevManifestId(ULong prevManifestId) {
+    public void setPrevManifestId(String prevManifestId) {
         this.prevManifestId = prevManifestId;
     }
 
@@ -101,7 +99,7 @@ public class Node {
         return getTypeAsString() + "-" + getManifestId();
     }
 
-    public static String toKey(NodeType type, BigInteger manifestId) {
+    public static String toKey(NodeType type, String manifestId) {
         return type.toString() + "-" + manifestId;
     }
 
@@ -113,7 +111,7 @@ public class Node {
         return this.properties;
     }
 
-    public static Node toNode(NodeType type, ULong manifestId, CcState state) {
+    public static Node toNode(NodeType type, String manifestId, CcState state) {
         return new Node(type, manifestId, state);
     }
 

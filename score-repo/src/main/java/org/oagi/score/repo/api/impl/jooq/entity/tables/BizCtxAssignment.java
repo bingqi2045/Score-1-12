@@ -11,8 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,8 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentRecord;
@@ -56,19 +52,21 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     /**
      * The column <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
+     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>. Foreign key
+     * to the biz_ctx table.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the biz_ctx table.");
 
     /**
      * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This
      * is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BizCtxAssignmentRecord, String> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased) {
         this(alias, aliased, null);
@@ -109,16 +107,6 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID);
-    }
-
-    @Override
-    public Identity<BizCtxAssignmentRecord, ULong> getIdentity() {
-        return (Identity<BizCtxAssignmentRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BizCtxAssignmentRecord> getPrimaryKey() {
         return Keys.KEY_BIZ_CTX_ASSIGNMENT_PRIMARY;
     }
@@ -130,21 +118,10 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     @Override
     public List<ForeignKey<BizCtxAssignmentRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
+        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
-    private transient BizCtx _bizCtx;
     private transient TopLevelAsbiep _topLevelAsbiep;
-
-    /**
-     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
-     */
-    public BizCtx bizCtx() {
-        if (_bizCtx == null)
-            _bizCtx = new BizCtx(this, Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK);
-
-        return _bizCtx;
-    }
 
     /**
      * Get the implicit join path to the <code>oagi.top_level_asbiep</code>
@@ -201,21 +178,22 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

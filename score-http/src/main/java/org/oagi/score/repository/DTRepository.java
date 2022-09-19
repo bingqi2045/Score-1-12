@@ -3,17 +3,16 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.DT;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class DTRepository implements ScoreRepository<DT> {
+public class DTRepository implements ScoreRepository<DT, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -58,12 +57,12 @@ public class DTRepository implements ScoreRepository<DT> {
     }
 
     @Override
-    public DT findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public DT findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.DT.DT_ID.eq(ULong.valueOf(id)))
+                .where(Tables.DT.DT_ID.eq(id))
                 .fetchOptionalInto(DT.class).orElse(null);
     }
 }

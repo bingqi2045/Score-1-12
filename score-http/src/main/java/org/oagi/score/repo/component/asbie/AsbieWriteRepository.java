@@ -1,17 +1,17 @@
 package org.oagi.score.repo.component.asbie;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.oagi.score.repo.component.ascc.AsccReadRepository;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
@@ -34,7 +34,7 @@ public class AsbieWriteRepository {
 
     public AsbieNode.Asbie upsertAsbie(UpsertAsbieRequest request) {
         AsbieNode.Asbie asbie = request.getAsbie();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = asbie.getHashPath();
         AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
                 .where(and(
@@ -43,13 +43,14 @@ public class AsbieWriteRepository {
                 ))
                 .fetchOptional().orElse(null);
 
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong requesterId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String requesterId = user.getAppUserId();
 
         if (asbieRecord == null) {
             asbieRecord = new AsbieRecord();
+            asbieRecord.setAsbieId(UUID.randomUUID().toString());
             asbieRecord.setGuid(ScoreGuid.randomGuid());
-            asbieRecord.setBasedAsccManifestId(ULong.valueOf(asbie.getBasedAsccManifestId()));
+            asbieRecord.setBasedAsccManifestId(asbie.getBasedAsccManifestId());
             asbieRecord.setPath(asbie.getPath());
             asbieRecord.setHashPath(hashPath);
             asbieRecord.setFromAbieId(dslContext.select(ABIE.ABIE_ID)
@@ -58,14 +59,14 @@ public class AsbieWriteRepository {
                             ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ABIE.HASH_PATH.eq(asbie.getFromAbieHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             asbieRecord.setToAsbiepId(dslContext.select(ASBIEP.ASBIEP_ID)
                     .from(ASBIEP)
                     .where(and(
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ASBIEP.HASH_PATH.eq(asbie.getToAsbiepHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
 
             if (asbie.getUsed() != null) {
@@ -106,12 +107,9 @@ public class AsbieWriteRepository {
             asbieRecord.setCreationTimestamp(request.getLocalDateTime());
             asbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            asbieRecord.setAsbieId(
-                    dslContext.insertInto(ASBIE)
-                            .set(asbieRecord)
-                            .returning(ASBIE.ASBIE_ID)
-                            .fetchOne().getAsbieId()
-            );
+            dslContext.insertInto(ASBIE)
+                    .set(asbieRecord)
+                    .execute();
         } else {
             asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
             if (asbie.getUsed() != null) {

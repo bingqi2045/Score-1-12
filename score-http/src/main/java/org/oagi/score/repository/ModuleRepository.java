@@ -1,15 +1,11 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.export.model.ScoreModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -21,7 +17,7 @@ public class ModuleRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public List<ScoreModule> findAll(ULong moduleSetReleaseId) {
+    public List<ScoreModule> findAll(String moduleSetReleaseId) {
         return dslContext.select(
                         MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID,
                         MODULE_SET_RELEASE.MODULE_SET_ID,
@@ -44,7 +40,7 @@ public class ModuleRepository {
     }
 
     public ScoreModule findByModuleSetReleaseIdAndAsccpManifestId(
-            ULong moduleSetReleaseId, ULong asccpManifestId) {
+            String moduleSetReleaseId, String asccpManifestId) {
         return dslContext.select(
                         MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID,
                         MODULE_SET_RELEASE.MODULE_SET_ID,
@@ -74,7 +70,7 @@ public class ModuleRepository {
                 .fetchOneInto(ScoreModule.class);
     }
 
-    public ULong getModuleSetReleaseIdByAsccpManifestId(ULong asccpManifestId) {
+    public String getModuleSetReleaseIdByAsccpManifestId(String asccpManifestId) {
         return dslContext.select(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
                 .from(MODULE_SET_RELEASE)
                 .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
@@ -82,10 +78,10 @@ public class ModuleRepository {
                         MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1),
                         ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestId)
                 ))
-                .fetchOneInto(ULong.class);
+                .fetchOneInto(String.class);
     }
 
-    public String getModulePathByDtManifestId(ULong moduleSetReleaseId, ULong dtManifestId) {
+    public String getModulePathByDtManifestId(String moduleSetReleaseId, String dtManifestId) {
         return dslContext.select(MODULE.PATH)
                 .from(MODULE)
                 .join(MODULE_DT_MANIFEST).on(MODULE.MODULE_ID.eq(MODULE_DT_MANIFEST.MODULE_ID))

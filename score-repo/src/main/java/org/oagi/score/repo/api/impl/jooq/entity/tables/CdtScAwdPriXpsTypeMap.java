@@ -10,12 +10,11 @@ import java.util.function.Function;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function3;
-import org.jooq.Identity;
+import org.jooq.Function4;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.SelectField;
 import org.jooq.Table;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriXpsTypeMapRecord;
@@ -58,23 +56,28 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
     /**
      * The column
      * <code>oagi.cdt_sc_awd_pri_xps_type_map.cdt_sc_awd_pri_xps_type_map_id</code>.
-     * Internal, primary database key.
+     * Primary, internal database key.
      */
-    public final TableField<CdtScAwdPriXpsTypeMapRecord, ULong> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CdtScAwdPriXpsTypeMapRecord, String> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column
      * <code>oagi.cdt_sc_awd_pri_xps_type_map.cdt_sc_awd_pri_id</code>. Foreign
      * key to the CDT_SC_AWD_PRI table.
      */
-    public final TableField<CdtScAwdPriXpsTypeMapRecord, ULong> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CDT_SC_AWD_PRI table.");
+    public final TableField<CdtScAwdPriXpsTypeMapRecord, String> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CDT_SC_AWD_PRI table.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri_xps_type_map.xbt_id</code>. Foreign
-     * key to the Xbt table. It identifies an XML schema built-in type that maps
-     * to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.
+     * key to the XBT table.
      */
-    public final TableField<CdtScAwdPriXpsTypeMapRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the Xbt table. It identifies an XML schema built-in type that maps to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.");
+    public final TableField<CdtScAwdPriXpsTypeMapRecord, String> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.CHAR(36), this, "Foreign key to the XBT table.");
+
+    /**
+     * The column <code>oagi.cdt_sc_awd_pri_xps_type_map.is_default</code>.
+     * Indicating a default value domain mapping.
+     */
+    public final TableField<CdtScAwdPriXpsTypeMapRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "Indicating a default value domain mapping.");
 
     private CdtScAwdPriXpsTypeMap(Name alias, Table<CdtScAwdPriXpsTypeMapRecord> aliased) {
         this(alias, aliased, null);
@@ -114,11 +117,6 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CdtScAwdPriXpsTypeMapRecord, ULong> getIdentity() {
-        return (Identity<CdtScAwdPriXpsTypeMapRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -194,25 +192,26 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<String, String, String, Byte> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

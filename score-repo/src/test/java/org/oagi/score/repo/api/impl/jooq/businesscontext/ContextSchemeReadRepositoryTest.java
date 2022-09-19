@@ -1,16 +1,14 @@
 package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +17,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ContextSchemeReadRepositoryTest
@@ -28,13 +26,13 @@ public class ContextSchemeReadRepositoryTest
 
     private ContextSchemeReadRepository repository;
     private ScoreUser requester;
-    private BigInteger contextCategoryId;
-    private List<BigInteger> contextSchemeIds = new ArrayList();
+    private String contextCategoryId;
+    private List<String> contextSchemeIds = new ArrayList();
 
     @BeforeAll
     void setUp() {
         repository = scoreRepositoryFactory().createContextSchemeReadRepository();
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
         contextCategoryId = createContextCategory();
 
         int cnt = 20;
@@ -43,7 +41,7 @@ public class ContextSchemeReadRepositoryTest
         }
     }
 
-    private BigInteger createContextCategory() {
+    private String createContextCategory() {
         CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester);
         request.setName(RandomStringUtils.random(45, true, true));
         request.setDescription(RandomStringUtils.random(1000, true, true));
@@ -70,7 +68,7 @@ public class ContextSchemeReadRepositoryTest
             );
         }
 
-        BigInteger contextSchemeId = scoreRepositoryFactory().createContextSchemeWriteRepository()
+        String contextSchemeId = scoreRepositoryFactory().createContextSchemeWriteRepository()
                 .createContextScheme(request)
                 .getContextSchemeId();
 
@@ -89,7 +87,7 @@ public class ContextSchemeReadRepositoryTest
 
         ContextScheme contextScheme = response.getContextScheme();
         CtxSchemeRecord record = dslContext().selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextScheme.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(contextScheme.getContextSchemeId()))
                 .fetchOptional().orElse(null);
 
         assertNotNull(record);
@@ -103,14 +101,14 @@ public class ContextSchemeReadRepositoryTest
         assertEquals(record.getLastUpdateTimestamp(), contextScheme.getLastUpdateTimestamp());
 
         Map<String, CtxSchemeValueRecord> valueRecords = dslContext().selectFrom(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextScheme.getContextSchemeId())))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextScheme.getContextSchemeId()))
                 .orderBy(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
                 .fetchStream().collect(Collectors.toMap(CtxSchemeValueRecord::getValue, Function.identity()));
 
         assertEquals(contextScheme.getContextSchemeValueList().size(), valueRecords.size());
         for (ContextSchemeValue contextSchemeValue : contextScheme.getContextSchemeValueList()) {
             CtxSchemeValueRecord valueRecord = valueRecords.get(contextSchemeValue.getValue());
-            assertEquals(valueRecord.getCtxSchemeValueId().toBigInteger(), contextSchemeValue.getContextSchemeValueId());
+            assertEquals(valueRecord.getCtxSchemeValueId(), contextSchemeValue.getContextSchemeValueId());
             assertEquals(valueRecord.getGuid(), contextSchemeValue.getGuid());
             assertEquals(valueRecord.getValue(), contextSchemeValue.getValue());
             assertEquals(valueRecord.getMeaning(), contextSchemeValue.getMeaning());

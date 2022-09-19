@@ -4,6 +4,8 @@ package org.oagi.score.gateway.http.configuration.oauth2;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
@@ -25,6 +27,7 @@ import static org.springframework.security.oauth2.core.ClientAuthenticationMetho
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST;
 
 @Component
+@DependsOn({"scoreDatabaseInitializer"})
 public class ScoreClientRegistrationRepository
         implements ClientRegistrationRepository, Iterable<ClientRegistration>, InitializingBean {
 

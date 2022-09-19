@@ -6,7 +6,6 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditAgenc
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditCodeList;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,9 +25,9 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
     private String bizTerm;
     private String remark;
 
-    private BigInteger dtScPriRestriId = BigInteger.ZERO;
-    private BigInteger codeListId = BigInteger.ZERO;
-    private BigInteger agencyIdListId = BigInteger.ZERO;
+    private String dtScPriRestriId;
+    private String codeListId;
+    private String agencyIdListId;
 
     private List<BieEditXbt> xbtList = Collections.emptyList();
     private List<BieEditCodeList> codeLists = Collections.emptyList();
@@ -52,7 +51,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
         this.setDerived(bbieScNode.isDerived());
         this.setLocked(bbieScNode.isLocked());
 
-        this.setBbieScManifestId(bbieScNode.getBbieScManifestId());
+        this.setBbieScId(bbieScNode.getBbieScId());
         this.setDtScManifestId(bbieScNode.getDtScManifestId());
 
         return this;

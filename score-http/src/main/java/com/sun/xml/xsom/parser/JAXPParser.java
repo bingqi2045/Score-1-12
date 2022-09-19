@@ -40,19 +40,17 @@
 
 package com.sun.xml.xsom.parser;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.xml.xsom.impl.parser.Messages;
+import org.xml.sax.*;
+import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.*;
-import org.xml.sax.helpers.XMLFilterImpl;
-
-import com.sun.xml.xsom.impl.parser.Messages;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Standard XMLParser implemented by using JAXP.

@@ -3,8 +3,6 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class CreateModuleSetRequest extends Request {
 
     private String guid;
@@ -15,9 +13,9 @@ public class CreateModuleSetRequest extends Request {
 
     private boolean createModuleSetRelease;
 
-    private BigInteger targetReleaseId;
+    private String targetReleaseId;
 
-    private BigInteger targetModuleSetReleaseId;
+    private String targetModuleSetReleaseId;
 
     public CreateModuleSetRequest(ScoreUser requester) {
         super(requester);
@@ -55,19 +53,19 @@ public class CreateModuleSetRequest extends Request {
         this.createModuleSetRelease = createModuleSetRelease;
     }
 
-    public BigInteger getTargetReleaseId() {
+    public String getTargetReleaseId() {
         return targetReleaseId;
     }
 
-    public void setTargetReleaseId(BigInteger targetReleaseId) {
+    public void setTargetReleaseId(String targetReleaseId) {
         this.targetReleaseId = targetReleaseId;
     }
 
-    public BigInteger getTargetModuleSetReleaseId() {
+    public String getTargetModuleSetReleaseId() {
         return targetModuleSetReleaseId;
     }
 
-    public void setTargetModuleSetReleaseId(BigInteger targetModuleSetReleaseId) {
+    public void setTargetModuleSetReleaseId(String targetModuleSetReleaseId) {
         this.targetModuleSetReleaseId = targetModuleSetReleaseId;
     }
 }

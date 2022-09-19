@@ -1,10 +1,8 @@
 package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
-
-import java.math.BigInteger;
+import org.oagi.score.service.common.data.CcState;
 
 @Data
 public class CcAsccpNodeDetail implements CcNodeDetail {
@@ -15,8 +13,8 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Ascc {
-        private BigInteger manifestId = BigInteger.ZERO;
-        private BigInteger asccId = BigInteger.ZERO;
+        private String manifestId;
+        private String asccId;
         private String guid;
         private String den;
         private int cardinalityMin;
@@ -27,21 +25,21 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }
 
     @Data
     public static class Asccp {
-        private BigInteger manifestId = BigInteger.ZERO;
-        private BigInteger asccpId = BigInteger.ZERO;
+        private String manifestId;
+        private String asccpId;
         private String guid;
         private String propertyTerm;
         private String den;
-        private BigInteger namespaceId = BigInteger.ZERO;
+        private String namespaceId;
         private boolean reusable;
         private boolean deprecated;
         private boolean nillable;
@@ -50,9 +48,9 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
         private CcState state;
         private String owner;
-        private BigInteger releaseId;
+        private String releaseId;
         private String releaseNum;
-        private BigInteger logId;
+        private String logId;
         private int revisionNum;
         private int revisionTrackingNum;
     }

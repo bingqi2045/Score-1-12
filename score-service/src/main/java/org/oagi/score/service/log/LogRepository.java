@@ -8,10 +8,10 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.CcAction;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.PageRequest;
@@ -21,12 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,14 +46,14 @@ public class LogRepository {
         this.serializer = serializer;
     }
 
-    private Log getCurrentStatusAsLog(String type, BigInteger manifestId) {
+    private Log getCurrentStatusAsLog(String type, String manifestId) {
         Log log = null;
         AppUserRecord owner = null;
 
         switch (type) {
             case "ACC":
                 AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -73,7 +69,7 @@ public class LogRepository {
                 break;
             case "ASCCP":
                 AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -89,7 +85,7 @@ public class LogRepository {
                 break;
             case "BCCP":
                 BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -105,7 +101,7 @@ public class LogRepository {
                 break;
             case "DT":
                 DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
                         .fetchOne();
 
                 DtRecord dtRecord = dslContext.selectFrom(DT)
@@ -122,7 +118,7 @@ public class LogRepository {
         }
 
         if (log != null) {
-            log.setLogId(BigInteger.ZERO);
+            log.setLogId(null);
             log.setHash(CURRENT_LOG_HASH);
             log.setLogAction(LogAction.Current);
             log.setTimestamp(LocalDateTime.now());
@@ -175,7 +171,7 @@ public class LogRepository {
                 .join(APP_USER)
                 .on(LOG.CREATED_BY.eq(APP_USER.APP_USER_ID))
                 .where(conditions)
-                .orderBy(LOG.LOG_ID.desc())
+                .orderBy(LOG.CREATION_TIMESTAMP.desc())
                 .limit(pageOffset, pageSize)
                 .fetchInto(Log.class);
 
@@ -201,13 +197,13 @@ public class LogRepository {
         return response;
     }
 
-    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId,
-                                  String reference, String type, BigInteger manifestId) {
+    public String getSnapshotById(AuthenticatedPrincipal user, String logId,
+                                  String reference, String type, String manifestId) {
         if (CURRENT_LOG_HASH.equals(reference)) {
             switch (type) {
                 case "ACC":
                     AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -238,7 +234,7 @@ public class LogRepository {
                             asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords);
                 case "ASCCP":
                     AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
-                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -248,7 +244,7 @@ public class LogRepository {
                     return serializer.serialize(asccpManifestRecord, asccpRecord);
                 case "BCCP":
                     BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -258,7 +254,7 @@ public class LogRepository {
                     return serializer.serialize(bccpManifestRecord, bccpRecord);
                 case "DT":
                     DtManifestRecord dtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
-                            .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                            .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
                             .fetchOne();
 
                     DtRecord dtRecord = dslContext.selectFrom(DT)
@@ -279,14 +275,14 @@ public class LogRepository {
             }
             return "{}";
         } else {
-            if (logId == null || logId.longValue() <= 0L) {
+            if (!StringUtils.hasLength(logId)) {
                 return "{}";
             }
 
             return serializer.deserialize(
                     dslContext.select(LOG.SNAPSHOT)
                             .from(LOG)
-                            .where(LOG.LOG_ID.eq(ULong.valueOf(logId)))
+                            .where(LOG.LOG_ID.eq(logId))
                             .fetchOptionalInto(String.class).orElse(null)
             ).toString();
         }
@@ -316,7 +312,7 @@ public class LogRepository {
 
         List<LogRecord> sortedLogRecordList = new ArrayList(logRecordList.size());
         if (logRecordList.size() > 0) {
-            Map<ULong, LogRecord> logRecordMap = logRecordList.stream()
+            Map<String, LogRecord> logRecordMap = logRecordList.stream()
                     .collect(Collectors.toMap(LogRecord::getLogId, Function.identity()));
 
             if (sortDirection == ASC) {
@@ -350,7 +346,7 @@ public class LogRepository {
         List<LogRecord> logRecordList = getSortedLogListByReference(reference, SortDirection.DESC, ccType);
 
         LogRecord logRecordInStableState = null;
-        List<ULong> deleteTargetLogIdList = new ArrayList();
+        List<String> deleteTargetLogIdList = new ArrayList();
         int revisionNum = -1;
         for (int i = 0, len = logRecordList.size(); i < len; ++i) {
             LogRecord logRecord = logRecordList.get(i);
@@ -506,20 +502,20 @@ public class LogRepository {
         final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
 
         private final ObjectNode content = nodeFactory.objectNode();
-        private ULong logId;
+        private String logId;
         private UInteger logNum;
         private UInteger logTrackingNum;
         private LogAction logAction;
         private String reference;
-        private ULong prevLogId;
-        private ULong createdBy;
+        private String prevLogId;
+        private String createdBy;
         private LocalDateTime creationTimestamp;
 
-        public ULong getLogId() {
+        public String getLogId() {
             return logId;
         }
 
-        public InsertLogArguments setLogId(ULong logId) {
+        public InsertLogArguments setLogId(String logId) {
             this.logId = logId;
             return this;
         }
@@ -560,20 +556,20 @@ public class LogRepository {
             return this;
         }
 
-        public ULong getPrevLogId() {
+        public String getPrevLogId() {
             return prevLogId;
         }
 
-        public InsertLogArguments setPrevLogId(ULong prevLogId) {
+        public InsertLogArguments setPrevLogId(String prevLogId) {
             this.prevLogId = prevLogId;
             return this;
         }
 
-        public ULong getCreatedBy() {
+        public String getCreatedBy() {
             return createdBy;
         }
 
-        public InsertLogArguments setCreatedBy(ULong createdBy) {
+        public InsertLogArguments setCreatedBy(String createdBy) {
             this.createdBy = createdBy;
             return this;
         }
@@ -600,7 +596,7 @@ public class LogRepository {
             content.put("ActionDescription", action.toString());
         }
 
-        public ULong execute() {
+        public String execute() {
             if (getPrevLogId() == null) {
                 setRevisionNum(UInteger.valueOf(1));
                 setRevisionTrackingNum(UInteger.valueOf(1));
@@ -610,7 +606,9 @@ public class LogRepository {
                 setRevisionTrackingNum(logRecord.getRevisionTrackingNum().add(1));
             }
 
-            return dslContext.insertInto(LOG)
+            String logId = UUID.randomUUID().toString();
+            dslContext.insertInto(LOG)
+                    .set(LOG.LOG_ID, logId)
                     .set(LOG.SNAPSHOT, content != null ? JSON.valueOf(content.toString()) : null)
                     .set(LOG.PREV_LOG_ID, getPrevLogId())
                     .set(LOG.CREATED_BY, getCreatedBy())
@@ -618,7 +616,8 @@ public class LogRepository {
                     .set(LOG.LOG_ACTION, getLogAction().name())
                     .set(LOG.REVISION_NUM, getRevisionNum())
                     .set(LOG.REVISION_TRACKING_NUM, getRevisionTrackingNum())
-                    .returning().fetchOne().getLogId();
+                    .execute();
+            return logId;
         }
     }
 
@@ -626,10 +625,10 @@ public class LogRepository {
         final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
 
         private ObjectNode content;
-        private final ULong logId;
+        private final String logId;
         private String reference;
 
-        UpdateLogArguments(ULong logId) {
+        UpdateLogArguments(String logId) {
             LogRecord logRecord = dslContext
                     .selectFrom(LOG)
                     .where(LOG.LOG_ID.eq(logId))
@@ -670,7 +669,7 @@ public class LogRepository {
             dslContext.update(LOG)
                     .set(LOG.SNAPSHOT, content != null ? JSON.valueOf(content.toString()) : null)
                     .where(LOG.LOG_ID.eq(this.logId))
-                    .returning().fetchOne();
+                    .execute();
         }
     }
 
@@ -678,11 +677,11 @@ public class LogRepository {
         return new InsertLogArguments();
     }
 
-    public UpdateLogArguments updateLogArguments(ULong logId) {
+    public UpdateLogArguments updateLogArguments(String logId) {
         return new UpdateLogArguments(logId);
     }
 
-    public LogRecord getLogById(ULong logId) {
+    public LogRecord getLogById(String logId) {
         return dslContext.selectFrom(LOG).where(LOG.LOG_ID.eq(logId)).fetchOne();
     }
 
@@ -692,7 +691,7 @@ public class LogRepository {
     public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
                                   AccRecord accRecord,
                                   LogAction logAction,
-                                  ULong requesterId,
+                                  String requesterId,
                                   LocalDateTime timestamp) {
         return insertAccLog(accManifestRecord, accRecord, null, logAction, requesterId, timestamp);
     }
@@ -729,18 +728,18 @@ public class LogRepository {
 
     public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
                                   AccRecord accRecord,
-                                  ULong prevLogId,
+                                  String prevLogId,
                                   LogAction logAction,
-                                  ULong requesterId,
+                                  String requesterId,
                                   LocalDateTime timestamp) {
         return insertAccLog(accManifestRecord, accRecord, prevLogId, logAction, requesterId, timestamp, LogUtils.generateHash());
     }
 
     public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
                                   AccRecord accRecord,
-                                  ULong prevLogId,
+                                  String prevLogId,
                                   LogAction logAction,
-                                  ULong requesterId,
+                                  String requesterId,
                                   LocalDateTime timestamp,
                                   String hash) {
 
@@ -752,6 +751,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
+        logRecord.setLogId(UUID.randomUUID().toString());
         logRecord.setHash(hash);
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
@@ -780,9 +780,9 @@ public class LogRepository {
             logRecord.setPrevLogId(prevLogRecord.getLogId());
         }
 
-        logRecord.setLogId(dslContext.insertInto(LOG)
+        dslContext.insertInto(LOG)
                 .set(logRecord)
-                .returning(LOG.LOG_ID).fetchOne().getLogId());
+                .execute();
         if (prevLogRecord != null) {
             prevLogRecord.setNextLogId(logRecord.getLogId());
             prevLogRecord.update(LOG.NEXT_LOG_ID);
@@ -797,16 +797,16 @@ public class LogRepository {
     public LogRecord insertAsccpLog(AsccpManifestRecord asccpManifestRecord,
                                     AsccpRecord asccpRecord,
                                     LogAction logAction,
-                                    ULong requesterId,
+                                    String requesterId,
                                     LocalDateTime timestamp) {
         return insertAsccpLog(asccpManifestRecord, asccpRecord, null, logAction, requesterId, timestamp);
     }
 
     public LogRecord insertAsccpLog(AsccpManifestRecord asccpManifestRecord,
                                     AsccpRecord asccpRecord,
-                                    ULong prevLogId,
+                                    String prevLogId,
                                     LogAction logAction,
-                                    ULong requesterId,
+                                    String requesterId,
                                     LocalDateTime timestamp) {
 
         LogRecord prevLogRecord = null;
@@ -817,6 +817,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
+        logRecord.setLogId(UUID.randomUUID().toString());
         logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
@@ -844,9 +845,9 @@ public class LogRepository {
             logRecord.setPrevLogId(prevLogRecord.getLogId());
         }
 
-        logRecord.setLogId(dslContext.insertInto(LOG)
+        dslContext.insertInto(LOG)
                 .set(logRecord)
-                .returning(LOG.LOG_ID).fetchOne().getLogId());
+                .execute();
         if (prevLogRecord != null) {
             prevLogRecord.setNextLogId(logRecord.getLogId());
             prevLogRecord.update(LOG.NEXT_LOG_ID);
@@ -861,16 +862,16 @@ public class LogRepository {
     public LogRecord insertBccpLog(BccpManifestRecord bccpManifestRecord,
                                    BccpRecord bccpRecord,
                                    LogAction logAction,
-                                   ULong requesterId,
+                                   String requesterId,
                                    LocalDateTime timestamp) {
         return insertBccpLog(bccpManifestRecord, bccpRecord, null, logAction, requesterId, timestamp);
     }
 
     public LogRecord insertBccpLog(BccpManifestRecord bccpManifestRecord,
                                    BccpRecord bccpRecord,
-                                   ULong prevLogId,
+                                   String prevLogId,
                                    LogAction logAction,
-                                   ULong requesterId,
+                                   String requesterId,
                                    LocalDateTime timestamp) {
 
         LogRecord prevLogRecord = null;
@@ -881,6 +882,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
+        logRecord.setLogId(UUID.randomUUID().toString());
         logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
@@ -908,9 +910,9 @@ public class LogRepository {
             logRecord.setPrevLogId(prevLogRecord.getLogId());
         }
 
-        logRecord.setLogId(dslContext.insertInto(LOG)
+        dslContext.insertInto(LOG)
                 .set(logRecord)
-                .returning(LOG.LOG_ID).fetchOne().getLogId());
+                .execute();
         if (prevLogRecord != null) {
             prevLogRecord.setNextLogId(logRecord.getLogId());
             prevLogRecord.update(LOG.NEXT_LOG_ID);
@@ -925,16 +927,16 @@ public class LogRepository {
     public LogRecord insertBdtLog(DtManifestRecord bdtManifestRecord,
                                   DtRecord bdtRecord,
                                   LogAction logAction,
-                                  ULong requesterId,
+                                  String requesterId,
                                   LocalDateTime timestamp) {
         return insertBdtLog(bdtManifestRecord, bdtRecord, null, logAction, requesterId, timestamp);
     }
 
     public LogRecord insertBdtLog(DtManifestRecord bdtManifestRecord,
                                   DtRecord bdtRecord,
-                                  ULong prevLogId,
+                                  String prevLogId,
                                   LogAction logAction,
-                                  ULong requesterId,
+                                  String requesterId,
                                   LocalDateTime timestamp) {
 
         LogRecord prevLogRecord = null;
@@ -945,6 +947,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
+        logRecord.setLogId(UUID.randomUUID().toString());
         logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
@@ -983,9 +986,9 @@ public class LogRepository {
             logRecord.setPrevLogId(prevLogRecord.getLogId());
         }
 
-        logRecord.setLogId(dslContext.insertInto(LOG)
+        dslContext.insertInto(LOG)
                 .set(logRecord)
-                .returning(LOG.LOG_ID).fetchOne().getLogId());
+                .execute();
         if (prevLogRecord != null) {
             prevLogRecord.setNextLogId(logRecord.getLogId());
             prevLogRecord.update(LOG.NEXT_LOG_ID);
@@ -1000,16 +1003,16 @@ public class LogRepository {
     public LogRecord insertCodeListLog(CodeListManifestRecord codeListManifestRecord,
                                        CodeListRecord codeListRecord,
                                        LogAction logAction,
-                                       ULong requesterId,
+                                       String requesterId,
                                        LocalDateTime timestamp) {
         return insertCodeListLog(codeListManifestRecord, codeListRecord, null, logAction, requesterId, timestamp);
     }
 
     public LogRecord insertCodeListLog(CodeListManifestRecord codeListManifestRecord,
                                        CodeListRecord codeListRecord,
-                                       ULong prevLogId,
+                                       String prevLogId,
                                        LogAction logAction,
-                                       ULong requesterId,
+                                       String requesterId,
                                        LocalDateTime timestamp) {
 
         LogRecord prevLogRecord = null;
@@ -1020,6 +1023,7 @@ public class LogRepository {
         }
 
         LogRecord logRecord = new LogRecord();
+        logRecord.setLogId(UUID.randomUUID().toString());
         logRecord.setHash(LogUtils.generateHash());
         if (LogAction.Revised.equals(logAction)) {
             assert (prevLogRecord != null);
@@ -1059,9 +1063,9 @@ public class LogRepository {
             logRecord.setPrevLogId(prevLogRecord.getLogId());
         }
 
-        logRecord.setLogId(dslContext.insertInto(LOG)
+        dslContext.insertInto(LOG)
                 .set(logRecord)
-                .returning(LOG.LOG_ID).fetchOne().getLogId());
+                .execute();
         if (prevLogRecord != null) {
             prevLogRecord.setNextLogId(logRecord.getLogId());
             prevLogRecord.update(LOG.NEXT_LOG_ID);

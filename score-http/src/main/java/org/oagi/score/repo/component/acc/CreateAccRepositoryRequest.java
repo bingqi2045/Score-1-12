@@ -1,37 +1,36 @@
 package org.oagi.score.repo.component.acc;
 
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcACCType;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class CreateAccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
+    private final String releaseId;
 
     private String initialObjectClassTerm = "Object Class Term";
     private OagisComponentType initialComponentType = OagisComponentType.Semantics;
     private CcACCType initialType = CcACCType.Default;
     private String initialDefinition;
-    private BigInteger basedAccManifestId;
-    private BigInteger namespaceId;
+    private String basedAccManifestId;
+    private String namespaceId;
 
-    public CreateAccRepositoryRequest(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public CreateAccRepositoryRequest(AuthenticatedPrincipal user, String releaseId) {
         super(user);
         this.releaseId = releaseId;
     }
 
     public CreateAccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
-                                      BigInteger releaseId) {
+                                      String releaseId) {
         super(user, localDateTime);
         this.releaseId = releaseId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -59,19 +58,19 @@ public class CreateAccRepositoryRequest extends RepositoryRequest {
         this.initialDefinition = initialDefinition;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 
-    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+    public void setBasedAccManifestId(String basedAccManifestId) {
         this.basedAccManifestId = basedAccManifestId;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

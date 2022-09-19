@@ -2,22 +2,21 @@ package org.oagi.score.repo.api.message.model;
 
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 public class MessageList {
 
-    private BigInteger messageId;
+    private String messageId;
     private ScoreUser sender;
     private String subject;
     private boolean read;
     private Date timestamp;
 
-    public BigInteger getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(BigInteger messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 

@@ -8,8 +8,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
-
 @RestController
 public class BieUpliftingController {
 
@@ -22,8 +20,8 @@ public class BieUpliftingController {
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting/target", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public FindTargetAsccpManifestResponse findTargetAsccpManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                                   @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                                   @RequestParam("targetReleaseId") BigInteger targetReleaseId) {
+                                                                   @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
+                                                                   @RequestParam("targetReleaseId") String targetReleaseId) {
 
         FindTargetAsccpManifestRequest request = new FindTargetAsccpManifestRequest();
         request.setRequester(sessionService.asScoreUser(user));
@@ -37,8 +35,8 @@ public class BieUpliftingController {
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AnalysisBieUpliftingResponse analysisBieUplifting(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                             @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                             @RequestParam("targetReleaseId") BigInteger targetReleaseId) {
+                                                             @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
+                                                             @RequestParam("targetReleaseId") String targetReleaseId) {
 
         AnalysisBieUpliftingRequest request = new AnalysisBieUpliftingRequest();
         request.setRequester(sessionService.asScoreUser(user));
@@ -50,7 +48,7 @@ public class BieUpliftingController {
 
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting", method = RequestMethod.POST)
     public UpliftBieResponse upliftBie(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                       @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
+                                       @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
                                        @RequestBody UpliftBieRequest request) {
 
         request.setRequester(sessionService.asScoreUser(user));
@@ -62,8 +60,8 @@ public class BieUpliftingController {
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/uplifting/{targetReleaseId}/valid", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UpliftValidationResponse validateUplift(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                             @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                                             @PathVariable("targetReleaseId") BigInteger targetReleaseId,
+                                                             @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
+                                                             @PathVariable("targetReleaseId") String targetReleaseId,
                                                              @RequestBody UpliftValidationRequest request) {
         request.setRequester(sessionService.asScoreUser(user));
         request.setTopLevelAsbiepId(topLevelAsbiepId);

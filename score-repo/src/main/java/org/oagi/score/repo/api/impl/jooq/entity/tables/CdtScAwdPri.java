@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function4;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriRecord;
@@ -55,23 +53,22 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     }
 
     /**
-     * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Internal,
-     * primary database key.
+     * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CdtScAwdPriRecord, String> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key
      * pointing to the supplementary component (SC).
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
+    public final TableField<CdtScAwdPriRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
 
     /**
-     * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
-     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
-     * the suppliement component identified in the CDT_SC_ID column.
+     * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
+     * the CDT_PRI table.
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the CDT_Pri table. It represents a CDT primitive allowed for the suppliement component identified in the CDT_SC_ID column.");
+    public final TableField<CdtScAwdPriRecord, String> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CDT_PRI table.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.is_default</code>. Indicating
@@ -116,11 +113,6 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CdtScAwdPriRecord, ULong> getIdentity() {
-        return (Identity<CdtScAwdPriRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -200,21 +192,22 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row4<String, String, String, Byte> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super ULong, ? super ULong, ? super ULong, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super String, ? super String, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

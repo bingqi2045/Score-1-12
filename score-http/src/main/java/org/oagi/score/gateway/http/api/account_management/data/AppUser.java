@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AppUser {
 
-    private long appUserId;
+    private String appUserId;
     private String loginId;
     private String password;
     private String name;
@@ -13,7 +13,7 @@ public class AppUser {
     private boolean developer;
     private boolean admin;
     private boolean enabled;
-    private long appOauth2UserId;
+    private String appOauth2UserId;
     private String sub;
 
 }

@@ -42,18 +42,14 @@ package com.sun.xml.xsom.impl;
 
 import com.sun.xml.xsom.XSFacet;
 import com.sun.xml.xsom.XSRestrictionSimpleType;
-import com.sun.xml.xsom.XSVariety;
 import com.sun.xml.xsom.XSSimpleType;
+import com.sun.xml.xsom.XSVariety;
 import com.sun.xml.xsom.impl.parser.SchemaDocumentImpl;
 import com.sun.xml.xsom.visitor.XSSimpleTypeFunction;
 import com.sun.xml.xsom.visitor.XSSimpleTypeVisitor;
 import org.xml.sax.Locator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RestrictionSimpleTypeImpl extends SimpleTypeImpl implements XSRestrictionSimpleType {
 

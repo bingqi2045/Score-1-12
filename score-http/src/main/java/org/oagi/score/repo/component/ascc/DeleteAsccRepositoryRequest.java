@@ -4,30 +4,29 @@ import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.service.log.model.LogAction;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class DeleteAsccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger asccManifestId;
+    private final String asccManifestId;
     private boolean ignoreState;
     private String logHash;
     private LogAction logAction;
 
     public DeleteAsccRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger asccManifestId) {
+                                       String asccManifestId) {
         super(user);
         this.asccManifestId = asccManifestId;
     }
 
     public DeleteAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
-                                       BigInteger asccManifestId) {
+                                       String asccManifestId) {
         super(user, localDateTime);
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 

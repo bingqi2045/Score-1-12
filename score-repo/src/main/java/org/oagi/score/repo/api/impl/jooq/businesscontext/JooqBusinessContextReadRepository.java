@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.BusinessContextReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
 
@@ -55,7 +52,7 @@ public class JooqBusinessContextReadRepository
     private RecordMapper<Record, BusinessContext> mapper() {
         return record -> {
             BusinessContext businessContext = new BusinessContext();
-            businessContext.setBusinessContextId(record.get(BIZ_CTX.BIZ_CTX_ID).toBigInteger());
+            businessContext.setBusinessContextId(record.get(BIZ_CTX.BIZ_CTX_ID));
             businessContext.setGuid(record.get(BIZ_CTX.GUID));
             businessContext.setName(record.get(BIZ_CTX.NAME));
             businessContext.setUsed(dslContext().selectCount().from(BIZ_CTX_ASSIGNMENT)
@@ -67,11 +64,11 @@ public class JooqBusinessContextReadRepository
             businessContext.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -80,11 +77,11 @@ public class JooqBusinessContextReadRepository
             businessContext.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -102,10 +99,10 @@ public class JooqBusinessContextReadRepository
             GetBusinessContextRequest request) throws ScoreDataAccessException {
         BusinessContext businessContext = null;
 
-        BigInteger businessContextId = request.getBusinessContextId();
-        if (!isNull(businessContextId)) {
+        String businessContextId = request.getBusinessContextId();
+        if (StringUtils.hasLength(businessContextId)) {
             businessContext = (BusinessContext) select()
-                    .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(businessContextId)))
+                    .where(BIZ_CTX.BIZ_CTX_ID.eq(businessContextId))
                     .fetchOne(mapper());
 
             if (businessContext != null) {
@@ -118,7 +115,7 @@ public class JooqBusinessContextReadRepository
         return new GetBusinessContextResponse(businessContext);
     }
 
-    private SelectConditionStep selectForValues(BigInteger businessContextId) {
+    private SelectConditionStep selectForValues(String businessContextId) {
         return dslContext().select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
                 BIZ_CTX_VALUE.BIZ_CTX_ID,
@@ -133,22 +130,22 @@ public class JooqBusinessContextReadRepository
                 .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
                 .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(businessContextId)));
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(businessContextId));
     }
 
     private RecordMapper<Record, BusinessContextValue> mapperForValue() {
         return record -> {
             BusinessContextValue businessContextValue = new BusinessContextValue();
-            businessContextValue.setBusinessContextValueId(record.get(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID).toBigInteger());
-            businessContextValue.setBusinessContextId(record.get(BIZ_CTX_VALUE.BIZ_CTX_ID).toBigInteger());
+            businessContextValue.setBusinessContextValueId(record.get(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID));
+            businessContextValue.setBusinessContextId(record.get(BIZ_CTX_VALUE.BIZ_CTX_ID));
 
-            businessContextValue.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID).toBigInteger());
+            businessContextValue.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID));
             businessContextValue.setContextCategoryName(record.get(CTX_CATEGORY.NAME.as("ctx_category_name")));
 
-            businessContextValue.setContextSchemeId(record.get(CTX_SCHEME.CTX_SCHEME_ID).toBigInteger());
+            businessContextValue.setContextSchemeId(record.get(CTX_SCHEME.CTX_SCHEME_ID));
             businessContextValue.setContextSchemeName(record.get(CTX_SCHEME.SCHEME_NAME.as("ctx_scheme_name")));
 
-            businessContextValue.setContextSchemeValueId(record.get(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID).toBigInteger());
+            businessContextValue.setContextSchemeValueId(record.get(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID));
             businessContextValue.setContextSchemeValue(record.get(CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value")));
             businessContextValue.setContextSchemeValueMeaning(record.get(CTX_SCHEME_VALUE.MEANING.as("ctx_scheme_value_meaning")));
 
@@ -162,13 +159,10 @@ public class JooqBusinessContextReadRepository
         if (!request.getBusinessContextIdList().isEmpty()) {
             if (request.getBusinessContextIdList().size() == 1) {
                 conditions.add(BIZ_CTX.BIZ_CTX_ID.eq(
-                        ULong.valueOf(request.getBusinessContextIdList().iterator().next())
+                        request.getBusinessContextIdList().iterator().next()
                 ));
             } else {
-                conditions.add(BIZ_CTX.BIZ_CTX_ID.in(
-                        request.getBusinessContextIdList().stream()
-                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                conditions.add(BIZ_CTX.BIZ_CTX_ID.in(request.getBusinessContextIdList()));
             }
         }
         if (!request.getTopLevelAsbiepIdList().isEmpty()) {
@@ -176,13 +170,11 @@ public class JooqBusinessContextReadRepository
             System.out.println(request.getTopLevelAsbiepIdList().size());
             if (request.getTopLevelAsbiepIdList().size() == 1) {
                 conditions.add(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(
-                        ULong.valueOf(request.getTopLevelAsbiepIdList().iterator().next())
+                        request.getTopLevelAsbiepIdList().iterator().next()
                 ));
             } else {
                 conditions.add(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.in(
-                        request.getTopLevelAsbiepIdList().stream()
-                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                        request.getTopLevelAsbiepIdList()));
             }
         }
         if (StringUtils.hasLength(request.getName())) {

@@ -2,15 +2,15 @@ package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.account_management.data.AppOauth2User;
 import org.oagi.score.gateway.http.api.account_management.data.PendingListRequest;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -41,7 +41,7 @@ public class PendingListService {
     private SessionService sessionService;
 
     public PageResponse<AppOauth2User> getPendingList(AuthenticatedPrincipal user, PendingListRequest request) {
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isAdmin()) {
             throw new InsufficientAuthenticationException(
                     messages.getMessage(
@@ -156,7 +156,7 @@ public class PendingListService {
         return response;
     }
 
-    public AppOauth2User getPending(long appOauth2UserId) {
+    public AppOauth2User getPending(String appOauth2UserId) {
         return dslContext.select(
                 APP_OAUTH2_USER.APP_OAUTH2_USER_ID,
                 APP_OAUTH2_USER.APP_USER_ID,
@@ -170,7 +170,7 @@ public class PendingListService {
                 OAUTH2_APP.PROVIDER_NAME)
                 .from(APP_OAUTH2_USER)
                 .join(OAUTH2_APP).on(APP_OAUTH2_USER.OAUTH2_APP_ID.eq(OAUTH2_APP.OAUTH2_APP_ID))
-                .where((APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(appOauth2UserId))))
+                .where((APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(appOauth2UserId)))
                 .fetchOneInto(AppOauth2User.class);
     }
 
@@ -194,24 +194,24 @@ public class PendingListService {
 
     @Transactional
     public void deletePending(AppOauth2User appOauth2User) {
-        if (appOauth2User.getAppOauth2UserId() > 0) {
+        if (StringUtils.hasLength(appOauth2User.getAppOauth2UserId())) {
             dslContext.deleteFrom(APP_OAUTH2_USER)
-                    .where(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(appOauth2User.getAppOauth2UserId())))
+                    .where(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(appOauth2User.getAppOauth2UserId()))
                     .execute();
         }
     }
 
     @Transactional
-    public void linkPendingToAppUser(long appOauth2UserId, long appUserId) {
+    public void linkPendingToAppUser(String appOauth2UserId, String appUserId) {
         AppUserRecord appUserRecord = dslContext.selectFrom(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId))).fetchOne();
+                .where(APP_USER.APP_USER_ID.eq(appUserId)).fetchOne();
 
         if (appUserRecord == null) {
             throw new IllegalArgumentException("Cannot find target Account");
         }
 
         AppOauth2UserRecord appOauth2UserRecord = dslContext.selectFrom(APP_OAUTH2_USER)
-                .where(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(appOauth2UserId))).fetchOne();
+                .where(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(appOauth2UserId)).fetchOne();
 
         if (appOauth2UserRecord == null) {
             throw new IllegalArgumentException("Cannot find target Pending Account");

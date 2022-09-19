@@ -7,29 +7,29 @@ import java.math.BigInteger;
 
 public class UpdateModuleRequest extends Request {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String versionNum;
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 
@@ -41,11 +41,11 @@ public class UpdateModuleRequest extends Request {
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

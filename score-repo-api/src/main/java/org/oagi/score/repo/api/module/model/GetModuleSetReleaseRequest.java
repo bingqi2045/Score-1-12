@@ -3,21 +3,19 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class GetModuleSetReleaseRequest extends Request {
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
     public GetModuleSetReleaseRequest(ScoreUser requester) {
         super(requester);
     }
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 }

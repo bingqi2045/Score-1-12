@@ -3,14 +3,13 @@ package org.oagi.score.repo.api.businessterm.model;
 import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> {
 
-    private Collection<BigInteger> businessTermIdList;
+    private Collection<String> businessTermIdList;
     private String businessTerm;
     private String definition;
     private String comment;
@@ -25,11 +24,11 @@ public class GetBusinessTermListRequest extends PaginationRequest<BusinessTerm> 
         super(requester, BusinessTerm.class);
     }
 
-    public Collection<BigInteger> getBusinessTermIdList() {
+    public Collection<String> getBusinessTermIdList() {
         return businessTermIdList;
     }
 
-    public void setBusinessTermIdList(Collection<BigInteger> businessTermIdList) {
+    public void setBusinessTermIdList(Collection<String> businessTermIdList) {
         this.businessTermIdList = businessTermIdList;
     }
 

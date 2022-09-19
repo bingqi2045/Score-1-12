@@ -1,12 +1,11 @@
 package org.oagi.score.repo.component.namespace;
 
 import org.jooq.*;
-import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
+import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.PageRequest;
 import org.oagi.score.service.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
-import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -28,7 +27,7 @@ public class NamespaceReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record9<ULong, String, String, ULong, String, String,
+    private SelectOnConditionStep<Record9<String, String, String, String, String, String,
             LocalDateTime, Byte, String>> getSelectOnConditionStep() {
         return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI, NAMESPACE.PREFIX,
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
@@ -46,7 +45,7 @@ public class NamespaceReadRepository {
                                              NamespaceListRequest request) {
 
         PageRequest pageRequest = request.getPageRequest();
-        SelectOnConditionStep<Record9<ULong, String, String, ULong, String, String,
+        SelectOnConditionStep<Record9<String, String, String, String, String, String,
                 LocalDateTime, Byte, String>> selectOnConditionStep = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
@@ -77,7 +76,7 @@ public class NamespaceReadRepository {
             conditions.add(NAMESPACE.IS_STD_NMSP.eq((byte) (request.getStandard() ? 1 : 0)));
         }
 
-        SelectConditionStep<Record9<ULong, String, String, ULong, String, String,
+        SelectConditionStep<Record9<String, String, String, String, String, String,
                 LocalDateTime, Byte, String>> conditionStep = selectOnConditionStep.where(conditions);
 
         int length = dslContext.fetchCount(conditionStep);
@@ -109,7 +108,7 @@ public class NamespaceReadRepository {
         }
 
         ResultQuery<Record9<
-                ULong, String, String, ULong, String, String,
+                String, String, String, String, String, String,
                 LocalDateTime, Byte, String>> query;
         if (sortField != null) {
             if (pageRequest.getOffset() >= 0 && pageRequest.getPageSize() >= 0) {
@@ -128,7 +127,7 @@ public class NamespaceReadRepository {
 
         List<NamespaceList> results = query.fetchStream().map(record -> {
             NamespaceList namespaceList = new NamespaceList();
-            namespaceList.setNamespaceId(record.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
+            namespaceList.setNamespaceId(record.get(NAMESPACE.NAMESPACE_ID));
             namespaceList.setUri(record.get(NAMESPACE.URI));
             namespaceList.setPrefix(record.get(NAMESPACE.PREFIX));
             namespaceList.setDescription(record.get(NAMESPACE.DESCRIPTION));

@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.module_management.service;
 
 import org.apache.commons.io.FileUtils;
-import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.impl.DefaultExportContextBuilder;
 import org.oagi.score.export.impl.StandaloneExportContextBuilder;
@@ -24,12 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -74,7 +67,7 @@ public class ModuleSetReleaseService {
         return scoreRepositoryFactory.createModuleSetReleaseWriteRepository().deleteModuleSetRelease(request);
     }
 
-    public File exportStandaloneSchema(ScoreUser user, List<BigInteger> asccpManifestIdList) throws Exception {
+    public File exportStandaloneSchema(ScoreUser user, List<String> asccpManifestIdList) throws Exception {
         if (asccpManifestIdList == null || asccpManifestIdList.isEmpty()) {
             throw new IllegalArgumentException();
         }
@@ -87,10 +80,10 @@ public class ModuleSetReleaseService {
         FileUtils.forceMkdir(baseDir);
 
         List<File> files = new ArrayList<>();
-        Map<BigInteger, ImportedDataProvider> dataProviderMap = new HashMap();
+        Map<String, ImportedDataProvider> dataProviderMap = new HashMap();
 
-        for (BigInteger asccpManifestId : asccpManifestIdList) {
-            BigInteger moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId)).toBigInteger();
+        for (String asccpManifestId : asccpManifestIdList) {
+            String moduleSetReleaseId = moduleRepository.getModuleSetReleaseIdByAsccpManifestId(asccpManifestId);
             if (!dataProviderMap.containsKey(moduleSetReleaseId)) {
                 dataProviderMap.put(moduleSetReleaseId, new ImportedDataProvider(ccRepository, moduleSetReleaseId));
             }
@@ -104,7 +97,7 @@ public class ModuleSetReleaseService {
 
             SchemaModule schemaModule = exportContext.getSchemaModules().iterator().next();
             schemaModule.visit(visitor);
-            File file = visitor.endSchemaModule(schemaModule);
+            File file = schemaModule.getModuleFile();
             if (file != null) {
                 files.add(file);
             }
@@ -117,7 +110,7 @@ public class ModuleSetReleaseService {
         }
     }
 
-    public File exportModuleSetRelease(ScoreUser user, BigInteger moduleSetReleaseId) throws Exception {
+    public File exportModuleSetRelease(ScoreUser user, String moduleSetReleaseId) throws Exception {
         GetModuleSetReleaseRequest request = new GetModuleSetReleaseRequest(user);
         request.setModuleSetReleaseId(moduleSetReleaseId);
         ModuleSetRelease moduleSetRelease = scoreRepositoryFactory.createModuleSetReleaseReadRepository().getModuleSetRelease(request).getModuleSetRelease();
@@ -138,7 +131,7 @@ public class ModuleSetReleaseService {
         for (SchemaModule schemaModule : exportContext.getSchemaModules()) {
             visitor.setBaseDirectory(baseDir);
             schemaModule.visit(visitor);
-            File file = visitor.endSchemaModule(schemaModule);
+            File file = schemaModule.getModuleFile();
             if (file != null) {
                 files.add(file);
             }
@@ -174,7 +167,7 @@ public class ModuleSetReleaseService {
         return assignComponents;
     }
 
-    public ModuleAssignComponents getAssignedCCs(ScoreUser user, BigInteger moduleSetReleaseId, BigInteger moduleId) {
+    public ModuleAssignComponents getAssignedCCs(ScoreUser user, String moduleSetReleaseId, String moduleId) {
         ModuleAssignComponents assignComponents = new ModuleAssignComponents();
         GetAssignedCCListRequest request = new GetAssignedCCListRequest(user);
         request.setModuleSetReleaseId(moduleSetReleaseId);

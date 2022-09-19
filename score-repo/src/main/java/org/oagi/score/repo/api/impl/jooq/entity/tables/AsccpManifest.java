@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
@@ -53,24 +51,26 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.asccp_manifest.asccp_manifest_id</code>.
+     * The column <code>oagi.asccp_manifest.asccp_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<AsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AsccpManifestRecord, String> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.asccp_manifest.release_id</code>.
+     * The column <code>oagi.asccp_manifest.release_id</code>. Foreign key to
+     * the RELEASE table.
      */
-    public final TableField<AsccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.asccp_manifest.asccp_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> ASCCP_ID = createField(DSL.name("asccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, String> ASCCP_ID = createField(DSL.name("asccp_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.role_of_acc_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> ROLE_OF_ACC_MANIFEST_ID = createField(DSL.name("role_of_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, String> ROLE_OF_ACC_MANIFEST_ID = createField(DSL.name("role_of_acc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.conflict</code>. This indicates that
@@ -82,24 +82,24 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
      * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed
      * to a log for the current record.
      */
-    public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<AsccpManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column
      * <code>oagi.asccp_manifest.replacement_asccp_manifest_id</code>. This
      * refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AsccpManifestRecord, ULong> REPLACEMENT_ASCCP_MANIFEST_ID = createField(DSL.name("replacement_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AsccpManifestRecord, String> REPLACEMENT_ASCCP_MANIFEST_ID = createField(DSL.name("replacement_asccp_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.asccp_manifest.prev_asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> PREV_ASCCP_MANIFEST_ID = createField(DSL.name("prev_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AsccpManifestRecord, String> PREV_ASCCP_MANIFEST_ID = createField(DSL.name("prev_asccp_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.next_asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> NEXT_ASCCP_MANIFEST_ID = createField(DSL.name("next_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AsccpManifestRecord, String> NEXT_ASCCP_MANIFEST_ID = createField(DSL.name("next_asccp_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private AsccpManifest(Name alias, Table<AsccpManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -140,25 +140,20 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     }
 
     @Override
-    public Identity<AsccpManifestRecord, ULong> getIdentity() {
-        return (Identity<AsccpManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<AsccpManifestRecord> getPrimaryKey() {
         return Keys.KEY_ASCCP_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<AsccpManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_LOG_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_LOG_ID_FK, Keys.ASCCP_MANIFEST_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
     private transient Asccp _asccp;
     private transient AccManifest _accManifest;
     private transient Log _log;
-    private transient AsccpManifest _asccpReplacementAsccpManifestIdFk;
+    private transient AsccpManifest _asccpManifestReplacementAsccpManifestIdFk;
     private transient AsccpManifest _asccpManifestPrevAsccpManifestIdFk;
     private transient AsccpManifest _asccpManifestNextAsccpManifestIdFk;
 
@@ -204,13 +199,13 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     /**
      * Get the implicit join path to the <code>oagi.asccp_manifest</code> table,
-     * via the <code>asccp_replacement_asccp_manifest_id_fk</code> key.
+     * via the <code>asccp_manifest_replacement_asccp_manifest_id_fk</code> key.
      */
-    public AsccpManifest asccpReplacementAsccpManifestIdFk() {
-        if (_asccpReplacementAsccpManifestIdFk == null)
-            _asccpReplacementAsccpManifestIdFk = new AsccpManifest(this, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK);
+    public AsccpManifest asccpManifestReplacementAsccpManifestIdFk() {
+        if (_asccpManifestReplacementAsccpManifestIdFk == null)
+            _asccpManifestReplacementAsccpManifestIdFk = new AsccpManifest(this, Keys.ASCCP_MANIFEST_REPLACEMENT_ASCCP_MANIFEST_ID_FK);
 
-        return _asccpReplacementAsccpManifestIdFk;
+        return _asccpManifestReplacementAsccpManifestIdFk;
     }
 
     /**
@@ -279,21 +274,22 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row9<String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

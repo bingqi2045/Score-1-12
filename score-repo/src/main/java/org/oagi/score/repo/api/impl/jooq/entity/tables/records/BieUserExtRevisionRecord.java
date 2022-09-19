@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record6;
 import org.jooq.Row6;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
 
 
@@ -25,7 +24,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
  * component/ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, ULong, ULong, ULong, Byte, ULong> {
+public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<String, String, String, String, Byte, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,7 +33,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public void setBieUserExtRevisionId(ULong value) {
+    public void setBieUserExtRevisionId(String value) {
         set(0, value);
     }
 
@@ -43,8 +42,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public ULong getBieUserExtRevisionId() {
-        return (ULong) get(0);
+    public String getBieUserExtRevisionId() {
+        return (String) get(0);
     }
 
     /**
@@ -56,7 +55,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * the AllExtension because there is no corresponding ABIE for the
      * AllExtension ACC.
      */
-    public void setExtAbieId(ULong value) {
+    public void setExtAbieId(String value) {
         set(1, value);
     }
 
@@ -69,8 +68,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * the AllExtension because there is no corresponding ABIE for the
      * AllExtension ACC.
      */
-    public ULong getExtAbieId() {
-        return (ULong) get(1);
+    public String getExtAbieId() {
+        return (String) get(1);
     }
 
     /**
@@ -81,7 +80,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2
      * (Extension).
      */
-    public void setExtAccId(ULong value) {
+    public void setExtAccId(String value) {
         set(2, value);
     }
 
@@ -93,8 +92,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2
      * (Extension).
      */
-    public ULong getExtAccId() {
-        return (ULong) get(2);
+    public String getExtAccId() {
+        return (String) get(2);
     }
 
     /**
@@ -102,9 +101,9 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * column points to the specific revision of a User Extension ACC (this is
      * an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as
      * indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of
-     * the AllExtension). 
+     * the AllExtension).
      */
-    public void setUserExtAccId(ULong value) {
+    public void setUserExtAccId(String value) {
         set(3, value);
     }
 
@@ -113,10 +112,10 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * column points to the specific revision of a User Extension ACC (this is
      * an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as
      * indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of
-     * the AllExtension). 
+     * the AllExtension).
      */
-    public ULong getUserExtAccId() {
-        return (ULong) get(3);
+    public String getUserExtAccId() {
+        return (String) get(3);
     }
 
     /**
@@ -147,7 +146,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * Setter for <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>.
      * This is a foreign key to the top-level ASBIEP.
      */
-    public void setTopLevelAsbiepId(ULong value) {
+    public void setTopLevelAsbiepId(String value) {
         set(5, value);
     }
 
@@ -155,8 +154,8 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
      * Getter for <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>.
      * This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getTopLevelAsbiepId() {
-        return (ULong) get(5);
+    public String getTopLevelAsbiepId() {
+        return (String) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -164,7 +163,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -173,32 +172,32 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, Byte, ULong> fieldsRow() {
+    public Row6<String, String, String, String, Byte, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, Byte, ULong> valuesRow() {
+    public Row6<String, String, String, String, Byte, String> valuesRow() {
         return (Row6) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID;
     }
 
     @Override
-    public Field<ULong> field2() {
+    public Field<String> field2() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.EXT_ABIE_ID;
     }
 
     @Override
-    public Field<ULong> field3() {
+    public Field<String> field3() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.EXT_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field4() {
+    public Field<String> field4() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.USER_EXT_ACC_ID;
     }
 
@@ -208,27 +207,27 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return BieUserExtRevision.BIE_USER_EXT_REVISION.TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getBieUserExtRevisionId();
     }
 
     @Override
-    public ULong component2() {
+    public String component2() {
         return getExtAbieId();
     }
 
     @Override
-    public ULong component3() {
+    public String component3() {
         return getExtAccId();
     }
 
     @Override
-    public ULong component4() {
+    public String component4() {
         return getUserExtAccId();
     }
 
@@ -238,27 +237,27 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getTopLevelAsbiepId();
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getBieUserExtRevisionId();
     }
 
     @Override
-    public ULong value2() {
+    public String value2() {
         return getExtAbieId();
     }
 
     @Override
-    public ULong value3() {
+    public String value3() {
         return getExtAccId();
     }
 
     @Override
-    public ULong value4() {
+    public String value4() {
         return getUserExtAccId();
     }
 
@@ -268,30 +267,30 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getTopLevelAsbiepId();
     }
 
     @Override
-    public BieUserExtRevisionRecord value1(ULong value) {
+    public BieUserExtRevisionRecord value1(String value) {
         setBieUserExtRevisionId(value);
         return this;
     }
 
     @Override
-    public BieUserExtRevisionRecord value2(ULong value) {
+    public BieUserExtRevisionRecord value2(String value) {
         setExtAbieId(value);
         return this;
     }
 
     @Override
-    public BieUserExtRevisionRecord value3(ULong value) {
+    public BieUserExtRevisionRecord value3(String value) {
         setExtAccId(value);
         return this;
     }
 
     @Override
-    public BieUserExtRevisionRecord value4(ULong value) {
+    public BieUserExtRevisionRecord value4(String value) {
         setUserExtAccId(value);
         return this;
     }
@@ -303,13 +302,13 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     @Override
-    public BieUserExtRevisionRecord value6(ULong value) {
+    public BieUserExtRevisionRecord value6(String value) {
         setTopLevelAsbiepId(value);
         return this;
     }
 
     @Override
-    public BieUserExtRevisionRecord values(ULong value1, ULong value2, ULong value3, ULong value4, Byte value5, ULong value6) {
+    public BieUserExtRevisionRecord values(String value1, String value2, String value3, String value4, Byte value5, String value6) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -333,7 +332,7 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     /**
      * Create a detached, initialised BieUserExtRevisionRecord
      */
-    public BieUserExtRevisionRecord(ULong bieUserExtRevisionId, ULong extAbieId, ULong extAccId, ULong userExtAccId, Byte revisedIndicator, ULong topLevelAsbiepId) {
+    public BieUserExtRevisionRecord(String bieUserExtRevisionId, String extAbieId, String extAccId, String userExtAccId, Byte revisedIndicator, String topLevelAsbiepId) {
         super(BieUserExtRevision.BIE_USER_EXT_REVISION);
 
         setBieUserExtRevisionId(bieUserExtRevisionId);

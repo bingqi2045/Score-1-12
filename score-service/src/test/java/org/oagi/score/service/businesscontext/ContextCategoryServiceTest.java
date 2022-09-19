@@ -2,7 +2,6 @@ package org.oagi.score.service.businesscontext;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -11,7 +10,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.AbstractServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +28,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
 
     @BeforeAll
     void setUp() {
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
     }
 
     @Test
@@ -46,7 +44,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertNotNull(response.getContextCategoryId());
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(response.getContextCategoryId()))
                 .fetchOne();
 
         assertEquals(request.getName(), ctxCategoryRecord.getName());
@@ -83,7 +81,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertEquals(request.getContextCategoryId(), response.getContextCategoryId());
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(response.getContextCategoryId()))
                 .fetchOne();
 
         assertEquals(contextCategory.getGuid(), ctxCategoryRecord.getGuid());
@@ -119,7 +117,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertTrue(response.contains(contextCategory.getContextCategoryId()));
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                 .fetchOptional().orElse(null);
 
         assertNull(ctxCategoryRecord);
@@ -127,7 +125,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetContextCategory() {
-        BigInteger contextCategoryId;
+        String contextCategoryId;
         {
             CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
                     .withName(RandomStringUtils.randomAlphanumeric(45))
@@ -149,15 +147,15 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertNotNull(contextCategory);
 
         CtxCategoryRecord ctxCategoryRecord = dslContext.selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategory.getContextCategoryId()))
                 .fetchOne();
 
-        assertEquals(ctxCategoryRecord.getCtxCategoryId().toBigInteger(), contextCategory.getContextCategoryId());
+        assertEquals(ctxCategoryRecord.getCtxCategoryId(), contextCategory.getContextCategoryId());
         assertEquals(ctxCategoryRecord.getGuid(), contextCategory.getGuid());
         assertEquals(ctxCategoryRecord.getName(), contextCategory.getName());
         assertEquals(ctxCategoryRecord.getDescription(), contextCategory.getDescription());
-        assertEquals(ctxCategoryRecord.getCreatedBy().toBigInteger(), contextCategory.getCreatedBy().getUserId());
-        assertEquals(ctxCategoryRecord.getLastUpdatedBy().toBigInteger(), contextCategory.getLastUpdatedBy().getUserId());
+        assertEquals(ctxCategoryRecord.getCreatedBy(), contextCategory.getCreatedBy().getUserId());
+        assertEquals(ctxCategoryRecord.getLastUpdatedBy(), contextCategory.getLastUpdatedBy().getUserId());
     }
 
     @Test
@@ -171,7 +169,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
             CreateContextCategoryResponse response =
                     contextCategoryService.createContextCategory(request);
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             contextCategory =
                     contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)
@@ -212,7 +210,7 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
             CreateContextCategoryResponse response =
                     contextCategoryService.createContextCategory(request);
 
-            BigInteger contextCategoryId = response.getContextCategoryId();
+            String contextCategoryId = response.getContextCategoryId();
 
             contextCategory =
                     contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)

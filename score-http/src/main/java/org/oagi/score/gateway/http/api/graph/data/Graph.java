@@ -2,12 +2,9 @@ package org.oagi.score.gateway.http.api.graph.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 
 import javax.xml.bind.annotation.XmlTransient;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +13,7 @@ public class Graph {
 
     @XmlTransient
     @JsonIgnore
-    private transient Map<Node.NodeType, List<ULong>> nodeManifestIds = new HashMap();
+    private transient Map<Node.NodeType, List<String>> nodeManifestIds = new HashMap();
 
     private Map<String, Node> nodes = new LinkedHashMap();
     private Map<String, Edge> edges = new LinkedHashMap();
@@ -39,7 +36,7 @@ public class Graph {
         return true;
     }
 
-    public Node getNode(Node.NodeType type, BigInteger manifestId) {
+    public Node getNode(Node.NodeType type, String manifestId) {
         String key = Node.toKey(type, manifestId);
         return nodes.get(key);
     }

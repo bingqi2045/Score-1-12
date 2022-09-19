@@ -1,6 +1,5 @@
 package org.oagi.score.export.impl;
 
-import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
 import org.oagi.score.provider.ImportedDataProvider;
@@ -8,7 +7,6 @@ import org.oagi.score.repo.api.corecomponent.model.EntityType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repository.ModuleRepository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,20 +24,20 @@ public class StandaloneExportContextBuilder {
         this.importedDataProvider = importedDataProvider;
     }
 
-    public ExportContext build(BigInteger moduleSetReleaseId,
-                               BigInteger asccpManifestId) {
+    public ExportContext build(String moduleSetReleaseId,
+                               String asccpManifestId) {
         DefaultExportContext context = new DefaultExportContext();
         ScoreModule scoreModule = moduleRepository.findByModuleSetReleaseIdAndAsccpManifestId(
-                ULong.valueOf(moduleSetReleaseId), ULong.valueOf(asccpManifestId));
+                moduleSetReleaseId, asccpManifestId);
         SchemaModule schemaModule = new SchemaModule(scoreModule);
         context.addSchemaModule(schemaModule);
 
-        addASCCP(schemaModule, ULong.valueOf(asccpManifestId));
+        addASCCP(schemaModule, asccpManifestId);
 
         return context;
     }
 
-    private void addASCCP(SchemaModule schemaModule, ULong asccpManifestId) {
+    private void addASCCP(SchemaModule schemaModule, String asccpManifestId) {
         AsccpManifestRecord asccpManifest =
                 importedDataProvider.findASCCPManifest(asccpManifestId);
         AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
@@ -71,7 +69,7 @@ public class StandaloneExportContextBuilder {
         addBDT(schemaModule, bccpManifest.getBdtManifestId());
     }
 
-    private void addACC(SchemaModule schemaModule, ULong accManifestId) {
+    private void addACC(SchemaModule schemaModule, String accManifestId) {
         AccManifestRecord accManifest =
                 importedDataProvider.findACCManifest(accManifestId);
 
@@ -101,7 +99,7 @@ public class StandaloneExportContextBuilder {
         });
     }
 
-    private void addBDT(SchemaModule schemaModule, ULong bdtManifestId) {
+    private void addBDT(SchemaModule schemaModule, String bdtManifestId) {
         DtManifestRecord dtManifestRecord = importedDataProvider.findDtManifestByDtManifestId(bdtManifestId);
         if (dtManifestRecord.getBasedDtManifestId() != null) {
             addBDT(schemaModule, dtManifestRecord.getBasedDtManifestId());
@@ -123,7 +121,7 @@ public class StandaloneExportContextBuilder {
         boolean isDefaultBDT = (dtModulePath != null) && dtModulePath.contains("BusinessDataType_1");
         BDTSimple bdtSimple;
         if (dtScList.isEmpty()) {
-            ULong bdtId = bdt.getDtId();
+            String bdtId = bdt.getDtId();
             List<BdtPriRestriRecord> bdtPriRestriList =
                     importedDataProvider.findBdtPriRestriListByDtId(bdtId);
             List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapList =

@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function4;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtUsageRuleRecord;
@@ -57,30 +55,30 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     }
 
     /**
-     * The column <code>oagi.dt_usage_rule.dt_usage_rule_id</code>. Primary key
-     * of the table.
+     * The column <code>oagi.dt_usage_rule.dt_usage_rule_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<DtUsageRuleRecord, ULong> DT_USAGE_RULE_ID = createField(DSL.name("dt_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
+    public final TableField<DtUsageRuleRecord, String> DT_USAGE_RULE_ID = createField(DSL.name("dt_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.dt_usage_rule.assigned_usage_rule_id</code>.
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
-     * the DT content component or DT_SC.
+     * a BIE.
      */
-    public final TableField<DtUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.");
+    public final TableField<DtUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
+     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
+     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
 
     private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased) {
         this(alias, aliased, null);
@@ -118,11 +116,6 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<DtUsageRuleRecord, ULong> getIdentity() {
-        return (Identity<DtUsageRuleRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -213,21 +206,22 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row4<String, String, String, String> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function4<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function4<? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function4<? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

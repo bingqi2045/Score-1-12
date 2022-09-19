@@ -1,15 +1,12 @@
 package org.oagi.score.repo.component.asbiep;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 import org.oagi.score.repo.component.asccp.AsccpReadRepository;
 import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -23,16 +20,16 @@ public class AsbiepReadRepository {
     @Autowired
     private AsccpReadRepository asccpReadRepository;
 
-    private AsbiepRecord getAsbiepByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
+    private AsbiepRecord getAsbiepByTopLevelAsbiepIdAndHashPath(String topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(ASBIEP)
                 .where(and(
-                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ASBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public AsbiepNode getAsbiepNode(BigInteger topLevelAsbiepId, BigInteger asccpManifestId, String hashPath) {
+    public AsbiepNode getAsbiepNode(String topLevelAsbiepId, String asccpManifestId, String hashPath) {
         AsccpRecord asccpRecord = asccpReadRepository.getAsccpByManifestId(asccpManifestId);
         if (asccpRecord == null) {
             return null;
@@ -59,7 +56,7 @@ public class AsbiepReadRepository {
         return asbiepNode;
     }
 
-    public AsbiepNode.Asbiep getAsbiep(BigInteger topLevelAsbiepId, String hashPath) {
+    public AsbiepNode.Asbiep getAsbiep(String topLevelAsbiepId, String hashPath) {
         AsbiepNode.Asbiep asbiep = new AsbiepNode.Asbiep();
         asbiep.setUsed(true);
         asbiep.setHashPath(hashPath);
@@ -67,7 +64,7 @@ public class AsbiepReadRepository {
         AsbiepRecord asbiepRecord = getAsbiepByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (asbiepRecord != null) {
 
-            asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
+            asbiep.setAsbiepId(asbiepRecord.getAsbiepId());
             if (asbiepRecord.getRoleOfAbieId() != null) {
                 asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
                         .from(ABIE)
@@ -82,7 +79,7 @@ public class AsbiepReadRepository {
                         ))
                         .fetchOneInto(String.class));
             }
-            asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
+            asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId());
             asbiep.setDerived(false); // TODO
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
@@ -93,14 +90,14 @@ public class AsbiepReadRepository {
         return asbiep;
     }
 
-    public AsbiepNode.Asbiep getAsbiepByTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public AsbiepNode.Asbiep getAsbiepByTopLevelAsbiepId(String topLevelAsbiepId) {
         String asbiepHashPath = dslContext.select(ASBIEP.HASH_PATH)
                 .from(ASBIEP)
                 .join(TOP_LEVEL_ASBIEP).on(and(
                         ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
                         ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID)
                 ))
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                 .fetchOneInto(String.class);
         return getAsbiep(topLevelAsbiepId, asbiepHashPath);
     }

@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -61,7 +59,7 @@ public class Zip {
             for (File targetFile : targetFiles) {
                 logger.info("Adding: " + targetFile);
                 URI relativePath = currentPath.relativize(targetFile.toURI());
-                zipFile(targetFile, relativePath.toString(), out);
+                zipFile(targetFile, relativePath.getPath(), out);
             }
         }
 

@@ -3,18 +3,16 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.Table;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BCC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class BCCRepository implements ScoreRepository<BCC> {
+public class BCCRepository implements ScoreRepository<BCC, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -67,19 +65,19 @@ public class BCCRepository implements ScoreRepository<BCC> {
     }
 
     @Override
-    public List<BCC> findAllByReleaseId(BigInteger releaseId) {
+    public List<BCC> findAllByReleaseId(String releaseId) {
         return getSelectJoinStep()
-                .where(Tables.BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.BCC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(BCC.class);
     }
 
     @Override
-    public BCC findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BCC findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectJoinStep()
-                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BCC.BCC_ID.eq(id))
                 .fetchOptionalInto(BCC.class).orElse(null);
     }
 }

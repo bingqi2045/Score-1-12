@@ -15,8 +15,8 @@ public class MigrationMetadata {
 
     private BigInteger delimiterId = BigInteger.valueOf(1000000);
 
-    private BigInteger targetReleaseId = BigInteger.ZERO;
-    private Map<BigInteger, String> releaseIdNumMap = new HashMap();
+    private String targetReleaseId;
+    private Map<String, String> releaseIdNumMap = new HashMap();
 
     private BigInteger maxAccId = BigInteger.ZERO;
     private BigInteger maxAccManifestId = BigInteger.ZERO;
@@ -51,7 +51,6 @@ public class MigrationMetadata {
     private BigInteger maxAgencyIdListValueId = BigInteger.ZERO;
     private BigInteger maxAgencyIdListValueManifestId = BigInteger.ZERO;
 
-    private BigInteger maxXbtId = BigInteger.ZERO;
     private BigInteger maxXbtManifestId = BigInteger.ZERO;
 
     private BigInteger maxLogId = BigInteger.ZERO;
@@ -71,7 +70,7 @@ public class MigrationMetadata {
     private BigInteger maxModuleXbtManifestId = BigInteger.ZERO;
     private BigInteger maxModuleBlobContentManifestId = BigInteger.ZERO;
 
-    public void addRelease(BigInteger releaseId, String releaseNum) {
+    public void addRelease(String releaseId, String releaseNum) {
         this.releaseIdNumMap.put(releaseId, releaseNum);
     }
 

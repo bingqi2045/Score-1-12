@@ -3,56 +3,55 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class CodeListManifest implements CcManifest, Serializable {
 
-    private BigInteger CodeListManifestId;
+    private String codeListManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger CodeListId;
+    private String codeListId;
 
-    private BigInteger basedCodeListManifestId;
+    private String basedCodeListManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevBccpManifestId;
+    private String prevBccpManifestId;
 
-    private BigInteger nextBccpManifestId;
+    private String nextBccpManifestId;
 
-    public BigInteger getCodeListManifestId() {
-        return CodeListManifestId;
+    public String getCodeListManifestId() {
+        return codeListManifestId;
     }
 
-    public void setCodeListManifestId(BigInteger codeListManifestId) {
-        CodeListManifestId = codeListManifestId;
+    public void setCodeListManifestId(String codeListManifestId) {
+        this.codeListManifestId = codeListManifestId;
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getCodeListId() {
-        return CodeListId;
+    public String getCodeListId() {
+        return this.codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
-        CodeListId = codeListId;
+    public void setCodeListId(String codeListId) {
+        this.codeListId = codeListId;
     }
 
-    public BigInteger getBasedCodeListManifestId() {
+    public String getBasedCodeListManifestId() {
         return basedCodeListManifestId;
     }
 
-    public void setBasedCodeListManifestId(BigInteger basedCodeListManifestId) {
+    public void setBasedCodeListManifestId(String basedCodeListManifestId) {
         this.basedCodeListManifestId = basedCodeListManifestId;
     }
 
@@ -64,37 +63,37 @@ public class CodeListManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevBccpManifestId() {
+    public String getPrevBccpManifestId() {
         return prevBccpManifestId;
     }
 
-    public void setPrevBccpManifestId(BigInteger prevBccpManifestId) {
+    public void setPrevBccpManifestId(String prevBccpManifestId) {
         this.prevBccpManifestId = prevBccpManifestId;
     }
 
-    public BigInteger getNextBccpManifestId() {
+    public String getNextBccpManifestId() {
         return nextBccpManifestId;
     }
 
-    public void setNextBccpManifestId(BigInteger nextBccpManifestId) {
+    public void setNextBccpManifestId(String nextBccpManifestId) {
         this.nextBccpManifestId = nextBccpManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return this.getCodeListManifestId();
     }
 
     @Override
-    public BigInteger getBasedCcId() {
-        return this.getBasedCodeListManifestId();
+    public String getBasedCcId() {
+        return getCodeListId();
     }
 }

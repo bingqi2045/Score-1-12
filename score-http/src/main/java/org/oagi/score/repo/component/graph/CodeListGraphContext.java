@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.graph.data.Node;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
+import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,36 +19,36 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 public class CodeListGraphContext implements GraphContext {
 
     private DSLContext dslContext;
-    private ULong releaseId;
+    private String releaseId;
 
-    private Map<ULong, CodeListManifest> codeListManifestMap;
-    private Map<ULong, List<CodeListValueManifest>> codeListValueManifestMap;
+    private Map<String, CodeListManifest> codeListManifestMap;
+    private Map<String, List<CodeListValueManifest>> codeListValueManifestMap;
 
     @Data
     @AllArgsConstructor
     public class CodeListManifest {
-        private ULong codeListManifestId;
-        private ULong basedCodeListManifestId;
+        private String codeListManifestId;
+        private String basedCodeListManifestId;
         private String name;
         private String state;
-        private ULong releaseId;
-        private ULong prevCodeListManifestId;
+        private String releaseId;
+        private String prevCodeListManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class CodeListValueManifest {
-        private ULong codeListValueManifestId;
-        private ULong codeListManifestId;
+        private String codeListValueManifestId;
+        private String codeListManifestId;
         private String meaning;
         private String value;
         private String state;
-        private ULong releaseId;
+        private String releaseId;
     }
 
-    public CodeListGraphContext(DSLContext dslContext, BigInteger releaseId) {
+    public CodeListGraphContext(DSLContext dslContext, String releaseId) {
         this.dslContext = dslContext;
-        this.releaseId = ULong.valueOf(releaseId);
+        this.releaseId = releaseId;
 
         codeListManifestMap = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,

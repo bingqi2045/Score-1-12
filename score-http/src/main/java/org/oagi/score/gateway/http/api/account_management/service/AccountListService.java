@@ -5,11 +5,11 @@ import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.account_management.data.AccountListRequest;
 import org.oagi.score.gateway.http.api.account_management.data.AppUser;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -94,7 +95,7 @@ public class AccountListService {
         }
         Boolean excludeRequester = request.getExcludeRequester();
         if (excludeRequester != null && excludeRequester == true) {
-            conditions.add(APP_USER.LOGIN_ID.notEqualIgnoreCase(sessionService.getAppUser(user).getLoginId().trim()));
+            conditions.add(APP_USER.LOGIN_ID.notEqualIgnoreCase(sessionService.getAppUserByUsername(user).getLoginId().trim()));
         }
 
         SelectConditionStep<Record6<ULong, String, String, Byte, String, ULong>> conditionStep = step.where(conditions);
@@ -164,8 +165,8 @@ public class AccountListService {
         return response;
     }
 
-    public AppUser getAccountById(long appUserId) {
-        return getAccount(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)));
+    public AppUser getAccountById(String appUserId) {
+        return getAccount(APP_USER.APP_USER_ID.eq(appUserId));
     }
 
     public AppUser getAccountByUsername(String username) {
@@ -204,14 +205,15 @@ public class AccountListService {
 
     @Transactional
     public void insert(AuthenticatedPrincipal user, AppUser account) {
-        org.oagi.score.service.common.data.AppUser appUser = sessionService.getAppUser(user);
+        org.oagi.score.service.common.data.AppUser appUser = sessionService.getAppUserByUsername(user);
         if (!appUser.isAdmin()) {
             throw new DataAccessForbiddenException("Only admin user can create a new account.");
         }
 
         AppUserRecord record = new AppUserRecord();
+        record.setAppUserId(UUID.randomUUID().toString());
         record.setLoginId(account.getLoginId());
-        if (account.getAppOauth2UserId() == 0) {
+        if (!StringUtils.hasLength(account.getAppOauth2UserId())) {
             record.setPassword(passwordEncoder.encode(account.getPassword()));
         }
         record.setName(account.getName());
@@ -220,13 +222,15 @@ public class AccountListService {
         record.setIsAdmin((byte) (account.isAdmin() ? 1 : 0));
         record.setIsEnabled((byte) 1);
 
-        ULong appUserId = dslContext.insertInto(APP_USER)
+        dslContext.insertInto(APP_USER)
                 .set(record)
-                .returning(APP_USER.APP_USER_ID).fetchOne().getAppUserId();
+                .execute();
 
-        if (account.getAppOauth2UserId() > 0 && account.getSub().length() > 0) {
+        String appUserId = record.getAppUserId();
+
+        if (StringUtils.hasLength(account.getAppOauth2UserId()) && account.getSub().length() > 0) {
             AppOauth2UserRecord oauth2User = dslContext.selectFrom(APP_OAUTH2_USER).where(
-                    and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(account.getAppOauth2UserId())),
+                    and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(account.getAppOauth2UserId()),
                             APP_OAUTH2_USER.SUB.eq(account.getSub()))).fetchOne();
             if (oauth2User == null) {
                 throw new IllegalStateException("Cannot find Oauth2 account ");

@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class CcRevisionResponse {
     String type;
-    Long ccId;
+    String ccId;
     Boolean isDeprecated;
     Boolean isNillable;
     Boolean isReusable;

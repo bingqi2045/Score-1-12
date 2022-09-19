@@ -1,9 +1,9 @@
 package org.oagi.score.gateway.http.api.context_management.controller;
 
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.service.authentication.AuthenticationService;
 import org.oagi.score.service.businesscontext.ContextSchemeService;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -107,7 +106,7 @@ public class ContextSchemeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ContextScheme getContextScheme(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextSchemeId) {
+            @PathVariable("id") String contextSchemeId) {
 
         GetContextSchemeRequest request = new GetContextSchemeRequest(
                 authenticationService.asScoreUser(requester));
@@ -136,7 +135,7 @@ public class ContextSchemeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ContextScheme> getSimpleContextSchemeList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextCategoryId) {
+            @PathVariable("id") String contextCategoryId) {
 
         GetContextSchemeListRequest request = new GetContextSchemeListRequest(
                 authenticationService.asScoreUser(requester));
@@ -176,7 +175,7 @@ public class ContextSchemeController {
     @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextSchemeId,
+            @PathVariable("id") String contextSchemeId,
             @RequestBody ContextScheme contextScheme) {
 
         UpdateContextSchemeRequest request =
@@ -204,7 +203,7 @@ public class ContextSchemeController {
     @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextSchemeId) {
+            @PathVariable("id") String contextSchemeId) {
 
         DeleteContextSchemeRequest request =
                 new DeleteContextSchemeRequest(authenticationService.asScoreUser(requester))
@@ -221,13 +220,13 @@ public class ContextSchemeController {
     }
 
     public static class DeleteContextSchemeRequestData {
-        private List<BigInteger> contextSchemeIdList = Collections.emptyList();
+        private List<String> contextSchemeIdList = Collections.emptyList();
 
-        public List<BigInteger> getContextSchemeIdList() {
+        public List<String> getContextSchemeIdList() {
             return contextSchemeIdList;
         }
 
-        public void setContextSchemeIdList(List<BigInteger> contextSchemeIdList) {
+        public void setContextSchemeIdList(List<String> contextSchemeIdList) {
             this.contextSchemeIdList = contextSchemeIdList;
         }
     }
@@ -270,7 +269,7 @@ public class ContextSchemeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<ContextSchemeValue> getSimpleContextSchemeValueList(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger contextSchemeId) {
+            @PathVariable("id") String contextSchemeId) {
 
         GetContextSchemeRequest request = new GetContextSchemeRequest(
                 authenticationService.asScoreUser(requester));

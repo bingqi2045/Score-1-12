@@ -24,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestTagRecord;
@@ -54,12 +53,12 @@ public class AccManifestTag extends TableImpl<AccManifestTagRecord> {
     /**
      * The column <code>oagi.acc_manifest_tag.acc_manifest_id</code>.
      */
-    public final TableField<AccManifestTagRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AccManifestTagRecord, String> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.acc_manifest_tag.cc_tag_id</code>.
      */
-    public final TableField<AccManifestTagRecord, ULong> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AccManifestTagRecord, String> CC_TAG_ID = createField(DSL.name("cc_tag_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     private AccManifestTag(Name alias, Table<AccManifestTagRecord> aliased) {
         this(alias, aliased, null);
@@ -176,21 +175,22 @@ public class AccManifestTag extends TableImpl<AccManifestTagRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, ULong> fieldsRow() {
+    public Row2<String, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function2<? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function2<? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

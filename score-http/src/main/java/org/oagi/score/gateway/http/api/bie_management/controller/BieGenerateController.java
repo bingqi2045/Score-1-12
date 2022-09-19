@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +37,7 @@ public class BieGenerateController {
                                                         @RequestParam("data") String data) throws IOException {
 
         Map<String, Object> params = convertValue(data);
-        List<BigInteger> topLevelAsbiepIds = popTopLevelAsbiepIds(params);
+        List<String> topLevelAsbiepIds = popTopLevelAsbiepIds(params);
         GenerateExpressionOption option =
                 objectMapper.convertValue(params, GenerateExpressionOption.class);
 
@@ -61,31 +58,31 @@ public class BieGenerateController {
                 if (!params.containsKey("filenames")) {
                     params.put("filenames", new HashMap());
                 }
-                Map<BigInteger, String> filenames =
-                        (Map<BigInteger, String>) params.get("filenames");
+                Map<String, String> filenames =
+                        (Map<String, String>) params.get("filenames");
 
                 try {
                     keyValue[0] = URLDecoder.decode(keyValue[0], "UTF-8");
                 } catch (UnsupportedEncodingException ex) {
                     throw new IllegalArgumentException(ex);
                 }
-                BigInteger topLevelAsbiepId =
-                        new BigInteger(keyValue[0].substring(keyValue[0].indexOf('[') + 1, keyValue[0].indexOf(']')));
+                String topLevelAsbiepId =
+                        keyValue[0].substring(keyValue[0].indexOf('[') + 1, keyValue[0].indexOf(']'));
                 filenames.put(topLevelAsbiepId, keyValue[1]);
             } else if (keyValue[0].startsWith("bizCtxIds")) {
                 if (!params.containsKey("bizCtxIds")) {
                     params.put("bizCtxIds", new HashMap());
                 }
-                Map<BigInteger, String> bizCtxIds =
-                        (Map<BigInteger, String>) params.get("bizCtxIds");
+                Map<String, String> bizCtxIds =
+                        (Map<String, String>) params.get("bizCtxIds");
 
                 try {
                     keyValue[0] = URLDecoder.decode(keyValue[0], "UTF-8");
                 } catch (UnsupportedEncodingException ex) {
                     throw new IllegalArgumentException(ex);
                 }
-                BigInteger topLevelAsbiepId =
-                        new BigInteger(keyValue[0].substring(keyValue[0].indexOf('[') + 1, keyValue[0].indexOf(']')));
+                String topLevelAsbiepId =
+                        keyValue[0].substring(keyValue[0].indexOf('[') + 1, keyValue[0].indexOf(']'));
                 bizCtxIds.put(topLevelAsbiepId, keyValue[1]);
             } else {
                 params.put(keyValue[0], keyValue[1]);
@@ -94,13 +91,13 @@ public class BieGenerateController {
         return params;
     }
 
-    private List<BigInteger> popTopLevelAsbiepIds(Map<String, Object> params) {
+    private List<String> popTopLevelAsbiepIds(Map<String, Object> params) {
         Object obj = params.remove("topLevelAsbiepIds");
         if (obj == null) {
             return Collections.emptyList();
         }
 
         return Arrays.asList(((String) obj).split(",")).stream()
-                .map(s -> new BigInteger(s)).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

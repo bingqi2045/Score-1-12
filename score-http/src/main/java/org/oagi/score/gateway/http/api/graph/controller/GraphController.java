@@ -12,7 +12,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +24,12 @@ public class GraphController {
     @Autowired
     private GraphService graphService;
 
-    @RequestMapping(value = "/graphs/find_usages/{type}/{id:[\\d]+}",
+    @RequestMapping(value = "/graphs/find_usages/{type}/{id}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public FindUsagesResponse findUsages(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @PathVariable("type") String type,
-                                         @PathVariable("id") BigInteger manifestId) {
+                                         @PathVariable("id") String manifestId) {
 
         FindUsagesRequest request = new FindUsagesRequest();
         request.setType(type);
@@ -39,12 +38,12 @@ public class GraphController {
         return graphService.findUsages(request);
     }
 
-    @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
+    @RequestMapping(value = "/graphs/{type}/{id}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @PathVariable("type") String type,
-                                        @PathVariable("id") BigInteger id,
+                                        @PathVariable("id") String id,
                                         @RequestParam(value = "q", required = false) String query) {
         Graph graph;
         switch (type.toLowerCase()) {
@@ -95,16 +94,16 @@ public class GraphController {
         return response;
     }
 
-    @RequestMapping(value = "/graphs/uplift/{topLevelAsbiepId:[\\d]+}/{targetReleaseId:[\\d]+}",
+    @RequestMapping(value = "/graphs/uplift/{topLevelAsbiepId}/{targetReleaseId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getUpliftGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                              @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
-                                              @PathVariable("targetReleaseId") BigInteger targetReleaseId) {
+                                              @PathVariable("topLevelAsbiepId") String topLevelAsbiepId,
+                                              @PathVariable("targetReleaseId") String targetReleaseId) {
 
         AsccpManifestRecord asccpManifestRecord = graphService.getUpliftBie(user, topLevelAsbiepId, targetReleaseId);
         Graph graph;
-        graph = graphService.getAsccpGraph(asccpManifestRecord.getAsccpManifestId().toBigInteger(), false);
+        graph = graphService.getAsccpGraph(asccpManifestRecord.getAsccpManifestId(), false);
 
         Map<String, Object> response = new HashMap();
         response.put("graph", graph);

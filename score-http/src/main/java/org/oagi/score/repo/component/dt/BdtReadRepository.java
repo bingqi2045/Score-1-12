@@ -1,19 +1,10 @@
 package org.oagi.score.repo.component.dt;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -22,24 +13,24 @@ public class BdtReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public DtRecord getDtByBccpManifestId(BigInteger bccpManifestId) {
+    public DtRecord getDtByBccpManifestId(String bccpManifestId) {
         return dslContext.select(DT.fields())
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .join(BCCP_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(BCCP_MANIFEST.BDT_MANIFEST_ID))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetchOptionalInto(DtRecord.class).orElse(null);
     }
 
-    public DtRecord getDtByDtManifestId(BigInteger dtManifestId) {
+    public DtRecord getDtByDtManifestId(String dtManifestId) {
         return dslContext.select(DT.fields())
                 .from(DT)
                 .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
-                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(dtManifestId)))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId))
                 .fetchOptionalInto(DtRecord.class).orElse(null);
     }
 
-    public BdtNode getBdtNode(BigInteger topLevelAsbiepId, BigInteger dtManifestId) {
+    public BdtNode getBdtNode(String topLevelAsbiepId, String dtManifestId) {
         DtRecord dtRecord = getDtByDtManifestId(dtManifestId);
         if (dtRecord == null) {
             return null;

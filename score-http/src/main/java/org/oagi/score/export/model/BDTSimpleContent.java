@@ -1,6 +1,5 @@
 package org.oagi.score.export.model;
 
-import org.jooq.types.ULong;
 import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
@@ -39,7 +38,7 @@ public class BDTSimpleContent extends AbstractBDTSimple {
     }
 
     @Override
-    public ULong getBdtId() {
+    public String getBdtId() {
         return dataType.getDtId();
     }
 

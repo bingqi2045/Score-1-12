@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -58,10 +57,10 @@ public class Bbie extends TableImpl<BbieRecord> {
     }
 
     /**
-     * The column <code>oagi.bbie.bbie_id</code>. A internal, primary database
-     * key of a BBIE.
+     * The column <code>oagi.bbie.bbie_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<BbieRecord, ULong> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of a BBIE.");
+    public final TableField<BbieRecord, String> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bbie.guid</code>. A globally unique identifier
@@ -74,7 +73,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which
      * this BBIE contextualizes.
      */
-    public final TableField<BbieRecord, ULong> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
+    public final TableField<BbieRecord, String> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
 
     /**
      * The column <code>oagi.bbie.path</code>.
@@ -89,10 +88,14 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
-     * The column <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
-     * based on the FROM_ACC_ID in the BASED_BCC_ID.
+     * The column <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
+     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
+     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
+     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
+     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
+     * in the BASED_BCC_ID.
      */
-    public final TableField<BbieRecord, ULong> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.");
+    public final TableField<BbieRecord, String> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.");
 
     /**
      * The column <code>oagi.bbie.to_bbiep_id</code>. TO_BBIEP_ID is a foreign
@@ -100,7 +103,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID
      * in the based BCC.
      */
-    public final TableField<BbieRecord, ULong> TO_BBIEP_ID = createField(DSL.name("to_bbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "TO_BBIEP_ID is a foreign key to the BBIEP table. TO_BBIEP_ID basically refers to a child data element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID in the based BCC.");
+    public final TableField<BbieRecord, String> TO_BBIEP_ID = createField(DSL.name("to_bbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_BBIEP_ID is a foreign key to the BBIEP table. TO_BBIEP_ID basically refers to a child data element of the FROM_ABIE_ID. TO_BBIEP_ID must be based on the TO_BCCP_ID in the based BCC.");
 
     /**
      * The column <code>oagi.bbie.bdt_pri_restri_id</code>. This is the foreign
@@ -109,7 +112,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * specific association). This is assigned by the user who authors the BIE.
      * The assignment would override the default from the CC side.
      */
-    public final TableField<BbieRecord, ULong> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.");
+    public final TableField<BbieRecord, String> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.CHAR(36), this, "This is the foreign key to the BDT_PRI_RESTRI table. It indicates the primitive assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this specific association). This is assigned by the user who authors the BIE. The assignment would override the default from the CC side.");
 
     /**
      * The column <code>oagi.bbie.code_list_id</code>. This is a foreign key to
@@ -121,14 +124,14 @@ public class Bbie extends TableImpl<BbieRecord> {
      * assign another code list different from the one permissible by the CC
      * model.
      */
-    public final TableField<BbieRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the BDT_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.");
+    public final TableField<BbieRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the CODE_LIST table. If a code list is assigned to the BBIE (or also can be viewed as assigned to the BBIEP for this association), then this column stores the assigned code list. It should be noted that one of the possible primitives assignable to the BDT_PRI_RESTRI_ID column may also be a code list. So this column is typically used when the user wants to assign another code list different from the one permissible by the CC model.");
 
     /**
      * The column <code>oagi.bbie.agency_id_list_id</code>. This is a foreign
      * key to the AGENCY_ID_LIST table. It is used in the case that the BDT
      * content can be restricted to an agency identification.
      */
-    public final TableField<BbieRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
+    public final TableField<BbieRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
 
     /**
      * The column <code>oagi.bbie.cardinality_min</code>. The minimum occurrence
@@ -221,13 +224,13 @@ public class Bbie extends TableImpl<BbieRecord> {
      * by default. BBIEs created as children of another ABIE have the same
      * CREATED_BY.
      */
-    public final TableField<BbieRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.");
+    public final TableField<BbieRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.");
 
     /**
      * The column <code>oagi.bbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record. 
+     * referring to the user who has last updated the BBIE record.
      */
-    public final TableField<BbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record. ");
+    public final TableField<BbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the BBIE record.");
 
     /**
      * The column <code>oagi.bbie.creation_timestamp</code>. Timestamp when the
@@ -263,7 +266,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<BbieRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BbieRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private Bbie(Name alias, Table<BbieRecord> aliased) {
         this(alias, aliased, null);
@@ -306,11 +309,6 @@ public class Bbie extends TableImpl<BbieRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.BBIE_BBIE_HASH_PATH_K, Indexes.BBIE_BBIE_PATH_K);
-    }
-
-    @Override
-    public Identity<BbieRecord, ULong> getIdentity() {
-        return (Identity<BbieRecord, ULong>) super.getIdentity();
     }
 
     @Override

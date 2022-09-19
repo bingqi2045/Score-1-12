@@ -21,7 +21,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,7 +71,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (mergedTopLevelAsbieps.size() == 0) {
             throw new IllegalArgumentException("Cannot found BIEs.");
         }
-        BigInteger releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
+        String releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
         /*
          * Issue #587
          */
@@ -138,7 +137,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         StringBuilder pathName = new StringBuilder();
         pathName.append("/");
 
-        BigInteger bizCtxId = option.getBizCtxIds().get(topLevelAsbiep.getTopLevelAsbiepId());
+        String bizCtxId = option.getBizCtxIds().get(topLevelAsbiep.getTopLevelAsbiepId());
         BizCtx bizCtx = generationContext.findBusinessContexts(topLevelAsbiep).stream()
                 .filter(e -> e.getBizCtxId().equals(bizCtxId))
                 .findAny().orElse(null);

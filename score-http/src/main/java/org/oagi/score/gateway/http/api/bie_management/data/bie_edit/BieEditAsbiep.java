@@ -7,8 +7,8 @@ import java.math.BigInteger;
 @Data
 public class BieEditAsbiep {
 
-    private BigInteger asbiepId;
+    private String asbiepId;
     private BigInteger basedAsccpId;
-    private BigInteger roleOfAbieId;
+    private String roleOfAbieId;
 
 }

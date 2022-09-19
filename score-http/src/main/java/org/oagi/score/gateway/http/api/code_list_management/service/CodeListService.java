@@ -2,18 +2,13 @@ package org.oagi.score.gateway.http.api.code_list_management.service;
 
 import org.jooq.*;
 import org.jooq.types.UInteger;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.code_list_management.data.*;
-import org.oagi.score.service.common.data.AccessPrivilege;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.code_list.*;
+import org.oagi.score.service.common.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -21,17 +16,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.*;
-
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
-import static org.oagi.score.repo.api.bie.model.BieState.*;
+import static org.oagi.score.repo.api.bie.model.BieState.Production;
+import static org.oagi.score.repo.api.bie.model.BieState.QA;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
@@ -48,11 +43,11 @@ public class CodeListService extends EventHandler {
     private CodeListWriteRepository codeListWriteRepository;
 
     private SelectOnConditionStep<Record22<
-            ULong, ULong, String, String, ULong,
-            String, String, ULong, String, String,
-            String, LocalDateTime, ULong, String, String,
+            String, String, String, String, String,
+            String, String, String, String, String,
+            String, LocalDateTime, String, String, String,
             Byte, String, Byte, String, String,
-            String, UInteger>> getSelectOnConditionStep(ULong defaultModuleSetReleaseId) {
+            String, UInteger>> getSelectOnConditionStep(String defaultModuleSetReleaseId) {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.CODE_LIST_ID,
@@ -92,9 +87,9 @@ public class CodeListService extends EventHandler {
 
     public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId())))
                 .fetchOne();
 
         if (defaultModuleSetRelease != null) {
@@ -102,14 +97,14 @@ public class CodeListService extends EventHandler {
         }
 
         SelectOnConditionStep<Record22<
-                ULong, ULong, String, String, ULong,
-                String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, String, String, String, String,
+                String, String, String, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> step = getSelectOnConditionStep(defaultModuleSetReleaseId);
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
 
         if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
@@ -121,17 +116,17 @@ public class CodeListService extends EventHandler {
             conditions.add(MODULE.PATH.containsIgnoreCase(request.getModule()));
         }
         if (request.getAccess() != null) {
-            AppUser requester = sessionService.getAppUser(user);
+            AppUser requester = sessionService.getAppUserByUsername(user);
             switch (request.getAccess()) {
                 case CanEdit:
-                    conditions.add(CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId())));
+                    conditions.add(CODE_LIST.OWNER_USER_ID.eq(requester.getAppUserId()));
                     break;
 
                 case CanView:
                     conditions.add(
                             or(
                                     CODE_LIST.STATE.in(QA.name(), Production.name()),
-                                    CODE_LIST.OWNER_USER_ID.eq(ULong.valueOf(requester.getAppUserId()))
+                                    CODE_LIST.OWNER_USER_ID.eq(requester.getAppUserId())
                             )
                     );
                     break;
@@ -164,9 +159,9 @@ public class CodeListService extends EventHandler {
         }
 
         SelectConnectByStep<Record22<
-                ULong, ULong, String, String, ULong,
-                String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, String, String, String, String,
+                String, String, String, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
@@ -200,9 +195,9 @@ public class CodeListService extends EventHandler {
 
 
         SelectWithTiesAfterOffsetStep<Record22<
-                ULong, ULong, String, String, ULong,
-                String, String, ULong, String, String,
-                String, LocalDateTime, ULong, String, String,
+                String, String, String, String, String,
+                String, String, String, String, String,
+                String, LocalDateTime, String, String, String,
                 Byte, String, Byte, String, String,
                 String, UInteger>> offsetStep = null;
         if (sortField != null) {
@@ -219,13 +214,13 @@ public class CodeListService extends EventHandler {
                 offsetStep.fetchInto(CodeListForList.class) : conditionStep.fetchInto(CodeListForList.class);
 
         String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))).fetchOneInto(String.class);
+                .where(RELEASE.RELEASE_ID.eq(request.getReleaseId())).fetchOneInto(String.class);
         boolean isWorkingRelease = releaseNum.equals("Working");
 
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         result.stream().forEach(e -> {
             e.setAccess(
-                    AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(e.getOwnerId()),
+                    AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUserById(e.getOwnerId()),
                             CcState.valueOf(e.getState()), isWorkingRelease)
             );
             e.setOwnerId(null); // hide sensitive information
@@ -254,7 +249,7 @@ public class CodeListService extends EventHandler {
         return response;
     }
 
-    public CodeList getCodeList(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CodeList getCodeList(AuthenticatedPrincipal user, String manifestId) {
         CodeList codeList = dslContext.select(
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 RELEASE.STATE.as("release_state"),
@@ -291,7 +286,7 @@ public class CodeListService extends EventHandler {
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
                 .leftJoin(NAMESPACE).on(CODE_LIST.NAMESPACE_ID.eq(NAMESPACE.NAMESPACE_ID))
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestId))
                 .fetchOptionalInto(CodeList.class).orElse(null);
 
         if (codeList == null) {
@@ -299,12 +294,12 @@ public class CodeListService extends EventHandler {
         }
 
         String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(codeList.getReleaseId()))).fetchOneInto(String.class);
+                .where(RELEASE.RELEASE_ID.eq(codeList.getReleaseId())).fetchOneInto(String.class);
         boolean isWorkingRelease = releaseNum.equals("Working");
 
-        AppUser requester = sessionService.getAppUser(user);
+        AppUser requester = sessionService.getAppUserByUsername(user);
         codeList.setAccess(
-                AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(codeList.getOwnerId()),
+                AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUserById(codeList.getOwnerId()),
                         CcState.valueOf(codeList.getState()), isWorkingRelease)
         );
         codeList.setOwnerId(null); // hide sensitive information
@@ -312,7 +307,7 @@ public class CodeListService extends EventHandler {
         boolean isPublished = CodeListState.Published.name().equals(codeList.getState());
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)));
+        conditions.add(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestId));
 
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
@@ -336,7 +331,7 @@ public class CodeListService extends EventHandler {
             List<String> basedCodeListValueList = dslContext.select(CODE_LIST_VALUE.VALUE)
                     .from(CODE_LIST_VALUE)
                     .join(CODE_LIST_VALUE_MANIFEST).on(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID))
-                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeList.getBasedCodeListManifestId())))
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeList.getBasedCodeListManifestId()))
                     .fetchInto(String.class);
             codeListValues.stream().forEach(e -> e.setDerived(basedCodeListValueList.contains(e.getValue())));
         }
@@ -345,7 +340,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createCodeList(AuthenticatedPrincipal user, CodeList codeList) {
+    public String createCodeList(AuthenticatedPrincipal user, CodeList codeList) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateCodeListRepositoryRequest repositoryRequest =
                 new CreateCodeListRepositoryRequest(user, timestamp, codeList.getBasedCodeListManifestId(),
@@ -362,7 +357,9 @@ public class CodeListService extends EventHandler {
     private void createCodeList(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                                 CodeListValue codeListValue) {
 
-        ULong codeListValueId = dslContext.insertInto(CODE_LIST_VALUE,
+        String codeListValueId = UUID.randomUUID().toString();
+        dslContext.insertInto(CODE_LIST_VALUE,
+                CODE_LIST_VALUE.CODE_LIST_VALUE_ID,
                 CODE_LIST_VALUE.CODE_LIST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.MEANING,
@@ -373,6 +370,7 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.LAST_UPDATED_BY,
                 CODE_LIST_VALUE.CREATION_TIMESTAMP,
                 CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP).values(
+                codeListValueId,
                 manifestRecord.getCodeListId(),
                 codeListValue.getValue(),
                 codeListValue.getMeaning(),
@@ -383,7 +381,7 @@ public class CodeListService extends EventHandler {
                 codeListRecord.getLastUpdatedBy(),
                 codeListRecord.getCreationTimestamp(),
                 codeListRecord.getLastUpdateTimestamp())
-                .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId();
+                .execute();
 
         dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
                 .set(CODE_LIST_VALUE_MANIFEST.RELEASE_ID, manifestRecord.getReleaseId())
@@ -404,7 +402,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
+    public String makeNewRevision(AuthenticatedPrincipal user, String codeListManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ReviseCodeListRepositoryRequest reviseCodeListRepositoryRequest
                 = new ReviseCodeListRepositoryRequest(user, codeListManifestId, timestamp);
@@ -418,7 +416,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger cancelRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
+    public String cancelRevision(AuthenticatedPrincipal user, String codeListManifestId) {
         CancelRevisionCodeListRepositoryRequest request
                 = new CancelRevisionCodeListRepositoryRequest(user, codeListManifestId);
 
@@ -430,9 +428,9 @@ public class CodeListService extends EventHandler {
         return response.getCodeListManifestId();
     }
 
-    public CodeList getCodeListRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
+    public CodeList getCodeListRevision(AuthenticatedPrincipal user, String manifestId) {
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
         if (codeListManifestRecord == null) {
             throw new IllegalArgumentException("Unknown CodeList: " + manifestId);
@@ -442,7 +440,7 @@ public class CodeListService extends EventHandler {
                 .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
                 .fetchOne();
 
-        ULong lastPublishedCodeListId = codeListRecord.getPrevCodeListId();
+        String lastPublishedCodeListId = codeListRecord.getPrevCodeListId();
         if (lastPublishedCodeListId == null) {
             // rev = 1 return null
             return null;
@@ -486,7 +484,7 @@ public class CodeListService extends EventHandler {
         return codeList;
     }
 
-    public void updateCodeListState(AuthenticatedPrincipal user, LocalDateTime timestamp, BigInteger codeListManifestId, CcState state) {
+    public void updateCodeListState(AuthenticatedPrincipal user, LocalDateTime timestamp, String codeListManifestId, CcState state) {
         UpdateCodeListStateRepositoryRequest request =
                 new UpdateCodeListStateRepositoryRequest(user, timestamp, codeListManifestId, state);
 
@@ -546,41 +544,41 @@ public class CodeListService extends EventHandler {
                        CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                        List<CodeListValue> codeListValues) {
 
-        Map<ULong, CodeListValueManifestRecord> codeListValueManifestRecordMap = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+        Map<String, CodeListValueManifestRecord> codeListValueManifestRecordMap = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
                 .where(and(
                         CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestRecord.getCodeListManifestId()),
                         CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(manifestRecord.getReleaseId()))
                 ).fetchStreamInto(CodeListValueManifestRecord.class)
                 .collect(Collectors.toMap(CodeListValueManifestRecord::getCodeListValueManifestId, Function.identity()));
 
-        Map<ULong, CodeListValueRecord> codeListValueRecordMap = dslContext.selectFrom(CODE_LIST_VALUE)
+        Map<String, CodeListValueRecord> codeListValueRecordMap = dslContext.selectFrom(CODE_LIST_VALUE)
                 .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.in(
                         codeListValueManifestRecordMap.values().stream().map(e -> e.getCodeListValueId()).collect(Collectors.toList())
                 )).fetchStreamInto(CodeListValueRecord.class)
                 .collect(Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
 
         // deletion begins
-        Set<ULong> codeListValueManifestIds = codeListValues.stream()
-                .filter(e -> e.getCodeListValueManifestId() != null && e.getCodeListValueManifestId().compareTo(BigInteger.ZERO) > 0)
-                .map(e -> ULong.valueOf(e.getCodeListValueManifestId()))
+        Set<String> codeListValueManifestIds = codeListValues.stream()
+                .filter(e -> e.getCodeListValueManifestId() != null)
+                .map(e -> e.getCodeListValueManifestId())
                 .collect(Collectors.toSet());
 
-        Set<ULong> existingCodeListValueManifestIds = new HashSet(codeListValueManifestRecordMap.keySet()); // deep copy
+        Set<String> existingCodeListValueManifestIds = new HashSet(codeListValueManifestRecordMap.keySet()); // deep copy
         existingCodeListValueManifestIds.removeAll(codeListValueManifestIds);
 
         if (!existingCodeListValueManifestIds.isEmpty()) {
-            for (ULong codeListValueManifestId : existingCodeListValueManifestIds) {
+            for (String codeListValueManifestId : existingCodeListValueManifestIds) {
                 CodeListValueManifestRecord codeListValueManifestRecord =
                         codeListValueManifestRecordMap.get(codeListValueManifestId);
                 CodeListValueRecord codeListValueRecord =
                         codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
 
-                ULong prevCodeListValueId = codeListValueRecord.getCodeListValueId();
+                String prevCodeListValueId = codeListValueRecord.getCodeListValueId();
 
-                codeListValueRecord.setCodeListValueId(null);
+                codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
                 codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
 
-                ULong requesterId = codeListRecord.getOwnerUserId();
+                String requesterId = codeListRecord.getOwnerUserId();
                 LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();
 
                 if (!codeListValueRecord.getOwnerUserId().equals(requesterId)) {
@@ -591,9 +589,9 @@ public class CodeListService extends EventHandler {
                 codeListValueRecord.setLastUpdatedBy(requesterId);
                 codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
-                codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
+                dslContext.insertInto(CODE_LIST_VALUE)
                         .set(codeListValueRecord)
-                        .returning().fetchOne();
+                        .execute();
 
                 dslContext.update(CODE_LIST_VALUE)
                         .set(CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID, codeListValueRecord.getCodeListValueId())
@@ -610,12 +608,12 @@ public class CodeListService extends EventHandler {
         // insertion / updating begins
         for (CodeListValue codeListValue : codeListValues) {
             CodeListValueRecord codeListValueRecord;
-            BigInteger codeListValueManifestId = codeListValue.getCodeListValueManifestId();
-            if (codeListValueManifestId == null || codeListValueManifestId.compareTo(BigInteger.ZERO) <= 0) {
+            String codeListValueManifestId = codeListValue.getCodeListValueManifestId();
+            if (codeListValueManifestId == null || !StringUtils.hasLength(codeListValueManifestId)) {
                 codeListValueRecord = new CodeListValueRecord();
             } else {
                 CodeListValueManifestRecord codeListValueManifestRecord =
-                        codeListValueManifestRecordMap.get(ULong.valueOf(codeListValueManifestId));
+                        codeListValueManifestRecordMap.get(codeListValueManifestId);
                 if (codeListValueManifestRecord == null) {
                     throw new IllegalArgumentException();
                 }
@@ -624,10 +622,10 @@ public class CodeListService extends EventHandler {
                 );
             }
 
-            ULong prevCodeListValueId = codeListValueRecord.getCodeListValueId();
+            String prevCodeListValueId = codeListValueRecord.getCodeListValueId();
             boolean isUpdate = prevCodeListValueId != null;
 
-            codeListValueRecord.setCodeListValueId(null);
+            codeListValueRecord.setCodeListValueId(UUID.randomUUID().toString());
             codeListValueRecord.setPrevCodeListValueId(prevCodeListValueId);
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
@@ -637,7 +635,7 @@ public class CodeListService extends EventHandler {
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
 
-            ULong requesterId = codeListRecord.getOwnerUserId();
+            String requesterId = codeListRecord.getOwnerUserId();
             LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();
 
             if (!isUpdate) {
@@ -656,9 +654,9 @@ public class CodeListService extends EventHandler {
             codeListValueRecord.setLastUpdatedBy(requesterId);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
-            codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
+            dslContext.insertInto(CODE_LIST_VALUE)
                     .set(codeListValueRecord)
-                    .returning().fetchOne();
+                    .execute();
 
             if (isUpdate) {
                 dslContext.update(CODE_LIST_VALUE)
@@ -668,7 +666,7 @@ public class CodeListService extends EventHandler {
 
                 dslContext.update(CODE_LIST_VALUE_MANIFEST)
                         .set(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID, codeListValueRecord.getCodeListValueId())
-                        .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(codeListValueManifestId)))
+                        .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.eq(codeListValueManifestId))
                         .execute();
             } else {
                 CodeListValueManifestRecord codeListValueManifestRecord = new CodeListValueManifestRecord();
@@ -686,9 +684,9 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(AuthenticatedPrincipal user, BigInteger codeListManifestIds) {
+    public void deleteCodeList(AuthenticatedPrincipal user, String codeListManifestId) {
         DeleteCodeListRepositoryRequest repositoryRequest =
-                new DeleteCodeListRepositoryRequest(user, codeListManifestIds);
+                new DeleteCodeListRepositoryRequest(user, codeListManifestId);
 
         DeleteCodeListRepositoryResponse repositoryResponse =
                 codeListWriteRepository.deleteCodeList(repositoryRequest);
@@ -697,9 +695,9 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void restoreCodeList(AuthenticatedPrincipal user, BigInteger codeListManifestIds) {
+    public void restoreCodeList(AuthenticatedPrincipal user, String codeListManifestId) {
         RestoreCodeListRepositoryRequest repositoryRequest =
-                new RestoreCodeListRepositoryRequest(user, codeListManifestIds);
+                new RestoreCodeListRepositoryRequest(user, codeListManifestId);
 
         RestoreCodeListRepositoryResponse repositoryResponse =
                 codeListWriteRepository.restoreCodeList(repositoryRequest);
@@ -708,28 +706,28 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(AuthenticatedPrincipal user, List<BigInteger> codeListManifestIds) {
+    public void deleteCodeList(AuthenticatedPrincipal user, List<String> codeListManifestIds) {
         codeListManifestIds.stream().forEach(e -> deleteCodeList(user, e));
     }
 
     @Transactional
-    public void restoreCodeList(AuthenticatedPrincipal user, List<BigInteger> codeListManifestIds) {
+    public void restoreCodeList(AuthenticatedPrincipal user, List<String> codeListManifestIds) {
         codeListManifestIds.stream().forEach(e -> restoreCodeList(user, e));
     }
 
     public boolean hasSameCodeList(SameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 CODE_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
 
         if (params.getCodeListManifestId() != null) {
-            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getCodeListManifestId())));
+            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(params.getCodeListManifestId()));
         }
         conditions.add(and(
                 CODE_LIST.LIST_ID.eq(params.getListId()),
-                CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(params.getAgencyIdListValueManifestId())),
+                CODE_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(params.getAgencyIdListValueManifestId()),
                 CODE_LIST.VERSION_ID.eq(params.getVersionId())
         ));
 
@@ -742,12 +740,12 @@ public class CodeListService extends EventHandler {
     public boolean hasSameNameCodeList(SameNameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
         conditions.add(and(
-                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(params.getReleaseId()),
                 CODE_LIST.STATE.notEqual(CcState.Deleted.name())
         ));
 
         if (params.getCodeListManifestId() != null) {
-            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getCodeListManifestId())));
+            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(params.getCodeListManifestId()));
         }
         conditions.add(CODE_LIST.NAME.eq(params.getCodeListName()));
 
@@ -758,19 +756,19 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void transferOwnership(AuthenticatedPrincipal user, BigInteger manifestId, String targetLoginId) {
-        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+    public void transferOwnership(AuthenticatedPrincipal user, String manifestId, String targetLoginId) {
+        AppUser targetUser = sessionService.getAppUserByUsername(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestId)).fetchOne();
         if (codeListManifestRecord == null) {
             throw new IllegalArgumentException("Not found a target CodeList.");
         }
         UpdateCodeListOwnerRepositoryRequest request = new UpdateCodeListOwnerRepositoryRequest(user,
-                codeListManifestRecord.getCodeListManifestId().toBigInteger(), targetUser.getAppUserId());
+                codeListManifestRecord.getCodeListManifestId(), targetUser.getAppUserId());
         codeListWriteRepository.updateCodeListOwner(request);
         fireEvent(new UpdateCodeListOwnerEvent());
     }

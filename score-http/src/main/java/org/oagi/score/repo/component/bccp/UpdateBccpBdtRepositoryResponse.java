@@ -1,19 +1,17 @@
 package org.oagi.score.repo.component.bccp;
 
-import java.math.BigInteger;
-
 public class UpdateBccpBdtRepositoryResponse {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
     private final String den;
 
-    public UpdateBccpBdtRepositoryResponse(BigInteger bccpManifestId, String den) {
+    public UpdateBccpBdtRepositoryResponse(String bccpManifestId, String den) {
         this.bccpManifestId = bccpManifestId;
         this.den = den;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 

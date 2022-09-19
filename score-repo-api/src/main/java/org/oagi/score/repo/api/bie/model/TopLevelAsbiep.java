@@ -4,17 +4,16 @@ import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class TopLevelAsbiep extends Auditable implements Serializable {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
     private ScoreUser owner;
 
-    private BigInteger asbiepId;
+    private String asbiepId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String propertyTerm;
 
@@ -26,11 +25,11 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
 
     private String version;
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
-    public void setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public void setTopLevelAsbiepId(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
     }
 
@@ -42,19 +41,19 @@ public class TopLevelAsbiep extends Auditable implements Serializable {
         this.owner = owner;
     }
 
-    public BigInteger getAsbiepId() {
+    public String getAsbiepId() {
         return asbiepId;
     }
 
-    public void setAsbiepId(BigInteger asbiepId) {
+    public void setAsbiepId(String asbiepId) {
         this.asbiepId = asbiepId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 

@@ -3,17 +3,16 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 
 public class UpdateContextSchemeRequest extends Request {
 
-    private BigInteger contextSchemeId;
+    private String contextSchemeId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
     private String schemeId;
 
@@ -31,41 +30,41 @@ public class UpdateContextSchemeRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 
-    public void setContextSchemeId(BigInteger contextSchemeId) {
+    public void setContextSchemeId(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
-    public UpdateContextSchemeRequest withContextSchemeId(BigInteger contextSchemeId) {
+    public UpdateContextSchemeRequest withContextSchemeId(String contextSchemeId) {
         this.setContextSchemeId(contextSchemeId);
         return this;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public UpdateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+    public UpdateContextSchemeRequest withContextCategoryId(String contextCategoryId) {
         this.setContextCategoryId(contextCategoryId);
         return this;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public UpdateContextSchemeRequest withCodeListId(BigInteger codeListId) {
+    public UpdateContextSchemeRequest withCodeListId(String codeListId) {
         this.setCodeListId(codeListId);
         return this;
     }

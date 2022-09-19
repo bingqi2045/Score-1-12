@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
-import org.jooq.types.ULong;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.BieGenerateExpressionResult;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +42,7 @@ public class BieGenerateService {
     private DSLContext dslContext;
 
     public BieGenerateExpressionResult generate(
-            AuthenticatedPrincipal user, List<BigInteger> topLevelAsbiepIds,
+            AuthenticatedPrincipal user, List<String> topLevelAsbiepIds,
             GenerateExpressionOption option) throws BieGenerateFailureException {
 
         List<TopLevelAsbiep> topLevelAsbieps = topLevelAsbiepRepository.findByIdIn(topLevelAsbiepIds);
@@ -96,7 +94,7 @@ public class BieGenerateService {
                 return generateSchemaForAll(topLevelAsbieps, option);
 
             case "EACH":
-                Map<BigInteger, File> files = generateSchemaForEach(topLevelAsbieps, option);
+                Map<String, File> files = generateSchemaForEach(topLevelAsbieps, option);
                 if (files.size() == 1) {
                     return files.values().iterator().next();
                 }
@@ -137,9 +135,9 @@ public class BieGenerateService {
         return schemaExpressionFile;
     }
 
-    public Map<BigInteger, File> generateSchemaForEach(List<TopLevelAsbiep> topLevelAsbieps,
-                                                       GenerateExpressionOption option) throws BieGenerateFailureException {
-        Map<BigInteger, File> targetFiles = new HashMap();
+    public Map<String, File> generateSchemaForEach(List<TopLevelAsbiep> topLevelAsbieps,
+                                                   GenerateExpressionOption option) throws BieGenerateFailureException {
+        Map<String, File> targetFiles = new HashMap();
         BieGenerateExpression generateExpression = createBieGenerateExpression(option);
         GenerationContext generationContext = generateExpression.generateContext(topLevelAsbieps, option);
 
@@ -172,7 +170,7 @@ public class BieGenerateService {
     }
 
     private String getFilenameByTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep, GenerateExpressionOption option) {
-        Map<BigInteger, String> filenames = option.getFilenames();
+        Map<String, String> filenames = option.getFilenames();
         if (filenames != null && filenames.containsKey(topLevelAsbiep.getTopLevelAsbiepId())) {
             return filenames.get(topLevelAsbiep.getTopLevelAsbiepId());
         }
@@ -180,14 +178,14 @@ public class BieGenerateService {
         /*
          * Issue 566
          */
-        BigInteger rootAsbiepId = topLevelAsbiep.getAsbiepId();
-        Record2<String, ULong> result = dslContext.select(ASBIEP.GUID, ASBIEP.BASED_ASCCP_MANIFEST_ID)
+        String rootAsbiepId = topLevelAsbiep.getAsbiepId();
+        Record2<String, String> result = dslContext.select(ASBIEP.GUID, ASBIEP.BASED_ASCCP_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .where(and(ASBIEP.ASBIEP_ID
-                                .eq(ULong.valueOf(rootAsbiepId)),
+                                .eq(rootAsbiepId),
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID
-                                .eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId()))))
+                                .eq(topLevelAsbiep.getTopLevelAsbiepId())))
                 .fetchOne();
 
         String propertyTerm = dslContext.select(ASCCP.PROPERTY_TERM)
@@ -207,7 +205,7 @@ public class BieGenerateService {
 
         if (option.isIncludeBusinessContextInFilename()) {
             BizCtxAssignmentRecord bizCtxAssignmentRecord = dslContext.selectFrom(BIZ_CTX_ASSIGNMENT)
-                    .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
+                    .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiep.getTopLevelAsbiepId()))
                     .fetchAny();
             BizCtxRecord bizCtxRecord = dslContext.selectFrom(BIZ_CTX)
                     .where(BIZ_CTX.BIZ_CTX_ID.eq(bizCtxAssignmentRecord.getBizCtxId()))

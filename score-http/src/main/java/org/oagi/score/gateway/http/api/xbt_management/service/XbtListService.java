@@ -1,18 +1,16 @@
 package org.oagi.score.gateway.http.api.xbt_management.service;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Xbt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.List;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,7 +19,7 @@ public class XbtListService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<Xbt> getXbtSimpleList(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public List<Xbt> getXbtSimpleList(AuthenticatedPrincipal user, String releaseId) {
 
         return dslContext.select(XBT.XBT_ID,
                 XBT_MANIFEST.XBT_MANIFEST_ID.as("manifestId"),
@@ -40,7 +38,7 @@ public class XbtListService {
                 XBT.IS_DEPRECATED
             ).from(XBT_MANIFEST)
                 .join(XBT).on(XBT_MANIFEST.XBT_ID.eq(XBT.XBT_ID))
-                .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(XBT_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(Xbt.class);
     }
 }

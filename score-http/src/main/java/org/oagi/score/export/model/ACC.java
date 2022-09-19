@@ -1,6 +1,5 @@
 package org.oagi.score.export.model;
 
-import org.jooq.types.ULong;
 import org.oagi.score.common.util.OagisComponentType;
 import org.oagi.score.common.util.Utility;
 import org.oagi.score.provider.ImportedDataProvider;
@@ -54,7 +53,7 @@ public abstract class ACC implements Component {
         }
     }
 
-    public ULong getRawId() {
+    public String getRawId() {
         return acc.getAccId();
     }
 

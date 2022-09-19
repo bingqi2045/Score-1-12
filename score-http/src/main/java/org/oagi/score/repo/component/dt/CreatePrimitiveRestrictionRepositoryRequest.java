@@ -3,31 +3,30 @@ package org.oagi.score.repo.component.dt;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class CreatePrimitiveRestrictionRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
-    private final BigInteger releaseId;
+    private final String dtManifestId;
+    private final String releaseId;
 
     private String primitive;
-    private List<BigInteger> xbtManifestIdList;
+    private List<String> xbtManifestIdList;
 
 
 
     public CreatePrimitiveRestrictionRepositoryRequest(AuthenticatedPrincipal user,
-                                                       BigInteger dtManifestId, BigInteger releaseId) {
+                                                       String dtManifestId, String releaseId) {
         super(user);
         this.dtManifestId = dtManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -39,11 +38,11 @@ public class CreatePrimitiveRestrictionRepositoryRequest extends RepositoryReque
         this.primitive = primitive;
     }
 
-    public List<BigInteger> getXbtManifestIdList() {
+    public List<String> getXbtManifestIdList() {
         return xbtManifestIdList;
     }
 
-    public void setXbtManifestIdList(List<BigInteger> xbtManifestIdList) {
+    public void setXbtManifestIdList(List<String> xbtManifestIdList) {
         this.xbtManifestIdList = xbtManifestIdList;
     }
 }

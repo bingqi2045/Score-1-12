@@ -4,7 +4,6 @@ import lombok.Data;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.bie.model.BieUpliftingMapping;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,9 +12,9 @@ public class UpliftBieRequest {
 
     private ScoreUser requester;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
-    private BigInteger targetAsccpManifestId;
+    private String targetAsccpManifestId;
 
     private List<BieUpliftingMapping> customMappingTable = Collections.emptyList();
 

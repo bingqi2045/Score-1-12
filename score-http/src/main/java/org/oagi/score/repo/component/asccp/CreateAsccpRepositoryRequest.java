@@ -6,7 +6,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.service.common.data.CcState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +14,12 @@ import static org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType.Ver
 
 public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger roleOfAccManifestId;
-    private final BigInteger releaseId;
+    private final String roleOfAccManifestId;
+    private final String releaseId;
 
     private String initialPropertyTerm;
     private CcASCCPType initialType = CcASCCPType.Default;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private boolean reusable = true;
     private String definition;
     private String definitionSource;
@@ -29,7 +28,7 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     private List<String> tags = Collections.emptyList();
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
-                                        BigInteger roleOfAccManifestId, BigInteger releaseId) {
+                                        String roleOfAccManifestId, String releaseId) {
         super(user);
         this.roleOfAccManifestId = roleOfAccManifestId;
         this.releaseId = releaseId;
@@ -37,17 +36,17 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
                                         LocalDateTime localDateTime,
-                                        BigInteger roleOfAccManifestId, BigInteger releaseId) {
+                                        String roleOfAccManifestId, String releaseId) {
         super(user, localDateTime);
         this.roleOfAccManifestId = roleOfAccManifestId;
         this.releaseId = releaseId;
     }
 
-    public BigInteger getRoleOfAccManifestId() {
+    public String getRoleOfAccManifestId() {
         return roleOfAccManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
@@ -90,11 +89,11 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
         this.initialState = initialState;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

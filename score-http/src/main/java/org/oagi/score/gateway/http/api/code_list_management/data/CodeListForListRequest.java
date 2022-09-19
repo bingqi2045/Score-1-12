@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.AccessPrivilege;
+import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.PageRequest;
 
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class CodeListForListRequest {
 
-    private long releaseId;
+    private String releaseId;
     private String name;
     private String definition;
     private String module;

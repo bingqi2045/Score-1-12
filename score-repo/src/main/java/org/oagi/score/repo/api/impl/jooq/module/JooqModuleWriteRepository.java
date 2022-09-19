@@ -1,25 +1,24 @@
 package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleWriteRepository;
-import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.module.model.Module;
+import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -38,7 +37,7 @@ public class JooqModuleWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public CreateModuleResponse createModule(CreateModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (hasDuplicateName(request.getParentModuleId(), request.getName())) {
@@ -46,34 +45,35 @@ public class JooqModuleWriteRepository
         }
 
         ModuleRecord parent = dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
+                .where(MODULE.MODULE_ID.eq(request.getParentModuleId())).fetchOne();
 
         String path = parent.getPath().length() > 0 ? parent.getPath() + MODULE_PATH_SEPARATOR + request.getName() : request.getName();
 
-        ModuleRecord moduleRecord = dslContext().insertInto(MODULE)
+        String moduleId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE)
+                .set(MODULE.MODULE_ID, moduleId)
                 .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
                 .set(MODULE.PATH, path)
                 .set(MODULE.TYPE, request.getModuleType().name())
                 .set(MODULE.NAME, request.getName())
-                .set(MODULE.MODULE_SET_ID, ULong.valueOf(request.getModuleSetId()))
-                .set(MODULE.NAMESPACE_ID, (request.getNamespaceId() != null) ? ULong.valueOf(request.getNamespaceId()) : null)
+                .set(MODULE.MODULE_SET_ID, request.getModuleSetId())
+                .set(MODULE.NAMESPACE_ID, request.getNamespaceId())
                 .set(MODULE.VERSION_NUM, request.getVersionNum())
                 .set(MODULE.CREATED_BY, requesterUserId)
                 .set(MODULE.OWNER_USER_ID, requesterUserId)
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning()
-                .fetchOne();
+                .execute();
+        ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(moduleId)).fetchOne();
 
         Module module = new Module();
-        module.setModuleId(moduleRecord.getModuleId().toBigInteger());
-        module.setParentModuleId(moduleRecord.getParentModuleId().toBigInteger());
+        module.setModuleId(moduleRecord.getModuleId());
+        module.setParentModuleId(moduleRecord.getParentModuleId());
         module.setName(moduleRecord.getName());
         module.setVersionNum(moduleRecord.getVersionNum());
-        if (moduleRecord.getNamespaceId() != null) {
-            module.setNamespaceId(moduleRecord.getNamespaceId().toBigInteger());
-        }
+        module.setNamespaceId(moduleRecord.getNamespaceId());
         module.setCreatedBy(requester);
         module.setCreationTimestamp(
                 Date.from(moduleRecord.getCreationTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
@@ -88,22 +88,18 @@ public class JooqModuleWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateModuleResponse updateModule(UpdateModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getModuleId())))
+                .where(MODULE.MODULE_ID.eq(request.getModuleId()))
                 .fetchOne();
 
         if (moduleRecord == null) {
             throw new IllegalArgumentException("Cannot found a module record [moduleId=" + request.getModuleId() + "]");
         }
 
-        if (request.getNamespaceId() != null) {
-            moduleRecord.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
-        } else {
-            moduleRecord.setNamespaceId(null);
-        }
+        moduleRecord.setNamespaceId(request.getNamespaceId());
 
         if (StringUtils.hasLength(request.getVersionNum())) {
             moduleRecord.setVersionNum(request.getVersionNum());
@@ -136,8 +132,8 @@ public class JooqModuleWriteRepository
         }
 
         Module module = new Module();
-        module.setModuleId(moduleRecord.getModuleId().toBigInteger());
-        module.setParentModuleId(moduleRecord.getParentModuleId().toBigInteger());
+        module.setModuleId(moduleRecord.getModuleId());
+        module.setParentModuleId(moduleRecord.getParentModuleId());
         module.setName(moduleRecord.getName());
         module.setVersionNum(moduleRecord.getVersionNum());
 
@@ -153,12 +149,12 @@ public class JooqModuleWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleResponse deleteModule(DeleteModuleRequest request) throws ScoreDataAccessException {
-        ULong moduleId = ULong.valueOf(request.getModuleId());
+        String moduleId = request.getModuleId();
         deleteModule(moduleId, true);
         return new DeleteModuleResponse();
     }
 
-    private void deleteModule(ULong moduleId, boolean isDirectory) {
+    private void deleteModule(String moduleId, boolean isDirectory) {
         if (isDirectory) {
             List<ModuleRecord> moduleRecordList = dslContext().selectFrom(MODULE)
                     .where(MODULE.PARENT_MODULE_ID.eq(moduleId))
@@ -180,7 +176,7 @@ public class JooqModuleWriteRepository
         dslContext().delete(MODULE).where(MODULE.MODULE_ID.eq(moduleId)).execute();
     }
 
-    private void broadcastModulePath(ULong parentModuleId, List<String> tokens) {
+    private void broadcastModulePath(String parentModuleId, List<String> tokens) {
         List<ModuleRecord> moduleRecordList = dslContext().selectFrom(MODULE)
                 .where(MODULE.PARENT_MODULE_ID.eq(parentModuleId))
                 .fetch();
@@ -195,14 +191,14 @@ public class JooqModuleWriteRepository
     @Override
     public void copyModule(CopyModuleRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         ModuleRecord moduleRecord = dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getTargetModuleId()))).fetchOne();
+                .where(MODULE.MODULE_ID.eq(request.getTargetModuleId())).fetchOne();
 
         ModuleRecord parent = dslContext().selectFrom(MODULE)
-                .where(MODULE.MODULE_ID.eq(ULong.valueOf(request.getParentModuleId()))).fetchOne();
+                .where(MODULE.MODULE_ID.eq(request.getParentModuleId())).fetchOne();
 
         if (hasDuplicateName(request.getParentModuleId(), moduleRecord.getName())) {
             copyOverWriteModule(moduleRecord, parent, requesterUserId, timestamp, request.isCopySubModules());
@@ -211,14 +207,17 @@ public class JooqModuleWriteRepository
         }
     }
 
-    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
+    private void copyInsertModule(ModuleRecord target, ModuleRecord parent, String requesterUserId, LocalDateTime timestamp, boolean copySub) {
         String path;
         if (parent.getPath().length() == 0) {
             path = target.getName();
         } else {
             path = parent.getPath() + MODULE_PATH_SEPARATOR + target.getName();
         }
-        ModuleRecord inserted = dslContext().insertInto(MODULE)
+
+        String moduleId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE)
+                .set(MODULE.MODULE_ID, moduleId)
                 .set(MODULE.PARENT_MODULE_ID, parent.getModuleId())
                 .set(MODULE.NAME, target.getName())
                 .set(MODULE.TYPE, target.getType())
@@ -231,7 +230,9 @@ public class JooqModuleWriteRepository
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning().fetchOne();
+                .execute();
+        ModuleRecord inserted = dslContext().selectFrom(MODULE)
+                .where(MODULE.MODULE_ID.eq(moduleId)).fetchOne();
 
         if (copySub) {
             if (target.getType().equals(ModuleType.DIRECTORY.name())) {
@@ -245,7 +246,7 @@ public class JooqModuleWriteRepository
 
     }
 
-    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, ULong requesterUserId, LocalDateTime timestamp, boolean copySub) {
+    private void copyOverWriteModule(ModuleRecord target, ModuleRecord parent, String requesterUserId, LocalDateTime timestamp, boolean copySub) {
         ModuleRecord duplicated = dslContext().selectFrom(MODULE).where(and(
                 MODULE.PARENT_MODULE_ID.eq(parent.getModuleId()),
                 MODULE.NAME.eq(target.getName())
@@ -281,7 +282,7 @@ public class JooqModuleWriteRepository
         } else {
             if (target.getType().equals(ModuleType.FILE.name())) {
                 DeleteModuleRequest deleteModuleRequest = new DeleteModuleRequest();
-                deleteModuleRequest.setModuleId(duplicated.getModuleId().toBigInteger());
+                deleteModuleRequest.setModuleId(duplicated.getModuleId());
                 deleteModule(deleteModuleRequest);
                 if (copySub) {
                     copyInsertModule(target, parent, requesterUserId, timestamp, copySub);
@@ -304,9 +305,9 @@ public class JooqModuleWriteRepository
         }
     }
 
-    private boolean hasDuplicateName(BigInteger parentModuleId, String name) {
+    private boolean hasDuplicateName(String parentModuleId, String name) {
         if (dslContext().selectFrom(MODULE)
-                .where(and(MODULE.PARENT_MODULE_ID.eq(ULong.valueOf(parentModuleId)),
+                .where(and(MODULE.PARENT_MODULE_ID.eq(parentModuleId),
                         MODULE.NAME.eq(name))).fetch().size() > 0) {
             return true;
         }

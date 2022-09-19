@@ -4,13 +4,12 @@ import lombok.Data;
 import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
 public class SummaryCcExt {
 
-    private BigInteger accId;
+    private String accId;
     private String guid;
     private String objectClassTerm;
     private CcState state;
@@ -18,9 +17,9 @@ public class SummaryCcExt {
     private String lastUpdateUser;
 
     private String ownerUsername;
-    private BigInteger ownerUserId;
+    private String ownerUserId;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private BieState bieState;
     private String propertyTerm;
     private String associationPropertyTerm;

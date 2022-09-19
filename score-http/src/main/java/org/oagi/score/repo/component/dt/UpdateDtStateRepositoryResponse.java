@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.dt;
 
-import java.math.BigInteger;
-
 public class UpdateDtStateRepositoryResponse {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
 
-    public UpdateDtStateRepositoryResponse(BigInteger dtManifestId) {
+    public UpdateDtStateRepositoryResponse(String dtManifestId) {
         this.dtManifestId = dtManifestId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 }

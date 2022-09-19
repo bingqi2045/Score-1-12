@@ -2,17 +2,15 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
-
 public class CreateBusinessTermResponse extends Auditable {
 
-    private final BigInteger businessTermId;
+    private final String businessTermId;
 
-    public CreateBusinessTermResponse(BigInteger businessTermId) {
+    public CreateBusinessTermResponse(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 

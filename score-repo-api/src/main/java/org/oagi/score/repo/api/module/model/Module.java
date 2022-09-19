@@ -3,19 +3,18 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Module extends Auditable implements Comparable<Module>, Serializable {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private String path;
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String namespaceUri;
 
@@ -33,19 +32,19 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
         this.type = type;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 
@@ -57,11 +56,11 @@ public class Module extends Auditable implements Comparable<Module>, Serializabl
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

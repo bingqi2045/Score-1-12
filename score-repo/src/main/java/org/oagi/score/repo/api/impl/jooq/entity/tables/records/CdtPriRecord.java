@@ -9,7 +9,6 @@ import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Row2;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
 
 
@@ -17,24 +16,24 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
  * This table stores the CDT primitives.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements Record2<ULong, String> {
+public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements Record2<String, String> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.cdt_pri.cdt_pri_id</code>. Internal, primary
+     * Setter for <code>oagi.cdt_pri.cdt_pri_id</code>. Primary, internal
      * database key.
      */
-    public void setCdtPriId(ULong value) {
+    public void setCdtPriId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.cdt_pri.cdt_pri_id</code>. Internal, primary
+     * Getter for <code>oagi.cdt_pri.cdt_pri_id</code>. Primary, internal
      * database key.
      */
-    public ULong getCdtPriId() {
-        return (ULong) get(0);
+    public String getCdtPriId() {
+        return (String) get(0);
     }
 
     /**
@@ -58,7 +57,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -67,17 +66,17 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<ULong, String> fieldsRow() {
+    public Row2<String, String> fieldsRow() {
         return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Row2<ULong, String> valuesRow() {
+    public Row2<String, String> valuesRow() {
         return (Row2) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return CdtPri.CDT_PRI.CDT_PRI_ID;
     }
 
@@ -87,7 +86,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getCdtPriId();
     }
 
@@ -97,7 +96,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getCdtPriId();
     }
 
@@ -107,7 +106,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     }
 
     @Override
-    public CdtPriRecord value1(ULong value) {
+    public CdtPriRecord value1(String value) {
         setCdtPriId(value);
         return this;
     }
@@ -119,7 +118,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     }
 
     @Override
-    public CdtPriRecord values(ULong value1, String value2) {
+    public CdtPriRecord values(String value1, String value2) {
         value1(value1);
         value2(value2);
         return this;
@@ -139,7 +138,7 @@ public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements R
     /**
      * Create a detached, initialised CdtPriRecord
      */
-    public CdtPriRecord(ULong cdtPriId, String name) {
+    public CdtPriRecord(String cdtPriId, String name) {
         super(CdtPri.CDT_PRI);
 
         setCdtPriId(cdtPriId);

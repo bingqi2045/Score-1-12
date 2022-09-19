@@ -1,11 +1,12 @@
 package org.oagi.score.repo;
 
-import org.jooq.types.ULong;
 import org.junit.jupiter.api.Test;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +21,7 @@ public class CoreComponentRepositoryTest {
 
     @Test
     public void getAsccpManifestByManifestIdTestWithValidManifestId() {
-        ULong manifestId = ULong.valueOf(1L);
+        String manifestId = "00007748-1ad1-4b36-8366-2e6a01c63b52";
 
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(manifestId);
@@ -31,7 +32,7 @@ public class CoreComponentRepositoryTest {
 
     @Test
     public void getAsccpManifestByManifestIdTestWithInvalidManifestId() {
-        ULong manifestId = ULong.valueOf(0L);
+        String manifestId = UUID.randomUUID().toString();
 
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(manifestId);

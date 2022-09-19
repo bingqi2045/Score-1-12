@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,7 +65,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         if (mergedTopLevelAsbieps.size() == 0) {
             throw new IllegalArgumentException("Can not found BIEs.");
         }
-        BigInteger releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
+        String releaseId = mergedTopLevelAsbieps.get(0).getReleaseId();
 
         /* Issue 587 */
         if (option.isIncludeMetaHeaderForJson()) {

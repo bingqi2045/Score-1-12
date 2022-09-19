@@ -3,12 +3,11 @@ package org.oagi.score.repo.component.bccp;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccpManifestId;
+    private final String bccpManifestId;
 
     private String propertyTerm;
     private String defaultValue;
@@ -17,22 +16,22 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
     private String definitionSource;
     private boolean deprecated;
     private boolean nillable;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                 BigInteger bccpManifestId) {
+                                                 String bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
     public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
-                                                 BigInteger bccpManifestId) {
+                                                 String bccpManifestId) {
         super(user, localDateTime);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public BigInteger getBccpManifestId() {
+    public String getBccpManifestId() {
         return bccpManifestId;
     }
 
@@ -92,11 +91,11 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
         this.nillable = nillable;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 }

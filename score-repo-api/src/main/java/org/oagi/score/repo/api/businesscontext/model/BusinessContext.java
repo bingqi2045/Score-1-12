@@ -3,13 +3,12 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
 public class BusinessContext extends Auditable implements Serializable {
 
-    private BigInteger businessContextId;
+    private String businessContextId;
 
     private String guid;
 
@@ -19,11 +18,11 @@ public class BusinessContext extends Auditable implements Serializable {
 
     private boolean used;
 
-    public BigInteger getBusinessContextId() {
+    public String getBusinessContextId() {
         return businessContextId;
     }
 
-    public void setBusinessContextId(BigInteger businessContextId) {
+    public void setBusinessContextId(String businessContextId) {
         this.businessContextId = businessContextId;
     }
 

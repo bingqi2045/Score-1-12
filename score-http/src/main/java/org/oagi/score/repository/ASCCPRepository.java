@@ -3,17 +3,16 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.ASCCP;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class ASCCPRepository implements ScoreRepository<ASCCP> {
+public class ASCCPRepository implements ScoreRepository<ASCCP, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -59,19 +58,19 @@ public class ASCCPRepository implements ScoreRepository<ASCCP> {
     }
 
     @Override
-    public List<ASCCP> findAllByReleaseId(BigInteger releaseId) {
+    public List<ASCCP> findAllByReleaseId(String releaseId) {
         return getSelectOnConditionStep()
-                .where(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(ASCCP.class);
     }
 
     @Override
-    public ASCCP findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public ASCCP findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(id)))
+                .where(Tables.ASCCP.ASCCP_ID.eq(id))
                 .fetchOptionalInto(ASCCP.class).orElse(null);
     }
 }

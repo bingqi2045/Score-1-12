@@ -2,15 +2,13 @@ package org.oagi.score.repo.api.bie.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
-
 public class Bbiep extends Auditable {
 
-    private BigInteger bbiepId;
+    private String bbiepId;
 
     private String guid;
 
-    private BigInteger basedBccpManifestId;
+    private String basedBccpManifestId;
 
     private String path;
 
@@ -22,13 +20,13 @@ public class Bbiep extends Auditable {
 
     private String bizTerm;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getBbiepId() {
+    public String getBbiepId() {
         return bbiepId;
     }
 
-    public void setBbiepId(BigInteger bbiepId) {
+    public void setBbiepId(String bbiepId) {
         this.bbiepId = bbiepId;
     }
 
@@ -40,11 +38,11 @@ public class Bbiep extends Auditable {
         this.guid = guid;
     }
 
-    public BigInteger getBasedBccpManifestId() {
+    public String getBasedBccpManifestId() {
         return basedBccpManifestId;
     }
 
-    public void setBasedBccpManifestId(BigInteger basedBccpManifestId) {
+    public void setBasedBccpManifestId(String basedBccpManifestId) {
         this.basedBccpManifestId = basedBccpManifestId;
     }
 
@@ -88,11 +86,11 @@ public class Bbiep extends Auditable {
         this.bizTerm = bizTerm;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 }

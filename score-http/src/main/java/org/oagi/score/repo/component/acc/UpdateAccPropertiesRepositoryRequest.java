@@ -1,15 +1,14 @@
 package org.oagi.score.repo.component.acc;
 
-import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.data.RepositoryRequest;
+import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
 
     private String objectClassTerm;
     private String definition;
@@ -17,22 +16,22 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
     private OagisComponentType componentType;
     private boolean isAbstract;
     private boolean deprecated;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger accManifestId) {
+                                                String accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }
 
     public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger accManifestId) {
+                                                String accManifestId) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
@@ -84,11 +83,11 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
         this.deprecated = deprecated;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 }

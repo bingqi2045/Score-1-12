@@ -1,11 +1,7 @@
 package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.*;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.service.common.data.PageRequest;
-import org.oagi.score.service.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.ReleaseCleanupEvent;
@@ -14,6 +10,9 @@ import org.oagi.score.redis.event.EventListenerContainer;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.release.ReleaseRepositoryDiscardRequest;
+import org.oagi.score.service.common.data.AppUser;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -29,11 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
@@ -76,24 +75,26 @@ public class ReleaseService implements InitializingBean {
     }
 
     public List<SimpleRelease> getSimpleReleases(SimpleReleasesRequest request) {
-        AppUser requester = sessionService.getAppUser(request.getUser());
+        AppUser requester = sessionService.getAppUserByUsername(request.getUser());
 
         List<Condition> conditions = new ArrayList();
         if (!request.getStates().isEmpty()) {
             conditions.add(RELEASE.STATE.in(request.getStates()));
         }
 
-        List<SimpleRelease> releases = new ArrayList(dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
-                .from(RELEASE)
-                .where(conditions)
-                .orderBy(RELEASE.RELEASE_ID.desc())
-                .fetch().map(row -> {
-                    SimpleRelease simpleRelease = new SimpleRelease();
-                    simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).toBigInteger());
-                    simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
-                    return simpleRelease;
-                })
+        List<SimpleRelease> releases = new ArrayList(
+                dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE, RELEASE.LAST_UPDATE_TIMESTAMP)
+                        .from(RELEASE)
+                        .where(conditions)
+                        .orderBy(RELEASE.LAST_UPDATE_TIMESTAMP.desc())
+                        .fetch().map(row -> {
+                            SimpleRelease simpleRelease = new SimpleRelease();
+                            simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID));
+                            simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
+                            simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
+                            simpleRelease.setLastUpdateTimestamp(Date.from(row.get(RELEASE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+                            return simpleRelease;
+                        })
         );
 
         SimpleRelease workingRelease =
@@ -109,11 +110,18 @@ public class ReleaseService implements InitializingBean {
         return releases;
     }
 
-    public SimpleRelease getSimpleReleaseByReleaseId(BigInteger releaseId) {
-        return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM)
+    public SimpleRelease getSimpleReleaseByReleaseId(String releaseId) {
+        return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE, RELEASE.LAST_UPDATE_TIMESTAMP)
                 .from(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
-                .fetchOneInto(SimpleRelease.class);
+                .where(RELEASE.RELEASE_ID.eq(releaseId))
+                .fetchOne().map(row -> {
+                    SimpleRelease simpleRelease = new SimpleRelease();
+                    simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID));
+                    simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
+                    simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
+                    simpleRelease.setLastUpdateTimestamp(Date.from(row.get(RELEASE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+                    return simpleRelease;
+                });
     }
 
     public List<ReleaseList> getReleaseList(AuthenticatedPrincipal user) {
@@ -138,7 +146,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     private SelectOnConditionStep<Record10<
-            ULong, String, String, String, String,
+            String, String, String, String, String,
             String, String, LocalDateTime, String, LocalDateTime>> getSelectOnConditionStep() {
         return dslContext.select(
                         RELEASE.RELEASE_ID,
@@ -160,7 +168,7 @@ public class ReleaseService implements InitializingBean {
 
     public PageResponse<ReleaseList> getReleases(AuthenticatedPrincipal user, ReleaseListRequest request) {
         SelectOnConditionStep<Record10<
-                ULong, String, String, String, String,
+                String, String, String, String, String,
                 String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
@@ -193,7 +201,7 @@ public class ReleaseService implements InitializingBean {
         }
 
         SelectConnectByStep<Record10<
-                ULong, String, String, String, String,
+                String, String, String, String, String,
                 String, String, LocalDateTime, String, LocalDateTime>> conditionStep = step.where(conditions);
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -237,7 +245,7 @@ public class ReleaseService implements InitializingBean {
         }
         int pageCount = dslContext.fetchCount(conditionStep);
         SelectWithTiesAfterOffsetStep<Record10<
-                ULong, String, String, String, String,
+                String, String, String, String, String,
                 String, String, LocalDateTime, String, LocalDateTime>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
@@ -262,7 +270,7 @@ public class ReleaseService implements InitializingBean {
 
     @Transactional
     public ReleaseResponse createRelease(AuthenticatedPrincipal user, ReleaseDetail releaseDetail) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
         ReleaseResponse response = new ReleaseResponse();
 
         ReleaseRecord releaseRecord = repository.create(userId,
@@ -274,10 +282,8 @@ public class ReleaseService implements InitializingBean {
         response.setStatus("success");
         response.setStatusMessage("");
 
-        releaseDetail.setReleaseId(releaseRecord.getReleaseId().toBigInteger());
-        if (releaseRecord.getNamespaceId() != null) {
-            releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().toBigInteger());
-        }
+        releaseDetail.setReleaseId(releaseRecord.getReleaseId());
+        releaseDetail.setNamespaceId(releaseRecord.getNamespaceId());
         releaseDetail.setReleaseNum(releaseRecord.getReleaseNum());
         releaseDetail.setReleaseNote(releaseRecord.getReleaseNote());
         releaseDetail.setReleaseLicense(releaseRecord.getReleaseLicense());
@@ -289,7 +295,7 @@ public class ReleaseService implements InitializingBean {
 
     @Transactional
     public void updateRelease(AuthenticatedPrincipal user, ReleaseDetail releaseDetail) {
-        BigInteger userId = sessionService.userId(user);
+        String userId = sessionService.userId(user);
 
         repository.update(userId,
                 releaseDetail.getReleaseId(),
@@ -299,7 +305,7 @@ public class ReleaseService implements InitializingBean {
                 releaseDetail.getNamespaceId());
     }
 
-    public ReleaseDetail getReleaseDetail(AuthenticatedPrincipal user, BigInteger releaseId) {
+    public ReleaseDetail getReleaseDetail(AuthenticatedPrincipal user, String releaseId) {
         Release release = repository.findById(releaseId);
         ReleaseDetail detail = new ReleaseDetail();
         detail.setReleaseId(release.getReleaseId());
@@ -312,14 +318,14 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public void discard(AuthenticatedPrincipal user, List<BigInteger> releaseIds) {
-        for (BigInteger releaseId : releaseIds) {
+    public void discard(AuthenticatedPrincipal user, List<String> releaseIds) {
+        for (String releaseId : releaseIds) {
             ReleaseRepositoryDiscardRequest request = new ReleaseRepositoryDiscardRequest(user, releaseId);
             repository.discard(request);
         }
     }
 
-    public AssignComponents getAssignComponents(BigInteger releaseId) {
+    public AssignComponents getAssignComponents(String releaseId) {
         return repository.getAssignComponents(releaseId);
     }
 
@@ -354,7 +360,7 @@ public class ReleaseService implements InitializingBean {
 
     @Transactional
     public ReleaseValidationResponse createDraft(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                 BigInteger releaseId,
+                                                 String releaseId,
                                                  @RequestBody ReleaseValidationRequest request) {
         if (repository.isThereAnyDraftRelease(releaseId)) {
             throw new IllegalArgumentException("It cannot make any release to 'Draft' due to a release restriction.");

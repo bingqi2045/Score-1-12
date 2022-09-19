@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -13,16 +12,13 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_SCHEME;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_SCHEME_VALUE;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -41,28 +37,29 @@ public class JooqContextSchemeWriteRepository
             CreateContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxSchemeRecord record = new CtxSchemeRecord();
 
+        record.setCtxSchemeId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setSchemeId(request.getSchemeId());
         record.setSchemeName(request.getSchemeName());
         record.setDescription(request.getDescription());
         record.setSchemeAgencyId(request.getSchemeAgencyId());
         record.setSchemeVersionId(request.getSchemeVersionId());
-        record.setCtxCategoryId(ULong.valueOf(request.getContextCategoryId()));
+        record.setCtxCategoryId(request.getContextCategoryId());
         record.setCreatedBy(requesterUserId);
         record.setLastUpdatedBy(requesterUserId);
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        BigInteger contextSchemeId = dslContext().insertInto(CTX_SCHEME)
+        dslContext().insertInto(CTX_SCHEME)
                 .set(record)
-                .returning(CTX_SCHEME.CTX_SCHEME_ID)
-                .fetchOne().getCtxSchemeId().toBigInteger();
+                .execute();
 
+        String contextSchemeId = record.getCtxSchemeId();
         CreateContextSchemeResponse response = new CreateContextSchemeResponse(contextSchemeId);
 
         for (ContextSchemeValue contextSchemeValue : request.getContextSchemeValueList()) {
@@ -74,18 +71,19 @@ public class JooqContextSchemeWriteRepository
     }
 
     private ContextSchemeValue createContextSchemeValue(ContextSchemeValue contextSchemeValue,
-                                                BigInteger ownerContextSchemeId) {
+                                                        String ownerContextSchemeId) {
         CtxSchemeValueRecord valueRecord = new CtxSchemeValueRecord();
 
+        valueRecord.setCtxSchemeValueId(UUID.randomUUID().toString());
         valueRecord.setGuid(randomGuid());
         valueRecord.setValue(contextSchemeValue.getValue());
         valueRecord.setMeaning(contextSchemeValue.getMeaning());
-        valueRecord.setOwnerCtxSchemeId(ULong.valueOf(ownerContextSchemeId));
+        valueRecord.setOwnerCtxSchemeId(ownerContextSchemeId);
 
-        BigInteger contextSchemeValueId = dslContext().insertInto(CTX_SCHEME_VALUE)
-                        .set(valueRecord)
-                        .returning(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
-                        .fetchOne().getCtxSchemeValueId().toBigInteger();
+        dslContext().insertInto(CTX_SCHEME_VALUE)
+                .set(valueRecord)
+                .execute();
+        String contextSchemeValueId = valueRecord.getCtxSchemeValueId();
 
         contextSchemeValue.setContextSchemeValueId(contextSchemeValueId);
         contextSchemeValue.setGuid(valueRecord.getGuid());
@@ -97,11 +95,11 @@ public class JooqContextSchemeWriteRepository
             UpdateContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         CtxSchemeRecord record = dslContext().selectFrom(CTX_SCHEME)
-                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(request.getContextSchemeId())))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(request.getContextSchemeId()))
                 .fetchOptional().orElse(null);
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
@@ -109,12 +107,12 @@ public class JooqContextSchemeWriteRepository
 
         List<Field<?>> changedField = new ArrayList();
         if (request.getContextCategoryId() != null &&
-                !record.getCtxCategoryId().equals(ULong.valueOf(request.getContextCategoryId()))) {
-            record.setCtxCategoryId(ULong.valueOf(request.getContextCategoryId()));
+                !record.getCtxCategoryId().equals(request.getContextCategoryId())) {
+            record.setCtxCategoryId(request.getContextCategoryId());
             changedField.add(CTX_SCHEME.CTX_CATEGORY_ID);
         }
         if (request.getCodeListId() != null) {
-            record.setCodeListId(ULong.valueOf(request.getCodeListId()));
+            record.setCodeListId(request.getCodeListId());
             changedField.add(CTX_SCHEME.CODE_LIST_ID);
         }
         if (!StringUtils.equals(request.getSchemeId(), record.getSchemeId())) {
@@ -153,26 +151,26 @@ public class JooqContextSchemeWriteRepository
         updateContextSchemeValue(request);
 
         return new UpdateContextSchemeResponse(
-                record.getCtxSchemeId().toBigInteger(),
+                record.getCtxSchemeId(),
                 !changedField.isEmpty());
     }
 
     private void updateContextSchemeValue(UpdateContextSchemeRequest request) {
-        List<ULong> oldCtxSchemeValueGuidList =
+        List<String> oldCtxSchemeValueIdList =
                 dslContext().select(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
                         .from(CTX_SCHEME_VALUE)
-                        .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(request.getContextSchemeId())))
+                        .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(request.getContextSchemeId()))
                         .fetch(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID);
 
-        Map<BigInteger, ContextSchemeValue> contextSchemeValues = request.getContextSchemeValueList().stream()
+        Map<String, ContextSchemeValue> contextSchemeValues = request.getContextSchemeValueList().stream()
                 .filter(e -> e.getContextSchemeValueId() != null)
                 .collect(Collectors.toMap(ContextSchemeValue::getContextSchemeValueId, Function.identity()));
 
         // Delete context scheme values not contained in the request
         dslContext().deleteFrom(CTX_SCHEME_VALUE)
                 .where(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.in(
-                        oldCtxSchemeValueGuidList.stream()
-                                .filter(e -> !contextSchemeValues.keySet().contains(e.toBigInteger()))
+                        oldCtxSchemeValueIdList.stream()
+                                .filter(e -> !contextSchemeValues.keySet().contains(e))
                                 .collect(Collectors.toList())
                 ))
                 .execute();
@@ -181,7 +179,7 @@ public class JooqContextSchemeWriteRepository
             dslContext().update(CTX_SCHEME_VALUE)
                     .set(CTX_SCHEME_VALUE.VALUE, contextSchemeValue.getValue())
                     .set(CTX_SCHEME_VALUE.MEANING, contextSchemeValue.getMeaning())
-                    .where(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(contextSchemeValue.getContextSchemeValueId())))
+                    .where(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(contextSchemeValue.getContextSchemeValueId()))
                     .execute();
         }
 
@@ -196,10 +194,10 @@ public class JooqContextSchemeWriteRepository
             DeleteContextSchemeRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
-        List<BigInteger> contextSchemeIdList = request.getContextSchemeIdList();
+        List<String> contextSchemeIdList = request.getContextSchemeIdList();
         if (contextSchemeIdList == null || contextSchemeIdList.isEmpty()) {
             return new DeleteContextSchemeResponse(Collections.emptyList());
         }
@@ -207,19 +205,15 @@ public class JooqContextSchemeWriteRepository
         dslContext().delete(CTX_SCHEME_VALUE)
                 .where(
                         contextSchemeIdList.size() == 1 ?
-                                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeIdList.get(0))) :
-                                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.in(
-                                        contextSchemeIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
+                                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextSchemeIdList.get(0)) :
+                                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.in(contextSchemeIdList)
                 )
                 .execute();
         dslContext().delete(CTX_SCHEME)
                 .where(
                         contextSchemeIdList.size() == 1 ?
-                                CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextSchemeIdList.get(0))) :
-                                CTX_SCHEME.CTX_SCHEME_ID.in(
-                                        contextSchemeIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
+                                CTX_SCHEME.CTX_SCHEME_ID.eq(contextSchemeIdList.get(0)) :
+                                CTX_SCHEME.CTX_SCHEME_ID.in(contextSchemeIdList)
                 )
                 .execute();
 

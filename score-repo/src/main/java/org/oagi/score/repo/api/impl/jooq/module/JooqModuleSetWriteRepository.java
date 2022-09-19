@@ -1,22 +1,19 @@
 package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.module.ModuleSetWriteRepository;
-import org.oagi.score.repo.api.module.model.ModuleSet;
 import org.oagi.score.repo.api.module.model.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
@@ -35,14 +32,16 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public CreateModuleSetResponse createModuleSet(CreateModuleSetRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (!StringUtils.hasLength(request.getName())) {
             throw new IllegalArgumentException("Module set name cannot be empty.");
         }
 
-        ModuleSetRecord moduleSetRecord = dslContext().insertInto(MODULE_SET)
+        String moduleSetId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE_SET)
+                .set(MODULE_SET.MODULE_SET_ID, moduleSetId)
                 .set(MODULE_SET.GUID, randomGuid())
                 .set(MODULE_SET.NAME, request.getName())
                 .set(MODULE_SET.DESCRIPTION, request.getDescription())
@@ -50,11 +49,12 @@ public class JooqModuleSetWriteRepository
                 .set(MODULE_SET.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE_SET.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE_SET.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning()
-                .fetchOne();
+                .execute();
+        ModuleSetRecord moduleSetRecord = dslContext().selectFrom(MODULE_SET)
+                .where(MODULE_SET.MODULE_SET_ID.eq(moduleSetId)).fetchOne();
 
         ModuleSet moduleSet = new ModuleSet();
-        moduleSet.setModuleSetId(moduleSetRecord.getModuleSetId().toBigInteger());
+        moduleSet.setModuleSetId(moduleSetRecord.getModuleSetId());
         moduleSet.setName(moduleSetRecord.getName());
         moduleSet.setDescription(moduleSetRecord.getDescription());
         moduleSet.setCreatedBy(requester);
@@ -64,10 +64,12 @@ public class JooqModuleSetWriteRepository
         moduleSet.setLastUpdateTimestamp(
                 Date.from(moduleSetRecord.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
 
-        ULong namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
-                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(ULong.class);
+        String namespaceId = dslContext().select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
+                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1)).limit(1).fetchOneInto(String.class);
 
-        ULong rootModuleSetId = dslContext().insertInto(MODULE)
+        String rootModuleSetId = UUID.randomUUID().toString();
+        dslContext().insertInto(MODULE)
+                .set(MODULE.MODULE_ID, rootModuleSetId)
                 .setNull(MODULE.PARENT_MODULE_ID)
                 .set(MODULE.PATH, "")
                 .set(MODULE.TYPE, ModuleType.DIRECTORY.name())
@@ -80,10 +82,10 @@ public class JooqModuleSetWriteRepository
                 .set(MODULE.LAST_UPDATED_BY, requesterUserId)
                 .set(MODULE.CREATION_TIMESTAMP, timestamp)
                 .set(MODULE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .returning().fetchOne().getModuleId();
+                .execute();
 
         CreateModuleSetResponse response = new CreateModuleSetResponse(moduleSet);
-        response.setRootModuleId(rootModuleSetId.toBigInteger());
+        response.setRootModuleId(rootModuleSetId);
         return response;
     }
 
@@ -91,7 +93,7 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateModuleSetResponse updateModuleSet(UpdateModuleSetRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         if (!StringUtils.hasLength(request.getName())) {
@@ -99,7 +101,7 @@ public class JooqModuleSetWriteRepository
         }
 
         ModuleSetRecord moduleSetRecord = dslContext().selectFrom(MODULE_SET)
-                .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
+                .where(MODULE_SET.MODULE_SET_ID.eq(request.getModuleSetId()))
                 .fetchOne();
 
         if (moduleSetRecord == null) {
@@ -116,7 +118,7 @@ public class JooqModuleSetWriteRepository
         }
 
         ModuleSet moduleSet = new ModuleSet();
-        moduleSet.setModuleSetId(moduleSetRecord.getModuleSetId().toBigInteger());
+        moduleSet.setModuleSetId(moduleSetRecord.getModuleSetId());
         moduleSet.setName(moduleSetRecord.getName());
         moduleSet.setDescription(moduleSetRecord.getDescription());
 
@@ -133,18 +135,18 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetResponse deleteModuleSet(DeleteModuleSetRequest request) throws ScoreDataAccessException {
         if (dslContext().selectFrom(MODULE_SET_RELEASE)
-                .where(MODULE_SET_RELEASE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId())))
+                .where(MODULE_SET_RELEASE.MODULE_SET_ID.eq(request.getModuleSetId()))
                 .fetch().size() > 0) {
             throw new IllegalArgumentException("This ModuleSet in use can not be discard.");
         }
 
         dslContext().update(MODULE)
                 .setNull(MODULE.PARENT_MODULE_ID)
-                .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
+                .where(MODULE.MODULE_SET_ID.eq(request.getModuleSetId())).execute();
         dslContext().deleteFrom(MODULE)
-                .where(MODULE.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
+                .where(MODULE.MODULE_SET_ID.eq(request.getModuleSetId())).execute();
         dslContext().deleteFrom(MODULE_SET)
-                .where(MODULE_SET.MODULE_SET_ID.eq(ULong.valueOf(request.getModuleSetId()))).execute();
+                .where(MODULE_SET.MODULE_SET_ID.eq(request.getModuleSetId())).execute();
 
         return new DeleteModuleSetResponse();
     }
@@ -153,12 +155,12 @@ public class JooqModuleSetWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteModuleSetAssignmentResponse unassignModule(DeleteModuleSetAssignmentRequest request) throws ScoreDataAccessException {
 
-        deleteModule(ULong.valueOf(request.getModuleId()));
+        deleteModule(request.getModuleId());
 
         return new DeleteModuleSetAssignmentResponse();
     }
 
-    private void deleteModule(ULong moduleId) {
+    private void deleteModule(String moduleId) {
         dslContext().delete(MODULE_ACC_MANIFEST).where(MODULE_ACC_MANIFEST.MODULE_ID.eq(moduleId)).execute();
         dslContext().delete(MODULE_ASCCP_MANIFEST).where(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();
         dslContext().delete(MODULE_BCCP_MANIFEST).where(MODULE_BCCP_MANIFEST.MODULE_ID.eq(moduleId)).execute();

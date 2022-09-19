@@ -3,13 +3,11 @@ package org.oagi.score.repo.api.businessterm.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class UpdateBusinessTermAssignmentRequest extends Request {
 
-    private BigInteger assignedBtId;
+    private String assignedBizTermId;
 
-    private BigInteger bieId;
+    private String bieId;
 
     private String bieType;
 
@@ -21,16 +19,16 @@ public class UpdateBusinessTermAssignmentRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getAssignedBtId() {
-        return assignedBtId;
+    public String getAssignedBizTermId() {
+        return assignedBizTermId;
     }
 
-    public void setAssignedBtId(BigInteger assignedBtId) {
-        this.assignedBtId = assignedBtId;
+    public void setAssignedBizTermId(String assignedBizTermId) {
+        this.assignedBizTermId = assignedBizTermId;
     }
 
-    public UpdateBusinessTermAssignmentRequest withAssignedBtId(BigInteger assignedBtId) {
-        this.setAssignedBtId(assignedBtId);
+    public UpdateBusinessTermAssignmentRequest withAssignedBizTermId(String assignedBizTermId) {
+        this.setAssignedBizTermId(assignedBizTermId);
         return this;
     }
 
@@ -58,18 +56,18 @@ public class UpdateBusinessTermAssignmentRequest extends Request {
         this.primaryIndicator = primaryIndicator;
     }
 
-    public BigInteger getBieId() {
+    public String getBieId() {
         return bieId;
     }
 
-    public void setBieId(BigInteger bieId) {
+    public void setBieId(String bieId) {
         this.bieId = bieId;
     }
 
     @Override
     public String toString() {
         return "UpdateBusinessTermAssignmentRequest{" +
-                "assignedBtId=" + assignedBtId +
+                "assignedBizTermId=" + assignedBizTermId +
                 ", bieId=" + bieId +
                 ", bieType='" + bieType + '\'' +
                 ", typeCode='" + typeCode + '\'' +

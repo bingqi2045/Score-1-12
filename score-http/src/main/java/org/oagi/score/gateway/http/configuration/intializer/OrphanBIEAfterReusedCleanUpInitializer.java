@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.configuration.intializer;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.PurgeBieEvent;
 import org.oagi.score.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,14 +24,14 @@ public class OrphanBIEAfterReusedCleanUpInitializer implements InitializingBean 
     @Override
     public void afterPropertiesSet() {
         // delete orphan nodes of BIE
-        List<ULong> topLevelAsbiepIds = dslContext.select(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID)
+        List<String> topLevelAsbiepIds = dslContext.select(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(ABIE)
                 .leftJoin(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
                 .where(ASBIEP.ASBIEP_ID.isNull())
                 .groupBy(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID)
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         topLevelAsbiepIds.forEach(topLevelAsbiepId -> service.onPurgeBieEventReceived(
-                new PurgeBieEvent(topLevelAsbiepId.toBigInteger())));
+                new PurgeBieEvent(topLevelAsbiepId)));
     }
 }

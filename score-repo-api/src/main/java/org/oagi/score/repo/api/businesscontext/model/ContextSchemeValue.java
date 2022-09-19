@@ -1,11 +1,10 @@
 package org.oagi.score.repo.api.businesscontext.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class ContextSchemeValue implements Serializable {
 
-    private BigInteger contextSchemeValueId;
+    private String contextSchemeValueId;
 
     private String guid;
 
@@ -15,13 +14,13 @@ public class ContextSchemeValue implements Serializable {
 
     private boolean used;
 
-    private BigInteger ownerContextSchemeId;
+    private String ownerContextSchemeId;
 
-    public BigInteger getContextSchemeValueId() {
+    public String getContextSchemeValueId() {
         return contextSchemeValueId;
     }
 
-    public void setContextSchemeValueId(BigInteger contextSchemeValueId) {
+    public void setContextSchemeValueId(String contextSchemeValueId) {
         this.contextSchemeValueId = contextSchemeValueId;
     }
 
@@ -57,11 +56,11 @@ public class ContextSchemeValue implements Serializable {
         this.used = used;
     }
 
-    public BigInteger getOwnerContextSchemeId() {
+    public String getOwnerContextSchemeId() {
         return ownerContextSchemeId;
     }
 
-    public void setOwnerContextSchemeId(BigInteger ownerContextSchemeId) {
+    public void setOwnerContextSchemeId(String ownerContextSchemeId) {
         this.ownerContextSchemeId = ownerContextSchemeId;
     }
 }

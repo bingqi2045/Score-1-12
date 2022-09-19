@@ -11,7 +11,6 @@ import org.jooq.Record1;
 import org.jooq.Record10;
 import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 
 
@@ -20,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
  * as in the XML schema specification.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implements Record10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implements Record10<String, String, String, String, Byte, String, String, String, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +27,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Setter for <code>oagi.namespace.namespace_id</code>. Primary, internal
      * database key.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(0, value);
     }
 
@@ -36,8 +35,8 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Getter for <code>oagi.namespace.namespace_id</code>. Primary, internal
      * database key.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(0);
+    public String getNamespaceId() {
+        return (String) get(0);
     }
 
     /**
@@ -116,7 +115,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Setter for <code>oagi.namespace.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(5, value);
     }
 
@@ -124,15 +123,15 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Getter for <code>oagi.namespace.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(5);
+    public String getOwnerUserId() {
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.namespace.created_by</code>. Foreign key to the
      * APP_USER table identifying user who created the namespace.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(6, value);
     }
 
@@ -140,15 +139,15 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Getter for <code>oagi.namespace.created_by</code>. Foreign key to the
      * APP_USER table identifying user who created the namespace.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(6);
+    public String getCreatedBy() {
+        return (String) get(6);
     }
 
     /**
      * Setter for <code>oagi.namespace.last_updated_by</code>. Foreign key to
      * the APP_USER table identifying the user who last updated the record.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(7, value);
     }
 
@@ -156,8 +155,8 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
      * Getter for <code>oagi.namespace.last_updated_by</code>. Foreign key to
      * the APP_USER table identifying the user who last updated the record.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(7);
+    public String getLastUpdatedBy() {
+        return (String) get(7);
     }
 
     /**
@@ -197,7 +196,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -206,17 +205,17 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<String, String, String, String, Byte, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     @Override
-    public Row10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row10<String, String, String, String, Byte, String, String, String, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row10) super.valuesRow();
     }
 
     @Override
-    public Field<ULong> field1() {
+    public Field<String> field1() {
         return Namespace.NAMESPACE.NAMESPACE_ID;
     }
 
@@ -241,17 +240,17 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<String> field6() {
         return Namespace.NAMESPACE.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<String> field7() {
         return Namespace.NAMESPACE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field8() {
+    public Field<String> field8() {
         return Namespace.NAMESPACE.LAST_UPDATED_BY;
     }
 
@@ -266,7 +265,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public ULong component1() {
+    public String component1() {
         return getNamespaceId();
     }
 
@@ -291,17 +290,17 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public ULong component6() {
+    public String component6() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component7() {
+    public String component7() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component8() {
+    public String component8() {
         return getLastUpdatedBy();
     }
 
@@ -316,7 +315,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public ULong value1() {
+    public String value1() {
         return getNamespaceId();
     }
 
@@ -341,17 +340,17 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public ULong value6() {
+    public String value6() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value7() {
+    public String value7() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value8() {
+    public String value8() {
         return getLastUpdatedBy();
     }
 
@@ -366,7 +365,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public NamespaceRecord value1(ULong value) {
+    public NamespaceRecord value1(String value) {
         setNamespaceId(value);
         return this;
     }
@@ -396,19 +395,19 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public NamespaceRecord value6(ULong value) {
+    public NamespaceRecord value6(String value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public NamespaceRecord value7(ULong value) {
+    public NamespaceRecord value7(String value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public NamespaceRecord value8(ULong value) {
+    public NamespaceRecord value8(String value) {
         setLastUpdatedBy(value);
         return this;
     }
@@ -426,7 +425,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     }
 
     @Override
-    public NamespaceRecord values(ULong value1, String value2, String value3, String value4, Byte value5, ULong value6, ULong value7, ULong value8, LocalDateTime value9, LocalDateTime value10) {
+    public NamespaceRecord values(String value1, String value2, String value3, String value4, Byte value5, String value6, String value7, String value8, LocalDateTime value9, LocalDateTime value10) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -454,7 +453,7 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     /**
      * Create a detached, initialised NamespaceRecord
      */
-    public NamespaceRecord(ULong namespaceId, String uri, String prefix, String description, Byte isStdNmsp, ULong ownerUserId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public NamespaceRecord(String namespaceId, String uri, String prefix, String description, Byte isStdNmsp, String ownerUserId, String createdBy, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Namespace.NAMESPACE);
 
         setNamespaceId(namespaceId);

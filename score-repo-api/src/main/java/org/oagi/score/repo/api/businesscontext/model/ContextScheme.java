@@ -2,18 +2,17 @@ package org.oagi.score.repo.api.businesscontext.model;
 
 import org.oagi.score.repo.api.base.Auditable;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 public class ContextScheme extends Auditable {
 
-    private BigInteger contextSchemeId;
+    private String contextSchemeId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private String contextCategoryName;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
     private String codeListName;
 
@@ -35,19 +34,19 @@ public class ContextScheme extends Auditable {
 
     private Collection<ContextSchemeValue> contextSchemeValueList;
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 
-    public void setContextSchemeId(BigInteger contextSchemeId) {
+    public void setContextSchemeId(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
@@ -59,11 +58,11 @@ public class ContextScheme extends Auditable {
         this.contextCategoryName = contextCategoryName;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 

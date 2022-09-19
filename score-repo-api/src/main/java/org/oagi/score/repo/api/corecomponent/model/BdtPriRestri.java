@@ -1,40 +1,39 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class BdtPriRestri implements Serializable {
 
-    private BigInteger bdtPriRestriId;
-    private BigInteger bdtId;
-    private BigInteger xbtId;
+    private String bdtPriRestriId;
+    private String bdtId;
+    private String xbtId;
     private String xbtName;
-    private BigInteger cdtAwdPriXpsTypeMapId;
-    private BigInteger codeListId;
-    private BigInteger agencyIdListId;
+    private String cdtAwdPriXpsTypeMapId;
+    private String codeListId;
+    private String agencyIdListId;
     private boolean isDefault;
 
-    public BigInteger getBdtPriRestriId() {
+    public String getBdtPriRestriId() {
         return bdtPriRestriId;
     }
 
-    public void setBdtPriRestriId(BigInteger bdtPriRestriId) {
+    public void setBdtPriRestriId(String bdtPriRestriId) {
         this.bdtPriRestriId = bdtPriRestriId;
     }
 
-    public BigInteger getBdtId() {
+    public String getBdtId() {
         return bdtId;
     }
 
-    public void setBdtId(BigInteger bdtId) {
+    public void setBdtId(String bdtId) {
         this.bdtId = bdtId;
     }
 
-    public BigInteger getXbtId() {
+    public String getXbtId() {
         return xbtId;
     }
 
-    public void setXbtId(BigInteger xbtId) {
+    public void setXbtId(String xbtId) {
         this.xbtId = xbtId;
     }
 
@@ -46,27 +45,27 @@ public class BdtPriRestri implements Serializable {
         this.xbtName = xbtName;
     }
 
-    public BigInteger getCdtAwdPriXpsTypeMapId() {
+    public String getCdtAwdPriXpsTypeMapId() {
         return cdtAwdPriXpsTypeMapId;
     }
 
-    public void setCdtAwdPriXpsTypeMapId(BigInteger cdtAwdPriXpsTypeMapId) {
+    public void setCdtAwdPriXpsTypeMapId(String cdtAwdPriXpsTypeMapId) {
         this.cdtAwdPriXpsTypeMapId = cdtAwdPriXpsTypeMapId;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public BigInteger getAgencyIdListId() {
+    public String getAgencyIdListId() {
         return agencyIdListId;
     }
 
-    public void setAgencyIdListId(BigInteger agencyIdListId) {
+    public void setAgencyIdListId(String agencyIdListId) {
         this.agencyIdListId = agencyIdListId;
     }
 

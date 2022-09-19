@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -12,7 +11,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
 
@@ -56,7 +53,7 @@ public class JooqContextCategoryReadRepository
     private RecordMapper<Record, ContextCategory> mapper() {
         return record -> {
             ContextCategory contextCategory = new ContextCategory();
-            contextCategory.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID).toBigInteger());
+            contextCategory.setContextCategoryId(record.get(CTX_CATEGORY.CTX_CATEGORY_ID));
             contextCategory.setGuid(record.get(CTX_CATEGORY.GUID));
             contextCategory.setName(record.get(CTX_CATEGORY.NAME));
             contextCategory.setDescription(record.get(CTX_CATEGORY.DESCRIPTION));
@@ -69,11 +66,11 @@ public class JooqContextCategoryReadRepository
             contextCategory.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -82,11 +79,11 @@ public class JooqContextCategoryReadRepository
             contextCategory.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -104,10 +101,10 @@ public class JooqContextCategoryReadRepository
             GetContextCategoryRequest request) throws ScoreDataAccessException {
         ContextCategory contextCategory = null;
 
-        BigInteger contextCategoryId = request.getContextCategoryId();
-        if (!isNull(contextCategoryId)) {
+        String contextCategoryId = request.getContextCategoryId();
+        if (StringUtils.hasLength(contextCategoryId)) {
             contextCategory = (ContextCategory) select()
-                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategoryId)))
+                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(contextCategoryId))
                     .fetchOne(mapper());
         }
 
@@ -120,13 +117,10 @@ public class JooqContextCategoryReadRepository
         if (!request.getContextCategoryIds().isEmpty()) {
             if (request.getContextCategoryIds().size() == 1) {
                 conditions.add(CTX_CATEGORY.CTX_CATEGORY_ID.eq(
-                        ULong.valueOf(request.getContextCategoryIds().iterator().next())
+                        request.getContextCategoryIds().iterator().next()
                 ));
             } else {
-                conditions.add(CTX_CATEGORY.CTX_CATEGORY_ID.in(
-                        request.getContextCategoryIds().stream()
-                                .map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                ));
+                conditions.add(CTX_CATEGORY.CTX_CATEGORY_ID.in(request.getContextCategoryIds()));
             }
         }
         if (StringUtils.hasLength(request.getName())) {

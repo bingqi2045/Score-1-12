@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.CcList;
 import org.oagi.score.gateway.http.api.cc_management.data.CcListRequest;
@@ -43,9 +42,9 @@ public class CcListRepository {
     public PageResponse<CcList> getCcList(CcListRequest request) {
         Release release = releaseRepository.findById(request.getReleaseId());
 
-        ULong defaultModuleSetReleaseId = null;
+        String defaultModuleSetReleaseId = null;
         ModuleSetReleaseRecord defaultModuleSetRelease = dslContext.selectFrom(MODULE_SET_RELEASE)
-                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .where(and(MODULE_SET_RELEASE.IS_DEFAULT.eq((byte) 1), MODULE_SET_RELEASE.RELEASE_ID.eq(release.getReleaseId())))
                 .fetchOne();
         if (defaultModuleSetRelease != null) {
             defaultModuleSetReleaseId = defaultModuleSetRelease.getModuleSetReleaseId();
@@ -134,8 +133,8 @@ public class CcListRepository {
         List<CcList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch()).map((RecordMapper<Record, CcList>) row -> {
             CcList ccList = new CcList();
             ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
-            ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
-            ccList.setId(row.getValue("id", ULong.class).toBigInteger());
+            ccList.setManifestId(row.getValue("manifest_id", String.class));
+            ccList.setId(row.getValue("id", String.class));
             ccList.setGuid(row.getValue("guid", String.class));
             ccList.setDen(row.getValue("den", String.class));
             ccList.setDefinition(stripToNull(row.getValue("definition", String.class)));
@@ -155,9 +154,9 @@ public class CcListRepository {
             ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
             ccList.setRevision(row.getValue(LOG.REVISION_NUM).toString());
             ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-            ULong basedManifestId = row.getValue("based_manifest_id", ULong.class);
+            String basedManifestId = row.getValue("based_manifest_id", String.class);
             if (basedManifestId != null) {
-                ccList.setBasedManifestId(basedManifestId.toBigInteger());
+                ccList.setBasedManifestId(basedManifestId);
                 ccList.setDtType(ccList.getType() == CcType.DT ? "BDT" : "");
             } else {
                 ccList.setDtType(ccList.getType() == CcType.DT ? "CDT" : "");
@@ -176,34 +175,34 @@ public class CcListRepository {
         return response;
     }
 
-    private BigInteger getManifestIdByObjectClassTermAndReleaseId(String objectClassTerm, BigInteger releaseId) {
+    private String getManifestIdByObjectClassTermAndReleaseId(String objectClassTerm, String releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .where(and(
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
-    private List<BigInteger> getManifestIdsByBasedAccManifestIdAndReleaseId(
-            List<BigInteger> basedManifestIds, BigInteger releaseId) {
+    private List<String> getManifestIdsByBasedAccManifestIdAndReleaseId(
+            List<BigInteger> basedManifestIds, String releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .where(and(
                         ACC_MANIFEST.BASED_ACC_MANIFEST_ID.in(basedManifestIds),
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
-                .fetchInto(BigInteger.class);
+                .fetchInto(String.class);
     }
 
-    private SelectOrderByStep getAccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ACC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         if ("Working".equals(release.getReleaseNum())) {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notEqual(OagisComponentType.UserExtensionGroup.getValue()));
         }
@@ -243,12 +242,12 @@ public class CcListRepository {
                     .map(e -> e.getValue()).collect(Collectors.toList())));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(ACC_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -277,7 +276,7 @@ public class CcListRepository {
                 val((String) null).as("default_value_domain"))
                 .from(ACC)
                 .join(ACC_MANIFEST)
-                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID).and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID).and(ACC_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(LOG)
                 .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
@@ -295,12 +294,12 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAsccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ASCC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         conditions.add(ASCC.DEN.notContains("User Extension Group"));
 
         if (request.getDeprecated() != null) {
@@ -360,7 +359,7 @@ public class CcListRepository {
                 val((String) null).as("default_value_domain"))
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
-                .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID).and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID).and(ASCC_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(ACC_MANIFEST)
                 .on(and(
                         ASCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
@@ -382,12 +381,12 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getBccList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(BCC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         conditions.add(BCC.DEN.notContains("User Extension Group"));
 
         if (request.getDeprecated() != null) {
@@ -447,7 +446,7 @@ public class CcListRepository {
                 val((String) null).as("default_value_domain"))
                 .from(BCC)
                 .join(BCC_MANIFEST)
-                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID).and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID).and(BCC_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(ACC_MANIFEST)
                 .on(and(
                         BCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
@@ -469,12 +468,12 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getAsccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getAsccpList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ASCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         conditions.add(ASCCP.DEN.notContains("User Extension Group"));
 
         if (request.getDeprecated() != null) {
@@ -515,12 +514,12 @@ public class CcListRepository {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notIn(Arrays.asList(SemanticGroup.getValue(), UserExtensionGroup.getValue())));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(ASCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -549,7 +548,7 @@ public class CcListRepository {
                 val((String) null).as("default_value_domain"))
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
-                .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(ACC_MANIFEST)
                 .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
                 .join(ACC)
@@ -571,12 +570,12 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    private SelectOrderByStep getBccpList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    private SelectOrderByStep getBccpList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(BCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         conditions.add(BCCP.DEN.notContains("User Extension Group"));
         if (request.getDeprecated() != null) {
             conditions.add(BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
@@ -610,12 +609,12 @@ public class CcListRepository {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(BCCP_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -644,7 +643,7 @@ public class CcListRepository {
                 val((String) null).as("default_value_domain"))
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
-                .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID).and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID).and(BCCP_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(LOG)
                 .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
@@ -662,12 +661,12 @@ public class CcListRepository {
                 .where(conditions);
     }
 
-    public SelectOrderByStep getDtList(CcListRequest request, Release release, ULong defaultModuleSetReleaseId) {
+    public SelectOrderByStep getDtList(CcListRequest request, Release release, String defaultModuleSetReleaseId) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(DT_MANIFEST.RELEASE_ID.eq(request.getReleaseId()));
         if (request.getDtTypes() != null && !request.getDtTypes().isEmpty()) {
             List<String> dtTypes = request.getDtTypes().stream()
                     .filter(e -> "CDT".equals(e) || "BDT".equals(e))
@@ -720,12 +719,12 @@ public class CcListRepository {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        List<BigInteger> ccTagIds = request.getCcTagIds();
+        List<String> ccTagIds = request.getCcTagIds();
         if (!ccTagIds.isEmpty()) {
             if (ccTagIds.size() == 1) {
-                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.eq(ULong.valueOf(ccTagIds.get(0))));
+                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.eq(ccTagIds.get(0)));
             } else {
-                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds.stream().map(e -> ULong.valueOf(e)).toList()));
+                conditions.add(DT_MANIFEST_TAG.CC_TAG_ID.in(ccTagIds));
             }
         }
 
@@ -757,7 +756,7 @@ public class CcListRepository {
                 ifnull(CDT_PRI.as("pri_for_cdt").NAME, "")).as("default_value_domain"))
                 .from(DT)
                 .join(DT_MANIFEST)
-                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID).and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID).and(DT_MANIFEST.RELEASE_ID.eq(release.getReleaseId())))
                 .join(LOG)
                 .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)

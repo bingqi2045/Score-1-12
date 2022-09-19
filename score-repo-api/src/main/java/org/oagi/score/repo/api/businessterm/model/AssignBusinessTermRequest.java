@@ -2,13 +2,12 @@ package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Request;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class AssignBusinessTermRequest extends Request {
 
     private List<BieToAssign> biesToAssign;
-    private BigInteger businessTermId;
+    private String businessTermId;
     private String primaryIndicator;
     private Boolean isPrimary;
 
@@ -17,7 +16,7 @@ public class AssignBusinessTermRequest extends Request {
     public AssignBusinessTermRequest() {
     }
 
-    public AssignBusinessTermRequest(List<BieToAssign> biesToAssign, BigInteger businessTermId, String typeCode,
+    public AssignBusinessTermRequest(List<BieToAssign> biesToAssign, String businessTermId, String typeCode,
                                      String primaryIndicator, Boolean isPrimary) {
         this.biesToAssign = biesToAssign;
         this.businessTermId = businessTermId;
@@ -34,11 +33,11 @@ public class AssignBusinessTermRequest extends Request {
         this.biesToAssign = biesToAssign;
     }
 
-    public BigInteger getBusinessTermId() {
+    public String getBusinessTermId() {
         return businessTermId;
     }
 
-    public void setBusinessTermId(BigInteger businessTermId) {
+    public void setBusinessTermId(String businessTermId) {
         this.businessTermId = businessTermId;
     }
 

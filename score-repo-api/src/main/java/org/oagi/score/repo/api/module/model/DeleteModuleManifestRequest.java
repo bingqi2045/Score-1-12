@@ -4,27 +4,25 @@ import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.corecomponent.model.CcType;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class DeleteModuleManifestRequest extends Request {
 
     public DeleteModuleManifestRequest(ScoreUser requester) {
         super(requester);
     }
 
-    private BigInteger manifestId;
+    private String manifestId;
 
     private CcType type;
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
-    private BigInteger moduleId;
+    private String moduleId;
 
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return manifestId;
     }
 
-    public void setManifestId(BigInteger manifestId) {
+    public void setManifestId(String manifestId) {
         this.manifestId = manifestId;
     }
 
@@ -36,19 +34,19 @@ public class DeleteModuleManifestRequest extends Request {
         this.type = type;
     }
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 }

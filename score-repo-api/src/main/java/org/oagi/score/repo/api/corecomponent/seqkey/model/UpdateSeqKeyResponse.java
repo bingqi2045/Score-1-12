@@ -2,17 +2,15 @@ package org.oagi.score.repo.api.corecomponent.seqkey.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
-
 public class UpdateSeqKeyResponse extends Response {
 
-    private final BigInteger seqKeyId;
+    private final String seqKeyId;
 
-    public UpdateSeqKeyResponse(BigInteger seqKeyId) {
+    public UpdateSeqKeyResponse(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 

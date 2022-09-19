@@ -12,7 +12,7 @@ public class BbieNode {
 
     @Data
     public class Bcc {
-        private BigInteger bccManifestId;
+        private String bccManifestId;
         private String guid;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -37,9 +37,9 @@ public class BbieNode {
         private String fromAbieHashPath;
         private String toBbiepPath;
         private String toBbiepHashPath;
-        private BigInteger basedBccManifestId;
+        private String basedBccManifestId;
 
-        private BigInteger bbieId;
+        private String bbieId;
         private String guid;
         private BigInteger seqKey;
         private Integer cardinalityMin;
@@ -54,9 +54,9 @@ public class BbieNode {
         private String fixedValue;
         private String example;
 
-        private BigInteger bdtPriRestriId;
-        private BigInteger codeListId;
-        private BigInteger agencyIdListId;
+        private String bdtPriRestriId;
+        private String codeListId;
+        private String agencyIdListId;
 
         public boolean isEmptyPrimitive() {
             return (bdtPriRestriId == null && codeListId == null && agencyIdListId == null);

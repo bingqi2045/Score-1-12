@@ -1,16 +1,15 @@
 package org.oagi.score.repo.api.bie.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Objects;
 
 public class Abie implements Serializable {
 
-    private BigInteger abieId;
+    private String abieId;
 
     private String guid;
 
-    private BigInteger basedAccManifestId;
+    private String basedAccManifestId;
 
     private String path;
 
@@ -22,13 +21,13 @@ public class Abie implements Serializable {
 
     private String bizTerm;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getAbieId() {
+    public String getAbieId() {
         return abieId;
     }
 
-    public void setAbieId(BigInteger abieId) {
+    public void setAbieId(String abieId) {
         this.abieId = abieId;
     }
 
@@ -40,11 +39,11 @@ public class Abie implements Serializable {
         this.guid = guid;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 
-    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+    public void setBasedAccManifestId(String basedAccManifestId) {
         this.basedAccManifestId = basedAccManifestId;
     }
 
@@ -88,11 +87,11 @@ public class Abie implements Serializable {
         this.bizTerm = bizTerm;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 

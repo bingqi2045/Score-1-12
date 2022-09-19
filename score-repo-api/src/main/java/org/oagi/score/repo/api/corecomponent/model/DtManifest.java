@@ -3,66 +3,65 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class DtManifest implements CcManifest, Serializable {
 
-    private BigInteger dtManifestId;
+    private String dtManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger dtId;
+    private String dtId;
 
-    private BigInteger basedDtManifestId;
+    private String basedDtManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevDtManifestId;
+    private String prevDtManifestId;
 
-    private BigInteger nextDtManifestId;
+    private String nextDtManifestId;
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
-    public void setDtManifestId(BigInteger dtManifestId) {
+    public void setDtManifestId(String dtManifestId) {
         this.dtManifestId = dtManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getDtManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getDtId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getDtId() {
+    public String getDtId() {
         return dtId;
     }
 
-    public void setDtId(BigInteger dtId) {
+    public void setDtId(String dtId) {
         this.dtId = dtId;
     }
 
-    public BigInteger getBasedDtManifestId() {
+    public String getBasedDtManifestId() {
         return basedDtManifestId;
     }
 
-    public void setBasedDtManifestId(BigInteger basedDtManifestId) {
+    public void setBasedDtManifestId(String basedDtManifestId) {
         this.basedDtManifestId = basedDtManifestId;
     }
 
@@ -74,27 +73,27 @@ public class DtManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevDtManifestId() {
+    public String getPrevDtManifestId() {
         return prevDtManifestId;
     }
 
-    public void setPrevDtManifestId(BigInteger prevDtManifestId) {
+    public void setPrevDtManifestId(String prevDtManifestId) {
         this.prevDtManifestId = prevDtManifestId;
     }
 
-    public BigInteger getNextDtManifestId() {
+    public String getNextDtManifestId() {
         return nextDtManifestId;
     }
 
-    public void setNextDtManifestId(BigInteger nextDtManifestId) {
+    public void setNextDtManifestId(String nextDtManifestId) {
         this.nextDtManifestId = nextDtManifestId;
     }
 }

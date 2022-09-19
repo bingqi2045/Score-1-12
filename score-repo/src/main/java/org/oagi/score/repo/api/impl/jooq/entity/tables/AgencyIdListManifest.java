@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function10;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListManifestRecord;
@@ -55,30 +53,32 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.agency_id_list_manifest_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.agency_id_list_manifest.release_id</code>.
+     * The column <code>oagi.agency_id_list_manifest.release_id</code>. Foreign
+     * key to the RELEASE table.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.agency_id_list_manifest.agency_id_list_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.agency_id_list_value_manifest_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.based_agency_id_list_manifest_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> BASED_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("based_agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListManifestRecord, String> BASED_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("based_agency_id_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_manifest.conflict</code>. This
@@ -90,26 +90,26 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
      * The column <code>oagi.agency_id_list_manifest.log_id</code>. A foreign
      * key pointed to a log for the current record.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<AgencyIdListManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.replacement_agency_id_list_manifest_id</code>.
      * This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("replacement_agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AgencyIdListManifestRecord, String> REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("replacement_agency_id_list_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.prev_agency_id_list_manifest_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> PREV_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("prev_agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListManifestRecord, String> PREV_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("prev_agency_id_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
      * <code>oagi.agency_id_list_manifest.next_agency_id_list_manifest_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, ULong> NEXT_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("next_agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListManifestRecord, String> NEXT_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("next_agency_id_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private AgencyIdListManifest(Name alias, Table<AgencyIdListManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -152,18 +152,13 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     }
 
     @Override
-    public Identity<AgencyIdListManifestRecord, ULong> getIdentity() {
-        return (Identity<AgencyIdListManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<AgencyIdListManifestRecord> getPrimaryKey() {
         return Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<AgencyIdListManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_LOG_ID_FK, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_LOG_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_I_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
@@ -171,7 +166,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     private transient AgencyIdListValueManifest _agencyIdListValueManifest;
     private transient AgencyIdListManifest _agencyIdListManifestBasedAgencyIdListManifestIdFk;
     private transient Log _log;
-    private transient AgencyIdListManifest _agencyIdListReplacementAgencyIdListManifestIdFk;
+    private transient AgencyIdListManifest _agencyIdListManifestReplacementAgencyIdListManifestIFk;
     private transient AgencyIdListManifest _agencyIdListManifestPrevAgencyIdListManifestIdFk;
     private transient AgencyIdListManifest _agencyIdListManifestNextAgencyIdListManifestIdFk;
 
@@ -201,7 +196,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
      */
     public AgencyIdListValueManifest agencyIdListValueManifest() {
         if (_agencyIdListValueManifest == null)
-            _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
+            _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
 
         return _agencyIdListValueManifest;
     }
@@ -232,14 +227,14 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     /**
      * Get the implicit join path to the
      * <code>oagi.agency_id_list_manifest</code> table, via the
-     * <code>agency_id_list_replacement_agency_id_list_manifest_id_fk</code>
+     * <code>agency_id_list_manifest_replacement_agency_id_list_manifest_i_fk</code>
      * key.
      */
-    public AgencyIdListManifest agencyIdListReplacementAgencyIdListManifestIdFk() {
-        if (_agencyIdListReplacementAgencyIdListManifestIdFk == null)
-            _agencyIdListReplacementAgencyIdListManifestIdFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID_FK);
+    public AgencyIdListManifest agencyIdListManifestReplacementAgencyIdListManifestIFk() {
+        if (_agencyIdListManifestReplacementAgencyIdListManifestIFk == null)
+            _agencyIdListManifestReplacementAgencyIdListManifestIFk = new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_I_FK);
 
-        return _agencyIdListReplacementAgencyIdListManifestIdFk;
+        return _agencyIdListManifestReplacementAgencyIdListManifestIFk;
     }
 
     /**
@@ -312,21 +307,22 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row10<String, String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

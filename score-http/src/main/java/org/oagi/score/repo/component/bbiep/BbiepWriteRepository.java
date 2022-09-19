@@ -1,13 +1,14 @@
 package org.oagi.score.repo.component.bbiep;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
@@ -27,7 +28,7 @@ public class BbiepWriteRepository {
 
     public BbiepNode.Bbiep upsertBbiep(UpsertBbiepRequest request) {
         BbiepNode.Bbiep bbiep = request.getBbiep();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = bbiep.getHashPath();
         BbiepRecord bbiepRecord = dslContext.selectFrom(BBIEP)
                 .where(and(
@@ -36,13 +37,14 @@ public class BbiepWriteRepository {
                 ))
                 .fetchOptional().orElse(null);
 
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong requesterId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String requesterId = user.getAppUserId();
 
         if (bbiepRecord == null) {
             bbiepRecord = new BbiepRecord();
+            bbiepRecord.setBbiepId(UUID.randomUUID().toString());
             bbiepRecord.setGuid(ScoreGuid.randomGuid());
-            bbiepRecord.setBasedBccpManifestId(ULong.valueOf(bbiep.getBasedBccpManifestId()));
+            bbiepRecord.setBasedBccpManifestId(bbiep.getBasedBccpManifestId());
             bbiepRecord.setPath(bbiep.getPath());
             bbiepRecord.setHashPath(hashPath);
 
@@ -57,12 +59,9 @@ public class BbiepWriteRepository {
             bbiepRecord.setCreationTimestamp(request.getLocalDateTime());
             bbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbiepRecord.setBbiepId(
-                    dslContext.insertInto(BBIEP)
-                            .set(bbiepRecord)
-                            .returning(BBIEP.BBIEP_ID)
-                            .fetchOne().getBbiepId()
-            );
+            dslContext.insertInto(BBIEP)
+                    .set(bbiepRecord)
+                    .execute();
         } else {
             if (bbiep.getDefinition() != null) {
                 bbiepRecord.setDefinition(emptyToNull(bbiep.getDefinition()));

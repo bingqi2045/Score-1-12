@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
@@ -53,24 +51,26 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     /**
-     * The column <code>oagi.dt_manifest.dt_manifest_id</code>.
+     * The column <code>oagi.dt_manifest.dt_manifest_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<DtManifestRecord, ULong> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<DtManifestRecord, String> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.dt_manifest.release_id</code>.
+     * The column <code>oagi.dt_manifest.release_id</code>. Foreign key to the
+     * RELEASE table.
      */
-    public final TableField<DtManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.dt_manifest.dt_id</code>.
      */
-    public final TableField<DtManifestRecord, ULong> DT_ID = createField(DSL.name("dt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtManifestRecord, String> DT_ID = createField(DSL.name("dt_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_manifest.based_dt_manifest_id</code>.
      */
-    public final TableField<DtManifestRecord, ULong> BASED_DT_MANIFEST_ID = createField(DSL.name("based_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<DtManifestRecord, String> BASED_DT_MANIFEST_ID = createField(DSL.name("based_dt_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.dt_manifest.conflict</code>. This indicates that
@@ -82,23 +82,23 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
      * The column <code>oagi.dt_manifest.log_id</code>. A foreign key pointed to
      * a log for the current record.
      */
-    public final TableField<DtManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<DtManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.dt_manifest.replacement_dt_manifest_id</code>. This
      * refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<DtManifestRecord, ULong> REPLACEMENT_DT_MANIFEST_ID = createField(DSL.name("replacement_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<DtManifestRecord, String> REPLACEMENT_DT_MANIFEST_ID = createField(DSL.name("replacement_dt_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt_manifest.prev_dt_manifest_id</code>.
      */
-    public final TableField<DtManifestRecord, ULong> PREV_DT_MANIFEST_ID = createField(DSL.name("prev_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<DtManifestRecord, String> PREV_DT_MANIFEST_ID = createField(DSL.name("prev_dt_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.dt_manifest.next_dt_manifest_id</code>.
      */
-    public final TableField<DtManifestRecord, ULong> NEXT_DT_MANIFEST_ID = createField(DSL.name("next_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<DtManifestRecord, String> NEXT_DT_MANIFEST_ID = createField(DSL.name("next_dt_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private DtManifest(Name alias, Table<DtManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -139,25 +139,20 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     @Override
-    public Identity<DtManifestRecord, ULong> getIdentity() {
-        return (Identity<DtManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<DtManifestRecord> getPrimaryKey() {
         return Keys.KEY_DT_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_BASED_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_MANIFEST_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
     private transient Dt _dt;
     private transient DtManifest _dtManifestBasedDtManifestIdFk;
     private transient Log _log;
-    private transient DtManifest _dtReplacementDtManifestIdFk;
+    private transient DtManifest _dtManifestReplacementDtManifestIdFk;
     private transient DtManifest _dtManifestPrevDtManifestIdFk;
     private transient DtManifest _dtManifestNextDtManifestIdFk;
 
@@ -204,13 +199,13 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     /**
      * Get the implicit join path to the <code>oagi.dt_manifest</code> table,
-     * via the <code>dt_replacement_dt_manifest_id_fk</code> key.
+     * via the <code>dt_manifest_replacement_dt_manifest_id_fk</code> key.
      */
-    public DtManifest dtReplacementDtManifestIdFk() {
-        if (_dtReplacementDtManifestIdFk == null)
-            _dtReplacementDtManifestIdFk = new DtManifest(this, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK);
+    public DtManifest dtManifestReplacementDtManifestIdFk() {
+        if (_dtManifestReplacementDtManifestIdFk == null)
+            _dtManifestReplacementDtManifestIdFk = new DtManifest(this, Keys.DT_MANIFEST_REPLACEMENT_DT_MANIFEST_ID_FK);
 
-        return _dtReplacementDtManifestIdFk;
+        return _dtManifestReplacementDtManifestIdFk;
     }
 
     /**
@@ -279,21 +274,22 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row9<String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

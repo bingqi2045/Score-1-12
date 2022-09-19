@@ -1,21 +1,20 @@
 package org.oagi.score.repo.api.module.model;
 
 import org.oagi.score.repo.api.base.Request;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 
 public class CopyModuleDirRequest extends Request {
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
     public Boolean getCopySubModules() {
         return copySubModules;
@@ -27,23 +26,23 @@ public class CopyModuleDirRequest extends Request {
 
     private Boolean copySubModules;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
-    private BigInteger copyPosDirId;
+    private String copyPosDirId;
 
-    public BigInteger getCopyPosDirId() {
+    public String getCopyPosDirId() {
         return copyPosDirId;
     }
 
-    public void setCopyPosDirId(BigInteger copyPosDirId) {
+    public void setCopyPosDirId(String copyPosDirId) {
         this.copyPosDirId = copyPosDirId;
     }
 }

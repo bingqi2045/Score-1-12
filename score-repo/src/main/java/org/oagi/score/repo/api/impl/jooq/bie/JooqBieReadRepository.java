@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.bie;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.bie.BieReadRepository;
 import org.oagi.score.repo.api.bie.model.*;
@@ -11,7 +10,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -63,9 +61,9 @@ public class JooqBieReadRepository
     private RecordMapper<Record, TopLevelAsbiep> mapperTopLevelAsbiep() {
         return record -> {
             TopLevelAsbiep topLevelAsbiep = new TopLevelAsbiep();
-            topLevelAsbiep.setTopLevelAsbiepId(record.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
-            topLevelAsbiep.setAsbiepId(record.get(TOP_LEVEL_ASBIEP.ASBIEP_ID).toBigInteger());
-            topLevelAsbiep.setReleaseId(record.get(TOP_LEVEL_ASBIEP.RELEASE_ID).toBigInteger());
+            topLevelAsbiep.setTopLevelAsbiepId(record.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID));
+            topLevelAsbiep.setAsbiepId(record.get(TOP_LEVEL_ASBIEP.ASBIEP_ID));
+            topLevelAsbiep.setReleaseId(record.get(TOP_LEVEL_ASBIEP.RELEASE_ID));
             topLevelAsbiep.setPropertyTerm(record.get(ASCCP.PROPERTY_TERM));
             topLevelAsbiep.setGuid(record.get(ASCCP.GUID));
             topLevelAsbiep.setState(BieState.valueOf(record.get(TOP_LEVEL_ASBIEP.STATE)));
@@ -77,11 +75,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setOwner(
                     (isOwnerAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     Arrays.asList(ownerRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")),
                                     record.get(APP_USER.as("owner").LOGIN_ID.as("owner_login_id")),
                                     ownerRole));
 
@@ -90,11 +88,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -103,11 +101,11 @@ public class JooqBieReadRepository
             topLevelAsbiep.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -135,15 +133,15 @@ public class JooqBieReadRepository
     private RecordMapper<Record, Abie> mapperAbie() {
         return record -> {
             Abie abie = new Abie();
-            abie.setAbieId(record.get(ABIE.ABIE_ID).toBigInteger());
+            abie.setAbieId(record.get(ABIE.ABIE_ID));
             abie.setGuid(record.get(ABIE.GUID));
-            abie.setBasedAccManifestId(record.get(ABIE.BASED_ACC_MANIFEST_ID).toBigInteger());
+            abie.setBasedAccManifestId(record.get(ABIE.BASED_ACC_MANIFEST_ID));
             abie.setPath(record.get(ABIE.PATH));
             abie.setHashPath(record.get(ABIE.HASH_PATH));
             abie.setDefinition(record.get(ABIE.DEFINITION));
             abie.setRemark(record.get(ABIE.REMARK));
             abie.setBizTerm(record.get(ABIE.BIZ_TERM));
-            abie.setOwnerTopLevelAsbiepId(record.get(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            abie.setOwnerTopLevelAsbiepId(record.get(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID));
             return abie;
         };
     }
@@ -169,20 +167,20 @@ public class JooqBieReadRepository
     private RecordMapper<Record, Asbie> mapperAsbie() {
         return record -> {
             Asbie asbie = new Asbie();
-            asbie.setAsbieId(record.get(ASBIE.ASBIE_ID).toBigInteger());
+            asbie.setAsbieId(record.get(ASBIE.ASBIE_ID));
             asbie.setGuid(record.get(ASBIE.GUID));
-            asbie.setBasedAsccManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID).toBigInteger());
+            asbie.setBasedAsccManifestId(record.get(ASBIE.BASED_ASCC_MANIFEST_ID));
             asbie.setPath(record.get(ASBIE.PATH));
             asbie.setHashPath(record.get(ASBIE.HASH_PATH));
-            asbie.setFromAbieId(record.get(ASBIE.FROM_ABIE_ID).toBigInteger());
-            asbie.setToAsbiepId(record.get(ASBIE.TO_ASBIEP_ID).toBigInteger());
+            asbie.setFromAbieId(record.get(ASBIE.FROM_ABIE_ID));
+            asbie.setToAsbiepId(record.get(ASBIE.TO_ASBIEP_ID));
             asbie.setCardinalityMin(record.get(ASBIE.CARDINALITY_MIN));
             asbie.setCardinalityMax(record.get(ASBIE.CARDINALITY_MAX));
             asbie.setNillable((byte) 1 == record.get(ASBIE.IS_NILLABLE));
             asbie.setUsed((byte) 1 == record.get(ASBIE.IS_USED));
             asbie.setDefinition(record.get(ASBIE.DEFINITION));
             asbie.setRemark(record.get(ASBIE.REMARK));
-            asbie.setOwnerTopLevelAsbiepId(record.get(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            asbie.setOwnerTopLevelAsbiepId(record.get(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID));
             return asbie;
         };
     }
@@ -215,19 +213,19 @@ public class JooqBieReadRepository
     private RecordMapper<Record, Bbie> mapperBbie() {
         return record -> {
             Bbie bbie = new Bbie();
-            bbie.setBbieId(record.get(BBIE.BBIE_ID).toBigInteger());
+            bbie.setBbieId(record.get(BBIE.BBIE_ID));
             bbie.setGuid(record.get(BBIE.GUID));
-            bbie.setBasedBccManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID).toBigInteger());
+            bbie.setBasedBccManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID));
             bbie.setPath(record.get(BBIE.PATH));
             bbie.setHashPath(record.get(BBIE.HASH_PATH));
-            bbie.setFromAbieId(record.get(BBIE.FROM_ABIE_ID).toBigInteger());
-            bbie.setToBbiepId(record.get(BBIE.TO_BBIEP_ID).toBigInteger());
+            bbie.setFromAbieId(record.get(BBIE.FROM_ABIE_ID));
+            bbie.setToBbiepId(record.get(BBIE.TO_BBIEP_ID));
             bbie.setBdtPriRestriId((record.get(BBIE.BDT_PRI_RESTRI_ID) != null) ?
-                    record.get(BBIE.BDT_PRI_RESTRI_ID).toBigInteger() : null);
+                    record.get(BBIE.BDT_PRI_RESTRI_ID) : null);
             bbie.setCodeListId((record.get(BBIE.CODE_LIST_ID) != null) ?
-                    record.get(BBIE.CODE_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE.CODE_LIST_ID) : null);
             bbie.setAgencyIdListId((record.get(BBIE.AGENCY_ID_LIST_ID) != null) ?
-                    record.get(BBIE.AGENCY_ID_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE.AGENCY_ID_LIST_ID) : null);
             bbie.setCardinalityMin(record.get(BBIE.CARDINALITY_MIN));
             bbie.setCardinalityMax(record.get(BBIE.CARDINALITY_MAX));
             bbie.setDefaultValue(record.get(BBIE.DEFAULT_VALUE));
@@ -237,7 +235,7 @@ public class JooqBieReadRepository
             bbie.setDefinition(record.get(BBIE.DEFINITION));
             bbie.setRemark(record.get(BBIE.REMARK));
             bbie.setExample(record.get(BBIE.EXAMPLE));
-            bbie.setOwnerTopLevelAsbiepId(record.get(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            bbie.setOwnerTopLevelAsbiepId(record.get(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID));
             return bbie;
         };
     }
@@ -259,16 +257,16 @@ public class JooqBieReadRepository
     private RecordMapper<Record, Asbiep> mapperAsbiep() {
         return record -> {
             Asbiep asbiep = new Asbiep();
-            asbiep.setAsbiepId(record.get(ASBIEP.ASBIEP_ID).toBigInteger());
+            asbiep.setAsbiepId(record.get(ASBIEP.ASBIEP_ID));
             asbiep.setGuid(record.get(ASBIEP.GUID));
-            asbiep.setBasedAsccpManifestId(record.get(ASBIEP.BASED_ASCCP_MANIFEST_ID).toBigInteger());
+            asbiep.setBasedAsccpManifestId(record.get(ASBIEP.BASED_ASCCP_MANIFEST_ID));
             asbiep.setPath(record.get(ASBIEP.PATH));
             asbiep.setHashPath(record.get(ASBIEP.HASH_PATH));
-            asbiep.setRoleOfAbieId(record.get(ASBIEP.ROLE_OF_ABIE_ID).toBigInteger());
+            asbiep.setRoleOfAbieId(record.get(ASBIEP.ROLE_OF_ABIE_ID));
             asbiep.setDefinition(record.get(ASBIEP.DEFINITION));
             asbiep.setRemark(record.get(ASBIEP.REMARK));
             asbiep.setBizTerm(record.get(ASBIEP.BIZ_TERM));
-            asbiep.setOwnerTopLevelAsbiepId(record.get(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            asbiep.setOwnerTopLevelAsbiepId(record.get(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID));
             return asbiep;
         };
     }
@@ -289,15 +287,15 @@ public class JooqBieReadRepository
     private RecordMapper<Record, Bbiep> mapperBbiep() {
         return record -> {
             Bbiep bbiep = new Bbiep();
-            bbiep.setBbiepId(record.get(BBIEP.BBIEP_ID).toBigInteger());
+            bbiep.setBbiepId(record.get(BBIEP.BBIEP_ID));
             bbiep.setGuid(record.get(BBIEP.GUID));
-            bbiep.setBasedBccpManifestId(record.get(BBIEP.BASED_BCCP_MANIFEST_ID).toBigInteger());
+            bbiep.setBasedBccpManifestId(record.get(BBIEP.BASED_BCCP_MANIFEST_ID));
             bbiep.setPath(record.get(BBIEP.PATH));
             bbiep.setHashPath(record.get(BBIEP.HASH_PATH));
             bbiep.setDefinition(record.get(BBIEP.DEFINITION));
             bbiep.setRemark(record.get(BBIEP.REMARK));
             bbiep.setBizTerm(record.get(BBIEP.BIZ_TERM));
-            bbiep.setOwnerTopLevelAsbiepId(record.get(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            bbiep.setOwnerTopLevelAsbiepId(record.get(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID));
             return bbiep;
         };
     }
@@ -328,18 +326,18 @@ public class JooqBieReadRepository
     private RecordMapper<Record, BbieSc> mapperBbieSc() {
         return record -> {
             BbieSc bbieSc = new BbieSc();
-            bbieSc.setBbieScId(record.get(BBIE_SC.BBIE_SC_ID).toBigInteger());
+            bbieSc.setBbieScId(record.get(BBIE_SC.BBIE_SC_ID));
             bbieSc.setGuid(record.get(BBIE_SC.GUID));
-            bbieSc.setBasedDtScManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID).toBigInteger());
-            bbieSc.setBbieId(record.get(BBIE_SC.BBIE_ID).toBigInteger());
+            bbieSc.setBasedDtScManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID));
+            bbieSc.setBbieId(record.get(BBIE_SC.BBIE_ID));
             bbieSc.setPath(record.get(BBIE_SC.PATH));
             bbieSc.setHashPath(record.get(BBIE_SC.HASH_PATH));
             bbieSc.setDtScPriRestriId((record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID) != null) ?
-                    record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.DT_SC_PRI_RESTRI_ID) : null);
             bbieSc.setCodeListId((record.get(BBIE_SC.CODE_LIST_ID) != null) ?
-                    record.get(BBIE_SC.CODE_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.CODE_LIST_ID) : null);
             bbieSc.setAgencyIdListId((record.get(BBIE_SC.AGENCY_ID_LIST_ID) != null) ?
-                    record.get(BBIE_SC.AGENCY_ID_LIST_ID).toBigInteger() : null);
+                    record.get(BBIE_SC.AGENCY_ID_LIST_ID) : null);
             bbieSc.setCardinalityMin(record.get(BBIE_SC.CARDINALITY_MIN));
             bbieSc.setCardinalityMax(record.get(BBIE_SC.CARDINALITY_MAX));
             bbieSc.setDefaultValue(record.get(BBIE_SC.DEFAULT_VALUE));
@@ -349,7 +347,7 @@ public class JooqBieReadRepository
             bbieSc.setBizTerm(record.get(BBIE_SC.BIZ_TERM));
             bbieSc.setRemark(record.get(BBIE_SC.REMARK));
             bbieSc.setExample(record.get(BBIE_SC.EXAMPLE));
-            bbieSc.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            bbieSc.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID));
             return bbieSc;
         };
     }
@@ -358,10 +356,10 @@ public class JooqBieReadRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetBiePackageResponse getBiePackage(GetBiePackageRequest request) throws ScoreDataAccessException {
         ScoreUser requester = request.getRequester();
-        BigInteger topLevelAsbiepId = request.getTopLevelAsbiepId();
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
 
         TopLevelAsbiep topLevelAsbiep = (TopLevelAsbiep) selectTopLevelAsbiep()
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                 .fetchOne(mapperTopLevelAsbiep());
 
         if (topLevelAsbiep.getState() == BieState.WIP) {
@@ -377,12 +375,12 @@ public class JooqBieReadRepository
             List<Condition> conditions;
 
             biePackage.setAbieList(selectAbie()
-                            .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                            .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                             .fetch(mapperAbie())
             );
 
             conditions = new ArrayList();
-            conditions.add(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)));
+            conditions.add(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId));
             if (request.isUsed()) {
                 conditions.add(ASBIE.IS_USED.eq((byte) 1));
             }
@@ -392,7 +390,7 @@ public class JooqBieReadRepository
             );
 
             conditions = new ArrayList();
-            conditions.add(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)));
+            conditions.add(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId));
             if (request.isUsed()) {
                 conditions.add(BBIE.IS_USED.eq((byte) 1));
             }
@@ -402,17 +400,17 @@ public class JooqBieReadRepository
             );
 
             biePackage.setAsbiepList(selectAsbiep()
-                    .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                    .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                     .fetch(mapperAsbiep())
             );
 
             biePackage.setBbiepList(selectBbiep()
-                    .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                    .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                     .fetch(mapperBbiep())
             );
 
             conditions = new ArrayList();
-            conditions.add(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)));
+            conditions.add(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId));
             if (request.isUsed()) {
                 conditions.add(BBIE_SC.IS_USED.eq((byte) 1));
             }
@@ -428,8 +426,8 @@ public class JooqBieReadRepository
     @Override
     public GetReuseBieListResponse getReuseBieList(
             GetReuseBieListRequest request) throws ScoreDataAccessException {
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
-        List<ULong> reuseTopLevelAsbiepIdList = getReuseTopLevelAsbiepList(topLevelAsbiepId, request.isReusedBie());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
+        List<String> reuseTopLevelAsbiepIdList = getReuseTopLevelAsbiepList(topLevelAsbiepId, request.isReusedBie());
         List<TopLevelAsbiep> reuseTopLevelAsbiepList = (!reuseTopLevelAsbiepIdList.isEmpty()) ?
                 selectTopLevelAsbiep()
                         .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(reuseTopLevelAsbiepIdList))
@@ -438,7 +436,7 @@ public class JooqBieReadRepository
         return new GetReuseBieListResponse(reuseTopLevelAsbiepList);
     }
 
-    private List<ULong> getReuseTopLevelAsbiepList(ULong topLevelAsbiepId, boolean isReusedBie) {
+    private List<String> getReuseTopLevelAsbiepList(String topLevelAsbiepId, boolean isReusedBie) {
         List<Condition> conds = new ArrayList();
         if (isReusedBie) {
             return dslContext().selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
@@ -449,7 +447,7 @@ public class JooqBieReadRepository
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId),
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)
                     ))
-                    .fetchInto(ULong.class);
+                    .fetchInto(String.class);
         } else {
             return dslContext().selectDistinct(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                     .from(ASBIE)
@@ -459,7 +457,7 @@ public class JooqBieReadRepository
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(topLevelAsbiepId)
                     ))
-                    .fetchInto(ULong.class);
+                    .fetchInto(String.class);
         }
     }
 
@@ -467,11 +465,11 @@ public class JooqBieReadRepository
     public GetAssignedBusinessContextResponse getAssignedBusinessContext(
             GetAssignedBusinessContextRequest request) throws ScoreDataAccessException {
 
-        BigInteger topLevelAsbiepId = request.getTopLevelAsbiepId();
-        List<BigInteger> bizCtxIds = dslContext().select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
+        List<String> bizCtxIds = dslContext().select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
-                .fetchInto(BigInteger.class);
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
+                .fetchInto(String.class);
 
         return new GetAssignedBusinessContextResponse(bizCtxIds);
     }

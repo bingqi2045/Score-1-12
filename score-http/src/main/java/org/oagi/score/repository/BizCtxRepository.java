@@ -4,27 +4,26 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record7;
 import org.jooq.SelectJoinStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class BizCtxRepository implements ScoreRepository<BizCtx> {
+public class BizCtxRepository implements ScoreRepository<BizCtx, String> {
 
     @Autowired
     private DSLContext dslContext;
 
     private SelectJoinStep<Record7<
-            ULong, String, String, ULong,
-            ULong, LocalDateTime, LocalDateTime>> getSelectBizCtx() {
+            String, String, String, String,
+            String, LocalDateTime, LocalDateTime>> getSelectBizCtx() {
         return dslContext.select(
                 Tables.BIZ_CTX.BIZ_CTX_ID,
                 Tables.BIZ_CTX.GUID,
@@ -43,21 +42,21 @@ public class BizCtxRepository implements ScoreRepository<BizCtx> {
     }
 
     @Override
-    public BizCtx findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public BizCtx findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectBizCtx()
-                .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(id)))
+                .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(id))
                 .fetchOneInto(BizCtx.class);
     }
 
     public List<BizCtx> findByTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
-        List<BigInteger> bizCtxIds = dslContext.select(
+        List<String> bizCtxIds = dslContext.select(
                 Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
-                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
-                .fetchInto(BigInteger.class);
+                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiep.getTopLevelAsbiepId()))
+                .fetchInto(String.class);
 
         return bizCtxIds.stream().map(bizCtxId -> findById(bizCtxId)).collect(Collectors.toList());
     }

@@ -40,26 +40,20 @@
 
 package com.sun.xml.xsom.parser;
 
+import com.sun.xml.xsom.XSSchemaSet;
+import com.sun.xml.xsom.impl.parser.NGCCRuntimeEx;
+import com.sun.xml.xsom.impl.parser.ParserContext;
+import com.sun.xml.xsom.impl.parser.state.Schema;
+import org.xml.sax.*;
+
+import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.util.Set;
 import java.util.HashSet;
-
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.ContentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.xml.xsom.XSSchemaSet;
-import com.sun.xml.xsom.impl.parser.NGCCRuntimeEx;
-import com.sun.xml.xsom.impl.parser.ParserContext;
-import com.sun.xml.xsom.impl.parser.state.Schema;
+import java.util.Set;
 
 /**
  * Parses possibly multiple W3C XML Schema files and compose

@@ -1,17 +1,14 @@
 package org.oagi.score.repo.api.impl.jooq.corecomponent;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.agency.model.AgencyIdList;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.corecomponent.CodeListReadRepository;
 import org.oagi.score.repo.api.corecomponent.ValueDomainReadRepository;
 import org.oagi.score.repo.api.corecomponent.model.BdtPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.BdtScPriRestri;
 import org.oagi.score.repo.api.corecomponent.model.CodeList;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -30,7 +27,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public List<CodeList> getCodeListList(BigInteger releaseId) throws ScoreDataAccessException {
+    public List<CodeList> getCodeListList(String releaseId) throws ScoreDataAccessException {
         return dslContext()
                 .select(CODE_LIST.CODE_LIST_ID,
                         CODE_LIST.GUID,
@@ -49,12 +46,12 @@ public class JooqValueDomainReadRepository
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(
                         and(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID)),
                         AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID))
-                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(CodeList.class);
     }
 
     @Override
-    public Map<BigInteger, BdtPriRestri> getBdtPriRestriMap(BigInteger releaseId) throws ScoreDataAccessException {
+    public Map<String, BdtPriRestri> getBdtPriRestriMap(String releaseId) throws ScoreDataAccessException {
         List<BdtPriRestri> bdtPriRestriRecords = dslContext().select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 BDT_PRI_RESTRI.BDT_ID,
                 BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -63,7 +60,7 @@ public class JooqValueDomainReadRepository
                 BDT_PRI_RESTRI.IS_DEFAULT,
                 XBT.NAME.as("XBT_NAME"), XBT.XBT_ID)
                 .from(BDT_PRI_RESTRI)
-                .join(DT_MANIFEST).on(and(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID), DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(DT_MANIFEST).on(and(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID), DT_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .leftJoin(CDT_AWD_PRI_XPS_TYPE_MAP)
                 .on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
                 .leftJoin(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
@@ -74,7 +71,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, BdtScPriRestri> getBdtScPriRestriMap(BigInteger releaseId) throws ScoreDataAccessException {
+    public Map<String, BdtScPriRestri> getBdtScPriRestriMap(String releaseId) throws ScoreDataAccessException {
         List<BdtScPriRestri> bdtScPriRestriRecords = dslContext().select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.BDT_SC_ID,
                 BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -83,7 +80,7 @@ public class JooqValueDomainReadRepository
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
                 XBT.XBT_ID, XBT.NAME.as("XBT_NAME"))
                 .from(BDT_SC_PRI_RESTRI)
-                .join(DT_SC_MANIFEST).on(and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID), DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(DT_SC_MANIFEST).on(and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID), DT_SC_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .leftJoin(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
                 .on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
                 .leftJoin(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
@@ -94,7 +91,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(BigInteger releaseId) throws ScoreDataAccessException {
+    public Map<String, List<BdtPriRestri>> getBdtPriRestriBdtIdMap(String releaseId) throws ScoreDataAccessException {
         List<BdtPriRestri> bdtPriRestriRecords = dslContext().select(BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
                 BDT_PRI_RESTRI.BDT_ID,
                 BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -103,7 +100,7 @@ public class JooqValueDomainReadRepository
                 BDT_PRI_RESTRI.IS_DEFAULT,
                 XBT.NAME.as("XBT_NAME"), XBT.XBT_ID)
                 .from(BDT_PRI_RESTRI)
-                .join(DT_MANIFEST).on(and(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID), DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(DT_MANIFEST).on(and(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID), DT_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .leftJoin(CDT_AWD_PRI_XPS_TYPE_MAP)
                 .on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
                 .leftJoin(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
@@ -114,7 +111,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public Map<BigInteger, List<BdtScPriRestri>> getBdtScPriRestriBdtScIdMap(BigInteger releaseId) throws ScoreDataAccessException {
+    public Map<String, List<BdtScPriRestri>> getBdtScPriRestriBdtScIdMap(String releaseId) throws ScoreDataAccessException {
         List<BdtScPriRestri> bdtScPriRestriRecords = dslContext().select(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.BDT_SC_ID,
                 BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
@@ -123,7 +120,7 @@ public class JooqValueDomainReadRepository
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
                 XBT.XBT_ID, XBT.NAME.as("XBT_NAME"))
                 .from(BDT_SC_PRI_RESTRI)
-                .join(DT_SC_MANIFEST).on(and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID), DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(DT_SC_MANIFEST).on(and(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID), DT_SC_MANIFEST.RELEASE_ID.eq(releaseId)))
                 .leftJoin(CDT_SC_AWD_PRI_XPS_TYPE_MAP)
                 .on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
                 .leftJoin(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
@@ -134,7 +131,7 @@ public class JooqValueDomainReadRepository
     }
 
     @Override
-    public List<AgencyIdList> getAgencyIdListList(BigInteger releaseId) throws ScoreDataAccessException {
+    public List<AgencyIdList> getAgencyIdListList(String releaseId) throws ScoreDataAccessException {
         return dslContext()
                 .select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                         AGENCY_ID_LIST.GUID,
@@ -150,7 +147,7 @@ public class JooqValueDomainReadRepository
                 .leftOuterJoin(AGENCY_ID_LIST_MANIFEST.as("based_ail")).on(AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.as("based_ail").AGENCY_ID_LIST_MANIFEST_ID))
                 .join(AGENCY_ID_LIST_VALUE_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID))
                 .join(AGENCY_ID_LIST_VALUE).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
-                .where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(AgencyIdList.class);
     }
 }

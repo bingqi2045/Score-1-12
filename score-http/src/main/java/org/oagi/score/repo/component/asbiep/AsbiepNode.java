@@ -3,14 +3,12 @@ package org.oagi.score.repo.component.asbiep;
 import lombok.Data;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
-
 @Data
 public class AsbiepNode {
 
     @Data
     public class Asccp {
-        private BigInteger asccpManifestId;
+        private String asccpManifestId;
         private String guid;
         private String propertyTerm;
         private String den;
@@ -29,10 +27,10 @@ public class AsbiepNode {
         private String hashPath;
         private String roleOfAbiePath;
         private String roleOfAbieHashPath;
-        private BigInteger basedAsccpManifestId;
-        private BigInteger refTopLevelAsbiepId;
+        private String basedAsccpManifestId;
+        private String refTopLevelAsbiepId;
 
-        private BigInteger asbiepId;
+        private String asbiepId;
         private String guid;
         private String remark;
         private String bizTerm;

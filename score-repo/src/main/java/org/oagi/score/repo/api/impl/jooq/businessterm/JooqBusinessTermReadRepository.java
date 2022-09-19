@@ -11,7 +11,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -57,7 +55,7 @@ public class JooqBusinessTermReadRepository
     private RecordMapper<Record, BusinessTerm> mapper() {
         return record -> {
             BusinessTerm businessTerm = new BusinessTerm();
-            businessTerm.setBusinessTermId(record.get(BUSINESS_TERM.BUSINESS_TERM_ID).toBigInteger());
+            businessTerm.setBusinessTermId(record.get(BUSINESS_TERM.BUSINESS_TERM_ID));
             businessTerm.setGuid(record.get(BUSINESS_TERM.GUID));
             businessTerm.setBusinessTerm(record.get(BUSINESS_TERM.BUSINESS_TERM_));
             businessTerm.setDefinition(record.get(BUSINESS_TERM.DEFINITION));
@@ -65,12 +63,12 @@ public class JooqBusinessTermReadRepository
             businessTerm.setExternalReferenceId(record.get(BUSINESS_TERM.EXTERNAL_REF_ID));
             businessTerm.setExternalReferenceUri(record.get(BUSINESS_TERM.EXTERNAL_REF_URI));
             businessTerm.setCreatedBy(new ScoreUser(
-                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                     (byte) 1 == record.get(APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer")) ? DEVELOPER : END_USER
             ));
             businessTerm.setLastUpdatedBy(new ScoreUser(
-                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                     (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
             ));
@@ -87,10 +85,10 @@ public class JooqBusinessTermReadRepository
             GetBusinessTermRequest request) throws ScoreDataAccessException {
         BusinessTerm businessTerm = null;
 
-        BigInteger businessTermId = request.getBusinessTermId();
-        if (!isNull(businessTermId)) {
+        String businessTermId = request.getBusinessTermId();
+        if (StringUtils.hasLength(businessTermId)) {
             businessTerm = (BusinessTerm) select()
-                    .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermId)))
+                    .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(businessTermId))
                     .fetchOne(mapper());
         }
 
@@ -104,7 +102,7 @@ public class JooqBusinessTermReadRepository
         if (request.getBusinessTermIdList() != null && !request.getBusinessTermIdList().isEmpty()) {
             if (request.getBusinessTermIdList().size() == 1) {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.eq(
-                        ULong.valueOf(request.getBusinessTermIdList().iterator().next())
+                        request.getBusinessTermIdList().iterator().next()
                 ));
             } else {
                 conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.in(

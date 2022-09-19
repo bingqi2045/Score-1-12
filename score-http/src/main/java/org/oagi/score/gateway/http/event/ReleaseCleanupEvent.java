@@ -5,14 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oagi.score.redis.event.Event;
 
-import java.math.BigInteger;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReleaseCleanupEvent implements Event {
 
-    private BigInteger userId;
-    private BigInteger releaseId;
+    private String userId;
+    private String releaseId;
 
 }

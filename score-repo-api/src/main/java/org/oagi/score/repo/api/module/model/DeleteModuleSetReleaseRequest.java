@@ -3,19 +3,17 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class DeleteModuleSetReleaseRequest extends Request {
 
-    public BigInteger getModuleSetReleaseId() {
+    public String getModuleSetReleaseId() {
         return moduleSetReleaseId;
     }
 
-    public void setModuleSetReleaseId(BigInteger moduleSetReleaseId) {
+    public void setModuleSetReleaseId(String moduleSetReleaseId) {
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
     public DeleteModuleSetReleaseRequest(ScoreUser requester) {
         super(requester);

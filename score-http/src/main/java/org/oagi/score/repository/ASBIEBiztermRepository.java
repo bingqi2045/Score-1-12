@@ -1,25 +1,24 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.data.AsbieBizterm;
+import org.oagi.score.data.AsbieBizTerm;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static org.jooq.impl.DSL.inline;
 
 @Repository
-public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizterm> {
+public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizTerm, String> {
 
     @Autowired
     private DSLContext dslContext;
 
     @Override
-    public List<AsbieBizterm> findAll() {
+    public List<AsbieBizTerm> findAll() {
         return dslContext.select(
                 Tables.ASBIE_BIZTERM.ASBIE_BIZTERM_ID,
                 Tables.ASBIE_BIZTERM.ASCC_BIZTERM_ID,
@@ -40,12 +39,12 @@ public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizterm> {
                 .on(Tables.ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(Tables.ASCC_BIZTERM.ASCC_BIZTERM_ID))
                 .innerJoin(Tables.BUSINESS_TERM)
                 .on(Tables.ASCC_BIZTERM.BUSINESS_TERM_ID.eq(Tables.BUSINESS_TERM.BUSINESS_TERM_ID))
-                .fetchInto(AsbieBizterm.class);
+                .fetchInto(AsbieBizTerm.class);
     }
 
     @Override
-    public AsbieBizterm findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public AsbieBizTerm findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return dslContext.select(
@@ -67,7 +66,7 @@ public class ASBIEBiztermRepository implements ScoreRepository<AsbieBizterm> {
         .on(Tables.ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(Tables.ASCC_BIZTERM.ASCC_BIZTERM_ID))
         .innerJoin(Tables.BUSINESS_TERM)
         .on(Tables.ASCC_BIZTERM.BUSINESS_TERM_ID.eq(Tables.BUSINESS_TERM.BUSINESS_TERM_ID))
-        .where(Tables.ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(ULong.valueOf(id)))
-        .fetchOneInto(AsbieBizterm.class);
+        .where(Tables.ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(id))
+        .fetchOneInto(AsbieBizTerm.class);
     }
 }

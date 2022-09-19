@@ -6,14 +6,13 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEdit
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditBbieScNodeDetail;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditBbiepNodeDetail;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
 @Data
 public class BieEditUpdateRequest {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private BieEditAbieNodeDetail abieNodeDetail;
     private List<BieEditAsbiepNodeDetail> asbiepNodeDetails = Collections.emptyList();
     private List<BieEditBbiepNodeDetail> bbiepNodeDetails = Collections.emptyList();

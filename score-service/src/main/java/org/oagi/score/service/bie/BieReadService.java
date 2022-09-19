@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
-
 @Service
 @Transactional(readOnly = true)
 public class BieReadService {
@@ -16,7 +14,7 @@ public class BieReadService {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    public BieDocument getBieDocument(ScoreUser requester, BigInteger topLevelAsbiepId) {
+    public BieDocument getBieDocument(ScoreUser requester, String topLevelAsbiepId) {
         BieDocument bieDocument = BieDocumentBuilder.buildFrom(
                 scoreRepositoryFactory.createBieReadRepository(),
                 scoreRepositoryFactory.createCcReadRepository())

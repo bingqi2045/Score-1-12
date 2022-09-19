@@ -1,14 +1,12 @@
 package org.oagi.score.export.impl;
 
-import org.jooq.types.ULong;
 import org.oagi.score.export.ExportContext;
 import org.oagi.score.export.model.*;
 import org.oagi.score.provider.ImportedDataProvider;
-import org.oagi.score.repository.ModuleRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repository.ModuleRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,22 +20,22 @@ public class DefaultExportContextBuilder {
 
     private ImportedDataProvider importedDataProvider;
 
-    private BigInteger moduleSetReleaseId;
+    private String moduleSetReleaseId;
 
     public DefaultExportContextBuilder(ModuleRepository moduleRepository,
                                        ImportedDataProvider importedDataProvider,
-                                       BigInteger moduleSetReleaseId) {
+                                       String moduleSetReleaseId) {
         this.moduleRepository = moduleRepository;
         this.importedDataProvider = importedDataProvider;
         this.moduleSetReleaseId = moduleSetReleaseId;
     }
 
     @Transactional
-    public ExportContext build(BigInteger moduleSetReleaseId) {
+    public ExportContext build(String moduleSetReleaseId) {
         DefaultExportContext context = new DefaultExportContext();
 
-        List<ScoreModule> moduleList = moduleRepository.findAll(ULong.valueOf(moduleSetReleaseId));
-        Map<ULong, SchemaModule> moduleMap = moduleList.stream()
+        List<ScoreModule> moduleList = moduleRepository.findAll(moduleSetReleaseId);
+        Map<String, SchemaModule> moduleMap = moduleList.stream()
                 .collect(Collectors.toMap(ScoreModule::getModuleId, SchemaModule::new));
 
         createSchemaModules(context, moduleMap);
@@ -65,19 +63,19 @@ public class DefaultExportContextBuilder {
         }
     }
 
-    private void minimizeDependency(Map<ULong, SchemaModule> moduleMap) {
+    private void minimizeDependency(Map<String, SchemaModule> moduleMap) {
         for (SchemaModule schemaModule : moduleMap.values()) {
             schemaModule.minimizeDependency();
         }
     }
 
-    private void createSchemaModules(DefaultExportContext context, Map<ULong, SchemaModule> moduleMap) {
+    private void createSchemaModules(DefaultExportContext context, Map<String, SchemaModule> moduleMap) {
         for (SchemaModule schemaModule : moduleMap.values()) {
             context.addSchemaModule(schemaModule);
         }
     }
 
-    private void createAgencyIdList(Map<ULong, SchemaModule> moduleMap) {
+    private void createAgencyIdList(Map<String, SchemaModule> moduleMap) {
         for (AgencyIdListRecord agencyIdList : importedDataProvider.findAgencyIdList()) {
             List<AgencyIdListValueRecord> agencyIdListValues =
                     importedDataProvider.findAgencyIdListValueByOwnerListId(agencyIdList.getAgencyIdListId());
@@ -91,9 +89,9 @@ public class DefaultExportContextBuilder {
         }
     }
 
-    private void createCodeLists(Map<ULong, SchemaModule> moduleMap) {
+    private void createCodeLists(Map<String, SchemaModule> moduleMap) {
         List<CodeListRecord> codeLists = importedDataProvider.findCodeList();
-        Map<ULong, SchemaCodeList> schemaCodeListMap = new HashMap();
+        Map<String, SchemaCodeList> schemaCodeListMap = new HashMap();
         codeLists.forEach(codeList-> {
             SchemaCodeList schemaCodeList = new SchemaCodeList();
             schemaCodeList.setGuid(codeList.getGuid());
@@ -133,19 +131,19 @@ public class DefaultExportContextBuilder {
         });
     }
 
-    private void createXBTs(Map<ULong, SchemaModule> moduleMap) {
+    private void createXBTs(Map<String, SchemaModule> moduleMap) {
         List<XbtRecord> xbtList = importedDataProvider.findXbt();
         xbtList.forEach(xbt-> {
-            ModuleCCID moduleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
-            if (moduleCCID == null) {
+            ModuleXbtID moduleXbt = importedDataProvider.findModuleXbt(xbt.getXbtId());
+            if (moduleXbt == null) {
                 return;
             }
-            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleId());
+            SchemaModule schemaModule = moduleMap.get(moduleXbt.getModuleId());
             schemaModule.addXBTSimpleType(new XBTSimpleType(xbt, importedDataProvider.findXbt(xbt.getSubtypeOfXbtId())));
         });
     }
 
-    private void createCDT(Map<ULong, SchemaModule> moduleMap) {
+    private void createCDT(Map<String, SchemaModule> moduleMap) {
         List<DtRecord> cdtList = importedDataProvider.findDT().stream()
                 .filter(e -> e.getBasedDtId() != null).collect(Collectors.toList());
         cdtList.forEach(bdt->{
@@ -174,7 +172,7 @@ public class DefaultExportContextBuilder {
             boolean isDefaultBDT = schemaModule.getPath().contains("BusinessDataType_1");
             BDTSimple bdtSimple;
             if (dtScList.isEmpty()) {
-                ULong bdtId = bdt.getDtId();
+                String bdtId = bdt.getDtId();
                 List<BdtPriRestriRecord> bdtPriRestriList =
                         importedDataProvider.findBdtPriRestriListByDtId(bdtId);
                 List<CdtAwdPriXpsTypeMapRecord> cdtAwdPriXpsTypeMapList =
@@ -187,7 +185,7 @@ public class DefaultExportContextBuilder {
                             bdt, baseDataType, isDefaultBDT,
                             bdtPriRestriList, xbtList, importedDataProvider);
                     xbtList.forEach(xbtRecord -> {
-                        ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbtRecord.getXbtId());
+                        ModuleXbtID xbtModuleCCID = importedDataProvider.findModuleXbt(xbtRecord.getXbtId());
 
                         if (xbtModuleCCID != null) {
                             addDependency(schemaModule,
@@ -233,7 +231,7 @@ public class DefaultExportContextBuilder {
                             CdtScAwdPriXpsTypeMapRecord cdtScAwdPriXpsTypeMap =
                                     importedDataProvider.findCdtScAwdPriXpsTypeMap(defaultBdtScPriRestri.get(0).getCdtScAwdPriXpsTypeMapId());
                             XbtRecord xbt = importedDataProvider.findXbt(cdtScAwdPriXpsTypeMap.getXbtId());
-                            ModuleCCID xbtModuleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
+                            ModuleXbtID xbtModuleCCID = importedDataProvider.findModuleXbt(xbt.getXbtId());
                             if (xbtModuleCCID != null) {
                                 addDependency(schemaModule, moduleMap.get(xbtModuleCCID.getModuleId()));
                             }
@@ -254,7 +252,7 @@ public class DefaultExportContextBuilder {
         });
     }
 
-    private void createBCCP(Map<ULong, SchemaModule> moduleMap) {
+    private void createBCCP(Map<String, SchemaModule> moduleMap) {
         importedDataProvider.findBCCP().forEach(bccp-> {
             List<BccRecord> bccList = importedDataProvider.findBCCByToBccpId(bccp.getBccpId());
             if (isAvailable(bccList)) {
@@ -291,7 +289,7 @@ public class DefaultExportContextBuilder {
         return sumOfEntityTypes != 0;
     }
 
-    private void createACC(Map<ULong, SchemaModule> moduleMap) {
+    private void createACC(Map<String, SchemaModule> moduleMap) {
         importedDataProvider.findACCManifest().forEach(accManifest->{
             AccRecord acc = importedDataProvider.findACC(accManifest.getAccId());
             if (acc.getDen().equals("Any Structured Content. Details")) {
@@ -341,7 +339,7 @@ public class DefaultExportContextBuilder {
         });
     }
 
-    private void createASCCP(Map<ULong, SchemaModule> moduleMap) {
+    private void createASCCP(Map<String, SchemaModule> moduleMap) {
         importedDataProvider.findASCCPManifest().forEach(asccpManifest -> {
             AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
             if (asccp.getReusableIndicator() == 0) {
@@ -367,7 +365,7 @@ public class DefaultExportContextBuilder {
         });
     }
 
-    private void createBlobContents(Map<ULong, SchemaModule> moduleMap) {
+    private void createBlobContents(Map<String, SchemaModule> moduleMap) {
         for (BlobContentRecord blobContent : importedDataProvider.findBlobContent()) {
             ModuleCCID moduleCCID = importedDataProvider.findModuleBlobContent(blobContent.getBlobContentId());
             if (moduleCCID == null) {

@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function10;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
@@ -54,30 +52,32 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
     /**
      * The column <code>oagi.code_list_manifest.code_list_manifest_id</code>.
+     * Primary, internal database key.
      */
-    public final TableField<CodeListManifestRecord, ULong> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CodeListManifestRecord, String> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.code_list_manifest.release_id</code>.
+     * The column <code>oagi.code_list_manifest.release_id</code>. Foreign key
+     * to the RELEASE table.
      */
-    public final TableField<CodeListManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CodeListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.code_list_manifest.code_list_id</code>.
      */
-    public final TableField<CodeListManifestRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CodeListManifestRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column
      * <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
      */
-    public final TableField<CodeListManifestRecord, ULong> BASED_CODE_LIST_MANIFEST_ID = createField(DSL.name("based_code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListManifestRecord, String> BASED_CODE_LIST_MANIFEST_ID = createField(DSL.name("based_code_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
      * <code>oagi.code_list_manifest.agency_id_list_value_manifest_id</code>.
      */
-    public final TableField<CodeListManifestRecord, ULong> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListManifestRecord, String> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.code_list_manifest.conflict</code>. This indicates
@@ -89,26 +89,26 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
      * The column <code>oagi.code_list_manifest.log_id</code>. A foreign key
      * pointed to a log for the current record.
      */
-    public final TableField<CodeListManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<CodeListManifestRecord, String> LOG_ID = createField(DSL.name("log_id"), SQLDataType.CHAR(36), this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column
      * <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>.
      * This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<CodeListManifestRecord, ULong> REPLACEMENT_CODE_LIST_MANIFEST_ID = createField(DSL.name("replacement_code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<CodeListManifestRecord, String> REPLACEMENT_CODE_LIST_MANIFEST_ID = createField(DSL.name("replacement_code_list_manifest_id"), SQLDataType.CHAR(36), this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column
      * <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
      */
-    public final TableField<CodeListManifestRecord, ULong> PREV_CODE_LIST_MANIFEST_ID = createField(DSL.name("prev_code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListManifestRecord, String> PREV_CODE_LIST_MANIFEST_ID = createField(DSL.name("prev_code_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column
      * <code>oagi.code_list_manifest.next_code_list_manifest_id</code>.
      */
-    public final TableField<CodeListManifestRecord, ULong> NEXT_CODE_LIST_MANIFEST_ID = createField(DSL.name("next_code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListManifestRecord, String> NEXT_CODE_LIST_MANIFEST_ID = createField(DSL.name("next_code_list_manifest_id"), SQLDataType.CHAR(36), this, "");
 
     private CodeListManifest(Name alias, Table<CodeListManifestRecord> aliased) {
         this(alias, aliased, null);
@@ -149,18 +149,13 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     }
 
     @Override
-    public Identity<CodeListManifestRecord, ULong> getIdentity() {
-        return (Identity<CodeListManifestRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<CodeListManifestRecord> getPrimaryKey() {
         return Keys.KEY_CODE_LIST_MANIFEST_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<CodeListManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_LOG_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_LOG_ID_FK, Keys.CODE_LIST_MANIFEST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
     }
 
     private transient Release _release;
@@ -168,7 +163,7 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     private transient CodeListManifest _codeListManifestBasedCodeListManifestIdFk;
     private transient AgencyIdListValueManifest _agencyIdListValueManifest;
     private transient Log _log;
-    private transient CodeListManifest _codeListReplacementCodeListManifestIdFk;
+    private transient CodeListManifest _codeListManifestReplacementCodeListManifestIdFk;
     private transient CodeListManifest _codeListManifestPrevCodeListManifestIdFk;
     private transient CodeListManifest _codeListManifestNextCodeListManifestIdFk;
 
@@ -210,7 +205,7 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
      */
     public AgencyIdListValueManifest agencyIdListValueManifest() {
         if (_agencyIdListValueManifest == null)
-            _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.CODE_LIST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
+            _agencyIdListValueManifest = new AgencyIdListValueManifest(this, Keys.CODE_LIST_MANIFEST_AGENCY_ID_LIST_VALUE_MANIFEST_ID_FK);
 
         return _agencyIdListValueManifest;
     }
@@ -228,13 +223,13 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     /**
      * Get the implicit join path to the <code>oagi.code_list_manifest</code>
      * table, via the
-     * <code>code_list_replacement_code_list_manifest_id_fk</code> key.
+     * <code>code_list_manifest_replacement_code_list_manifest_id_fk</code> key.
      */
-    public CodeListManifest codeListReplacementCodeListManifestIdFk() {
-        if (_codeListReplacementCodeListManifestIdFk == null)
-            _codeListReplacementCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK);
+    public CodeListManifest codeListManifestReplacementCodeListManifestIdFk() {
+        if (_codeListManifestReplacementCodeListManifestIdFk == null)
+            _codeListManifestReplacementCodeListManifestIdFk = new CodeListManifest(this, Keys.CODE_LIST_MANIFEST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK);
 
-        return _codeListReplacementCodeListManifestIdFk;
+        return _codeListManifestReplacementCodeListManifestIdFk;
     }
 
     /**
@@ -305,21 +300,22 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+    public Row10<String, String, String, String, String, Byte, String, String, String, String> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

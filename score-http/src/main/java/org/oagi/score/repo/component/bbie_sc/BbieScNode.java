@@ -3,7 +3,6 @@ package org.oagi.score.repo.component.bbie_sc;
 import lombok.Data;
 import org.oagi.score.service.common.data.CcState;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class BbieScNode {
 
     @Data
     public class BdtSc {
-        private BigInteger dtScManifestId;
+        private String dtScManifestId;
         private String guid;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -34,9 +33,9 @@ public class BbieScNode {
         private String hashPath;
         private String bbiePath;
         private String bbieHashPath;
-        private BigInteger basedDtScManifestId;
+        private String basedDtScManifestId;
 
-        private BigInteger bbieScId;
+        private String bbieScId;
         private String guid;
         private Integer cardinalityMin;
         private Integer cardinalityMax;
@@ -50,9 +49,9 @@ public class BbieScNode {
         private String fixedValue;
         private String example;
 
-        private BigInteger bdtScPriRestriId;
-        private BigInteger codeListId;
-        private BigInteger agencyIdListId;
+        private String bdtScPriRestriId;
+        private String codeListId;
+        private String agencyIdListId;
 
         public boolean isEmptyPrimitive() {
             return (bdtScPriRestriId == null && codeListId == null && agencyIdListId == null);

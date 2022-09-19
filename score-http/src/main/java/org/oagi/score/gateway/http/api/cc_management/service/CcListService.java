@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
@@ -29,7 +28,6 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,7 +66,7 @@ public class CcListService {
         return repository.getCcList(request);
     }
 
-    public ACC getAcc(BigInteger manifestId) {
+    public ACC getAcc(String manifestId) {
         List<Field> fields = new ArrayList();
         fields.add(ACC_MANIFEST.ACC_MANIFEST_ID);
         fields.addAll(Arrays.asList(ACC.fields()));
@@ -76,20 +74,20 @@ public class CcListService {
         return dslContext.select(fields)
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(manifestId))
                 .fetchOneInto(ACC.class);
     }
 
     @Transactional
-    public void transferOwnership(AuthenticatedPrincipal user, String type, BigInteger manifestId, String targetLoginId) {
-        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+    public void transferOwnership(AuthenticatedPrincipal user, String type, String manifestId, String targetLoginId) {
+        AppUser targetUser = sessionService.getAppUserByUsername(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
         switch (CcType.valueOf(type.toUpperCase())) {
             case ACC:
-                AccManifestRecord accManifest = manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
+                AccManifestRecord accManifest = manifestRepository.getAccManifestById(manifestId);
                 if (accManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
@@ -98,7 +96,7 @@ public class CcListService {
                 break;
 
             case ASCCP:
-                AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
+                AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(manifestId);
                 if (asccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
@@ -107,7 +105,7 @@ public class CcListService {
                 break;
 
             case BCCP:
-                BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
+                BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(manifestId);
                 if (bccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target BCCP.");
                 }
@@ -115,7 +113,7 @@ public class CcListService {
                 ccNodeService.updateBccpOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
             case DT:
-                DtManifestRecord dtManifest = manifestRepository.getDtManifestById(ULong.valueOf(manifestId));
+                DtManifestRecord dtManifest = manifestRepository.getDtManifestById(manifestId);
                 if (dtManifest == null) {
                     throw new IllegalArgumentException("Not found a target DT.");
                 }
@@ -129,19 +127,19 @@ public class CcListService {
     }
 
     public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(AuthenticatedPrincipal user) {
-        BigInteger requesterId = sessionService.userId(user);
+        String requesterId = sessionService.userId(user);
 
         Release workingRelease = releaseRepository.getWorkingRelease();
 
-        List<ULong> uegIds = dslContext.select(ACC.ACC_ID.as("id"))
+        List<String> uegIds = dslContext.select(ACC.ACC_ID.as("id"))
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .where(and(
                         ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                        ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(workingRelease.getReleaseId())),
-                        ACC.OWNER_USER_ID.eq(ULong.valueOf(requesterId))
+                        ACC_MANIFEST.RELEASE_ID.notEqual(workingRelease.getReleaseId()),
+                        ACC.OWNER_USER_ID.eq(requesterId)
                 ))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
 
         byte isUsed = (byte) 0;
 
@@ -168,20 +166,20 @@ public class CcListService {
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
                 .join(TOP_LEVEL_ASBIEP).on(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                 .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
-                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
                 .join(ASCCP.as("bie")).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID));
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
-                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID));
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
@@ -217,15 +215,15 @@ public class CcListService {
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID));
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
-                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID));
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID));
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(BCCP.PROPERTY_TERM));
@@ -332,7 +330,7 @@ public class CcListService {
         return dslContext.selectFrom(CC_TAG)
                 .fetch(record -> {
                     CcTag tag = new CcTag();
-                    tag.setCcTagId(record.getCcTagId().toBigInteger());
+                    tag.setCcTagId(record.getCcTagId());
                     tag.setTagName(record.getTagName());
                     return tag;
                 });

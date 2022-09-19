@@ -1,13 +1,12 @@
 package org.oagi.score.service.log.model;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +20,8 @@ public class LogSnapshotResolver {
     @Autowired
     private DSLContext dslContext;
 
-    public Map<String, Object> getNamespace(ULong namespaceId) {
-        if (namespaceId == null || namespaceId.longValue() <= 0L) {
+    public Map<String, Object> getNamespace(String namespaceId) {
+        if (!StringUtils.hasLength(namespaceId)) {
             return new HashMap();
         }
 
@@ -39,8 +38,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getUser(ULong userId) {
-        if (userId == null || userId.longValue() <= 0L) {
+    public Map<String, Object> getUser(String userId) {
+        if (!StringUtils.hasLength(userId)) {
             return new HashMap();
         }
 
@@ -58,8 +57,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getAcc(ULong accId) {
-        if (accId == null || accId.longValue() <= 0L) {
+    public Map<String, Object> getAcc(String accId) {
+        if (!StringUtils.hasLength(accId)) {
             return new HashMap();
         }
 
@@ -77,8 +76,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getAsccp(ULong asccpId) {
-        if (asccpId == null || asccpId.longValue() <= 0L) {
+    public Map<String, Object> getAsccp(String asccpId) {
+        if (!StringUtils.hasLength(asccpId)) {
             return new HashMap();
         }
 
@@ -96,8 +95,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getBccp(ULong bccpId) {
-        if (bccpId == null || bccpId.longValue() <= 0L) {
+    public Map<String, Object> getBccp(String bccpId) {
+        if (!StringUtils.hasLength(bccpId)) {
             return new HashMap();
         }
 
@@ -115,8 +114,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getDt(ULong dtId) {
-        if (dtId == null || dtId.longValue() <= 0L) {
+    public Map<String, Object> getDt(String dtId) {
+        if (!StringUtils.hasLength(dtId)) {
             return new HashMap();
         }
 
@@ -134,8 +133,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getDtSc(ULong dtScId) {
-        if (dtScId == null || dtScId.longValue() <= 0L) {
+    public Map<String, Object> getDtSc(String dtScId) {
+        if (!StringUtils.hasLength(dtScId)) {
             return new HashMap();
         }
 
@@ -153,8 +152,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getCodeList(ULong codeListId) {
-        if (codeListId == null || codeListId.longValue() <= 0L) {
+    public Map<String, Object> getCodeList(String codeListId) {
+        if (!StringUtils.hasLength(codeListId)) {
             return new HashMap();
         }
 
@@ -174,8 +173,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getAgencyIdList(ULong agencyIdListId) {
-        if (agencyIdListId == null || agencyIdListId.longValue() <= 0L) {
+    public Map<String, Object> getAgencyIdList(String agencyIdListId) {
+        if (!StringUtils.hasLength(agencyIdListId)) {
             return new HashMap();
         }
 
@@ -194,8 +193,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getAgencyIdListValue(ULong agencyIdListValueId) {
-        if (agencyIdListValueId == null || agencyIdListValueId.longValue() <= 0L) {
+    public Map<String, Object> getAgencyIdListValue(String agencyIdListValueId) {
+        if (!StringUtils.hasLength(agencyIdListValueId)) {
             return new HashMap();
         }
 
@@ -213,8 +212,8 @@ public class LogSnapshotResolver {
         return userProperties;
     }
 
-    public Map<String, Object> getXbt(ULong xbtId) {
-        if (xbtId == null || xbtId.longValue() <= 0L) {
+    public Map<String, Object> getXbt(String xbtId) {
+        if (!StringUtils.hasLength(xbtId)) {
             return new HashMap();
         }
 

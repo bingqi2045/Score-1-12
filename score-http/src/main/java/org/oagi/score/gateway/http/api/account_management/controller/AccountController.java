@@ -67,7 +67,7 @@ public class AccountController {
             AppOauth2User appOauth2User = pendingListService.getPendingBySub(sub);
 
             if (appOauth2User != null && appOauth2User.getAppUserId() != null) {
-                AppUser appUser = accountListService.getAccountById(appOauth2User.getAppUserId().longValue());
+                AppUser appUser = accountListService.getAccountById(appOauth2User.getAppUserId());
                 resp.put("username", appUser.getLoginId());
                 resp.put("authentication", "oauth2");
                 List<String> roles = new ArrayList();
@@ -94,7 +94,7 @@ public class AccountController {
 
     @RequestMapping(value = "/accounts/{id}/enable", method = RequestMethod.POST)
     public ResponseEntity enable(
-            @PathVariable("id") long id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
         accountService.setEnable(user, id, true);
         return ResponseEntity.noContent().build();
@@ -102,7 +102,7 @@ public class AccountController {
 
     @RequestMapping(value = "/accounts/{id}/disable", method = RequestMethod.POST)
     public ResponseEntity disable(
-            @PathVariable("id") long id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
         accountService.setEnable(user, id, false);
         return ResponseEntity.noContent().build();

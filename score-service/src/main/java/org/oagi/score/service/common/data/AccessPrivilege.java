@@ -2,8 +2,6 @@ package org.oagi.score.service.common.data;
 
 import org.oagi.score.repo.api.bie.model.BieState;
 
-import java.math.BigInteger;
-
 public enum AccessPrivilege {
 
     CanEdit,
@@ -69,7 +67,7 @@ public enum AccessPrivilege {
         return toAccessPrivilege(requester, owner, CcState.valueOf(ccState), isWorkingRelease);
     }
 
-    public static AccessPrivilege toAccessPrivilege(AppUser requester, BigInteger bieOwnerId, BieState bieState) {
+    public static AccessPrivilege toAccessPrivilege(AppUser requester, String bieOwnerId, BieState bieState) {
         AccessPrivilege accessPrivilege = Prohibited;
         switch (bieState) {
             case Initiating:

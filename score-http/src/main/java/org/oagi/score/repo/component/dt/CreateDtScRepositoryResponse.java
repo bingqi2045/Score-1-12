@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.dt;
 
-import java.math.BigInteger;
-
 public class CreateDtScRepositoryResponse {
 
-    private final BigInteger dtScManifestId;
+    private final String dtScManifestId;
 
-    public CreateDtScRepositoryResponse(BigInteger dtScManifestId) {
+    public CreateDtScRepositoryResponse(String dtScManifestId) {
         this.dtScManifestId = dtScManifestId;
     }
 
-    public BigInteger getDtScManifestId() {
+    public String getDtScManifestId() {
         return dtScManifestId;
     }
 }

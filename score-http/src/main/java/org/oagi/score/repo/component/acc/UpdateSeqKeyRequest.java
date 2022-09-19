@@ -5,16 +5,15 @@ import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateSeqKeyRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
+    private final String accManifestId;
     private final Pair<CcId, CcId> itemAfterPair;
 
     public UpdateSeqKeyRequest(AuthenticatedPrincipal user,
-                               BigInteger accManifestId,
+                               String accManifestId,
                                Pair<CcId, CcId> itemAfterPair) {
         super(user);
         this.accManifestId = accManifestId;
@@ -23,14 +22,14 @@ public class UpdateSeqKeyRequest extends RepositoryRequest {
 
     public UpdateSeqKeyRequest(AuthenticatedPrincipal user,
                                LocalDateTime localDateTime,
-                               BigInteger accManifestId,
+                               String accManifestId,
                                Pair<CcId, CcId> itemAfterPair) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
         this.itemAfterPair = itemAfterPair;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 

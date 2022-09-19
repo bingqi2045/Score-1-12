@@ -40,48 +40,14 @@
 
 package com.sun.xml.xsom.impl;
 
-import com.sun.xml.xsom.SCD;
-import com.sun.xml.xsom.XSAttGroupDecl;
-import com.sun.xml.xsom.XSAttributeDecl;
-import com.sun.xml.xsom.XSAttributeUse;
-import com.sun.xml.xsom.XSComplexType;
-import com.sun.xml.xsom.XSComponent;
-import com.sun.xml.xsom.XSContentType;
-import com.sun.xml.xsom.XSElementDecl;
-import com.sun.xml.xsom.XSFacet;
-import com.sun.xml.xsom.XSIdentityConstraint;
-import com.sun.xml.xsom.XSListSimpleType;
-import com.sun.xml.xsom.XSModelGroup;
-import com.sun.xml.xsom.XSModelGroupDecl;
-import com.sun.xml.xsom.XSNotation;
-import com.sun.xml.xsom.XSParticle;
-import com.sun.xml.xsom.XSRestrictionSimpleType;
-import com.sun.xml.xsom.XSSchema;
-import com.sun.xml.xsom.XSSchemaSet;
-import com.sun.xml.xsom.XSSimpleType;
-import com.sun.xml.xsom.XSType;
-import com.sun.xml.xsom.XSUnionSimpleType;
-import com.sun.xml.xsom.XSVariety;
-import com.sun.xml.xsom.XSWildcard;
+import com.sun.xml.xsom.*;
 import com.sun.xml.xsom.impl.scd.Iterators;
-import com.sun.xml.xsom.visitor.XSContentTypeFunction;
-import com.sun.xml.xsom.visitor.XSContentTypeVisitor;
-import com.sun.xml.xsom.visitor.XSFunction;
-import com.sun.xml.xsom.visitor.XSSimpleTypeFunction;
-import com.sun.xml.xsom.visitor.XSSimpleTypeVisitor;
-import com.sun.xml.xsom.visitor.XSVisitor;
+import com.sun.xml.xsom.visitor.*;
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.NamespaceContext;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 public class SchemaSetImpl implements XSSchemaSet
 {

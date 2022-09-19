@@ -2,8 +2,10 @@ package org.oagi.score.repo.component.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.jooq.*;
-import org.jooq.types.ULong;
+import org.jooq.DSLContext;
+import org.jooq.Record4;
+import org.jooq.Record5;
+import org.jooq.Record6;
 import org.oagi.score.gateway.http.api.graph.data.FindUsagesResponse;
 import org.oagi.score.gateway.http.api.graph.data.Graph;
 import org.oagi.score.gateway.http.api.graph.data.Node;
@@ -17,7 +19,6 @@ import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
@@ -30,118 +31,118 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 public class CoreComponentGraphContext implements GraphContext {
 
     private DSLContext dslContext;
-    private ULong releaseId;
+    private String releaseId;
 
-    private Map<ULong, AccManifest> accManifestMap;
-    private Map<ULong, List<AccManifest>> accManifestMapByBasedAccManifestId;
-    private Map<ULong, Set<AccManifest>> accManifestMapByToAsccpManifestId;
-    private Map<ULong, Set<AccManifest>> accManifestMapByToBccpManifestId;
-    private Map<ULong, AsccpManifest> asccpManifestMap;
-    private Map<ULong, List<AsccpManifest>> asccpManifestMapByRoleOfAccManifestId;
-    private Map<ULong, BccpManifest> bccpManifestMap;
-    private Map<ULong, List<AsccManifest>> asccManifestMap;
-    private Map<ULong, List<BccManifest>> bccManifestMap;
-    private Map<ULong, DtManifest> dtManifestMap;
-    private Map<ULong, List<DtScManifest>> dtScManifestMap;
+    private Map<String, AccManifest> accManifestMap;
+    private Map<String, List<AccManifest>> accManifestMapByBasedAccManifestId;
+    private Map<String, Set<AccManifest>> accManifestMapByToAsccpManifestId;
+    private Map<String, Set<AccManifest>> accManifestMapByToBccpManifestId;
+    private Map<String, AsccpManifest> asccpManifestMap;
+    private Map<String, List<AsccpManifest>> asccpManifestMapByRoleOfAccManifestId;
+    private Map<String, BccpManifest> bccpManifestMap;
+    private Map<String, List<AsccManifest>> asccManifestMap;
+    private Map<String, List<BccManifest>> bccManifestMap;
+    private Map<String, DtManifest> dtManifestMap;
+    private Map<String, List<DtScManifest>> dtScManifestMap;
 
     @Data
     @AllArgsConstructor
     public class AccManifest {
-        private ULong accManifestId;
-        private ULong basedAccManifestId;
+        private String accManifestId;
+        private String basedAccManifestId;
         private String objectClassTerm;
         private String den;
         private OagisComponentType componentType;
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevAccManifestId;
+        private String releaseId;
+        private String prevAccManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class AsccpManifest {
-        private ULong asccpManifestId;
-        private ULong roleOfAccManifestId;
+        private String asccpManifestId;
+        private String roleOfAccManifestId;
         private String propertyTerm;
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevAsccpManifestId;
+        private String releaseId;
+        private String prevAsccpManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class BccpManifest {
-        private ULong bccpManifestId;
-        private ULong bdtManifestId;
+        private String bccpManifestId;
+        private String bdtManifestId;
         private String propertyTerm;
         private String representationTerm;
         private String state;
         private String guid;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevBccpManifestId;
+        private String releaseId;
+        private String prevBccpManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class AsccManifest implements SeqKeySupportable {
-        private ULong asccManifestId;
-        private ULong fromAccManifestId;
-        private ULong toAsccpManifestId;
+        private String asccManifestId;
+        private String fromAccManifestId;
+        private String toAsccpManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevAsccManifestId;
+        private String releaseId;
+        private String prevAsccManifestId;
 
-        private BigInteger seqKeyId;
-        private BigInteger prevSeqKeyId;
-        private BigInteger nextSeqKeyId;
+        private String seqKeyId;
+        private String prevSeqKeyId;
+        private String nextSeqKeyId;
     }
 
     @Data
     @AllArgsConstructor
     public class BccManifest implements SeqKeySupportable {
-        private ULong bccManifestId;
-        private ULong fromAccManifestId;
-        private ULong toBccpManifestId;
+        private String bccManifestId;
+        private String fromAccManifestId;
+        private String toBccpManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
         private BCCEntityType entityType;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevBccManifestId;
+        private String releaseId;
+        private String prevBccManifestId;
 
-        private BigInteger seqKeyId;
-        private BigInteger prevSeqKeyId;
-        private BigInteger nextSeqKeyId;
+        private String seqKeyId;
+        private String prevSeqKeyId;
+        private String nextSeqKeyId;
     }
 
     @Data
     @AllArgsConstructor
     public class DtManifest {
-        private ULong dtManifestId;
+        private String dtManifestId;
         private String dataTypeTerm;
         private String qualifier;
         private String den;
         private String state;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevDtManifestId;
+        private String releaseId;
+        private String prevDtManifestId;
     }
 
     @Data
     @AllArgsConstructor
     public class DtScManifest {
-        private ULong dtScManifestId;
-        private ULong basedDtScId;
-        private ULong ownerDtManifestId;
+        private String dtScManifestId;
+        private String basedDtScId;
+        private String ownerDtManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
         private String objectClassTerm;
@@ -149,13 +150,13 @@ public class CoreComponentGraphContext implements GraphContext {
         private String representationTerm;
         private String State;
         private Byte isDeprecated;
-        private ULong releaseId;
-        private ULong prevDtScManifestId;
+        private String releaseId;
+        private String prevDtScManifestId;
     }
 
-    public CoreComponentGraphContext(DSLContext dslContext, BigInteger releaseId) {
+    public CoreComponentGraphContext(DSLContext dslContext, String releaseId) {
         this.dslContext = dslContext;
-        this.releaseId = ULong.valueOf(releaseId);
+        this.releaseId = releaseId;
 
         List<AccManifest> accManifestList = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                 ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE, ACC.GUID,
@@ -237,9 +238,9 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(SEQ_KEY).on(ASCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
-                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
-                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
-                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                            String seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            String prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            String nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
 
                             return new AsccManifest(
                                     record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
@@ -251,15 +252,15 @@ public class CoreComponentGraphContext implements GraphContext {
                                     record.get(ASCC.IS_DEPRECATED),
                                     record.get(ASCC_MANIFEST.RELEASE_ID),
                                     record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID),
-                                    seqKeyId.toBigInteger(),
-                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
-                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                                    seqKeyId,
+                                    (prevSeqKeyId != null) ? prevSeqKeyId : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId : null);
                         });
         asccManifestMap = asccManifestList.stream()
                 .collect(groupingBy(AsccManifest::getFromAccManifestId));
         accManifestMapByToAsccpManifestId = new HashMap();
         for (AsccManifest asccManifest : asccManifestList) {
-            ULong toAsccpManifestId = asccManifest.getToAsccpManifestId();
+            String toAsccpManifestId = asccManifest.getToAsccpManifestId();
             Set<AccManifest> accManifests = accManifestMapByToAsccpManifestId.get(toAsccpManifestId);
             if (accManifests == null) {
                 accManifests = new HashSet();
@@ -280,9 +281,9 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(SEQ_KEY).on(BCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(BCC_MANIFEST.RELEASE_ID.eq(this.releaseId))
                         .fetch(record -> {
-                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
-                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
-                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                            String seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            String prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            String nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
 
                             return new BccManifest(
                                     record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
@@ -295,15 +296,15 @@ public class CoreComponentGraphContext implements GraphContext {
                                     record.get(BCC.IS_DEPRECATED),
                                     record.get(BCC_MANIFEST.RELEASE_ID),
                                     record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
-                                    seqKeyId.toBigInteger(),
-                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
-                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                                    seqKeyId,
+                                    (prevSeqKeyId != null) ? prevSeqKeyId : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId : null);
                         });
         bccManifestMap = bccManifestList.stream()
                 .collect(groupingBy(BccManifest::getFromAccManifestId));
         accManifestMapByToBccpManifestId = new HashMap();
         for (BccManifest bccManifest : bccManifestList) {
-            ULong toBccpManifestId = bccManifest.getToBccpManifestId();
+            String toBccpManifestId = bccManifest.getToBccpManifestId();
             Set<AccManifest> accManifests = accManifestMapByToBccpManifestId.get(toBccpManifestId);
             if (accManifests == null) {
                 accManifests = new HashSet();
@@ -337,6 +338,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
                         .join(DT).on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
                         .where(DT_SC_MANIFEST.RELEASE_ID.eq(this.releaseId))
+                        .orderBy(DT_SC.CREATION_TIMESTAMP, DT_SC.OBJECT_CLASS_TERM, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM)
                         .fetch(record -> new DtScManifest(
                                 record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID),
                                 record.get(DT_SC.BASED_DT_SC_ID),

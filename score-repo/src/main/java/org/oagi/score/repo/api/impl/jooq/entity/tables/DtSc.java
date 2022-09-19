@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function22;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -59,10 +57,10 @@ public class DtSc extends TableImpl<DtScRecord> {
     }
 
     /**
-     * The column <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database
+     * The column <code>oagi.dt_sc.dt_sc_id</code>. Primary, internal database
      * key.
      */
-    public final TableField<DtScRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<DtScRecord, String> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier
@@ -101,11 +99,11 @@ public class DtSc extends TableImpl<DtScRecord> {
     public final TableField<DtScRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(200), this, "This is typically a URL identifying the source of the DEFINITION column.");
 
     /**
-     * The column <code>oagi.dt_sc.owner_dt_id</code>. Foreigned key to the DT
+     * The column <code>oagi.dt_sc.owner_dt_id</code>. Foreign key to the DT
      * table indicating the data type, to which this supplementary component
      * belongs.
      */
-    public final TableField<DtScRecord, ULong> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.");
+    public final TableField<DtScRecord, String> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table indicating the data type, to which this supplementary component belongs.");
 
     /**
      * The column <code>oagi.dt_sc.cardinality_min</code>. The minimum
@@ -127,7 +125,7 @@ public class DtSc extends TableImpl<DtScRecord> {
      * DT_SC table itself. This column is used when the SC is derived from the
      * based DT.
      */
-    public final TableField<DtScRecord, ULong> BASED_DT_SC_ID = createField(DSL.name("based_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.");
+    public final TableField<DtScRecord, String> BASED_DT_SC_ID = createField(DSL.name("based_dt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.");
 
     /**
      * The column <code>oagi.dt_sc.default_value</code>. This column specifies
@@ -154,13 +152,13 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The column <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<DtScRecord, ULong> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<DtScRecord, String> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt_sc.created_by</code>. Foreign key to the
-     * APP_USER table. It indicates the user who created the code list.
+     * APP_USER table. It indicates the user who created the DT_SC.
      */
-    public final TableField<DtScRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
+    public final TableField<DtScRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the DT_SC.");
 
     /**
      * The column <code>oagi.dt_sc.owner_user_id</code>. Foreign key to the
@@ -170,13 +168,13 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public final TableField<DtScRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<DtScRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
      * The column <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the
-     * APP_USER table. It identifies the user who last updated the code list.
+     * APP_USER table. It identifies the user who last updated the DT_SC.
      */
-    public final TableField<DtScRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
+    public final TableField<DtScRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the DT_SC.");
 
     /**
      * The column <code>oagi.dt_sc.creation_timestamp</code>. Timestamp when the
@@ -194,13 +192,13 @@ public class DtSc extends TableImpl<DtScRecord> {
      * The column <code>oagi.dt_sc.prev_dt_sc_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<DtScRecord, ULong> PREV_DT_SC_ID = createField(DSL.name("prev_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<DtScRecord, String> PREV_DT_SC_ID = createField(DSL.name("prev_dt_sc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.dt_sc.next_dt_sc_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<DtScRecord, ULong> NEXT_DT_SC_ID = createField(DSL.name("next_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<DtScRecord, String> NEXT_DT_SC_ID = createField(DSL.name("next_dt_sc_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private DtSc(Name alias, Table<DtScRecord> aliased) {
         this(alias, aliased, null);
@@ -243,11 +241,6 @@ public class DtSc extends TableImpl<DtScRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.DT_SC_DT_SC_GUID_IDX);
-    }
-
-    @Override
-    public Identity<DtScRecord, ULong> getIdentity() {
-        return (Identity<DtScRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -400,21 +393,22 @@ public class DtSc extends TableImpl<DtScRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+    public Row22<String, String, String, String, String, String, String, String, Integer, Integer, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, String> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super Integer, ? super Integer, ? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super Integer, ? super Integer, ? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Integer, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

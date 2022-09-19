@@ -8,9 +8,7 @@ import org.oagi.score.service.bie.BieVisitContext;
 import org.oagi.score.service.bie.BieVisitor;
 import org.oagi.score.service.corecomponent.CcDocument;
 
-import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,14 +17,14 @@ import java.util.stream.Stream;
 public class BieDocumentImpl implements BieDocument {
 
     private TopLevelAsbiep topLevelAsbiep;
-    private Map<BigInteger, Abie> abieMap;
-    private Map<BigInteger, List<Asbie>> asbieMap;
-    private Map<BigInteger, List<Bbie>> bbieMap;
-    private Map<BigInteger, Bbie> bbieByIdMap;
-    private Map<BigInteger, Asbiep> asbiepMap;
-    private Map<BigInteger, Bbiep> bbiepMap;
-    private Map<BigInteger, List<BbieSc>> bbieScMap;
-    private Map<BigInteger, BbieSc> bbieScByIdMap;
+    private Map<String, Abie> abieMap;
+    private Map<String, List<Asbie>> asbieMap;
+    private Map<String, List<Bbie>> bbieMap;
+    private Map<String, Bbie> bbieByIdMap;
+    private Map<String, Asbiep> asbiepMap;
+    private Map<String, Bbiep> bbiepMap;
+    private Map<String, List<BbieSc>> bbieScMap;
+    private Map<String, BbieSc> bbieScByIdMap;
 
     private CcDocument ccDocument;
 
@@ -80,7 +78,7 @@ public class BieDocumentImpl implements BieDocument {
                         "BCC-" + ((Bbie) e).getBasedBccManifestId()), Function.identity()));
 
         List<BieAssociation> associations = new ArrayList();
-        BigInteger basedAccManifestId = abie.getBasedAccManifestId();
+        String basedAccManifestId = abie.getBasedAccManifestId();
         AccManifest accManifest = ccDocument.getAccManifest(basedAccManifestId);
         Stack<AccManifest> accManifestStack = new Stack();
         while (accManifest != null) {
@@ -140,7 +138,7 @@ public class BieDocumentImpl implements BieDocument {
     }
 
     @Override
-    public Bbie getBbie(BigInteger bbieId) {
+    public Bbie getBbie(String bbieId) {
         return this.bbieByIdMap.get(bbieId);
     }
 
@@ -154,7 +152,7 @@ public class BieDocumentImpl implements BieDocument {
     }
 
     @Override
-    public BbieSc getBbieSc(BigInteger bbieScId) {
+    public BbieSc getBbieSc(String bbieScId) {
         return this.bbieScByIdMap.get(bbieScId);
     }
 

@@ -11,5 +11,5 @@ public class BieUserExtRevision {
     private BigInteger extAbieId;
     private BigInteger extAccId;
     private BigInteger userExtAccId;
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 }

@@ -5,7 +5,6 @@ import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.businesscontext.model.BusinessContext;
 import org.oagi.score.service.common.data.AccessPrivilege;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -24,10 +23,10 @@ public class AsbieListRecord {
     private String lastUpdateUser;
     private String lastUpdateTimestamp;
     private String used;
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private String topLevelAsccpPropertyTerm;
     private List<BusinessContext> businessContexts;
     private String owner;
-    private BigInteger ownerUserId;
+    private String ownerUserId;
     private AccessPrivilege access;
 }

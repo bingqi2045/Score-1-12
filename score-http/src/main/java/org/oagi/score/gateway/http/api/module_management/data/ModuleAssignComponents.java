@@ -3,138 +3,137 @@ package org.oagi.score.gateway.http.api.module_management.data;
 import lombok.Data;
 import org.oagi.score.repo.api.module.model.AssignableNode;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 public class ModuleAssignComponents {
 
-    private Map<BigInteger, AssignableNode> assignableAccManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableAsccpManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableBccpManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableDtManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableCodeListManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableAgencyIdListManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignableXbtManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableAccManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableAsccpManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableBccpManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableDtManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableCodeListManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableAgencyIdListManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignableXbtManifestMap = new HashMap();
 
-    private Map<BigInteger, AssignableNode> assignedAccManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedAsccpManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedBccpManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedDtManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedCodeListManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedAgencyIdListManifestMap = new HashMap();
-    private Map<BigInteger, AssignableNode> assignedXbtManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedAccManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedAsccpManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedBccpManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedDtManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedCodeListManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedAgencyIdListManifestMap = new HashMap();
+    private Map<String, AssignableNode> assignedXbtManifestMap = new HashMap();
 
-    public Map<BigInteger, AssignableNode> getAssignableAccManifestMap() {
+    public Map<String, AssignableNode> getAssignableAccManifestMap() {
         return assignableAccManifestMap;
     }
 
-    public void setAssignableAccManifestMap(Map<BigInteger, AssignableNode> assignableAccManifestMap) {
+    public void setAssignableAccManifestMap(Map<String, AssignableNode> assignableAccManifestMap) {
         this.assignableAccManifestMap = assignableAccManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableAsccpManifestMap() {
+    public Map<String, AssignableNode> getAssignableAsccpManifestMap() {
         return assignableAsccpManifestMap;
     }
 
-    public void setAssignableAsccpManifestMap(Map<BigInteger, AssignableNode> assignableAsccpManifestMap) {
+    public void setAssignableAsccpManifestMap(Map<String, AssignableNode> assignableAsccpManifestMap) {
         this.assignableAsccpManifestMap = assignableAsccpManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableBccpManifestMap() {
+    public Map<String, AssignableNode> getAssignableBccpManifestMap() {
         return assignableBccpManifestMap;
     }
 
-    public void setAssignableBccpManifestMap(Map<BigInteger, AssignableNode> assignableBccpManifestMap) {
+    public void setAssignableBccpManifestMap(Map<String, AssignableNode> assignableBccpManifestMap) {
         this.assignableBccpManifestMap = assignableBccpManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableDtManifestMap() {
+    public Map<String, AssignableNode> getAssignableDtManifestMap() {
         return assignableDtManifestMap;
     }
 
-    public void setAssignableDtManifestMap(Map<BigInteger, AssignableNode> assignableDtManifestMap) {
+    public void setAssignableDtManifestMap(Map<String, AssignableNode> assignableDtManifestMap) {
         this.assignableDtManifestMap = assignableDtManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableCodeListManifestMap() {
+    public Map<String, AssignableNode> getAssignableCodeListManifestMap() {
         return assignableCodeListManifestMap;
     }
 
-    public void setAssignableCodeListManifestMap(Map<BigInteger, AssignableNode> assignableCodeListManifestMap) {
+    public void setAssignableCodeListManifestMap(Map<String, AssignableNode> assignableCodeListManifestMap) {
         this.assignableCodeListManifestMap = assignableCodeListManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableAgencyIdListManifestMap() {
+    public Map<String, AssignableNode> getAssignableAgencyIdListManifestMap() {
         return assignableAgencyIdListManifestMap;
     }
 
-    public void setAssignableAgencyIdListManifestMap(Map<BigInteger, AssignableNode> assignableAgencyIdListManifestMap) {
+    public void setAssignableAgencyIdListManifestMap(Map<String, AssignableNode> assignableAgencyIdListManifestMap) {
         this.assignableAgencyIdListManifestMap = assignableAgencyIdListManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignableXbtManifestMap() {
+    public Map<String, AssignableNode> getAssignableXbtManifestMap() {
         return assignableXbtManifestMap;
     }
 
-    public void setAssignableXbtManifestMap(Map<BigInteger, AssignableNode> assignableXbtManifestMap) {
+    public void setAssignableXbtManifestMap(Map<String, AssignableNode> assignableXbtManifestMap) {
         this.assignableXbtManifestMap = assignableXbtManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedAccManifestMap() {
+    public Map<String, AssignableNode> getAssignedAccManifestMap() {
         return assignedAccManifestMap;
     }
 
-    public void setAssignedAccManifestMap(Map<BigInteger, AssignableNode> assignedAccManifestMap) {
+    public void setAssignedAccManifestMap(Map<String, AssignableNode> assignedAccManifestMap) {
         this.assignedAccManifestMap = assignedAccManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedAsccpManifestMap() {
+    public Map<String, AssignableNode> getAssignedAsccpManifestMap() {
         return assignedAsccpManifestMap;
     }
 
-    public void setAssignedAsccpManifestMap(Map<BigInteger, AssignableNode> assignedAsccpManifestMap) {
+    public void setAssignedAsccpManifestMap(Map<String, AssignableNode> assignedAsccpManifestMap) {
         this.assignedAsccpManifestMap = assignedAsccpManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedBccpManifestMap() {
+    public Map<String, AssignableNode> getAssignedBccpManifestMap() {
         return assignedBccpManifestMap;
     }
 
-    public void setAssignedBccpManifestMap(Map<BigInteger, AssignableNode> assignedBccpManifestMap) {
+    public void setAssignedBccpManifestMap(Map<String, AssignableNode> assignedBccpManifestMap) {
         this.assignedBccpManifestMap = assignedBccpManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedDtManifestMap() {
+    public Map<String, AssignableNode> getAssignedDtManifestMap() {
         return assignedDtManifestMap;
     }
 
-    public void setAssignedDtManifestMap(Map<BigInteger, AssignableNode> assignedDtManifestMap) {
+    public void setAssignedDtManifestMap(Map<String, AssignableNode> assignedDtManifestMap) {
         this.assignedDtManifestMap = assignedDtManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedCodeListManifestMap() {
+    public Map<String, AssignableNode> getAssignedCodeListManifestMap() {
         return assignedCodeListManifestMap;
     }
 
-    public void setAssignedCodeListManifestMap(Map<BigInteger, AssignableNode> assignedCodeListManifestMap) {
+    public void setAssignedCodeListManifestMap(Map<String, AssignableNode> assignedCodeListManifestMap) {
         this.assignedCodeListManifestMap = assignedCodeListManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedAgencyIdListManifestMap() {
+    public Map<String, AssignableNode> getAssignedAgencyIdListManifestMap() {
         return assignedAgencyIdListManifestMap;
     }
 
-    public void setAssignedAgencyIdListManifestMap(Map<BigInteger, AssignableNode> assignedAgencyIdListManifestMap) {
+    public void setAssignedAgencyIdListManifestMap(Map<String, AssignableNode> assignedAgencyIdListManifestMap) {
         this.assignedAgencyIdListManifestMap = assignedAgencyIdListManifestMap;
     }
 
-    public Map<BigInteger, AssignableNode> getAssignedXbtManifestMap() {
+    public Map<String, AssignableNode> getAssignedXbtManifestMap() {
         return assignedXbtManifestMap;
     }
 
-    public void setAssignedXbtManifestMap(Map<BigInteger, AssignableNode> assignedXbtManifestMap) {
+    public void setAssignedXbtManifestMap(Map<String, AssignableNode> assignedXbtManifestMap) {
         this.assignedXbtManifestMap = assignedXbtManifestMap;
     }
 }

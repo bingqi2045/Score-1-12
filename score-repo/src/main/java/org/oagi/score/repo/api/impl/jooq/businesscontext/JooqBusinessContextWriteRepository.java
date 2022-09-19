@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.BusinessContextWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -13,16 +12,13 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BIZ_CTX;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BIZ_CTX_VALUE;
 import static org.oagi.score.repo.api.impl.jooq.utils.ScoreGuidUtils.randomGuid;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -41,11 +37,12 @@ public class JooqBusinessContextWriteRepository
             CreateBusinessContextRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BizCtxRecord record = new BizCtxRecord();
 
+        record.setBizCtxId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setName(request.getName());
         record.setCreatedBy(requesterUserId);
@@ -53,10 +50,10 @@ public class JooqBusinessContextWriteRepository
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        BigInteger businessContextId = dslContext().insertInto(BIZ_CTX)
+        dslContext().insertInto(BIZ_CTX)
                 .set(record)
-                .returning(BIZ_CTX.BIZ_CTX_ID)
-                .fetchOne().getBizCtxId().toBigInteger();
+                .execute();
+        String businessContextId = record.getBizCtxId();
 
         CreateBusinessContextResponse response = new CreateBusinessContextResponse(businessContextId);
 
@@ -69,16 +66,17 @@ public class JooqBusinessContextWriteRepository
     }
 
     private BusinessContextValue createBusinessContextValue(BusinessContextValue businessContextValue,
-                                                            BigInteger businessContextId) {
+                                                            String businessContextId) {
         BizCtxValueRecord valueRecord = new BizCtxValueRecord();
 
-        valueRecord.setBizCtxId(ULong.valueOf(businessContextId));
-        valueRecord.setCtxSchemeValueId(ULong.valueOf(businessContextValue.getContextSchemeValueId()));
+        valueRecord.setBizCtxValueId(UUID.randomUUID().toString());
+        valueRecord.setBizCtxId(businessContextId);
+        valueRecord.setCtxSchemeValueId(businessContextValue.getContextSchemeValueId());
 
-        BigInteger businessContextValueId = dslContext().insertInto(BIZ_CTX_VALUE)
+        dslContext().insertInto(BIZ_CTX_VALUE)
                 .set(valueRecord)
-                .returning(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID)
-                .fetchOne().getBizCtxValueId().toBigInteger();
+                .execute();
+        String businessContextValueId = valueRecord.getBizCtxValueId();
 
         businessContextValue.setContextSchemeValueId(businessContextValueId);
         return businessContextValue;
@@ -90,11 +88,11 @@ public class JooqBusinessContextWriteRepository
             UpdateBusinessContextRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BizCtxRecord record = dslContext().selectFrom(BIZ_CTX)
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(request.getBusinessContextId())))
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(request.getBusinessContextId()))
                 .fetchOptional().orElse(null);
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
@@ -121,18 +119,18 @@ public class JooqBusinessContextWriteRepository
         updateBusinessContextValue(request);
 
         return new UpdateBusinessContextResponse(
-                record.getBizCtxId().toBigInteger(),
+                record.getBizCtxId(),
                 !changedField.isEmpty());
     }
 
     private void updateBusinessContextValue(UpdateBusinessContextRequest request) {
-        List<ULong> oldBizCtxValueIdList =
+        List<String> oldBizCtxValueIdList =
                 dslContext().select(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID)
                         .from(BIZ_CTX_VALUE)
-                        .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(request.getBusinessContextId())))
+                        .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(request.getBusinessContextId()))
                         .fetch(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID);
 
-        Map<BigInteger, BusinessContextValue> businessContextValueMap = request.getBusinessContextValueList().stream()
+        Map<String, BusinessContextValue> businessContextValueMap = request.getBusinessContextValueList().stream()
                 .filter(e -> e.getBusinessContextValueId() != null)
                 .collect(Collectors.toMap(BusinessContextValue::getBusinessContextValueId, Function.identity()));
 
@@ -140,15 +138,15 @@ public class JooqBusinessContextWriteRepository
         dslContext().deleteFrom(BIZ_CTX_VALUE)
                 .where(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.in(
                         oldBizCtxValueIdList.stream()
-                                .filter(e -> !businessContextValueMap.keySet().contains(e.toBigInteger()))
+                                .filter(e -> !businessContextValueMap.keySet().contains(e))
                                 .collect(Collectors.toList())
                 ))
                 .execute();
 
         for (BusinessContextValue businessContextValue : businessContextValueMap.values()) {
             dslContext().update(BIZ_CTX_VALUE)
-                    .set(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID, ULong.valueOf(businessContextValue.getContextSchemeValueId()))
-                    .where(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(businessContextValue.getBusinessContextValueId())))
+                    .set(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID, businessContextValue.getContextSchemeValueId())
+                    .where(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(businessContextValue.getBusinessContextValueId()))
                     .execute();
         }
 
@@ -163,7 +161,7 @@ public class JooqBusinessContextWriteRepository
     public DeleteBusinessContextResponse deleteBusinessContext(
             DeleteBusinessContextRequest request) throws ScoreDataAccessException {
 
-        List<BigInteger> businessContextIdList = request.getBusinessContextIdList();
+        List<String> businessContextIdList = request.getBusinessContextIdList();
         if (businessContextIdList == null || businessContextIdList.isEmpty()) {
             return new DeleteBusinessContextResponse(Collections.emptyList());
         }
@@ -171,19 +169,15 @@ public class JooqBusinessContextWriteRepository
         dslContext().delete(BIZ_CTX_VALUE)
                 .where(
                         businessContextIdList.size() == 1 ?
-                                BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(businessContextIdList.get(0))) :
-                                BIZ_CTX_VALUE.BIZ_CTX_ID.in(
-                                        businessContextIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
+                                BIZ_CTX_VALUE.BIZ_CTX_ID.eq(businessContextIdList.get(0)) :
+                                BIZ_CTX_VALUE.BIZ_CTX_ID.in(businessContextIdList)
                 )
                 .execute();
         dslContext().delete(BIZ_CTX)
                 .where(
                         businessContextIdList.size() == 1 ?
-                                BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(businessContextIdList.get(0))) :
-                                BIZ_CTX.BIZ_CTX_ID.in(
-                                        businessContextIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                )
+                                BIZ_CTX.BIZ_CTX_ID.eq(businessContextIdList.get(0)) :
+                                BIZ_CTX.BIZ_CTX_ID.in(businessContextIdList)
                 )
                 .execute();
 

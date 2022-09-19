@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function13;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
@@ -55,10 +53,10 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     }
 
     /**
-     * The column <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary,
+     * The column <code>oagi.ctx_scheme.ctx_scheme_id</code>. Primary, internal
      * database key.
      */
-    public final TableField<CtxSchemeRecord, ULong> CTX_SCHEME_ID = createField(DSL.name("ctx_scheme_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary, database key.");
+    public final TableField<CtxSchemeRecord, String> CTX_SCHEME_ID = createField(DSL.name("ctx_scheme_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.ctx_scheme.guid</code>. A globally unique
@@ -102,27 +100,27 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
      * key to the CTX_CATEGORY table. It identifies the context category
      * associated with this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.");
+    public final TableField<CtxSchemeRecord, String> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), SQLDataType.CHAR(36).nullable(false), this, "This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.code_list_id</code>. This is the foreign
      * key to the CODE_LIST table. It identifies the code list associated with
      * this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.");
+    public final TableField<CtxSchemeRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this context scheme.");
+    public final TableField<CtxSchemeRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.last_updated_by</code>. Foreign key to
      * the APP_USER table. It identifies the user who last updated the context
      * scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.");
+    public final TableField<CtxSchemeRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.creation_timestamp</code>. Timestamp
@@ -172,11 +170,6 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CtxSchemeRecord, ULong> getIdentity() {
-        return (Identity<CtxSchemeRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -285,21 +278,22 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row13<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function13<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function13<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

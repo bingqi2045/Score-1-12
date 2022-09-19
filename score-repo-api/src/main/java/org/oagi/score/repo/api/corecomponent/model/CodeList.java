@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class CodeList implements CoreComponent, Serializable {
 
-    private BigInteger codeListId;
+    private String codeListId;
 
     private String guid;
 
@@ -14,13 +14,13 @@ public class CodeList implements CoreComponent, Serializable {
 
     private String versionId;
 
-    private BigInteger basedCodeListId;
+    private String basedCodeListId;
 
-    public BigInteger getBasedCodeListId() {
+    public String getBasedCodeListId() {
         return basedCodeListId;
     }
 
-    public void setBasedCodeListId(BigInteger basedCodeListId) {
+    public void setBasedCodeListId(String basedCodeListId) {
         this.basedCodeListId = basedCodeListId;
     }
 
@@ -34,7 +34,7 @@ public class CodeList implements CoreComponent, Serializable {
 
     private String listId;
 
-    private BigInteger agencyIdListValueId;
+    private String agencyIdListValueId;
 
     public String getAgencyName() {
         return agencyName;
@@ -46,15 +46,15 @@ public class CodeList implements CoreComponent, Serializable {
 
     private String agencyName;
 
-    private BigInteger prevCodeListId;
+    private String prevCodeListId;
 
-    private BigInteger nextCodeListId;
+    private String nextCodeListId;
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
@@ -78,32 +78,32 @@ public class CodeList implements CoreComponent, Serializable {
         this.versionId = versionId;
     }
 
-    public BigInteger getAgencyIdListValueId() {
+    public String getAgencyIdListValueId() {
         return agencyIdListValueId;
     }
 
-    public void setAgencyIdListValueId(BigInteger agencyIdListValueId) {
+    public void setAgencyIdListValueId(String agencyIdListValueId) {
         this.agencyIdListValueId = agencyIdListValueId;
     }
 
-    public BigInteger getPrevCodeListId() {
+    public String getPrevCodeListId() {
         return prevCodeListId;
     }
 
-    public void setPrevCodeListId(BigInteger prevCodeListId) {
+    public void setPrevCodeListId(String prevCodeListId) {
         this.prevCodeListId = prevCodeListId;
     }
 
-    public BigInteger getNextCodeListId() {
+    public String getNextCodeListId() {
         return nextCodeListId;
     }
 
-    public void setNextCodeListId(BigInteger nextCodeListId) {
+    public void setNextCodeListId(String nextCodeListId) {
         this.nextCodeListId = nextCodeListId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getCodeListId();
     }
 

@@ -1,66 +1,64 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
-import java.math.BigInteger;
-
 public class CcAssociationSequence {
 
-    private BigInteger seqKeyId;
+    private String seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
-    private BigInteger asccManifestId;
+    private String asccManifestId;
 
-    private BigInteger bccManifestId;
+    private String bccManifestId;
 
-    private BigInteger prevSeqKeyId;
+    private String prevSeqKeyId;
 
-    private BigInteger nextSeqKeyId;
+    private String nextSeqKeyId;
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 
-    public void setSeqKeyId(BigInteger seqKeyId) {
+    public void setSeqKeyId(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public BigInteger getAsccManifestId() {
+    public String getAsccManifestId() {
         return asccManifestId;
     }
 
-    public void setAsccManifestId(BigInteger asccManifestId) {
+    public void setAsccManifestId(String asccManifestId) {
         this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 
-    public void setBccManifestId(BigInteger bccManifestId) {
+    public void setBccManifestId(String bccManifestId) {
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getPrevSeqKeyId() {
+    public String getPrevSeqKeyId() {
         return prevSeqKeyId;
     }
 
-    public void setPrevSeqKeyId(BigInteger prevSeqKeyId) {
+    public void setPrevSeqKeyId(String prevSeqKeyId) {
         this.prevSeqKeyId = prevSeqKeyId;
     }
 
-    public BigInteger getNextSeqKeyId() {
+    public String getNextSeqKeyId() {
         return nextSeqKeyId;
     }
 
-    public void setNextSeqKeyId(BigInteger nextSeqKeyId) {
+    public void setNextSeqKeyId(String nextSeqKeyId) {
         this.nextSeqKeyId = nextSeqKeyId;
     }
 }

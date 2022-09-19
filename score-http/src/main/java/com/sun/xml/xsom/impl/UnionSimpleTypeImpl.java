@@ -49,10 +49,10 @@ import com.sun.xml.xsom.visitor.XSSimpleTypeFunction;
 import com.sun.xml.xsom.visitor.XSSimpleTypeVisitor;
 import org.xml.sax.Locator;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class UnionSimpleTypeImpl extends SimpleTypeImpl implements XSUnionSimpleType
 {

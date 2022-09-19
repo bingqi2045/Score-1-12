@@ -5,13 +5,12 @@ import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.oagi.score.service.common.data.PageRequest;
 
-import java.math.BigInteger;
 import java.util.*;
 
 @Data
 public class CcListRequest {
 
-    private BigInteger releaseId = BigInteger.ZERO;
+    private String releaseId;
     private CcListTypes types;
     private List<CcState> states = Collections.emptyList();
     private Boolean deprecated;
@@ -23,7 +22,7 @@ public class CcListRequest {
     private String definition;
     private String module;
     private List<OagisComponentType> componentTypes = Collections.emptyList();
-    private List<BigInteger> ccTagIds = Collections.emptyList();
+    private List<String> ccTagIds = Collections.emptyList();
     private List<String> excludes = Collections.emptyList();
     private Boolean isBIEUsable;
     private Boolean commonlyUsed;
@@ -32,7 +31,7 @@ public class CcListRequest {
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
-    private Map<BigInteger, String> usernameMap;
+    private Map<String, String> usernameMap;
 
     public List<String> getDtTypes() {
         if (dtTypes != null && dtTypes.size() == 1) {
@@ -41,7 +40,7 @@ public class CcListRequest {
         return Collections.emptyList();
     }
 
-    public List<BigInteger> getCcTagIds() {
+    public List<String> getCcTagIds() {
         if (this.ccTagIds == null || this.ccTagIds.isEmpty()) {
             return Collections.emptyList();
         }

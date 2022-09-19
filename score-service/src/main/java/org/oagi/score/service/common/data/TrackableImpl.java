@@ -2,15 +2,13 @@ package org.oagi.score.service.common.data;
 
 import lombok.Data;
 
-import java.math.BigInteger;
-
 @Data
-public abstract class TrackableImpl implements Trackable {
+public abstract class TrackableImpl<T> implements Trackable<T> {
 
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
 
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
 

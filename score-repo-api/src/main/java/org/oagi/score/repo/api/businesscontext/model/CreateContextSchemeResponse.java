@@ -2,22 +2,21 @@ package org.oagi.score.repo.api.businesscontext.model;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
 public class CreateContextSchemeResponse extends Response {
 
-    private final BigInteger contextSchemeId;
+    private final String contextSchemeId;
 
     private Collection<ContextSchemeValue> contextSchemeValues;
 
-    public CreateContextSchemeResponse(BigInteger contextSchemeId) {
+    public CreateContextSchemeResponse(String contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
     }
 
-    public BigInteger getContextSchemeId() {
+    public String getContextSchemeId() {
         return contextSchemeId;
     }
 

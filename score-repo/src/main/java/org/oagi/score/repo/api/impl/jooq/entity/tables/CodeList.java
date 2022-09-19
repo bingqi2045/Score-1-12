@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Schema;
@@ -21,7 +20,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
@@ -51,10 +49,10 @@ public class CodeList extends TableImpl<CodeListRecord> {
     }
 
     /**
-     * The column <code>oagi.code_list.code_list_id</code>. Internal, primary
+     * The column <code>oagi.code_list.code_list_id</code>. Primary, internal
      * database key.
      */
-    public final TableField<CodeListRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CodeListRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.code_list.guid</code>. A globally unique identifier
@@ -86,7 +84,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
      * which maintains the code list.
      */
-    public final TableField<CodeListRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.");
+    public final TableField<CodeListRecord, String> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.CHAR(36), this, "Foreign key to the AGENCY_ID_LIST_VALUE table. It indicates the organization which maintains the code list.");
 
     /**
      * The column <code>oagi.code_list.version_id</code>. Code list version
@@ -114,12 +112,9 @@ public class CodeList extends TableImpl<CodeListRecord> {
 
     /**
      * The column <code>oagi.code_list.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public final TableField<CodeListRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
+    public final TableField<CodeListRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
 
     /**
      * The column <code>oagi.code_list.based_code_list_id</code>. This is a
@@ -127,7 +122,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * on which this code list is based, if any. The derivation may be
      * restriction and/or extension.
      */
-    public final TableField<CodeListRecord, ULong> BASED_CODE_LIST_ID = createField(DSL.name("based_code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.");
+    public final TableField<CodeListRecord, String> BASED_CODE_LIST_ID = createField(DSL.name("based_code_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.");
 
     /**
      * The column <code>oagi.code_list.extensible_indicator</code>. This is a
@@ -147,13 +142,13 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.replacement_code_list_id</code>. This
      * refers to a replacement if the record is deprecated.
      */
-    public final TableField<CodeListRecord, ULong> REPLACEMENT_CODE_LIST_ID = createField(DSL.name("replacement_code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<CodeListRecord, String> REPLACEMENT_CODE_LIST_ID = createField(DSL.name("replacement_code_list_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created the code list.
      */
-    public final TableField<CodeListRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
+    public final TableField<CodeListRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
 
     /**
      * The column <code>oagi.code_list.owner_user_id</code>. Foreign key to the
@@ -163,14 +158,14 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public final TableField<CodeListRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<CodeListRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
      * The column <code>oagi.code_list.last_updated_by</code>. Foreign key to
      * the APP_USER table. It identifies the user who last updated the code
      * list.
      */
-    public final TableField<CodeListRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
+    public final TableField<CodeListRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
 
     /**
      * The column <code>oagi.code_list.creation_timestamp</code>. Timestamp when
@@ -193,13 +188,13 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.prev_code_list_id</code>. A self-foreign
      * key to indicate the previous history record.
      */
-    public final TableField<CodeListRecord, ULong> PREV_CODE_LIST_ID = createField(DSL.name("prev_code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<CodeListRecord, String> PREV_CODE_LIST_ID = createField(DSL.name("prev_code_list_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.code_list.next_code_list_id</code>. A self-foreign
      * key to indicate the next history record.
      */
-    public final TableField<CodeListRecord, ULong> NEXT_CODE_LIST_ID = createField(DSL.name("next_code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<CodeListRecord, String> NEXT_CODE_LIST_ID = createField(DSL.name("next_code_list_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private CodeList(Name alias, Table<CodeListRecord> aliased) {
         this(alias, aliased, null);
@@ -237,11 +232,6 @@ public class CodeList extends TableImpl<CodeListRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CodeListRecord, ULong> getIdentity() {
-        return (Identity<CodeListRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.oagi.score.service.businesscontext;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,7 @@ public class ContextSchemeService {
     public boolean hasSameCtxScheme(ContextScheme contextScheme) {
         Condition idMatch = trueCondition();
         if (contextScheme.getContextSchemeId() != null) {
-            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getContextSchemeId()));
+            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(contextScheme.getContextSchemeId());
         }
 
         return dslContext.selectCount().from(CTX_SCHEME).where(
@@ -91,7 +90,7 @@ public class ContextSchemeService {
     public boolean hasSameCtxSchemeName(ContextScheme contextScheme) {
         Condition idMatch = trueCondition();
         if (contextScheme.getContextSchemeId() != null) {
-            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getContextSchemeId()));
+            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(contextScheme.getContextSchemeId());
         }
         return dslContext.selectCount().from(CTX_SCHEME).where(
                 and(CTX_SCHEME.SCHEME_ID.eq(contextScheme.getSchemeId()),

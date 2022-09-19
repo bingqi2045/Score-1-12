@@ -2,8 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.businessterm;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businessterm.BusinessTermWriteRepository;
 import org.oagi.score.repo.api.businessterm.model.*;
@@ -13,7 +11,6 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,11 +34,12 @@ public class JooqBusinessTermWriteRepository
             CreateBusinessTermRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BusinessTermRecord record = new BusinessTermRecord();
 
+        record.setBusinessTermId(UUID.randomUUID().toString());
         record.setGuid(randomGuid());
         record.setBusinessTerm(request.getBusinessTerm());
         record.setComment(request.getComment());
@@ -53,11 +51,11 @@ public class JooqBusinessTermWriteRepository
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        BigInteger businessTermId = dslContext().insertInto(BUSINESS_TERM)
+        dslContext().insertInto(BUSINESS_TERM)
                 .set(record)
-                .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
-                .fetchOne().getBusinessTermId().toBigInteger();
+                .execute();
 
+        String businessTermId = record.getBusinessTermId();
         return new CreateBusinessTermResponse(businessTermId);
     }
 
@@ -67,15 +65,15 @@ public class JooqBusinessTermWriteRepository
             throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
-        List<BigInteger> createdRecordIds = request.getBusinessTermList().stream().map(businessTerm -> {
+        List<String> createdRecordIds = request.getBusinessTermList().stream().map(businessTerm -> {
             BusinessTermRecord record = new BusinessTermRecord();
+            record.setBusinessTermId(UUID.randomUUID().toString());
             record.setGuid(randomGuid());
             record.setBusinessTerm(businessTerm.getBusinessTerm());
             record.setDefinition(businessTerm.getDefinition());
-            System.out.println(businessTerm.getComment());
             record.setComment(businessTerm.getComment());
             record.setExternalRefId(businessTerm.getExternalReferenceId());
             record.setExternalRefUri(businessTerm.getExternalReferenceUri());
@@ -87,7 +85,7 @@ public class JooqBusinessTermWriteRepository
             BusinessTermRecord existentRecord = dslContext().selectFrom(BUSINESS_TERM)
                     .where(BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri()))
                     .fetchOne();
-            if(existentRecord != null) {
+            if (existentRecord != null) {
                 dslContext().update(BUSINESS_TERM)
                         .set(BUSINESS_TERM.BUSINESS_TERM_, record.getBusinessTerm())
                         .set(BUSINESS_TERM.EXTERNAL_REF_ID, record.getExternalRefId())
@@ -99,16 +97,15 @@ public class JooqBusinessTermWriteRepository
                         .execute();
                 return null;
             } else {
-                return dslContext().insertInto(BUSINESS_TERM)
+                dslContext().insertInto(BUSINESS_TERM)
                         .set(record)
-                        .returning(BUSINESS_TERM.BUSINESS_TERM_ID)
-                        .fetchOne().getBusinessTermId().toBigInteger();
+                        .execute();
+                return record.getBusinessTermId();
             }
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         return new CreateBulkBusinessTermResponse(createdRecordIds);
     }
-
 
 
     @Override
@@ -117,11 +114,11 @@ public class JooqBusinessTermWriteRepository
             UpdateBusinessTermRequest request) throws ScoreDataAccessException {
 
         ScoreUser requester = request.getRequester();
-        ULong requesterUserId = ULong.valueOf(requester.getUserId());
+        String requesterUserId = requester.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
         BusinessTermRecord record = dslContext().selectFrom(BUSINESS_TERM)
-                .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(request.getBusinessTermId())))
+                .where(BUSINESS_TERM.BUSINESS_TERM_ID.eq(request.getBusinessTermId()))
                 .fetchOptional().orElse(null);
         if (record == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
@@ -157,7 +154,7 @@ public class JooqBusinessTermWriteRepository
         }
 
         return new UpdateBusinessTermResponse(
-                record.getBusinessTermId().toBigInteger(),
+                record.getBusinessTermId(),
                 !changedField.isEmpty());
     }
 
@@ -166,7 +163,7 @@ public class JooqBusinessTermWriteRepository
     public DeleteBusinessTermResponse deleteBusinessTerm(
             DeleteBusinessTermRequest request) throws ScoreDataAccessException {
 
-        List<BigInteger> businessTermIdList = request.getBusinessTermIdList();
+        List<String> businessTermIdList = request.getBusinessTermIdList();
         if (businessTermIdList == null || businessTermIdList.isEmpty()) {
             return new DeleteBusinessTermResponse(Collections.emptyList());
         }
@@ -174,10 +171,8 @@ public class JooqBusinessTermWriteRepository
             dslContext().delete(BUSINESS_TERM)
                     .where(
                             businessTermIdList.size() == 1 ?
-                                    BUSINESS_TERM.BUSINESS_TERM_ID.eq(ULong.valueOf(businessTermIdList.get(0))) :
-                                    BUSINESS_TERM.BUSINESS_TERM_ID.in(
-                                            businessTermIdList.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
-                                    )
+                                    BUSINESS_TERM.BUSINESS_TERM_ID.eq(businessTermIdList.get(0)) :
+                                    BUSINESS_TERM.BUSINESS_TERM_ID.in(businessTermIdList)
                     )
                     .execute();
         } catch (Exception e) {

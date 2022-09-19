@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function18;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -23,7 +22,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
@@ -51,9 +49,10 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
     }
 
     /**
-     * The column <code>oagi.oauth2_app.oauth2_app_id</code>.
+     * The column <code>oagi.oauth2_app.oauth2_app_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<Oauth2AppRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<Oauth2AppRecord, String> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.oauth2_app.provider_name</code>.
@@ -179,11 +178,6 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
     }
 
     @Override
-    public Identity<Oauth2AppRecord, ULong> getIdentity() {
-        return (Identity<Oauth2AppRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<Oauth2AppRecord> getPrimaryKey() {
         return Keys.KEY_OAUTH2_APP_PRIMARY;
     }
@@ -232,21 +226,22 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, Integer, Byte> fieldsRow() {
+    public Row18<String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, Integer, Byte> fieldsRow() {
         return (Row18) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function18<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function18<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function18<? super ULong, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function18<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Integer, ? super Byte, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

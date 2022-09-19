@@ -40,13 +40,9 @@
 
 package com.sun.xml.xsom.parser;
 
-import java.io.IOException;
+import org.xml.sax.*;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.IOException;
 
 /**
  * Interface that hides the detail of parsing mechanism.

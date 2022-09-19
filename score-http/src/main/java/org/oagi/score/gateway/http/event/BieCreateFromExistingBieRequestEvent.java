@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oagi.score.redis.event.Event;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 public class BieCreateFromExistingBieRequestEvent implements Event {
 
-    private BigInteger sourceTopLevelAsbiepId;
-    private BigInteger targetTopLevelAsbiepId;
-    private BigInteger asbiepId;
-    private List<BigInteger> bizCtxIds = Collections.emptyList();
-    private BigInteger userId;
+    private String sourceTopLevelAsbiepId;
+    private String targetTopLevelAsbiepId;
+    private String asbiepId;
+    private List<String> bizCtxIds = Collections.emptyList();
+    private String userId;
 
 }

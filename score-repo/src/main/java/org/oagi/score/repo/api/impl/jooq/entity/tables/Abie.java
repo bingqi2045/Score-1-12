@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function15;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -62,10 +60,10 @@ public class Abie extends TableImpl<AbieRecord> {
     }
 
     /**
-     * The column <code>oagi.abie.abie_id</code>. A internal, primary database
-     * key of an ABIE.
+     * The column <code>oagi.abie.abie_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<AbieRecord, ULong> ABIE_ID = createField(DSL.name("abie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an ABIE.");
+    public final TableField<AbieRecord, String> ABIE_ID = createField(DSL.name("abie_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.abie.guid</code>. A globally unique identifier
@@ -78,7 +76,7 @@ public class Abie extends TableImpl<AbieRecord> {
      * the ACC_MANIFEST table refering to the ACC, on which the business context
      * has been applied to derive this ABIE.
      */
-    public final TableField<AbieRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.");
+    public final TableField<AbieRecord, String> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.");
 
     /**
      * The column <code>oagi.abie.path</code>.
@@ -97,7 +95,7 @@ public class Abie extends TableImpl<AbieRecord> {
      * to the BIZ_CTX table. This column stores the business context assigned to
      * the ABIE.
      */
-    public final TableField<AbieRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED, this, "(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.");
+    public final TableField<AbieRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36), this, "(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.");
 
     /**
      * The column <code>oagi.abie.definition</code>. Definition to override the
@@ -112,14 +110,14 @@ public class Abie extends TableImpl<AbieRecord> {
      * by default. ABIEs created as children of another ABIE have the same
      * CREATED_BY as its parent.
      */
-    public final TableField<AbieRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.");
+    public final TableField<AbieRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ABIE. The creator of the ABIE is also its owner by default. ABIEs created as children of another ABIE have the same CREATED_BY as its parent.");
 
     /**
      * The column <code>oagi.abie.last_updated_by</code>. A foreign key
      * referring to the last user who has updated the ABIE record. This may be
      * the user who is in the same group as the creator.
      */
-    public final TableField<AbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.");
+    public final TableField<AbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ABIE record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.abie.creation_timestamp</code>. Timestamp when the
@@ -168,7 +166,7 @@ public class Abie extends TableImpl<AbieRecord> {
      * The column <code>oagi.abie.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<AbieRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<AbieRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private Abie(Name alias, Table<AbieRecord> aliased) {
         this(alias, aliased, null);
@@ -211,11 +209,6 @@ public class Abie extends TableImpl<AbieRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ABIE_ABIE_HASH_PATH_K, Indexes.ABIE_ABIE_PATH_K);
-    }
-
-    @Override
-    public Identity<AbieRecord, ULong> getIdentity() {
-        return (Identity<AbieRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -331,21 +324,22 @@ public class Abie extends TableImpl<AbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> fieldsRow() {
+    public Row15<String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, Integer, String, String, String> fieldsRow() {
         return (Row15) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function15<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function15<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function15<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super Integer, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

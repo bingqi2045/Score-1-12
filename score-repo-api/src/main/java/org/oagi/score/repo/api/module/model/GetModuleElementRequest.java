@@ -1,12 +1,9 @@
 package org.oagi.score.repo.api.module.model;
 
-import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.util.Collection;
 
 public class GetModuleElementRequest extends Request {
 
@@ -14,23 +11,23 @@ public class GetModuleElementRequest extends Request {
         super(requester);
     }
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
-    private BigInteger moduleDirId;
+    private String moduleDirId;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getModuleDirId() {
+    public String getModuleDirId() {
         return moduleDirId;
     }
 
-    public void setModuleDirId(BigInteger moduleDirId) {
+    public void setModuleDirId(String moduleDirId) {
         this.moduleDirId = moduleDirId;
     }
 }

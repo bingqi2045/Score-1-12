@@ -1,10 +1,9 @@
 package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -28,8 +27,8 @@ public class AccountService {
     private SessionService sessionService;
 
     @Transactional
-    public void setEnable(AuthenticatedPrincipal user, long targetUserId, boolean enabled) {
-        AppUser requester = sessionService.getAppUser(user);
+    public void setEnable(AuthenticatedPrincipal user, String targetUserId, boolean enabled) {
+        AppUser requester = sessionService.getAppUserByUsername(user);
         if (!requester.isDeveloper()) {
             throw new InsufficientAuthenticationException(
                     messages.getMessage(
@@ -38,7 +37,7 @@ public class AccountService {
         }
 
         AppUserRecord targetAppUser = dslContext.selectFrom(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(targetUserId)))
+                .where(APP_USER.APP_USER_ID.eq(targetUserId))
                 .fetchOptional().orElse(null);
         if (targetAppUser == null) {
             throw new IllegalArgumentException();

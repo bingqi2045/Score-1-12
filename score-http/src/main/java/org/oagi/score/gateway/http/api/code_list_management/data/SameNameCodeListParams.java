@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SameNameCodeListParams {
 
-    private long releaseId;
-    private Long codeListManifestId;
+    private String releaseId;
+    private String codeListManifestId;
     private String codeListName;
 }

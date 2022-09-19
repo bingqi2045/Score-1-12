@@ -5,7 +5,6 @@ import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
 import org.springframework.util.StringUtils;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.Optional;
 
@@ -13,7 +12,7 @@ import java.util.Optional;
 public class CcList {
 
     private CcType type;
-    private BigInteger manifestId;
+    private String manifestId;
     private String guid;
     private String den;
     private String definition;
@@ -34,18 +33,18 @@ public class CcList {
     private String lastUpdateUser;
     private Date lastUpdateTimestamp;
     private String releaseNum;
-    private BigInteger id;
+    private String id;
 
     private boolean ownedByDeveloper;
 
-    private BigInteger basedManifestId;
+    private String basedManifestId;
     private String sixDigitId;
     private String defaultValueDomain;
 
     public CcList() {
     }
 
-    public CcList(CcType type, BigInteger manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, BigInteger id, boolean ownedByDeveloper, String sixDigitId, String defaultValueDomain) {
+    public CcList(CcType type, String manifestId, String guid, String den, String definition, String module, String name, String definitionSource, Optional<String> oagisComponentType, String dtType, String owner, CcState state, String revision, boolean deprecated, String lastUpdateUser, Date lastUpdateTimestamp, String releaseNum, String/**/ id, boolean ownedByDeveloper, String sixDigitId, String defaultValueDomain) {
         this.type = type;
         this.manifestId = manifestId;
         this.guid = guid;

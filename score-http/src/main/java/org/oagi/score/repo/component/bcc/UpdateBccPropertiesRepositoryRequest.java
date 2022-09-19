@@ -1,15 +1,14 @@
 package org.oagi.score.repo.component.bcc;
 
-import org.oagi.score.service.common.data.BCCEntityType;
 import org.oagi.score.data.RepositoryRequest;
+import org.oagi.score.service.common.data.BCCEntityType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger bccManifestId;
+    private final String bccManifestId;
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
@@ -22,19 +21,19 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
     private String fixedValue;
 
     public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger bccManifestId) {
+                                                String bccManifestId) {
         super(user);
         this.bccManifestId = bccManifestId;
     }
 
     public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
-                                                BigInteger bccManifestId) {
+                                                String bccManifestId) {
         super(user, localDateTime);
         this.bccManifestId = bccManifestId;
     }
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 

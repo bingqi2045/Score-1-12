@@ -3,14 +3,11 @@ package org.oagi.score.repo.component.ascc;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.component.bcc.RefactorBccRepositoryRequest;
-import org.oagi.score.repo.component.bcc.RefactorBccRepositoryResponse;
 import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
@@ -26,7 +23,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.compare;
@@ -36,8 +32,6 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_MANIFEST;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 
 @Repository
 public class AsccWriteRepository {
@@ -123,13 +117,13 @@ public class AsccWriteRepository {
     }
 
     public CreateAsccRepositoryResponse createAscc(CreateAsccRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        String userId = sessionService.userId(request.getUser());
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))
+                        ACC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId())
                 ))
                 .fetchOne();
 
@@ -139,8 +133,8 @@ public class AsccWriteRepository {
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(and(
-                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))
+                        ASCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
+                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(request.getAsccpManifestId())
                 ))
                 .fetchOne();
 
@@ -159,7 +153,7 @@ public class AsccWriteRepository {
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(ASCC_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
                 .where(and(ASCCP.REUSABLE_INDICATOR.eq((byte) 0),
-                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())))
+                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(request.getAsccpManifestId()))
                 )
                 .fetchOneInto(Integer.class) > 0) {
             throw new IllegalArgumentException("Target ASCCP is not reusable.");
@@ -174,7 +168,7 @@ public class AsccWriteRepository {
                     .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                     .join(ASCC_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
                     .where(and(ASCCP.TYPE.eq(CcASCCPType.Extension.name()),
-                            ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())))
+                            ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(request.getAsccpManifestId()))
                     )
                     .fetchOneInto(Integer.class) > 0) {
                 throw new IllegalArgumentException("This ACC already has Extension ASCCP.");
@@ -182,6 +176,7 @@ public class AsccWriteRepository {
         }
 
         AsccRecord ascc = new AsccRecord();
+        ascc.setAsccId(UUID.randomUUID().toString());
         ascc.setGuid(ScoreGuid.randomGuid());
         ascc.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getDen());
         ascc.setCardinalityMin(request.getCardinalityMin());
@@ -196,55 +191,53 @@ public class AsccWriteRepository {
         ascc.setOwnerUserId(userId);
         ascc.setCreationTimestamp(timestamp);
         ascc.setLastUpdateTimestamp(timestamp);
-        ascc.setAsccId(
-                dslContext.insertInto(ASCC)
-                        .set(ascc)
-                        .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
-        );
+        dslContext.insertInto(ASCC)
+                .set(ascc)
+                .execute();
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
+        asccManifest.setAsccManifestId(UUID.randomUUID().toString());
         asccManifest.setAsccId(ascc.getAsccId());
-        asccManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        asccManifest.setReleaseId(request.getReleaseId());
         asccManifest.setFromAccManifestId(accManifestRecord.getAccManifestId());
         asccManifest.setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId());
-        asccManifest.setAsccManifestId(
-                dslContext.insertInto(ASCC_MANIFEST)
-                        .set(asccManifest)
-                        .returning(ASCC_MANIFEST.ASCC_MANIFEST_ID).fetchOne().getAsccManifestId()
-        );
+
+        dslContext.insertInto(ASCC_MANIFEST)
+                .set(asccManifest)
+                .execute();
 
         seqKeyHandler(request.getUser(), asccManifest).moveTo(request.getPos());
 
         if (request.getLogAction() != null) {
             upsertLogIntoAccAndAssociationsByAction(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp, request.getLogHash(), request.getLogAction()
             );
         } else {
             upsertLogIntoAccAndAssociations(
                     accRecord, accManifestRecord,
-                    ULong.valueOf(request.getReleaseId()),
+                    request.getReleaseId(),
                     userId, timestamp
             );
         }
 
 
-        return new CreateAsccRepositoryResponse(asccManifest.getAsccManifestId().toBigInteger());
+        return new CreateAsccRepositoryResponse(asccManifest.getAsccManifestId());
     }
 
     private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
                                                  AccManifestRecord accManifestRecord,
-                                                 ULong releaseId,
-                                                 ULong userId, LocalDateTime timestamp) {
+                                                 String releaseId,
+                                                 String userId, LocalDateTime timestamp) {
         upsertLogIntoAccAndAssociationsByAction(accRecord, accManifestRecord, releaseId, userId, timestamp, LogUtils.generateHash(), LogAction.Modified);
     }
 
     private void upsertLogIntoAccAndAssociationsByAction(AccRecord accRecord,
-                                                 AccManifestRecord accManifestRecord,
-                                                 ULong releaseId,
-                                                 ULong userId, LocalDateTime timestamp,
-                                                 String hash, LogAction action) {
+                                                         AccManifestRecord accManifestRecord,
+                                                         String releaseId,
+                                                         String userId, LocalDateTime timestamp,
+                                                         String hash, LogAction action) {
         LogRecord logRecord =
                 logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
@@ -255,13 +248,13 @@ public class AsccWriteRepository {
     }
 
     public UpdateAsccPropertiesRepositoryResponse updateAsccProperties(UpdateAsccPropertiesRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccManifestId())
+                        request.getAsccManifestId()
                 ))
                 .fetchOne();
 
@@ -336,17 +329,17 @@ public class AsccWriteRepository {
             );
         }
 
-        return new UpdateAsccPropertiesRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
+        return new UpdateAsccPropertiesRepositoryResponse(asccManifestRecord.getAsccManifestId());
     }
 
     public DeleteAsccRepositoryResponse deleteAscc(DeleteAsccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccManifestId())
+                        request.getAsccManifestId()
                 ))
                 .fetchOne();
 
@@ -409,32 +402,32 @@ public class AsccWriteRepository {
             );
         }
 
-        return new DeleteAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
+        return new DeleteAsccRepositoryResponse(asccManifestRecord.getAsccManifestId());
     }
 
     private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccManifestRecord asccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initAscc(
-                asccManifestRecord.getFromAccManifestId().toBigInteger(),
-                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
-                asccManifestRecord.getAsccManifestId().toBigInteger());
+                asccManifestRecord.getFromAccManifestId(),
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId() : null,
+                asccManifestRecord.getAsccManifestId());
         return seqKeyHandler;
     }
 
     public RefactorAsccRepositoryResponse refactor(RefactorAsccRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String userId = user.getAppUserId();
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AsccManifestRecord targetAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getAsccManifestId())
+                        request.getAsccManifestId()
                 ))
                 .fetchOne();
 
         AccManifestRecord targetAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId()))
                 .fetchOne();
 
         AsccRecord targetAsccRecord = dslContext.selectFrom(ASCC).where(ASCC.ASCC_ID.eq(targetAsccManifestRecord.getAsccId())).fetchOne();
@@ -468,7 +461,7 @@ public class AsccWriteRepository {
                     .fetchOne();
 
             AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(request.getAccManifestId()))
                     .fetchOne();
 
             AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -518,23 +511,23 @@ public class AsccWriteRepository {
             );
         }
 
-        targetAsccRecord.setAsccId(null);
+        targetAsccRecord.setAsccId(UUID.randomUUID().toString());
         targetAsccRecord.setLastUpdatedBy(userId);
         targetAsccRecord.setLastUpdateTimestamp(timestamp);
         targetAsccRecord.setFromAccId(targetAccRecord.getAccId());
         targetAsccRecord.setPrevAsccId(null);
         targetAsccRecord.setNextAsccId(null);
         targetAsccRecord.setDen(targetAccRecord.getObjectClassTerm() + ". " + asccpDen);
-        ULong asccId = dslContext.insertInto(ASCC).set(targetAsccRecord).returning().fetchOne().getAsccId();
+        dslContext.insertInto(ASCC).set(targetAsccRecord).execute();
+        String asccId = targetAsccRecord.getAsccId();
 
-        targetAsccManifestRecord.setAsccManifestId(null);
-        targetAsccManifestRecord.setFromAccManifestId(ULong.valueOf(request.getAccManifestId()));
+        targetAsccManifestRecord.setAsccManifestId(UUID.randomUUID().toString());
+        targetAsccManifestRecord.setFromAccManifestId(request.getAccManifestId());
         targetAsccManifestRecord.setAsccId(asccId);
         targetAsccManifestRecord.setSeqKeyId(null);
         targetAsccManifestRecord.setPrevAsccManifestId(null);
         targetAsccManifestRecord.setNextAsccManifestId(null);
-        targetAsccManifestRecord.setAsccManifestId(
-                dslContext.insertInto(ASCC_MANIFEST).set(targetAsccManifestRecord).returning().fetchOne().getAsccManifestId());
+        dslContext.insertInto(ASCC_MANIFEST).set(targetAsccManifestRecord).execute();
 
         seqKeyHandler(request.getUser(), targetAsccManifestRecord).moveTo(MoveTo.LAST);
 
@@ -544,34 +537,34 @@ public class AsccWriteRepository {
                 userId, timestamp, hash, LogAction.Ungrouped
         );
 
-        return new RefactorAsccRepositoryResponse(targetAsccManifestRecord.getAsccManifestId().toBigInteger());
+        return new RefactorAsccRepositoryResponse(targetAsccManifestRecord.getAsccManifestId());
     }
 
-    private List<AsccManifestRecord> getRefactorTargetAsccManifestList(AsccManifestRecord asccManifestRecord, ULong targetAccManifestId) {
-        ULong releaseId = asccManifestRecord.getReleaseId();
+    private List<AsccManifestRecord> getRefactorTargetAsccManifestList(AsccManifestRecord asccManifestRecord, String targetAccManifestId) {
+        String releaseId = asccManifestRecord.getReleaseId();
         List<AccManifestRecord> accManifestList = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
+        Map<String, List<AccManifestRecord>> baseAccMap = accManifestList.stream().filter(e -> e.getBasedAccManifestId() != null)
                 .collect(Collectors.groupingBy(AccManifestRecord::getBasedAccManifestId));
 
         List<AsccManifestRecord> asccList = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId)).fetch();
-        Map<ULong, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
+        Map<String, List<AsccManifestRecord>> fromAccAsccMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccManifestRecord::getFromAccManifestId));
 
-        List<ULong> accManifestIdList = new ArrayList<>();
+        List<String> accManifestIdList = new ArrayList<>();
 
         accManifestIdList.add(targetAccManifestId);
 
-        Set<ULong> accCandidates = new HashSet<>();
+        Set<String> accCandidates = new HashSet<>();
 
-        for (ULong cur : accManifestIdList) {
+        for (String cur : accManifestIdList) {
             accCandidates.addAll(getBaseAccManifestId(cur, baseAccMap));
         }
 
         Set<AsccManifestRecord> asccResult = new HashSet<>();
 
-        for (ULong acc : accCandidates) {
+        for (String acc : accCandidates) {
             asccResult.addAll(
                     fromAccAsccMap.getOrDefault(acc, Collections.emptyList())
                             .stream()
@@ -581,8 +574,8 @@ public class AsccWriteRepository {
         return new ArrayList<>(asccResult);
     }
 
-    private List<ULong> getBaseAccManifestId(ULong accManifestId, Map<ULong, List<AccManifestRecord>> baseAccMap) {
-        List<ULong> result = new ArrayList<>();
+    private List<String> getBaseAccManifestId(String accManifestId, Map<String, List<AccManifestRecord>> baseAccMap) {
+        List<String> result = new ArrayList<>();
         result.add(accManifestId);
         if (baseAccMap.containsKey(accManifestId)) {
             baseAccMap.get(accManifestId).forEach(e -> {

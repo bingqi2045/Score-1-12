@@ -40,11 +40,7 @@
 
 package com.sun.xml.xsom.impl.scd;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Various convenient {@link Iterator} implementations.

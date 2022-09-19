@@ -1,16 +1,17 @@
 package org.oagi.score.repo.component.bbie_sc;
 
-import org.jooq.*;
-import org.jooq.types.ULong;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.SelectOnConditionStep;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.oagi.score.repo.component.dt_sc.DtScReadRepository;
+import org.oagi.score.service.common.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,16 +28,16 @@ public class BbieScReadRepository {
     @Autowired
     private DtScReadRepository dtScReadRepository;
 
-    private BbieScRecord getBbieScByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
+    private BbieScRecord getBbieScByTopLevelAsbiepIdAndHashPath(String topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIE_SC.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public BbieScNode getBbieScNode(BigInteger topLevelAsbiepId, BigInteger dtScManifestId, String hashPath) {
+    public BbieScNode getBbieScNode(String topLevelAsbiepId, String dtScManifestId, String hashPath) {
         DtScRecord dtScRecord = dtScReadRepository.getDtScByManifestId(dtScManifestId);
         if (dtScRecord == null) {
             return null;
@@ -78,8 +79,8 @@ public class BbieScReadRepository {
         return bbieScNode;
     }
 
-    public BigInteger getDefaultDtScPriRestriIdByDtScId(BigInteger dtScManifestId) {
-        ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
+    public String getDefaultDtScPriRestriIdByDtScId(String dtScManifestId) {
+        String bdtScManifestId = dtScManifestId;
         String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
                 .from(DT_SC)
                 .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
@@ -101,7 +102,7 @@ public class BbieScReadRepository {
             conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
         }
 
-        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
+        SelectOnConditionStep<Record1<String>> step = dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
                 .from(BDT_SC_PRI_RESTRI)
                 .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
@@ -109,24 +110,24 @@ public class BbieScReadRepository {
                 .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
                 .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
         return step.where(conds)
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
-    public BbieScNode.BbieSc getBbieSc(BigInteger topLevelAsbiepId, String hashPath) {
+    public BbieScNode.BbieSc getBbieSc(String topLevelAsbiepId, String hashPath) {
         BbieScNode.BbieSc bbieSc = new BbieScNode.BbieSc();
         bbieSc.setHashPath(hashPath);
 
         BbieScRecord bbieScRecord = getBbieScByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbieScRecord != null) {
-            bbieSc.setBbieScId(bbieScRecord.getBbieScId().toBigInteger());
+            bbieSc.setBbieScId(bbieScRecord.getBbieScId());
             bbieSc.setBbieHashPath(dslContext.select(BBIE.HASH_PATH)
                     .from(BBIE)
                     .where(and(
-                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIE.BBIE_ID.eq(bbieScRecord.getBbieId())
                     ))
                     .fetchOneInto(String.class));
-            bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
+            bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId());
             bbieSc.setUsed(bbieScRecord.getIsUsed() == 1);
             bbieSc.setGuid(bbieScRecord.getGuid());
             bbieSc.setCardinalityMin(bbieScRecord.getCardinalityMin());
@@ -146,30 +147,30 @@ public class BbieScReadRepository {
             bbieSc.setExample(bbieScRecord.getExample());
 
             bbieSc.setBdtScPriRestriId((bbieScRecord.getDtScPriRestriId() != null) ?
-                    bbieScRecord.getDtScPriRestriId().toBigInteger() : null);
+                    bbieScRecord.getDtScPriRestriId() : null);
             bbieSc.setCodeListId((bbieScRecord.getCodeListId() != null) ?
-                    bbieScRecord.getCodeListId().toBigInteger() : null);
+                    bbieScRecord.getCodeListId() : null);
             bbieSc.setAgencyIdListId((bbieScRecord.getAgencyIdListId() != null) ?
-                    bbieScRecord.getAgencyIdListId().toBigInteger() : null);
+                    bbieScRecord.getAgencyIdListId() : null);
         }
 
         return bbieSc;
     }
 
-    public List<BieEditUsed> getUsedBbieScList(BigInteger topLevelAsbiepId) {
+    public List<BieEditUsed> getUsedBbieScList(String topLevelAsbiepId) {
         return dslContext.select(BBIE_SC.BBIE_SC_ID, BBIE_SC.BASED_DT_SC_MANIFEST_ID, BBIE_SC.HASH_PATH, BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIE_SC.IS_USED.eq((byte) 1)
                 ))
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("BBIE_SC");
-                    bieEditUsed.setBieId(record.get(BBIE_SC.BBIE_SC_ID).toBigInteger());
-                    bieEditUsed.setManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID).toBigInteger());
+                    bieEditUsed.setBieId(record.get(BBIE_SC.BBIE_SC_ID));
+                    bieEditUsed.setManifestId(record.get(BBIE_SC.BASED_DT_SC_MANIFEST_ID));
                     bieEditUsed.setHashPath(record.get(BBIE_SC.HASH_PATH));
-                    bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID));
                     return bieEditUsed;
                 })
                 .collect(Collectors.toList());

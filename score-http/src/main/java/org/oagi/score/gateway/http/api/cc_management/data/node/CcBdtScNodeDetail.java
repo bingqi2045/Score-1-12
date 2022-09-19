@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
-import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
+import org.oagi.score.service.common.data.CcState;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -11,8 +11,8 @@ import java.util.List;
 public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private CcType type = CcType.DT_SC;
-    private BigInteger manifestId = BigInteger.ZERO;
-    private BigInteger bdtScId = BigInteger.ZERO;
+    private String manifestId;
+    private String bdtScId;
     private String guid;
     private String den;
     private int cardinalityMin;
@@ -33,14 +33,14 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private CcState state;
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
     private String spec;
-    private BigInteger basedDtManifestId;
-    private BigInteger basedDtScId;
+    private String basedDtManifestId;
+    private String basedDtScId;
 
     private List<CcBdtScPriRestri> bdtScPriRestriList;
 }

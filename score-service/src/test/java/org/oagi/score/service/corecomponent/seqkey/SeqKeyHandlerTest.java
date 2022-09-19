@@ -9,8 +9,6 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigInteger;
-
 import static org.jooq.impl.DSL.and;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -29,12 +27,12 @@ public class SeqKeyHandlerTest {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    private BigInteger businessObjectDocumentAccManifestId;
+    private String businessObjectDocumentAccManifestId;
     private SeqKey seqKey;
 
     @BeforeAll
     void setUp() {
-        requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
+        requester = new ScoreUser("c720c6cf-43ef-44f6-8552-fab526c572c2", "oagis", DEVELOPER);
 
         businessObjectDocumentAccManifestId = getAccManifestIdByObjectClassTerm("Business Object Document");
         seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
@@ -43,7 +41,7 @@ public class SeqKeyHandlerTest {
                 .getSeqKey();
     }
 
-    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+    private String getAccManifestIdByObjectClassTerm(String objectClassTerm) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
@@ -52,7 +50,7 @@ public class SeqKeyHandlerTest {
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
                         RELEASE.RELEASE_NUM.eq("10.6")
                 ))
-                .fetchOneInto(BigInteger.class);
+                .fetchOneInto(String.class);
     }
 
     @Test

@@ -4,15 +4,14 @@ import lombok.Data;
 import org.oagi.score.repo.api.bie.model.BieState;
 import org.oagi.score.repo.api.businessterm.model.BusinessTerm;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class BieEditNode {
 
-    private BigInteger topLevelAsbiepId;
-    private BigInteger releaseId;
+    private String topLevelAsbiepId;
+    private String releaseId;
 
     private String type;
     private String guid;

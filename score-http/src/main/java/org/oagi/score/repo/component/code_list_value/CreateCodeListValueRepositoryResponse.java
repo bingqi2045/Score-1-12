@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.code_list_value;
 
-import java.math.BigInteger;
-
 public class CreateCodeListValueRepositoryResponse {
 
-    private final BigInteger codeListValueManifestId;
+    private final String codeListValueManifestId;
 
-    public CreateCodeListValueRepositoryResponse(BigInteger codeListValueManifestId) {
+    public CreateCodeListValueRepositoryResponse(String codeListValueManifestId) {
         this.codeListValueManifestId = codeListValueManifestId;
     }
 
-    public BigInteger getCodeListValueManifestId() {
+    public String getCodeListValueManifestId() {
         return codeListValueManifestId;
     }
 }

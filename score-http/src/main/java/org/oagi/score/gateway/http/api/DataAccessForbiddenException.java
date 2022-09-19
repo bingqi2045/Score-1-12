@@ -3,17 +3,15 @@ package org.oagi.score.gateway.http.api;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
-
 public class DataAccessForbiddenException extends DataAccessException {
 
-    private BigInteger errorMessageId;
+    private String errorMessageId;
 
     public DataAccessForbiddenException(String msg) {
         super(msg);
     }
 
-    public DataAccessForbiddenException(String msg, BigInteger errorMessageId) {
+    public DataAccessForbiddenException(String msg, String errorMessageId) {
         super(msg);
         this.errorMessageId = errorMessageId;
     }
@@ -22,7 +20,7 @@ public class DataAccessForbiddenException extends DataAccessException {
         super("'" + user.getName() + "' doesn't have an access privilege.");
     }
 
-    public BigInteger getErrorMessageId() {
+    public String getErrorMessageId() {
         return errorMessageId;
     }
 }

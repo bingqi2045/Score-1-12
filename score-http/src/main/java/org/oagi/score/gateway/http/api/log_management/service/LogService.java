@@ -1,15 +1,13 @@
 package org.oagi.score.gateway.http.api.log_management.service;
 
 import org.oagi.score.service.common.data.PageResponse;
+import org.oagi.score.service.log.LogRepository;
 import org.oagi.score.service.log.model.Log;
 import org.oagi.score.service.log.model.LogListRequest;
-import org.oagi.score.service.log.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigInteger;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,8 +20,8 @@ public class LogService {
         return repository.getLogByReference(request);
     }
 
-    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger logId,
-                                  String reference, String type, BigInteger manifestId) {
+    public String getSnapshotById(AuthenticatedPrincipal user, String logId,
+                                  String reference, String type, String manifestId) {
         return repository.getSnapshotById(user, logId, reference, type, manifestId);
     }
 }

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function8;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.MessageRecord;
@@ -54,21 +52,22 @@ public class Message extends TableImpl<MessageRecord> {
     }
 
     /**
-     * The column <code>oagi.message.message_id</code>.
+     * The column <code>oagi.message.message_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<MessageRecord, ULong> MESSAGE_ID = createField(DSL.name("message_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<MessageRecord, String> MESSAGE_ID = createField(DSL.name("message_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.message.sender_id</code>. The user who created this
      * record.
      */
-    public final TableField<MessageRecord, ULong> SENDER_ID = createField(DSL.name("sender_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The user who created this record.");
+    public final TableField<MessageRecord, String> SENDER_ID = createField(DSL.name("sender_id"), SQLDataType.CHAR(36).nullable(false), this, "The user who created this record.");
 
     /**
      * The column <code>oagi.message.recipient_id</code>. The user who is a
      * target to possess this record.
      */
-    public final TableField<MessageRecord, ULong> RECIPIENT_ID = createField(DSL.name("recipient_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The user who is a target to possess this record.");
+    public final TableField<MessageRecord, String> RECIPIENT_ID = createField(DSL.name("recipient_id"), SQLDataType.CHAR(36).nullable(false), this, "The user who is a target to possess this record.");
 
     /**
      * The column <code>oagi.message.subject</code>. A subject of the message
@@ -134,11 +133,6 @@ public class Message extends TableImpl<MessageRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<MessageRecord, ULong> getIdentity() {
-        return (Identity<MessageRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -220,21 +214,22 @@ public class Message extends TableImpl<MessageRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, String, String, String, Byte, LocalDateTime> fieldsRow() {
+    public Row8<String, String, String, String, String, String, Byte, LocalDateTime> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function8<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

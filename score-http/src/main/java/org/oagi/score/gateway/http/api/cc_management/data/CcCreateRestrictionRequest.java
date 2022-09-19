@@ -9,12 +9,12 @@ import java.util.List;
 @Data
 public class CcCreateRestrictionRequest {
 
-    private BigInteger releaseId;
-    private BigInteger dtManifestId;
+    private String releaseId;
+    private String dtManifestId;
     private String restrictionType;
     private List<primitiveXbtMap> primitiveXbtMapList;
-    private BigInteger codeListManifestId;
-    private BigInteger agencyIdListManifestId;
+    private String codeListManifestId;
+    private String agencyIdListManifestId;
     private List<BigInteger> xbtManifestIdList;
 
     @Data

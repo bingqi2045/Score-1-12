@@ -1,31 +1,28 @@
 package org.oagi.score.repo.api.businessterm.model;
 
 import org.oagi.score.repo.api.base.Auditable;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-import java.util.Date;
 import java.util.Objects;
 
 public class BieToAssign extends Auditable {
 
-    private BigInteger bieId;
+    private String bieId;
 
     private String bieType;
 
     public BieToAssign() {
     }
 
-    public BieToAssign(BigInteger bieId, String bieType) {
+    public BieToAssign(String bieId, String bieType) {
         this.bieId = bieId;
         this.bieType = bieType;
     }
 
-    public BigInteger getBieId() {
+    public String getBieId() {
         return bieId;
     }
 
-    public void setBieId(BigInteger bieId) {
+    public void setBieId(String bieId) {
         this.bieId = bieId;
     }
 

@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +19,7 @@ public class CreateContextSchemeRequest extends Request {
 
     private String schemeVersionId;
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private Collection<ContextSchemeValue> contextSchemeValueList;
 
@@ -93,15 +92,15 @@ public class CreateContextSchemeRequest extends Request {
         return this;
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public CreateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+    public CreateContextSchemeRequest withContextCategoryId(String contextCategoryId) {
         this.setContextCategoryId(contextCategoryId);
         return this;
     }

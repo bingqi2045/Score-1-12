@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function10;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
@@ -55,21 +53,21 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
     /**
      * The column <code>oagi.module_set_release.module_set_release_id</code>.
-     * Primary key.
+     * Primary, internal database key.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleSetReleaseRecord, String> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module_set_release.module_set_id</code>. A foreign
      * key of the module set.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
+    public final TableField<ModuleSetReleaseRecord, String> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set.");
 
     /**
-     * The column <code>oagi.module_set_release.release_id</code>. A foreign key
-     * of the release.
+     * The column <code>oagi.module_set_release.release_id</code>. Foreign key
+     * to the RELEASE table.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the release.");
+    public final TableField<ModuleSetReleaseRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
 
     /**
      * The column <code>oagi.module_set_release.name</code>. This is the name of
@@ -95,14 +93,14 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
      * to the APP_USER table. It indicates the user who created this
      * MODULE_SET_RELEASE.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.");
+    public final TableField<ModuleSetReleaseRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.");
 
     /**
      * The column <code>oagi.module_set_release.last_updated_by</code>. Foreign
      * key to the APP_USER table referring to the last user who updated the
      * record.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleSetReleaseRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_set_release.creation_timestamp</code>. The
@@ -155,24 +153,19 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     }
 
     @Override
-    public Identity<ModuleSetReleaseRecord, ULong> getIdentity() {
-        return (Identity<ModuleSetReleaseRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<ModuleSetReleaseRecord> getPrimaryKey() {
         return Keys.KEY_MODULE_SET_RELEASE_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<ModuleSetReleaseRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.MODULE_SET_RELEASE_MODULE_SET_ID_FK, Keys.MODULE_SET_RELEASE_RELEASE_ID_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK, Keys.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.MODULE_SET_RELEASE_MODULE_SET_ID_FK, Keys.MODULE_SET_RELEASE_RELEASE_ID_FK, Keys.MODULE_SET_RELEASE_CREATED_BY_FK, Keys.MODULE_SET_RELEASE_LAST_UPDATED_BY_FK);
     }
 
     private transient ModuleSet _moduleSet;
     private transient Release _release;
-    private transient AppUser _moduleSetReleaseAssignmentCreatedByFk;
-    private transient AppUser _moduleSetReleaseAssignmentLastUpdatedByFk;
+    private transient AppUser _moduleSetReleaseCreatedByFk;
+    private transient AppUser _moduleSetReleaseLastUpdatedByFk;
 
     /**
      * Get the implicit join path to the <code>oagi.module_set</code> table.
@@ -196,24 +189,24 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
     /**
      * Get the implicit join path to the <code>oagi.app_user</code> table, via
-     * the <code>module_set_release_assignment_created_by_fk</code> key.
+     * the <code>module_set_release_created_by_fk</code> key.
      */
-    public AppUser moduleSetReleaseAssignmentCreatedByFk() {
-        if (_moduleSetReleaseAssignmentCreatedByFk == null)
-            _moduleSetReleaseAssignmentCreatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK);
+    public AppUser moduleSetReleaseCreatedByFk() {
+        if (_moduleSetReleaseCreatedByFk == null)
+            _moduleSetReleaseCreatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_CREATED_BY_FK);
 
-        return _moduleSetReleaseAssignmentCreatedByFk;
+        return _moduleSetReleaseCreatedByFk;
     }
 
     /**
      * Get the implicit join path to the <code>oagi.app_user</code> table, via
-     * the <code>module_set_release_assignment_last_updated_by_fk</code> key.
+     * the <code>module_set_release_last_updated_by_fk</code> key.
      */
-    public AppUser moduleSetReleaseAssignmentLastUpdatedByFk() {
-        if (_moduleSetReleaseAssignmentLastUpdatedByFk == null)
-            _moduleSetReleaseAssignmentLastUpdatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK);
+    public AppUser moduleSetReleaseLastUpdatedByFk() {
+        if (_moduleSetReleaseLastUpdatedByFk == null)
+            _moduleSetReleaseLastUpdatedByFk = new AppUser(this, Keys.MODULE_SET_RELEASE_LAST_UPDATED_BY_FK);
 
-        return _moduleSetReleaseAssignmentLastUpdatedByFk;
+        return _moduleSetReleaseLastUpdatedByFk;
     }
 
     @Override
@@ -260,21 +253,22 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, ULong, ULong, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<String, String, String, String, String, Byte, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

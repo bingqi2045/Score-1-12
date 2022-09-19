@@ -3,14 +3,13 @@ package org.oagi.score.repo.component.code_list;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
     private String state;
     private List<CodeListValue> codeListValueList = new ArrayList();
 
@@ -64,19 +63,19 @@ public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
     }
 
     public ModifyCodeListValuesRepositoryRequest(AuthenticatedPrincipal user,
-                                                 BigInteger codeListManifestId) {
+                                                 String codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;
     }
 
     public ModifyCodeListValuesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
-                                                 BigInteger codeListManifestId) {
+                                                 String codeListManifestId) {
         super(user, localDateTime);
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 

@@ -8,7 +8,6 @@ import org.oagi.score.repo.api.corecomponent.model.AsccManifest;
 import org.oagi.score.repo.api.corecomponent.model.BccManifest;
 import org.oagi.score.repo.api.corecomponent.model.DtScManifest;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +25,14 @@ public class AnalysisBieUpliftingResponse implements BieUpliftingListener {
         }
     }
 
-    private Map<BigInteger, BieContextPath> sourceAsbiePathMap = new HashMap();
-    private Map<BigInteger, BieContextPath> targetAsbiePathMap = new HashMap();
+    private Map<String, BieContextPath> sourceAsbiePathMap = new HashMap();
+    private Map<String, BieContextPath> targetAsbiePathMap = new HashMap();
 
-    private Map<BigInteger, BieContextPath> sourceBbiePathMap = new HashMap();
-    private Map<BigInteger, BieContextPath> targetBbiePathMap = new HashMap();
+    private Map<String, BieContextPath> sourceBbiePathMap = new HashMap();
+    private Map<String, BieContextPath> targetBbiePathMap = new HashMap();
 
-    private Map<BigInteger, BieContextPath> sourceBbieScPathMap = new HashMap();
-    private Map<BigInteger, BieContextPath> targetBbieScPathMap = new HashMap();
+    private Map<String, BieContextPath> sourceBbieScPathMap = new HashMap();
+    private Map<String, BieContextPath> targetBbieScPathMap = new HashMap();
 
     @Override
     public void notFoundMatchedAsbie(Asbie asbie, AsccManifest sourceAsccManifest, String sourceAsccPath, String sourceContextDefinition) {

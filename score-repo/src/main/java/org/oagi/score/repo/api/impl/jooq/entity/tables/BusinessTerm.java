@@ -5,12 +5,13 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables;
 
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function11;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -24,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BusinessTermRecord;
@@ -53,10 +53,10 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     /**
-     * The column <code>oagi.business_term.business_term_id</code>. A internal,
-     * primary database key of an Business term.
+     * The column <code>oagi.business_term.business_term_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BusinessTermRecord, ULong> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an Business term.");
+    public final TableField<BusinessTermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.business_term.guid</code>. A globally unique
@@ -81,14 +81,14 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
      * referring to the user who creates the business term. The creator of the
      * business term is also its owner by default.
      */
-    public final TableField<BusinessTermRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the business term. The creator of the business term is also its owner by default.");
+    public final TableField<BusinessTermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the business term. The creator of the business term is also its owner by default.");
 
     /**
      * The column <code>oagi.business_term.last_updated_by</code>. A foreign key
      * referring to the last user who has updated the business term record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<BusinessTermRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the business term record. This may be the user who is in the same group as the creator.");
+    public final TableField<BusinessTermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the business term record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.business_term.creation_timestamp</code>. Timestamp
@@ -159,13 +159,38 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     }
 
     @Override
-    public Identity<BusinessTermRecord, ULong> getIdentity() {
-        return (Identity<BusinessTermRecord, ULong>) super.getIdentity();
+    public UniqueKey<BusinessTermRecord> getPrimaryKey() {
+        return Keys.KEY_BUSINESS_TERM_PRIMARY;
     }
 
     @Override
-    public UniqueKey<BusinessTermRecord> getPrimaryKey() {
-        return Keys.KEY_BUSINESS_TERM_PRIMARY;
+    public List<ForeignKey<BusinessTermRecord, ?>> getReferences() {
+        return Arrays.asList(Keys.BUSINESS_TERM_CREATED_BY_FK, Keys.BUSINESS_TERM_LAST_UPDATED_BY_FK);
+    }
+
+    private transient AppUser _businessTermCreatedByFk;
+    private transient AppUser _businessTermLastUpdatedByFk;
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>business_term_created_by_fk</code> key.
+     */
+    public AppUser businessTermCreatedByFk() {
+        if (_businessTermCreatedByFk == null)
+            _businessTermCreatedByFk = new AppUser(this, Keys.BUSINESS_TERM_CREATED_BY_FK);
+
+        return _businessTermCreatedByFk;
+    }
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>business_term_last_updated_by_fk</code> key.
+     */
+    public AppUser businessTermLastUpdatedByFk() {
+        if (_businessTermLastUpdatedByFk == null)
+            _businessTermLastUpdatedByFk = new AppUser(this, Keys.BUSINESS_TERM_LAST_UPDATED_BY_FK);
+
+        return _businessTermLastUpdatedByFk;
     }
 
     @Override
@@ -212,21 +237,22 @@ public class BusinessTerm extends TableImpl<BusinessTermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
+    public Row11<String, String, String, String, String, String, LocalDateTime, LocalDateTime, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function11<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function11<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

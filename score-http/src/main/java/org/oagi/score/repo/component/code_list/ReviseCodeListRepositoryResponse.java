@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.code_list;
 
-import java.math.BigInteger;
-
 public class ReviseCodeListRepositoryResponse {
 
-    private final BigInteger codeListManifestId;
+    private final String codeListManifestId;
 
-    public ReviseCodeListRepositoryResponse(BigInteger codeListManifestId) {
+    public ReviseCodeListRepositoryResponse(String codeListManifestId) {
         this.codeListManifestId = codeListManifestId;
     }
 
-    public BigInteger getCodeListManifestId() {
+    public String getCodeListManifestId() {
         return codeListManifestId;
     }
 }

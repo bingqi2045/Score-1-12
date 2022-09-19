@@ -8,7 +8,7 @@ import java.math.BigInteger;
 @Data
 public class BieEditBdtSc {
 
-    private BigInteger dtScManifestId;
+    private String dtScManifestId;
     private String guid;
     private String propertyTerm;
     private String representationTerm;

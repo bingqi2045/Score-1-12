@@ -3,11 +3,9 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class UpdateContextCategoryRequest extends Request {
 
-    private BigInteger contextCategoryId;
+    private String contextCategoryId;
 
     private String name;
 
@@ -17,15 +15,15 @@ public class UpdateContextCategoryRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getContextCategoryId() {
+    public String getContextCategoryId() {
         return contextCategoryId;
     }
 
-    public void setContextCategoryId(BigInteger contextCategoryId) {
+    public void setContextCategoryId(String contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public UpdateContextCategoryRequest withContextCategoryId(BigInteger contextCategoryId) {
+    public UpdateContextCategoryRequest withContextCategoryId(String contextCategoryId) {
         this.setContextCategoryId(contextCategoryId);
         return this;
     }

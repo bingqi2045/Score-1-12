@@ -3,85 +3,84 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Objects;
 
 public class BccManifest implements CcManifest, CcAssociation, Serializable {
 
-    private BigInteger bccManifestId;
+    private String bccManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger bccId;
+    private String bccId;
 
-    private BigInteger seqKeyId;
+    private String seqKeyId;
 
-    private BigInteger fromAccManifestId;
+    private String fromAccManifestId;
 
-    private BigInteger toBccpManifestId;
+    private String toBccpManifestId;
 
     private boolean conflict;
 
-    private BigInteger prevBccManifestId;
+    private String prevBccManifestId;
 
-    private BigInteger nextBccManifestId;
+    private String nextBccManifestId;
 
-    public BigInteger getBccManifestId() {
+    public String getBccManifestId() {
         return bccManifestId;
     }
 
-    public void setBccManifestId(BigInteger bccManifestId) {
+    public void setBccManifestId(String bccManifestId) {
         this.bccManifestId = bccManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getBccManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getBccId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getBccId() {
+    public String getBccId() {
         return bccId;
     }
 
-    public void setBccId(BigInteger bccId) {
+    public void setBccId(String bccId) {
         this.bccId = bccId;
     }
 
-    public BigInteger getSeqKeyId() {
+    public String getSeqKeyId() {
         return seqKeyId;
     }
 
-    public void setSeqKeyId(BigInteger seqKeyId) {
+    public void setSeqKeyId(String seqKeyId) {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccManifestId() {
+    public String getFromAccManifestId() {
         return fromAccManifestId;
     }
 
-    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+    public void setFromAccManifestId(String fromAccManifestId) {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public BigInteger getToBccpManifestId() {
+    public String getToBccpManifestId() {
         return toBccpManifestId;
     }
 
-    public void setToBccpManifestId(BigInteger toBccpManifestId) {
+    public void setToBccpManifestId(String toBccpManifestId) {
         this.toBccpManifestId = toBccpManifestId;
     }
 
@@ -93,19 +92,19 @@ public class BccManifest implements CcManifest, CcAssociation, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevBccManifestId() {
+    public String getPrevBccManifestId() {
         return prevBccManifestId;
     }
 
-    public void setPrevBccManifestId(BigInteger prevBccManifestId) {
+    public void setPrevBccManifestId(String prevBccManifestId) {
         this.prevBccManifestId = prevBccManifestId;
     }
 
-    public BigInteger getNextBccManifestId() {
+    public String getNextBccManifestId() {
         return nextBccManifestId;
     }
 
-    public void setNextBccManifestId(BigInteger nextBccManifestId) {
+    public void setNextBccManifestId(String nextBccManifestId) {
         this.nextBccManifestId = nextBccManifestId;
     }
 

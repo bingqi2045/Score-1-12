@@ -3,27 +3,25 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class CreateModuleRequest extends Request {
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String versionNum;
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
     private ModuleType moduleType;
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 
@@ -35,11 +33,11 @@ public class CreateModuleRequest extends Request {
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 
@@ -55,11 +53,11 @@ public class CreateModuleRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 

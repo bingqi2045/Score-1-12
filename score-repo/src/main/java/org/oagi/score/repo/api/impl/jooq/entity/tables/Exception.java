@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -56,10 +54,10 @@ public class Exception extends TableImpl<ExceptionRecord> {
     }
 
     /**
-     * The column <code>oagi.exception.exception_id</code>. Internal, primary
+     * The column <code>oagi.exception.exception_id</code>. Primary, internal
      * database key.
      */
-    public final TableField<ExceptionRecord, ULong> EXCEPTION_ID = createField(DSL.name("exception_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<ExceptionRecord, String> EXCEPTION_ID = createField(DSL.name("exception_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.exception.tag</code>. A tag of the exception for
@@ -83,7 +81,7 @@ public class Exception extends TableImpl<ExceptionRecord> {
      * APP_USER table. It indicates the user who is working on when the
      * exception occurs.
      */
-    public final TableField<ExceptionRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
+    public final TableField<ExceptionRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
 
     /**
      * The column <code>oagi.exception.creation_timestamp</code>. Timestamp when
@@ -132,11 +130,6 @@ public class Exception extends TableImpl<ExceptionRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.EXCEPTION_EXCEPTION_TAG_IDX);
-    }
-
-    @Override
-    public Identity<ExceptionRecord, ULong> getIdentity() {
-        return (Identity<ExceptionRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -205,21 +198,22 @@ public class Exception extends TableImpl<ExceptionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, byte[], ULong, LocalDateTime> fieldsRow() {
+    public Row6<String, String, String, byte[], String, LocalDateTime> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super String, ? super String, ? super String, ? super byte[], ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super String, ? super String, ? super byte[], ? super ULong, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super String, ? super String, ? super String, ? super byte[], ? super String, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

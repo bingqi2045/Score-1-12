@@ -8,14 +8,14 @@ import java.util.Date;
 @Data
 public class BBIE implements BIE, FacetRestrictionsAware {
 
-    private BigInteger bbieId = BigInteger.ZERO;
+    private String bbieId;
     private String guid;
-    private BigInteger basedBccManifestId = BigInteger.ZERO;
-    private BigInteger fromAbieId = BigInteger.ZERO;
-    private BigInteger toBbiepId = BigInteger.ZERO;
-    private BigInteger bdtPriRestriId = BigInteger.ZERO;
-    private BigInteger codeListId = BigInteger.ZERO;
-    private BigInteger agencyIdListId = BigInteger.ZERO;
+    private String basedBccManifestId;
+    private String fromAbieId;
+    private String toBbiepId;
+    private String bdtPriRestriId;
+    private String codeListId;
+    private String agencyIdListId;
     private int cardinalityMin;
     private int cardinalityMax;
     private BigInteger minLength;
@@ -28,11 +28,11 @@ public class BBIE implements BIE, FacetRestrictionsAware {
     private String definition;
     private String remark;
     private String example;
-    private BigInteger createdBy = BigInteger.ZERO;
-    private BigInteger lastUpdatedBy = BigInteger.ZERO;
+    private String createdBy;
+    private String lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

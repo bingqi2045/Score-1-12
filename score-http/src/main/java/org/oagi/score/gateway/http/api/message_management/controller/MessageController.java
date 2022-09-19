@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -99,7 +98,7 @@ public class MessageController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetMessageResponse getMessage(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger messageId) {
+            @PathVariable("id") String messageId) {
         return messageService.getMessage(
                 sessionService.asScoreUser(requester),
                 messageId);

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oagi.score.redis.event.Event;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,52 +13,52 @@ import java.util.List;
 @AllArgsConstructor
 public class ReleaseCreateRequestEvent implements Event {
 
-    private BigInteger userId;
-    private BigInteger releaseId;
+    private String userId;
+    private String releaseId;
 
-    private List<BigInteger> accManifestIds;
-    private List<BigInteger> asccpManifestIds;
-    private List<BigInteger> bccpManifestIds;
-    private List<BigInteger> dtManifestIds;
-    private List<BigInteger> codeListManifestIds;
-    private List<BigInteger> agencyIdListManifestIds;
+    private List<String> accManifestIds;
+    private List<String> asccpManifestIds;
+    private List<String> bccpManifestIds;
+    private List<String> dtManifestIds;
+    private List<String> codeListManifestIds;
+    private List<String> agencyIdListManifestIds;
 
-    public List<BigInteger> getAccManifestIds() {
+    public List<String> getAccManifestIds() {
         if (accManifestIds == null) {
             return Collections.emptyList();
         }
         return accManifestIds;
     }
 
-    public List<BigInteger> getAsccpManifestIds() {
+    public List<String> getAsccpManifestIds() {
         if (asccpManifestIds == null) {
             return Collections.emptyList();
         }
         return asccpManifestIds;
     }
 
-    public List<BigInteger> getBccpManifestIds() {
+    public List<String> getBccpManifestIds() {
         if (bccpManifestIds == null) {
             return Collections.emptyList();
         }
         return bccpManifestIds;
     }
 
-    public List<BigInteger> getDtManifestIds() {
+    public List<String> getDtManifestIds() {
         if (dtManifestIds == null) {
             return Collections.emptyList();
         }
         return dtManifestIds;
     }
 
-    public List<BigInteger> getCodeListManifestIds() {
+    public List<String> getCodeListManifestIds() {
         if (codeListManifestIds == null) {
             return Collections.emptyList();
         }
         return codeListManifestIds;
     }
 
-    public List<BigInteger> getAgencyIdListManifestIds() {
+    public List<String> getAgencyIdListManifestIds() {
         if (agencyIdListManifestIds == null) {
             return Collections.emptyList();
         }

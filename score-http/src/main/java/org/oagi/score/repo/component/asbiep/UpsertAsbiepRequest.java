@@ -3,26 +3,25 @@ package org.oagi.score.repo.component.asbiep;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpsertAsbiepRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAsbiepId;
+    private final String topLevelAsbiepId;
     private final AsbiepNode.Asbiep asbiep;
 
-    private BigInteger roleOfAbieId;
-    private BigInteger refTopLevelAsbiepId;
+    private String roleOfAbieId;
+    private String refTopLevelAsbiepId;
     private boolean refTopLevelAsbiepIdNull;
 
     public UpsertAsbiepRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
-                               BigInteger topLevelAsbiepId, AsbiepNode.Asbiep asbiep) {
+                               String topLevelAsbiepId, AsbiepNode.Asbiep asbiep) {
         super(user, localDateTime);
         this.topLevelAsbiepId = topLevelAsbiepId;
         this.asbiep = asbiep;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
@@ -30,19 +29,19 @@ public class UpsertAsbiepRequest extends RepositoryRequest {
         return asbiep;
     }
 
-    public BigInteger getRoleOfAbieId() {
+    public String getRoleOfAbieId() {
         return roleOfAbieId;
     }
 
-    public void setRoleOfAbieId(BigInteger roleOfAbieId) {
+    public void setRoleOfAbieId(String roleOfAbieId) {
         this.roleOfAbieId = roleOfAbieId;
     }
 
-    public BigInteger getRefTopLevelAsbiepId() {
+    public String getRefTopLevelAsbiepId() {
         return refTopLevelAsbiepId;
     }
 
-    public void setRefTopLevelAsbiepId(BigInteger refTopLevelAsbiepId) {
+    public void setRefTopLevelAsbiepId(String refTopLevelAsbiepId) {
         this.refTopLevelAsbiepId = refTopLevelAsbiepId;
     }
 

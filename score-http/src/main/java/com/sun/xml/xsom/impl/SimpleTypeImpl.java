@@ -40,15 +40,7 @@
 
 package com.sun.xml.xsom.impl;
 
-import com.sun.xml.xsom.XSComplexType;
-import com.sun.xml.xsom.XSContentType;
-import com.sun.xml.xsom.XSListSimpleType;
-import com.sun.xml.xsom.XSParticle;
-import com.sun.xml.xsom.XSRestrictionSimpleType;
-import com.sun.xml.xsom.XSSimpleType;
-import com.sun.xml.xsom.XSType;
-import com.sun.xml.xsom.XSUnionSimpleType;
-import com.sun.xml.xsom.XSVariety;
+import com.sun.xml.xsom.*;
 import com.sun.xml.xsom.impl.parser.SchemaDocumentImpl;
 import com.sun.xml.xsom.visitor.XSContentTypeFunction;
 import com.sun.xml.xsom.visitor.XSContentTypeVisitor;

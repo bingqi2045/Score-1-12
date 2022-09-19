@@ -3,66 +3,65 @@ package org.oagi.score.repo.api.corecomponent.model;
 import org.oagi.score.repo.api.corecomponent.CcManifest;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class AsccpManifest implements CcManifest, Serializable {
 
-    private BigInteger asccpManifestId;
+    private String asccpManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger asccpId;
+    private String asccpId;
 
-    private BigInteger roleOfAccManifestId;
+    private String roleOfAccManifestId;
 
     private boolean conflict;
 
-    private BigInteger logId;
+    private String logId;
 
-    private BigInteger prevAsccpManifestId;
+    private String prevAsccpManifestId;
 
-    private BigInteger nextAsccpManifestId;
+    private String nextAsccpManifestId;
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 
-    public void setAsccpManifestId(BigInteger asccpManifestId) {
+    public void setAsccpManifestId(String asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return getAsccpManifestId();
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
+    public String getBasedCcId() {
         return getAsccpId();
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAsccpId() {
+    public String getAsccpId() {
         return asccpId;
     }
 
-    public void setAsccpId(BigInteger asccpId) {
+    public void setAsccpId(String asccpId) {
         this.asccpId = asccpId;
     }
 
-    public BigInteger getRoleOfAccManifestId() {
+    public String getRoleOfAccManifestId() {
         return roleOfAccManifestId;
     }
 
-    public void setRoleOfAccManifestId(BigInteger roleOfAccManifestId) {
+    public void setRoleOfAccManifestId(String roleOfAccManifestId) {
         this.roleOfAccManifestId = roleOfAccManifestId;
     }
 
@@ -74,27 +73,27 @@ public class AsccpManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
-    public BigInteger getPrevAsccpManifestId() {
+    public String getPrevAsccpManifestId() {
         return prevAsccpManifestId;
     }
 
-    public void setPrevAsccpManifestId(BigInteger prevAsccpManifestId) {
+    public void setPrevAsccpManifestId(String prevAsccpManifestId) {
         this.prevAsccpManifestId = prevAsccpManifestId;
     }
 
-    public BigInteger getNextAsccpManifestId() {
+    public String getNextAsccpManifestId() {
         return nextAsccpManifestId;
     }
 
-    public void setNextAsccpManifestId(BigInteger nextAsccpManifestId) {
+    public void setNextAsccpManifestId(String nextAsccpManifestId) {
         this.nextAsccpManifestId = nextAsccpManifestId;
     }
 }

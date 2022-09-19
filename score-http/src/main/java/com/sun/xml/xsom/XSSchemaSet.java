@@ -41,8 +41,8 @@
 package com.sun.xml.xsom;
 
 import javax.xml.namespace.NamespaceContext;
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Set of {@link XSSchema} objects.

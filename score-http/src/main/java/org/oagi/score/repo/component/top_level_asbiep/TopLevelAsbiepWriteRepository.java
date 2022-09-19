@@ -1,10 +1,9 @@
 package org.oagi.score.repo.component.top_level_asbiep;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,11 +21,11 @@ public class TopLevelAsbiepWriteRepository {
 
     public void updateTopLevelAsbiep(UpdateTopLevelAsbiepRequest request) {
 
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong requesterId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String requesterId = user.getAppUserId();
 
         TopLevelAsbiepRecord record = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId())))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(request.getTopLevelAsbiepId()))
                 .fetchOptional().orElse(null);
 
         if (record == null) {

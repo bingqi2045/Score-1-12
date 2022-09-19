@@ -40,21 +40,10 @@
 
 package com.sun.xml.xsom.impl;
 
-import com.sun.xml.xsom.XSElementDecl;
-import com.sun.xml.xsom.XSIdentityConstraint;
-import com.sun.xml.xsom.XSModelGroup;
-import com.sun.xml.xsom.XSModelGroupDecl;
-import com.sun.xml.xsom.XSTerm;
-import com.sun.xml.xsom.XSType;
-import com.sun.xml.xsom.XSWildcard;
-import com.sun.xml.xsom.XmlString;
+import com.sun.xml.xsom.*;
 import com.sun.xml.xsom.impl.parser.PatcherManager;
 import com.sun.xml.xsom.impl.parser.SchemaDocumentImpl;
-import com.sun.xml.xsom.visitor.XSFunction;
-import com.sun.xml.xsom.visitor.XSTermFunction;
-import com.sun.xml.xsom.visitor.XSTermFunctionWithParam;
-import com.sun.xml.xsom.visitor.XSTermVisitor;
-import com.sun.xml.xsom.visitor.XSVisitor;
+import com.sun.xml.xsom.visitor.*;
 import org.xml.sax.Locator;
 
 import java.util.Collections;

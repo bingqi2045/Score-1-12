@@ -2,7 +2,6 @@ package org.oagi.score.repo.component.bbie;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.service.common.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
@@ -10,12 +9,14 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
 import org.oagi.score.repo.component.bdt_pri_restri.AvailableBdtPriRestri;
 import org.oagi.score.repo.component.bdt_pri_restri.BdtPriRestriReadRepository;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
@@ -42,7 +43,7 @@ public class BbieWriteRepository {
 
     public BbieNode.Bbie upsertBbie(UpsertBbieRequest request) {
         BbieNode.Bbie bbie = request.getBbie();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        String topLevelAsbiepId = request.getTopLevelAsbiepId();
         String hashPath = bbie.getHashPath();
         BbieRecord bbieRecord = dslContext.selectFrom(BBIE)
                 .where(and(
@@ -51,13 +52,14 @@ public class BbieWriteRepository {
                 ))
                 .fetchOptional().orElse(null);
 
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong requesterId = ULong.valueOf(user.getAppUserId());
+        AppUser user = sessionService.getAppUserByUsername(request.getUser());
+        String requesterId = user.getAppUserId();
 
         if (bbieRecord == null) {
             bbieRecord = new BbieRecord();
+            bbieRecord.setBbieId(UUID.randomUUID().toString());
             bbieRecord.setGuid(ScoreGuid.randomGuid());
-            bbieRecord.setBasedBccManifestId(ULong.valueOf(bbie.getBasedBccManifestId()));
+            bbieRecord.setBasedBccManifestId(bbie.getBasedBccManifestId());
             bbieRecord.setPath(bbie.getPath());
             bbieRecord.setHashPath(hashPath);
             bbieRecord.setFromAbieId(dslContext.select(ABIE.ABIE_ID)
@@ -66,14 +68,14 @@ public class BbieWriteRepository {
                             ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ABIE.HASH_PATH.eq(bbie.getFromAbieHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             bbieRecord.setToBbiepId(dslContext.select(BBIEP.BBIEP_ID)
                     .from(BBIEP)
                     .where(and(
                             BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIEP.HASH_PATH.eq(bbie.getToBbiepHashPath())
                     ))
-                    .fetchOneInto(ULong.class));
+                    .fetchOneInto(String.class));
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 
             if (bbie.getUsed() != null) {
@@ -149,20 +151,20 @@ public class BbieWriteRepository {
                     throw new IllegalArgumentException();
                 }
 
-                bbieRecord.setBdtPriRestriId(ULong.valueOf(bdtPriRestriList.get(0).getBdtPriRestriId()));
+                bbieRecord.setBdtPriRestriId(bdtPriRestriList.get(0).getBdtPriRestriId());
             } else {
                 if (bbie.getBdtPriRestriId() != null) {
-                    bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
+                    bbieRecord.setBdtPriRestriId(bbie.getBdtPriRestriId());
                     bbieRecord.setCodeListId(null);
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getCodeListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
-                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setCodeListId(bbie.getCodeListId());
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getAgencyIdListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
                     bbieRecord.setCodeListId(null);
-                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                    bbieRecord.setAgencyIdListId(bbie.getAgencyIdListId());
                 }
             }
 
@@ -173,12 +175,9 @@ public class BbieWriteRepository {
             bbieRecord.setCreationTimestamp(request.getLocalDateTime());
             bbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbieRecord.setBbieId(
-                    dslContext.insertInto(BBIE)
-                            .set(bbieRecord)
-                            .returning(BBIE.BBIE_ID)
-                            .fetchOne().getBbieId()
-            );
+            dslContext.insertInto(BBIE)
+                    .set(bbieRecord)
+                    .execute();
         } else {
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 
@@ -248,17 +247,17 @@ public class BbieWriteRepository {
 
             if (!bbie.isEmptyPrimitive()) {
                 if (bbie.getBdtPriRestriId() != null) {
-                    bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
+                    bbieRecord.setBdtPriRestriId(bbie.getBdtPriRestriId());
                     bbieRecord.setCodeListId(null);
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getCodeListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
-                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setCodeListId(bbie.getCodeListId());
                     bbieRecord.setAgencyIdListId(null);
                 } else if (bbie.getAgencyIdListId() != null) {
                     bbieRecord.setBdtPriRestriId(null);
                     bbieRecord.setCodeListId(null);
-                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                    bbieRecord.setAgencyIdListId(bbie.getAgencyIdListId());
                 }
             }
 

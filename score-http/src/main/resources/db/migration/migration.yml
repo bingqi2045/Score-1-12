@@ -1,0 +1,12 @@
+migration:
+  processes:
+    - id: '93128fdf-1f4b-46aa-b248-a1d90a36c37c'
+      order: 1
+      author: hakju.oh
+      comment: 'Score Schema Initialization'
+      script: 'classpath:db/migration/mysql/V1__Initial_Schema.sql'
+    - id: 'a3891506-4fda-45ac-a3b4-232f462609d1'
+      order: 2
+      author: hakju.oh
+      comment: 'Score Data Initialization'
+      script: 'classpath:db/migration/mysql/V2__Initial_Data.sql'

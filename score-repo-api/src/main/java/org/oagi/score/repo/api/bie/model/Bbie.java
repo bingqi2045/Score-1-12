@@ -1,28 +1,26 @@
 package org.oagi.score.repo.api.bie.model;
 
-import java.math.BigInteger;
-
 public class Bbie implements BieAssociation {
 
-    private BigInteger bbieId;
+    private String bbieId;
 
     private String guid;
 
-    private BigInteger basedBccManifestId;
+    private String basedBccManifestId;
 
     private String path;
 
     private String hashPath;
 
-    private BigInteger fromAbieId;
+    private String fromAbieId;
 
-    private BigInteger toBbiepId;
+    private String toBbiepId;
 
-    private BigInteger bdtPriRestriId;
+    private String bdtPriRestriId;
 
-    private BigInteger codeListId;
+    private String codeListId;
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
 
     private String defaultValue;
 
@@ -42,13 +40,13 @@ public class Bbie implements BieAssociation {
 
     private boolean used;
 
-    private BigInteger ownerTopLevelAsbiepId;
+    private String ownerTopLevelAsbiepId;
 
-    public BigInteger getBbieId() {
+    public String getBbieId() {
         return bbieId;
     }
 
-    public void setBbieId(BigInteger bbieId) {
+    public void setBbieId(String bbieId) {
         this.bbieId = bbieId;
     }
 
@@ -60,11 +58,11 @@ public class Bbie implements BieAssociation {
         this.guid = guid;
     }
 
-    public BigInteger getBasedBccManifestId() {
+    public String getBasedBccManifestId() {
         return basedBccManifestId;
     }
 
-    public void setBasedBccManifestId(BigInteger basedBccManifestId) {
+    public void setBasedBccManifestId(String basedBccManifestId) {
         this.basedBccManifestId = basedBccManifestId;
     }
 
@@ -84,43 +82,43 @@ public class Bbie implements BieAssociation {
         this.hashPath = hashPath;
     }
 
-    public BigInteger getFromAbieId() {
+    public String getFromAbieId() {
         return fromAbieId;
     }
 
-    public void setFromAbieId(BigInteger fromAbieId) {
+    public void setFromAbieId(String fromAbieId) {
         this.fromAbieId = fromAbieId;
     }
 
-    public BigInteger getToBbiepId() {
+    public String getToBbiepId() {
         return toBbiepId;
     }
 
-    public void setToBbiepId(BigInteger toBbiepId) {
+    public void setToBbiepId(String toBbiepId) {
         this.toBbiepId = toBbiepId;
     }
 
-    public BigInteger getBdtPriRestriId() {
+    public String getBdtPriRestriId() {
         return bdtPriRestriId;
     }
 
-    public void setBdtPriRestriId(BigInteger bdtPriRestriId) {
+    public void setBdtPriRestriId(String bdtPriRestriId) {
         this.bdtPriRestriId = bdtPriRestriId;
     }
 
-    public BigInteger getCodeListId() {
+    public String getCodeListId() {
         return codeListId;
     }
 
-    public void setCodeListId(BigInteger codeListId) {
+    public void setCodeListId(String codeListId) {
         this.codeListId = codeListId;
     }
 
-    public BigInteger getAgencyIdListId() {
+    public String getAgencyIdListId() {
         return agencyIdListId;
     }
 
-    public void setAgencyIdListId(BigInteger agencyIdListId) {
+    public void setAgencyIdListId(String agencyIdListId) {
         this.agencyIdListId = agencyIdListId;
     }
 
@@ -196,11 +194,11 @@ public class Bbie implements BieAssociation {
         this.used = used;
     }
 
-    public BigInteger getOwnerTopLevelAsbiepId() {
+    public String getOwnerTopLevelAsbiepId() {
         return ownerTopLevelAsbiepId;
     }
 
-    public void setOwnerTopLevelAsbiepId(BigInteger ownerTopLevelAsbiepId) {
+    public void setOwnerTopLevelAsbiepId(String ownerTopLevelAsbiepId) {
         this.ownerTopLevelAsbiepId = ownerTopLevelAsbiepId;
     }
 

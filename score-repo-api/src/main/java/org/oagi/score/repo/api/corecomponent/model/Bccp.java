@@ -4,11 +4,10 @@ import org.oagi.score.repo.api.base.Auditable;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class Bccp extends Auditable implements CoreComponent, Serializable {
 
-    private BigInteger bccpId;
+    private String bccpId;
 
     private String guid;
 
@@ -22,7 +21,7 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
 
     private String definitionSource;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private ScoreUser owner;
 
@@ -36,20 +35,20 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
 
     private String fixedValue;
 
-    private BigInteger prevBccpId;
+    private String prevBccpId;
 
-    private BigInteger nextBccpId;
+    private String nextBccpId;
 
-    public BigInteger getBccpId() {
+    public String getBccpId() {
         return bccpId;
     }
 
-    public void setBccpId(BigInteger bccpId) {
+    public void setBccpId(String bccpId) {
         this.bccpId = bccpId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getBccpId();
     }
 
@@ -102,11 +101,11 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
         this.definitionSource = definitionSource;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 
@@ -158,19 +157,19 @@ public class Bccp extends Auditable implements CoreComponent, Serializable {
         this.fixedValue = fixedValue;
     }
 
-    public BigInteger getPrevBccpId() {
+    public String getPrevBccpId() {
         return prevBccpId;
     }
 
-    public void setPrevBccpId(BigInteger prevBccpId) {
+    public void setPrevBccpId(String prevBccpId) {
         this.prevBccpId = prevBccpId;
     }
 
-    public BigInteger getNextBccpId() {
+    public String getNextBccpId() {
         return nextBccpId;
     }
 
-    public void setNextBccpId(BigInteger nextBccpId) {
+    public void setNextBccpId(String nextBccpId) {
         this.nextBccpId = nextBccpId;
     }
 }

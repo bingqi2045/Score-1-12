@@ -1,7 +1,6 @@
 package org.oagi.score.repo;
 
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRecord;
 import org.oagi.score.gateway.http.api.business_term_management.data.AssignedBusinessTermListRequest;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import javax.swing.text.html.Option;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
-import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -37,15 +33,16 @@ public class BusinessTermRepository {
     private DSLContext dslContext;
 
     private SelectConditionStep<Record14<
-            String,ULong,ULong,String,String,String,ULong,String,
-            String,ULong,String,String,String,LocalDateTime>> getAsbieBiztermAssignmentList(
-                    AssignedBusinessTermListRequest request) {
+            String, String, String, String, String,
+            String, String, String, String, String,
+            String, String, String, LocalDateTime>> getAsbieBiztermAssignmentList(
+            AssignedBusinessTermListRequest request) {
         List<Condition> conditions = setConditions(request);
-        if (request.getAssignedBtId() != null) {
-            conditions.add(ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(ULong.valueOf(request.getAssignedBtId())));
+        if (request.getAssignedBizTermId() != null) {
+            conditions.add(ASBIE_BIZTERM.ASBIE_BIZTERM_ID.eq(request.getAssignedBizTermId()));
         }
         if (request.getBieId() != null) {
-            conditions.add(ASBIE.ASBIE_ID.eq(ULong.valueOf(request.getBieId())));
+            conditions.add(ASBIE.ASBIE_ID.eq(request.getBieId()));
         }
         if (StringUtils.hasLength(request.getBieDen())) {
             conditions.add(ASCC.DEN.contains(request.getBieDen()));
@@ -65,7 +62,7 @@ public class BusinessTermRepository {
 
         return dslContext.select(
                         inline("ASBIE").as("bieType"),
-                        ASBIE_BIZTERM.ASBIE_BIZTERM_ID.as("assignedBtId"),
+                        ASBIE_BIZTERM.ASBIE_BIZTERM_ID.as("assignedBizTermId"),
                         ASBIE_BIZTERM.ASBIE_ID.as("bieId"),
                         ASBIE_BIZTERM.PRIMARY_INDICATOR.as("primaryIndicator"),
                         ASBIE_BIZTERM.TYPE_CODE.as("typeCode"),
@@ -97,15 +94,16 @@ public class BusinessTermRepository {
     }
 
     private SelectConditionStep<Record14<
-            String,ULong,ULong,String,String,String,ULong,String,
-            String,ULong,String,String,String,LocalDateTime>>
+            String, String, String, String, String,
+            String, String, String, String, String,
+            String, String, String, LocalDateTime>>
     getBbieBiztermAssignmentList(AssignedBusinessTermListRequest request) {
         List<Condition> conditions = setConditions(request);
-        if (request.getAssignedBtId() != null) {
-            conditions.add(BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(ULong.valueOf(request.getAssignedBtId())));
+        if (request.getAssignedBizTermId() != null) {
+            conditions.add(BBIE_BIZTERM.BBIE_BIZTERM_ID.eq(request.getAssignedBizTermId()));
         }
         if (request.getBieId() != null) {
-            conditions.add(BBIE.BBIE_ID.eq(ULong.valueOf(request.getBieId())));
+            conditions.add(BBIE.BBIE_ID.eq(request.getBieId()));
         }
         if (StringUtils.hasLength(request.getBieDen())) {
             if (StringUtils.hasLength(request.getBieDen())) {
@@ -127,7 +125,7 @@ public class BusinessTermRepository {
 
         return dslContext.select(
                         inline("BBIE").as("bieType"),
-                        BBIE_BIZTERM.BBIE_BIZTERM_ID.as("assignedBtId"),
+                        BBIE_BIZTERM.BBIE_BIZTERM_ID.as("assignedBizTermId"),
                         BBIE_BIZTERM.BBIE_ID.as("bieId"),
                         BBIE_BIZTERM.PRIMARY_INDICATOR.as("primaryIndicator"),
                         BBIE_BIZTERM.TYPE_CODE.as("typeCode"),
@@ -169,17 +167,17 @@ public class BusinessTermRepository {
         if (StringUtils.hasLength(request.getExternalReferenceUri())) {
             conditions.addAll(contains(request.getExternalReferenceUri(), BUSINESS_TERM.EXTERNAL_REF_URI));
         }
-        if (request.getOwnerLoginIds() !=  null && !request.getOwnerLoginIds().isEmpty()) {
+        if (request.getOwnerLoginIds() != null && !request.getOwnerLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
-        if (request.getOwnerLoginIds() !=  null && !request.getUpdaterLoginIds().isEmpty()) {
+        if (request.getOwnerLoginIds() != null && !request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.as("appUserUpdater").LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         return conditions;
     }
 
     public <E> PaginationResponse<E> getBieBiztermList(AssignedBusinessTermListRequest request,
-                                                        Class<? extends E> type) {
+                                                       Class<? extends E> type) {
 
         SelectOrderByStep select = null;
         if (request.getBieTypes().contains("ASBIE")) {
@@ -248,21 +246,21 @@ public class BusinessTermRepository {
         AssignedBusinessTermListRecord assignedBusinessTermRecord = null;
 
         AssignedBusinessTermListRequest listRequest = new AssignedBusinessTermListRequest();
-        listRequest.setAssignedBtId(request.getAssignedBtId());
+        listRequest.setAssignedBizTermId(request.getAssignedBizTermId());
         listRequest.setBieTypes(Collections.singletonList(request.getBieType()));
-        if (listRequest.getAssignedBtId() != null && request.getBieType() != null) {
-            if(request.getBieType().equals("ASBIE")){
+        if (listRequest.getAssignedBizTermId() != null && request.getBieType() != null) {
+            if (request.getBieType().equals("ASBIE")) {
                 assignedBusinessTermRecord = getAsbieBiztermAssignmentList(listRequest)
                         .fetchInto(AssignedBusinessTermListRecord.class)
                         .get(0);
-            } else if(request.getBieType().equals("BBIE")){
+            } else if (request.getBieType().equals("BBIE")) {
                 assignedBusinessTermRecord = getBbieBiztermAssignmentList(listRequest)
                         .fetchInto(AssignedBusinessTermListRecord.class)
                         .get(0);
             } else throw new ScoreDataAccessException("Wrong BIE Type: " + request.getBieType());
         }
         AssignedBusinessTerm assignedBusinessTerm = new AssignedBusinessTerm(
-                assignedBusinessTermRecord.getAssignedBtId(),
+                assignedBusinessTermRecord.getAssignedBizTermId(),
                 assignedBusinessTermRecord.getBieId(),
                 assignedBusinessTermRecord.getBieType(),
                 assignedBusinessTermRecord.getPrimaryIndicator().equals("1"),
@@ -282,16 +280,16 @@ public class BusinessTermRepository {
     public boolean checkAssignmentUniqueness(AssignBusinessTermRequest assignBusinessTermRequest)
             throws ScoreDataAccessException {
 
-        if(assignBusinessTermRequest.getBusinessTermId() != null
+        if (assignBusinessTermRequest.getBusinessTermId() != null
                 && assignBusinessTermRequest.getBiesToAssign() != null
                 && assignBusinessTermRequest.getBiesToAssign().size() == 1
                 && assignBusinessTermRequest.getTypeCode() != null
-                && assignBusinessTermRequest.getPrimaryIndicator() != null){
+                && assignBusinessTermRequest.getPrimaryIndicator() != null) {
             boolean isUnique = assignBusinessTermRequest.getBiesToAssign().stream().map(bieToAssign -> {
-                if(bieToAssign.getBieType().equals("ASBIE")) {
+                if (bieToAssign.getBieType().equals("ASBIE")) {
                     List<Condition> conditions = new ArrayList<>();
-                    conditions.add(and(ASBIE_BIZTERM.ASBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
-                            ASCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
+                    conditions.add(and(ASBIE_BIZTERM.ASBIE_ID.eq(bieToAssign.getBieId()),
+                            ASCC_BIZTERM.BUSINESS_TERM_ID.eq(assignBusinessTermRequest.getBusinessTermId()),
                             ASBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
                             ASBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
                     return dslContext.selectCount()
@@ -299,11 +297,10 @@ public class BusinessTermRepository {
                             .join(ASCC_BIZTERM).on(ASBIE_BIZTERM.ASCC_BIZTERM_ID.eq(ASCC_BIZTERM.ASCC_BIZTERM_ID))
                             .where(conditions)
                             .fetchOneInto(Integer.class) == 0;
-                }
-                else if(bieToAssign.getBieType().equals("BBIE")) {
+                } else if (bieToAssign.getBieType().equals("BBIE")) {
                     List<Condition> conditions = new ArrayList<>();
-                    conditions.add(and(BBIE_BIZTERM.BBIE_ID.eq(ULong.valueOf(bieToAssign.getBieId())),
-                            BCC_BIZTERM.BUSINESS_TERM_ID.eq(ULong.valueOf(assignBusinessTermRequest.getBusinessTermId())),
+                    conditions.add(and(BBIE_BIZTERM.BBIE_ID.eq(bieToAssign.getBieId()),
+                            BCC_BIZTERM.BUSINESS_TERM_ID.eq(assignBusinessTermRequest.getBusinessTermId()),
                             BBIE_BIZTERM.TYPE_CODE.eq(assignBusinessTermRequest.getTypeCode()),
                             BBIE_BIZTERM.PRIMARY_INDICATOR.eq(assignBusinessTermRequest.getPrimaryIndicator())));
                     return dslContext.selectCount()
@@ -312,7 +309,7 @@ public class BusinessTermRepository {
                             .where(conditions)
                             .fetchOneInto(Integer.class) == 0;
                 } else throw new ScoreDataAccessException("Wrong BIE type: " + bieToAssign.getBieType());
-            }).allMatch(isUniqueRecord -> isUniqueRecord );
+            }).allMatch(isUniqueRecord -> isUniqueRecord);
             return isUnique;
         } else {
             throw new ScoreDataAccessException("Wrong input data");
@@ -323,24 +320,23 @@ public class BusinessTermRepository {
     public boolean checkBusinessTermUniqueness(BusinessTerm businessTerm)
             throws ScoreDataAccessException {
 
-        if(businessTerm.getBusinessTerm() != null && businessTerm.getExternalReferenceUri() != null){
+        if (businessTerm.getBusinessTerm() != null && businessTerm.getExternalReferenceUri() != null) {
             List<Condition> conditions = new ArrayList<>();
-            if(businessTerm.getDefinition() != null && businessTerm.getDefinition() != "") {
+            if (businessTerm.getDefinition() != null && businessTerm.getDefinition() != "") {
                 conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
                         BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri()),
                         BUSINESS_TERM.DEFINITION.eq(businessTerm.getDefinition())));
-            }
-            else {
+            } else {
                 conditions.add(and(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()),
                         BUSINESS_TERM.EXTERNAL_REF_URI.eq(businessTerm.getExternalReferenceUri())));
             }
-            if(businessTerm.getBusinessTermId() != null) {
-                conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(ULong.valueOf(businessTerm.getBusinessTermId())));
+            if (businessTerm.getBusinessTermId() != null) {
+                conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(businessTerm.getBusinessTermId()));
             }
             return dslContext.selectCount()
-                            .from(BUSINESS_TERM)
-                            .where(conditions)
-                            .fetchOneInto(Integer.class) == 0;
+                    .from(BUSINESS_TERM)
+                    .where(conditions)
+                    .fetchOneInto(Integer.class) == 0;
         } else
             throw new ScoreDataAccessException("Wrong input data");
     }
@@ -351,11 +347,11 @@ public class BusinessTermRepository {
 
         List<Condition> conditions = new ArrayList<>();
         conditions.add(BUSINESS_TERM.BUSINESS_TERM_.eq(businessTerm.getBusinessTerm()));
-        if(businessTerm.getBusinessTermId() != null) {
-            conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(ULong.valueOf(businessTerm.getBusinessTermId())));
+        if (businessTerm.getBusinessTermId() != null) {
+            conditions.add(BUSINESS_TERM.BUSINESS_TERM_ID.ne(businessTerm.getBusinessTermId()));
         }
 
-        if(businessTerm != null){
+        if (businessTerm != null) {
             return dslContext.selectCount()
                     .from(BUSINESS_TERM)
                     .where(conditions)

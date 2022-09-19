@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function22;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -57,10 +55,10 @@ public class Bccp extends TableImpl<BccpRecord> {
     }
 
     /**
-     * The column <code>oagi.bccp.bccp_id</code>. An internal, primary database
+     * The column <code>oagi.bccp.bccp_id</code>. Primary, internal database
      * key.
      */
-    public final TableField<BccpRecord, ULong> BCCP_ID = createField(DSL.name("bccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key.");
+    public final TableField<BccpRecord, String> BCCP_ID = createField(DSL.name("bccp_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bccp.guid</code>. A globally unique identifier
@@ -87,7 +85,7 @@ public class Bccp extends TableImpl<BccpRecord> {
      * table indicating the data typye or data format of the BCCP. Only DT_ID
      * which DT_Type is BDT can be used.
      */
-    public final TableField<BccpRecord, ULong> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.");
+    public final TableField<BccpRecord, String> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to the DT table indicating the data typye or data format of the BCCP. Only DT_ID which DT_Type is BDT can be used.");
 
     /**
      * The column <code>oagi.bccp.den</code>. The dictionary entry name of the
@@ -108,12 +106,9 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     /**
      * The column <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public final TableField<BccpRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
+    public final TableField<BccpRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
 
     /**
      * The column <code>oagi.bccp.is_deprecated</code>. Indicates whether the CC
@@ -126,17 +121,16 @@ public class Bccp extends TableImpl<BccpRecord> {
      * The column <code>oagi.bccp.replacement_bccp_id</code>. This refers to a
      * replacement if the record is deprecated.
      */
-    public final TableField<BccpRecord, ULong> REPLACEMENT_BCCP_ID = createField(DSL.name("replacement_bccp_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<BccpRecord, String> REPLACEMENT_BCCP_ID = createField(DSL.name("replacement_bccp_id"), SQLDataType.CHAR(36), this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity. 
+     * table referring to the user who creates the entity.
      * 
-     * This column never change between the history and the current record for a
-     * given revision. The history record should have the same value as that of
-     * its current record.
+     * This column never change between the history and the current record. The
+     * history record should have the same value as that of its current record.
      */
-    public final TableField<BccpRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
+    public final TableField<BccpRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.bccp.owner_user_id</code>. Foreign key to the
@@ -146,7 +140,7 @@ public class Bccp extends TableImpl<BccpRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public final TableField<BccpRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<BccpRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
      * The column <code>oagi.bccp.last_updated_by</code>. Foreign key to the
@@ -155,7 +149,7 @@ public class Bccp extends TableImpl<BccpRecord> {
      * In the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
-    public final TableField<BccpRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
+    public final TableField<BccpRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
      * The column <code>oagi.bccp.creation_timestamp</code>. Timestamp when the
@@ -211,13 +205,13 @@ public class Bccp extends TableImpl<BccpRecord> {
      * The column <code>oagi.bccp.prev_bccp_id</code>. A self-foreign key to
      * indicate the previous history record.
      */
-    public final TableField<BccpRecord, ULong> PREV_BCCP_ID = createField(DSL.name("prev_bccp_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+    public final TableField<BccpRecord, String> PREV_BCCP_ID = createField(DSL.name("prev_bccp_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the previous history record.");
 
     /**
      * The column <code>oagi.bccp.next_bccp_id</code>. A self-foreign key to
      * indicate the next history record.
      */
-    public final TableField<BccpRecord, ULong> NEXT_BCCP_ID = createField(DSL.name("next_bccp_id"), SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+    public final TableField<BccpRecord, String> NEXT_BCCP_ID = createField(DSL.name("next_bccp_id"), SQLDataType.CHAR(36), this, "A self-foreign key to indicate the next history record.");
 
     private Bccp(Name alias, Table<BccpRecord> aliased) {
         this(alias, aliased, null);
@@ -260,11 +254,6 @@ public class Bccp extends TableImpl<BccpRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX);
-    }
-
-    @Override
-    public Identity<BccpRecord, ULong> getIdentity() {
-        return (Identity<BccpRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -416,21 +405,22 @@ public class Bccp extends TableImpl<BccpRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
+    public Row22<String, String, String, String, String, String, String, String, String, Byte, String, String, String, String, LocalDateTime, LocalDateTime, String, Byte, String, String, String, String> fieldsRow() {
         return (Row22) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function22<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super String, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function22<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

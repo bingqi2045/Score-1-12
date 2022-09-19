@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function14;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -57,10 +55,10 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     }
 
     /**
-     * The column <code>oagi.asbiep.asbiep_id</code>. A internal, primary
-     * database key of an ASBIEP.
+     * The column <code>oagi.asbiep.asbiep_id</code>. Primary, internal database
+     * key.
      */
-    public final TableField<AsbiepRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an ASBIEP.");
+    public final TableField<AsbiepRecord, String> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.asbiep.guid</code>. A globally unique identifier
@@ -73,7 +71,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the
      * ASBIEP contextualizes.
      */
-    public final TableField<AsbiepRecord, ULong> BASED_ASCCP_MANIFEST_ID = createField(DSL.name("based_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.");
+    public final TableField<AsbiepRecord, String> BASED_ASCCP_MANIFEST_ID = createField(DSL.name("based_asccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.");
 
     /**
      * The column <code>oagi.asbiep.path</code>.
@@ -93,7 +91,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * the based ASCCP qualifies. Note that the ABIE has to be derived from the
      * ACC used by the based ASCCP.
      */
-    public final TableField<AsbiepRecord, ULong> ROLE_OF_ABIE_ID = createField(DSL.name("role_of_abie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.");
+    public final TableField<AsbiepRecord, String> ROLE_OF_ABIE_ID = createField(DSL.name("role_of_abie_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.");
 
     /**
      * The column <code>oagi.asbiep.definition</code>. A definition to override
@@ -130,13 +128,13 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * owner by default. ASBIEPs created as children of another ABIE have the
      * same CREATED_BY.
      */
-    public final TableField<AsbiepRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.");
+    public final TableField<AsbiepRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.");
 
     /**
      * The column <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record. 
+     * referring to the last user who has updated the ASBIEP record.
      */
-    public final TableField<AsbiepRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record. ");
+    public final TableField<AsbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record.");
 
     /**
      * The column <code>oagi.asbiep.creation_timestamp</code>. Timestamp when
@@ -155,7 +153,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * The column <code>oagi.asbiep.owner_top_level_asbiep_id</code>. This is a
      * foreign key to the top-level ASBIEP.
      */
-    public final TableField<AsbiepRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<AsbiepRecord, String> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private Asbiep(Name alias, Table<AsbiepRecord> aliased) {
         this(alias, aliased, null);
@@ -198,11 +196,6 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.ASBIEP_ASBIEP_HASH_PATH_K, Indexes.ASBIEP_ASBIEP_PATH_K);
-    }
-
-    @Override
-    public Identity<AsbiepRecord, ULong> getIdentity() {
-        return (Identity<AsbiepRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -318,21 +311,22 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+    public Row14<String, String, String, String, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, String> fieldsRow() {
         return (Row14) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function14<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function14<? super ULong, ? super String, ? super ULong, ? super String, ? super String, ? super ULong, ? super String, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function14<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

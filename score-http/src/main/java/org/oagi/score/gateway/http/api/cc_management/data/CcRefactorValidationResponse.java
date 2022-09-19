@@ -4,7 +4,6 @@ import lombok.Data;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.common.data.OagisComponentType;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -13,13 +12,13 @@ public class CcRefactorValidationResponse {
 
     private String type;
 
-    private BigInteger manifestId;
+    private String manifestId;
 
     private List<IssuedCc> issueList;
 
     @Data
     public static class IssuedCc {
-        private BigInteger manifestId;
+        private String manifestId;
         private String guid;
         private String den;
         private String name;
@@ -32,7 +31,7 @@ public class CcRefactorValidationResponse {
         private String lastUpdateUser;
         private Date lastUpdateTimestamp;
         private String releaseNum;
-        private BigInteger id;
+        private String id;
 
         private List<String> reasons;
     }

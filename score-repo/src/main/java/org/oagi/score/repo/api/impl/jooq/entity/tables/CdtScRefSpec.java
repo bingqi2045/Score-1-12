@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScRefSpecRecord;
@@ -53,19 +51,20 @@ public class CdtScRefSpec extends TableImpl<CdtScRefSpecRecord> {
     }
 
     /**
-     * The column <code>oagi.cdt_sc_ref_spec.cdt_sc_ref_spec_id</code>.
+     * The column <code>oagi.cdt_sc_ref_spec.cdt_sc_ref_spec_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<CdtScRefSpecRecord, ULong> CDT_SC_REF_SPEC_ID = createField(DSL.name("cdt_sc_ref_spec_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CdtScRefSpecRecord, String> CDT_SC_REF_SPEC_ID = createField(DSL.name("cdt_sc_ref_spec_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.cdt_sc_ref_spec.cdt_sc_id</code>.
      */
-    public final TableField<CdtScRefSpecRecord, ULong> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CdtScRefSpecRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.cdt_sc_ref_spec.ref_spec_id</code>.
      */
-    public final TableField<CdtScRefSpecRecord, ULong> REF_SPEC_ID = createField(DSL.name("ref_spec_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CdtScRefSpecRecord, String> REF_SPEC_ID = createField(DSL.name("ref_spec_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     private CdtScRefSpec(Name alias, Table<CdtScRefSpecRecord> aliased) {
         this(alias, aliased, null);
@@ -103,11 +102,6 @@ public class CdtScRefSpec extends TableImpl<CdtScRefSpecRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<CdtScRefSpecRecord, ULong> getIdentity() {
-        return (Identity<CdtScRefSpecRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -187,21 +181,22 @@ public class CdtScRefSpec extends TableImpl<CdtScRefSpecRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

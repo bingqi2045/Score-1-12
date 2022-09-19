@@ -3,13 +3,11 @@ package org.oagi.score.repo.api.release.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
-
 public class GetReleaseRequest extends Request {
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String releaseNum;
 
@@ -17,28 +15,28 @@ public class GetReleaseRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public GetReleaseRequest withReleaseId(BigInteger releaseId) {
+    public GetReleaseRequest withReleaseId(String releaseId) {
         setReleaseId(releaseId);
         return this;
     }
 
-    public BigInteger getTopLevelAsbiepId() {
+    public String getTopLevelAsbiepId() {
         return topLevelAsbiepId;
     }
 
-    public void setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public void setTopLevelAsbiepId(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
     }
 
-    public GetReleaseRequest withTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public GetReleaseRequest withTopLevelAsbiepId(String topLevelAsbiepId) {
         setTopLevelAsbiepId(topLevelAsbiepId);
         return this;
     }

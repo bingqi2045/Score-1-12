@@ -7,13 +7,13 @@ import java.math.BigInteger;
 @Data
 public class BBIESC implements BIE, FacetRestrictionsAware {
 
-    private BigInteger bbieScId = BigInteger.ZERO;
+    private String bbieScId;
     private String guid;
-    private BigInteger bbieId = BigInteger.ZERO;
-    private BigInteger basedDtScManifestId = BigInteger.ZERO;
-    private BigInteger dtScPriRestriId = BigInteger.ZERO;
-    private BigInteger codeListId = BigInteger.ZERO;
-    private BigInteger agencyIdListId = BigInteger.ZERO;
+    private String bbieId;
+    private String basedDtScManifestId;
+    private String dtScPriRestriId;
+    private String codeListId;
+    private String agencyIdListId;
     private int cardinalityMin;
     private int cardinalityMax;
     private BigInteger minLength;
@@ -26,5 +26,5 @@ public class BBIESC implements BIE, FacetRestrictionsAware {
     private String bizTerm;
     private String example;
     private boolean used;
-    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
+    private String ownerTopLevelAsbiepId;
 }

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function7;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
@@ -58,7 +56,7 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
      * The column <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal
      * database key.
      */
-    public final TableField<BizCtxRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BizCtxRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.biz_ctx.guid</code>. A globally unique identifier
@@ -74,16 +72,16 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
 
     /**
      * The column <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity. 
+     * APP_USER table referring to the user who creates the entity.
      */
-    public final TableField<BizCtxRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. ");
+    public final TableField<BizCtxRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity.");
 
     /**
      * The column <code>oagi.biz_ctx.last_updated_by</code>. Foreign key to the
      * APP_USER table  referring to the last user who has updated the business
      * context.
      */
-    public final TableField<BizCtxRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
+    public final TableField<BizCtxRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
 
     /**
      * The column <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when
@@ -133,11 +131,6 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BizCtxRecord, ULong> getIdentity() {
-        return (Identity<BizCtxRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -224,21 +217,22 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row7<String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function7<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function7<? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

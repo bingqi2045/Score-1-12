@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SimpleNamespace {
 
-    private long namespaceId;
+    private String namespaceId;
     private String uri;
     private boolean standard;
 

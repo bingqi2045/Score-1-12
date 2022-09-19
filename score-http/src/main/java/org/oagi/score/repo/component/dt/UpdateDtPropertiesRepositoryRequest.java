@@ -5,13 +5,12 @@ import org.oagi.score.gateway.http.api.cc_management.data.node.CcBdtPriRestri;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger dtManifestId;
+    private final String dtManifestId;
 
     private String qualifier;
     private String sixDigitId;
@@ -19,23 +18,23 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private boolean deprecated;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private List<CcBdtPriRestri> bdtPriRestriList;
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
-                                               BigInteger dtManifestId) {
+                                               String dtManifestId) {
         super(user);
         this.dtManifestId = dtManifestId;
     }
 
     public UpdateDtPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                LocalDateTime localDateTime,
-                                               BigInteger dtManifestId) {
+                                               String dtManifestId) {
         super(user, localDateTime);
         this.dtManifestId = dtManifestId;
     }
 
-    public BigInteger getDtManifestId() {
+    public String getDtManifestId() {
         return dtManifestId;
     }
 
@@ -95,11 +94,11 @@ public class UpdateDtPropertiesRepositoryRequest extends RepositoryRequest {
         this.deprecated = deprecated;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 

@@ -2,25 +2,22 @@ package org.oagi.score.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
 
-import java.math.BigInteger;
-import java.util.List;
-
 @Data
 public class CcBdtScPriRestri {
 
-    private BigInteger bdtScPriRestriId;
+    private String bdtScPriRestriId;
     private PrimitiveRestriType type;
-    private BigInteger cdtScAwdPriId;
+    private String cdtScAwdPriId;
     private String primitiveName;
 
-    private BigInteger cdtScAwdPriXpsTypeMapId;
-    private BigInteger xbtId;
+    private String cdtScAwdPriXpsTypeMapId;
+    private String xbtId;
     private String xbtName;
 
-    private BigInteger codeListId;
+    private String codeListId;
     private String codeListName;
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
     private String agencyIdListName;
 
     private boolean isDefault;

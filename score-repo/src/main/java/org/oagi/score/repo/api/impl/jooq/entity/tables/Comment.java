@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -27,7 +26,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
@@ -56,9 +54,10 @@ public class Comment extends TableImpl<CommentRecord> {
     }
 
     /**
-     * The column <code>oagi.comment.comment_id</code>.
+     * The column <code>oagi.comment.comment_id</code>. Primary, internal
+     * database key.
      */
-    public final TableField<CommentRecord, ULong> COMMENT_ID = createField(DSL.name("comment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CommentRecord, String> COMMENT_ID = createField(DSL.name("comment_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.comment.reference</code>.
@@ -83,12 +82,12 @@ public class Comment extends TableImpl<CommentRecord> {
     /**
      * The column <code>oagi.comment.prev_comment_id</code>.
      */
-    public final TableField<CommentRecord, ULong> PREV_COMMENT_ID = createField(DSL.name("prev_comment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CommentRecord, String> PREV_COMMENT_ID = createField(DSL.name("prev_comment_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.comment.created_by</code>.
      */
-    public final TableField<CommentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CommentRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.comment.creation_timestamp</code>.
@@ -141,11 +140,6 @@ public class Comment extends TableImpl<CommentRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.asList(Indexes.COMMENT_REFERENCE);
-    }
-
-    @Override
-    public Identity<CommentRecord, ULong> getIdentity() {
-        return (Identity<CommentRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -225,21 +219,22 @@ public class Comment extends TableImpl<CommentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, Byte, Byte, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<String, String, String, Byte, Byte, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super String, ? super String, ? super Byte, ? super Byte, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super Byte, ? super Byte, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

@@ -3,7 +3,6 @@ package org.oagi.score.repo.api.bie.model;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class CreateBieRequest extends Request {
 
     private String version;
 
-    private List<BigInteger> bizCtxIds;
+    private List<String> bizCtxIds;
 
     private List<WrappedAsbie> asbieList;
 
@@ -51,11 +50,11 @@ public class CreateBieRequest extends Request {
         this.version = version;
     }
 
-    public List<BigInteger> getBizCtxIds() {
+    public List<String> getBizCtxIds() {
         return (bizCtxIds != null) ? bizCtxIds : Collections.emptyList();
     }
 
-    public void setBizCtxIds(List<BigInteger> bizCtxIds) {
+    public void setBizCtxIds(List<String> bizCtxIds) {
         this.bizCtxIds = bizCtxIds;
     }
 

@@ -12,7 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function10;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -26,7 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
@@ -58,7 +56,7 @@ public class Namespace extends TableImpl<NamespaceRecord> {
      * The column <code>oagi.namespace.namespace_id</code>. Primary, internal
      * database key.
      */
-    public final TableField<NamespaceRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<NamespaceRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.namespace.uri</code>. This is the URI of the
@@ -92,19 +90,19 @@ public class Namespace extends TableImpl<NamespaceRecord> {
      * The column <code>oagi.namespace.owner_user_id</code>. Foreign key to the
      * APP_USER table identifying the user who can update or delete the record.
      */
-    public final TableField<NamespaceRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
+    public final TableField<NamespaceRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
 
     /**
      * The column <code>oagi.namespace.created_by</code>. Foreign key to the
      * APP_USER table identifying user who created the namespace.
      */
-    public final TableField<NamespaceRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
+    public final TableField<NamespaceRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
 
     /**
      * The column <code>oagi.namespace.last_updated_by</code>. Foreign key to
      * the APP_USER table identifying the user who last updated the record.
      */
-    public final TableField<NamespaceRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
+    public final TableField<NamespaceRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
 
     /**
      * The column <code>oagi.namespace.creation_timestamp</code>. The timestamp
@@ -154,11 +152,6 @@ public class Namespace extends TableImpl<NamespaceRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<NamespaceRecord, ULong> getIdentity() {
-        return (Identity<NamespaceRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -257,21 +250,22 @@ public class Namespace extends TableImpl<NamespaceRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<String, String, String, String, Byte, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function10<? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function10<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super ULong, ? super String, ? super String, ? super String, ? super Byte, ? super ULong, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function10<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

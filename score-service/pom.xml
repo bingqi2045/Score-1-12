@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -22,9 +22,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>17</maven.compiler.release>
 
-        <mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-        <jOOQ.version>3.17.1</jOOQ.version>
-        <gson.version>2.9.0</gson.version>
+        <mysql-connector-java.version>8.0.30</mysql-connector-java.version>
+        <jOOQ.version>3.17.3</jOOQ.version>
+        <gson.version>2.9.1</gson.version>
 
         <slf4j.version>1.7.36</slf4j.version>
         <junit.version>4.13.2</junit.version>

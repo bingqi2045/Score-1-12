@@ -3,16 +3,15 @@ package org.oagi.score.repo.api.module.model;
 import org.oagi.score.repo.api.base.Auditable;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.List;
 
 public class ModuleElement extends Auditable implements Comparable<ModuleElement>, Serializable {
 
-    private BigInteger moduleId;
+    private String moduleId;
 
     private String name;
 
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private String namespaceUri;
 
@@ -24,7 +23,7 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
 
     private boolean isDirectory;
 
-    private BigInteger parentModuleId;
+    private String parentModuleId;
 
     private List<ModuleElement> child;
 
@@ -36,11 +35,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         this.child = child;
     }
 
-    public BigInteger getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(BigInteger moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 
@@ -52,11 +51,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         this.name = name;
     }
 
-    public BigInteger getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
-    public void setNamespaceId(BigInteger namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 
@@ -100,11 +99,11 @@ public class ModuleElement extends Auditable implements Comparable<ModuleElement
         isDirectory = directory;
     }
 
-    public BigInteger getParentModuleId() {
+    public String getParentModuleId() {
         return parentModuleId;
     }
 
-    public void setParentModuleId(BigInteger parentModuleId) {
+    public void setParentModuleId(String parentModuleId) {
         this.parentModuleId = parentModuleId;
     }
 

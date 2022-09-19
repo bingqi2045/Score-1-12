@@ -3,17 +3,16 @@ package org.oagi.score.gateway.http.api.business_term_management.data;
 import lombok.Data;
 import org.oagi.score.service.common.data.PageRequest;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Data
 public class AssignedBusinessTermListRequest {
-    private BigInteger assignedBtId;
+
+    private String assignedBizTermId;
     private String businessContext;
-    private BigInteger bieId;
-    private BigInteger releaseId;
+    private String bieId;
+    private String releaseId;
     private List<String> bieTypes;
     private String bieDen;
     private String isPrimary;
@@ -25,6 +24,5 @@ public class AssignedBusinessTermListRequest {
     private Date updateStartDate;
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
-
 
 }

@@ -9,14 +9,12 @@ import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.service.bie.BieDocument;
 import org.oagi.score.service.corecomponent.model.CcDocumentImpl;
 
-import java.math.BigInteger;
-
 public final class BieDocumentBuilder {
 
     private BieReadRepository bieReadRepository;
     private CcReadRepository ccReadRepository;
 
-    private BigInteger topLevelAsbiepId;
+    private String topLevelAsbiepId;
     private boolean used;
     private ScoreUser requester;
 
@@ -25,7 +23,7 @@ public final class BieDocumentBuilder {
         this.ccReadRepository = ccReadRepository;
     }
 
-    public BieDocumentBuilder withTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+    public BieDocumentBuilder withTopLevelAsbiepId(String topLevelAsbiepId) {
         this.topLevelAsbiepId = topLevelAsbiepId;
         return this;
     }

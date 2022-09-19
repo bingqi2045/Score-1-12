@@ -1,7 +1,6 @@
 package org.oagi.score.gateway.http.api.module_management.controller;
 
 import org.oagi.score.gateway.http.api.module_management.data.AssignCCToModule;
-import org.oagi.score.gateway.http.api.module_management.data.ExportStandaloneSchemaRequest;
 import org.oagi.score.gateway.http.api.module_management.data.ModuleAssignComponents;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -10,7 +9,6 @@ import org.oagi.score.repo.api.module.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,7 +39,7 @@ public class ModuleSetReleaseController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GetModuleSetReleaseListResponse getModuleSetReleaseList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                                    @RequestParam(name = "name", required = false) String name,
-                                                                   @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
+                                                                   @RequestParam(name = "releaseId", required = false) String releaseId,
                                                                    @RequestParam(name = "default", required = false) Boolean isDefault,
                                                                    @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                                    @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -83,7 +80,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSetRelease getModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                @PathVariable("id") BigInteger moduleSetReleaseId) {
+                                                @PathVariable("id") String moduleSetReleaseId) {
         GetModuleSetReleaseRequest request = new GetModuleSetReleaseRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
         GetModuleSetReleaseResponse response = service.getModuleSetRelease(request);
@@ -102,7 +99,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleSetRelease updateModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @PathVariable("id") BigInteger moduleSetReleaseId,
+                                                   @PathVariable("id") String moduleSetReleaseId,
                                                    @RequestBody ModuleSetRelease moduleSetRelease) {
         UpdateModuleSetReleaseRequest request = new UpdateModuleSetReleaseRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
@@ -118,7 +115,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void discardModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                 @PathVariable("id") BigInteger moduleSetReleaseId) {
+                                 @PathVariable("id") String moduleSetReleaseId) {
         DeleteModuleSetReleaseRequest request = new DeleteModuleSetReleaseRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
         service.discardModuleSetRelease(request);
@@ -127,7 +124,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/export", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InputStreamResource> exportModuleSetRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                                      @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+                                                                      @PathVariable("id") String moduleSetReleaseId) throws Exception {
 
         File output = service.exportModuleSetRelease(sessionService.asScoreUser(user), moduleSetReleaseId);
 
@@ -141,7 +138,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/assignable", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleAssignComponents getAssignableCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @PathVariable("id") BigInteger moduleSetReleaseId) throws Exception {
+                                                   @PathVariable("id") String moduleSetReleaseId) throws Exception {
         GetAssignableCCListRequest request = new GetAssignableCCListRequest(sessionService.asScoreUser(user));
         request.setModuleSetReleaseId(moduleSetReleaseId);
         return service.getAssignableCCs(request);
@@ -150,8 +147,8 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/assigned", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ModuleAssignComponents getAssignedCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                 @PathVariable("id") BigInteger moduleSetReleaseId,
-                                                 @RequestParam(name = "moduleId", required = true) BigInteger moduleId) throws Exception {
+                                                 @PathVariable("id") String moduleSetReleaseId,
+                                                 @RequestParam(name = "moduleId", required = true) String moduleId) throws Exception {
 
         return service.getAssignedCCs(sessionService.asScoreUser(user), moduleSetReleaseId, moduleId);
     }
@@ -159,7 +156,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/assign", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void assignCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                             @PathVariable("id") BigInteger moduleSetReleaseId,
+                             @PathVariable("id") String moduleSetReleaseId,
                              @RequestBody AssignCCToModule assignCCToModule) throws Exception {
 
         service.setAssignCc(sessionService.asScoreUser(user), assignCCToModule);
@@ -168,7 +165,7 @@ public class ModuleSetReleaseController {
     @RequestMapping(value = "/module_set_release/{id}/unassign", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void unassignCCs(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                             @PathVariable("id") BigInteger moduleSetReleaseId,
+                             @PathVariable("id") String moduleSetReleaseId,
                              @RequestBody AssignCCToModule assignCCToModule) throws Exception {
 
         service.unAssignCc(sessionService.asScoreUser(user), assignCCToModule);

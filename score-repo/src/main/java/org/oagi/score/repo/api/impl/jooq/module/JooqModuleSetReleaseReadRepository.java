@@ -2,7 +2,6 @@ package org.oagi.score.repo.api.impl.jooq.module;
 
 import org.jooq.Record;
 import org.jooq.*;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.corecomponent.model.CcState;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
@@ -13,7 +12,6 @@ import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.user.model.ScoreRole;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +20,6 @@ import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
-import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
 import static org.oagi.score.repo.api.user.model.ScoreRole.*;
 
@@ -64,12 +61,12 @@ public class JooqModuleSetReleaseReadRepository
     private RecordMapper<Record, ModuleSetRelease> mapper() {
         return record -> {
             ModuleSetRelease moduleSetRelease = new ModuleSetRelease();
-            moduleSetRelease.setModuleSetReleaseId(record.get(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID).toBigInteger());
-            moduleSetRelease.setModuleSetId(record.get(MODULE_SET_RELEASE.MODULE_SET_ID).toBigInteger());
+            moduleSetRelease.setModuleSetReleaseId(record.get(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID));
+            moduleSetRelease.setModuleSetId(record.get(MODULE_SET_RELEASE.MODULE_SET_ID));
             moduleSetRelease.setModuleSetReleaseName(record.get(MODULE_SET_RELEASE.NAME));
             moduleSetRelease.setModuleSetReleaseDescription(record.get(MODULE_SET_RELEASE.DESCRIPTION));
             moduleSetRelease.setModuleSetName(record.get(MODULE_SET.NAME));
-            moduleSetRelease.setReleaseId(record.get(MODULE_SET_RELEASE.RELEASE_ID).toBigInteger());
+            moduleSetRelease.setReleaseId(record.get(MODULE_SET_RELEASE.RELEASE_ID));
             moduleSetRelease.setReleaseNum(record.get(RELEASE.RELEASE_NUM));
             moduleSetRelease.setDefault(record.get(MODULE_SET_RELEASE.IS_DEFAULT) == 1);
 
@@ -78,11 +75,11 @@ public class JooqModuleSetReleaseReadRepository
             moduleSetRelease.setCreatedBy(
                     (isCreatorAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     Arrays.asList(creatorRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")),
                                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),
                                     creatorRole));
 
@@ -91,11 +88,11 @@ public class JooqModuleSetReleaseReadRepository
             moduleSetRelease.setLastUpdatedBy(
                     (isUpdaterAdmin) ?
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     Arrays.asList(updaterRole, ADMINISTRATOR)) :
                             new ScoreUser(
-                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")).toBigInteger(),
+                                    record.get(APP_USER.as("updater").APP_USER_ID.as("updater_user_id")),
                                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                                     updaterRole));
 
@@ -112,10 +109,10 @@ public class JooqModuleSetReleaseReadRepository
     public GetModuleSetReleaseResponse getModuleSetRelease(GetModuleSetReleaseRequest request) throws ScoreDataAccessException {
         ModuleSetRelease moduleSetRelease = null;
 
-        BigInteger moduleSetReleaseId = request.getModuleSetReleaseId();
-        if (!isNull(moduleSetReleaseId)) {
+        String moduleSetReleaseId = request.getModuleSetReleaseId();
+        if (StringUtils.hasLength(moduleSetReleaseId)) {
             moduleSetRelease = (ModuleSetRelease) select()
-                    .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(moduleSetReleaseId)))
+                    .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                     .fetchOne(mapper());
         }
 
@@ -166,7 +163,7 @@ public class JooqModuleSetReleaseReadRepository
         }
 
         if (request.getReleaseId() != null) {
-            conditions.add(MODULE_SET_RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+            conditions.add(MODULE_SET_RELEASE.RELEASE_ID.eq(request.getReleaseId()));
         }
 
         if (request.getDefault() != null) {
@@ -228,14 +225,14 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_ACC_MANIFEST).on(
                         and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID),
-                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                            MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ACC_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         ACC.OBJECT_CLASS_TERM.notEqual("Any Structured Content"),
                         MODULE_ACC_MANIFEST.MODULE_ACC_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     node.setDen(e.get(ACC.DEN));
                     node.setType("ACC");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -258,11 +255,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
                 .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_ACC_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_ACC_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ACC_MANIFEST.ACC_MANIFEST_ID));
                     node.setDen(e.get(ACC.DEN));
                     node.setType("ACC");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -286,14 +283,14 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_ASCCP_MANIFEST).on(
                         and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID),
-                                MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                                MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        ASCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         ASCCP.PROPERTY_TERM.notEqual("Any Property"),
                         MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID));
                     node.setDen(e.get(ASCCP.DEN));
                     node.setType("ASCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -316,11 +313,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(APP_USER).on(ASCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_ASCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_ASCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID));
                     node.setDen(e.get(ASCCP.DEN));
                     node.setType("ASCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -333,13 +330,13 @@ public class JooqModuleSetReleaseReadRepository
 
     @Override
     public List<AssignableNode> getAssignableBCCPByModuleSetReleaseId(GetAssignableCCListRequest request) throws ScoreDataAccessException {
-        List<ULong> elementBccpManifestList = dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+        List<String> elementBccpManifestList = dslContext().select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
                 .join(BCC_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCC_MANIFEST.TO_BCCP_MANIFEST_ID))
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                .where(and(BCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         BCC.ENTITY_TYPE.eq(1)))
-                .fetchInto(ULong.class);
+                .fetchInto(String.class);
         return dslContext().select(
                 BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.DEN, RELEASE.RELEASE_NUM,
                 BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,
@@ -351,14 +348,14 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_BCCP_MANIFEST).on(
                         and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID),
-                                MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                                MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        BCCP_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         BCCP_MANIFEST.BCCP_MANIFEST_ID.in(elementBccpManifestList),
                         MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID));
                     node.setDen(e.get(BCCP.DEN));
                     node.setType("BCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -381,11 +378,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_BCCP_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .join(APP_USER).on(BCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_BCCP_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_BCCP_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(BCCP_MANIFEST.BCCP_MANIFEST_ID));
                     node.setDen(e.get(BCCP.DEN));
                     node.setType("BCCP");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -409,14 +406,14 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_DT_MANIFEST).on(
                         and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID),
-                                MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                                MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        DT_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         DT.BASED_DT_ID.isNotNull(),
                         MODULE_DT_MANIFEST.MODULE_DT_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID));
                     node.setDen(e.get(DT.DEN));
                     node.setType("DT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -439,11 +436,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_DT_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID))
                 .join(APP_USER).on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_DT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_DT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(DT_MANIFEST.DT_MANIFEST_ID));
                     node.setDen(e.get(DT.DEN));
                     node.setType("DT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -467,13 +464,13 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_CODE_LIST_MANIFEST).on(
                         and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID),
-                                MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                                MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        CODE_LIST_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID));
                     node.setDen(e.get(CODE_LIST.NAME));
                     node.setType("CODE_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -496,11 +493,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_CODE_LIST_MANIFEST).on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
                 .join(APP_USER).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID));
                     node.setDen(e.get(CODE_LIST.NAME));
                     node.setType("CODE_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -524,13 +521,13 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(AGENCY_ID_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_AGENCY_ID_LIST_MANIFEST).on(
                         and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID),
-                                MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
+                                MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
                 .where(and(
-                        AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID.isNull()))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID));
                     node.setDen(e.get(AGENCY_ID_LIST.NAME));
                     node.setType("AGENCY_ID_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -553,11 +550,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
                 .join(APP_USER).on(AGENCY_ID_LIST.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(AGENCY_ID_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID));
                     node.setDen(e.get(AGENCY_ID_LIST.NAME));
                     node.setType("AGENCY_ID_LIST");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -581,13 +578,13 @@ public class JooqModuleSetReleaseReadRepository
                 .join(LOG).on(XBT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(MODULE_XBT_MANIFEST).on(
                         and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID),
-                                MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId()))))
-                .where(and(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                                MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId())))
+                .where(and(XBT_MANIFEST.RELEASE_ID.eq(request.getReleaseId()),
                         MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID.isNull(),
                         XBT.BUILTIN_TYPE.notLike("xsd:%")))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID));
                     node.setDen(e.get(XBT.NAME));
                     node.setType("XBT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));
@@ -610,11 +607,11 @@ public class JooqModuleSetReleaseReadRepository
                 .join(MODULE_XBT_MANIFEST).on(XBT_MANIFEST.XBT_MANIFEST_ID.eq(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID))
                 .join(APP_USER).on(XBT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(LOG).on(XBT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
-                .where(and(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(ULong.valueOf(request.getModuleSetReleaseId())),
-                        MODULE_XBT_MANIFEST.MODULE_ID.eq(ULong.valueOf(request.getModuleId()))))
+                .where(and(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(request.getModuleSetReleaseId()),
+                        MODULE_XBT_MANIFEST.MODULE_ID.eq(request.getModuleId())))
                 .fetchStream().map(e -> {
                     AssignableNode node = new AssignableNode();
-                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID).toBigInteger());
+                    node.setManifestId(e.get(XBT_MANIFEST.XBT_MANIFEST_ID));
                     node.setDen(e.get(XBT.NAME));
                     node.setType("XBT");
                     node.setOwnerUserId(e.get(APP_USER.LOGIN_ID));

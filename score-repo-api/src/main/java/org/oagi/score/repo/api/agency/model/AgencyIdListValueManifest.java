@@ -7,60 +7,60 @@ import java.math.BigInteger;
 
 public class AgencyIdListValueManifest implements CcManifest, Serializable {
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger agencyIdListValueId;
+    private String agencyIdListValueId;
 
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
 
     private boolean conflict;
 
-    private BigInteger prevAgencyIdListManifestId;
+    private String prevAgencyIdListManifestId;
 
-    private BigInteger nextAgencyIdListManifestId;
+    private String nextAgencyIdListManifestId;
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return agencyIdListValueManifestId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
-        return agencyIdListManifestId;
+    public String getBasedCcId() {
+        return getAgencyIdListValueId();
     }
 
-    public BigInteger getAgencyIdListValueManifestId() {
+    public String getAgencyIdListValueManifestId() {
         return agencyIdListValueManifestId;
     }
 
-    public void setAgencyIdListValueManifestId(BigInteger agencyIdListValueManifestId) {
+    public void setAgencyIdListValueManifestId(String agencyIdListValueManifestId) {
         this.agencyIdListValueManifestId = agencyIdListValueManifestId;
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAgencyIdListValueId() {
+    public String getAgencyIdListValueId() {
         return agencyIdListValueId;
     }
 
-    public void setAgencyIdListValueId(BigInteger agencyIdListValueId) {
+    public void setAgencyIdListValueId(String agencyIdListValueId) {
         this.agencyIdListValueId = agencyIdListValueId;
     }
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 
@@ -72,19 +72,19 @@ public class AgencyIdListValueManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevAgencyIdListManifestId() {
+    public String getPrevAgencyIdListManifestId() {
         return prevAgencyIdListManifestId;
     }
 
-    public void setPrevAgencyIdListManifestId(BigInteger prevAgencyIdListManifestId) {
+    public void setPrevAgencyIdListManifestId(String prevAgencyIdListManifestId) {
         this.prevAgencyIdListManifestId = prevAgencyIdListManifestId;
     }
 
-    public BigInteger getNextAgencyIdListManifestId() {
+    public String getNextAgencyIdListManifestId() {
         return nextAgencyIdListManifestId;
     }
 
-    public void setNextAgencyIdListManifestId(BigInteger nextAgencyIdListManifestId) {
+    public void setNextAgencyIdListManifestId(String nextAgencyIdListManifestId) {
         this.nextAgencyIdListManifestId = nextAgencyIdListManifestId;
     }
 }

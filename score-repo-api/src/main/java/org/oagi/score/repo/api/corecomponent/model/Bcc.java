@@ -1,12 +1,11 @@
 package org.oagi.score.repo.api.corecomponent.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Objects;
 
 public class Bcc implements CoreComponent, CcAssociation, Serializable {
 
-    private BigInteger bccId;
+    private String bccId;
 
     private String guid;
 
@@ -30,20 +29,20 @@ public class Bcc implements CoreComponent, CcAssociation, Serializable {
 
     private String fixedValue;
 
-    private BigInteger prevBccId;
+    private String prevBccId;
 
-    private BigInteger nextBccId;
+    private String nextBccId;
 
-    public BigInteger getBccId() {
+    public String getBccId() {
         return bccId;
     }
 
-    public void setBccId(BigInteger bccId) {
+    public void setBccId(String bccId) {
         this.bccId = bccId;
     }
 
     @Override
-    public BigInteger getId() {
+    public String getId() {
         return getBccId();
     }
 
@@ -136,19 +135,19 @@ public class Bcc implements CoreComponent, CcAssociation, Serializable {
         this.fixedValue = fixedValue;
     }
 
-    public BigInteger getPrevBccId() {
+    public String getPrevBccId() {
         return prevBccId;
     }
 
-    public void setPrevBccId(BigInteger prevBccId) {
+    public void setPrevBccId(String prevBccId) {
         this.prevBccId = prevBccId;
     }
 
-    public BigInteger getNextBccId() {
+    public String getNextBccId() {
         return nextBccId;
     }
 
-    public void setNextBccId(BigInteger nextBccId) {
+    public void setNextBccId(String nextBccId) {
         this.nextBccId = nextBccId;
     }
 

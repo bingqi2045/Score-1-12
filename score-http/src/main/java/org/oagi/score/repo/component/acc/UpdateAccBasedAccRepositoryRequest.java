@@ -3,17 +3,16 @@ package org.oagi.score.repo.component.acc;
 import org.oagi.score.data.RepositoryRequest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class UpdateAccBasedAccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger accManifestId;
-    private final BigInteger basedAccManifestId;
+    private final String accManifestId;
+    private final String basedAccManifestId;
 
     public UpdateAccBasedAccRepositoryRequest(AuthenticatedPrincipal user,
-                                              BigInteger accManifestId,
-                                              BigInteger basedAccManifestId) {
+                                              String accManifestId,
+                                              String basedAccManifestId) {
         super(user);
         this.accManifestId = accManifestId;
         this.basedAccManifestId = basedAccManifestId;
@@ -21,18 +20,18 @@ public class UpdateAccBasedAccRepositoryRequest extends RepositoryRequest {
 
     public UpdateAccBasedAccRepositoryRequest(AuthenticatedPrincipal user,
                                               LocalDateTime localDateTime,
-                                              BigInteger accManifestId,
-                                              BigInteger basedAccManifestId) {
+                                              String accManifestId,
+                                              String basedAccManifestId) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
         this.basedAccManifestId = basedAccManifestId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public BigInteger getBasedAccManifestId() {
+    public String getBasedAccManifestId() {
         return basedAccManifestId;
     }
 }

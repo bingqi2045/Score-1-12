@@ -2,11 +2,9 @@ package org.oagi.score.repo.component.bdt_sc_pri_restri;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.types.ULong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -23,7 +21,7 @@ public class BdtScPriRestriReadRepository {
     private Function<Record, AvailableBdtScPriRestri> mapper() {
         return e -> {
             AvailableBdtScPriRestri availableBdtScPriRestri = new AvailableBdtScPriRestri();
-            availableBdtScPriRestri.setBdtScPriRestriId(e.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).toBigInteger());
+            availableBdtScPriRestri.setBdtScPriRestriId(e.get(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID));
             boolean isDefault = e.get(BDT_SC_PRI_RESTRI.IS_DEFAULT) == (byte) 1;
             /*
              * Issue #808
@@ -38,13 +36,13 @@ public class BdtScPriRestriReadRepository {
                 isDefault = "time".equalsIgnoreCase(xbtName);
             }
             availableBdtScPriRestri.setDefault(isDefault);
-            availableBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID).toBigInteger());
+            availableBdtScPriRestri.setXbtId(e.get(XBT.XBT_ID));
             availableBdtScPriRestri.setXbtName(xbtName);
             return availableBdtScPriRestri;
         };
     }
 
-    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(BigInteger bdtScManifestId) {
+    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(String bdtScManifestId) {
         return dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
@@ -60,7 +58,7 @@ public class BdtScPriRestriReadRepository {
                 .on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
                 .join(DT_SC_MANIFEST)
                 .on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
                 .fetchStream().map(mapper())
                 .sorted(Comparator.comparing(AvailableBdtScPriRestri::getXbtName))
                 .collect(Collectors.toList());

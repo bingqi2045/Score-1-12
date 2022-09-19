@@ -3,22 +3,21 @@ package org.oagi.score.gateway.http.api.code_list_management.data;
 import lombok.Data;
 import org.oagi.score.service.common.data.AccessPrivilege;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
 @Data
 public class CodeList {
 
-    private BigInteger codeListManifestId;
+    private String codeListManifestId;
     private String codeListName;
     private String guid;
-    private BigInteger basedCodeListManifestId;
+    private String basedCodeListManifestId;
     private String basedCodeListName;
-    private BigInteger namespaceId;
+    private String namespaceId;
     private String namespaceUri;
 
-    private BigInteger agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
     private String agencyIdListValueValue;
     private String agencyIdListValueName;
     private String versionId;
@@ -30,15 +29,15 @@ public class CodeList {
 
     private boolean extensible;
     private boolean deprecated;
-    private BigInteger ownerId;
+    private String ownerId;
     private String state;
     private AccessPrivilege access;
 
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseState;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
 

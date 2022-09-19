@@ -12,8 +12,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
-import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -27,8 +25,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieBiztermRecord;
@@ -57,22 +53,22 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
-     * primary database key of an bbie_bizterm record.
+     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
+     * internal database key.
      */
-    public final TableField<BbieBiztermRecord, ULong> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an bbie_bizterm record.");
+    public final TableField<BbieBiztermRecord, String> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bbie_bizterm record.
+     * of the bcc_business_term record.
      */
-    public final TableField<BbieBiztermRecord, ULong> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the bbie_bizterm record.");
+    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the bcc_business_term record.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
      * associated BBIE
      */
-    public final TableField<BbieBiztermRecord, ULong> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "An internal ID of the associated BBIE");
+    public final TableField<BbieBiztermRecord, String> BBIE_ID = createField(DSL.name("bbie_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated BBIE");
 
     /**
      * The column <code>oagi.bbie_bizterm.primary_indicator</code>. The
@@ -88,17 +84,17 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
 
     /**
      * The column <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the bbie_bizterm record. The creator of
-     * the asbie_bizterm is also its owner by default.
+     * referring to the user who creates the BBIE_BIZTERM record. The creator of
+     * the ASBIE_BIZTERM is also its owner by default.
      */
-    public final TableField<BbieBiztermRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the bbie_bizterm record. The creator of the asbie_bizterm is also its owner by default.");
+    public final TableField<BbieBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.");
 
     /**
      * The column <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the bbie_bizterm record. This
+     * referring to the last user who has updated the BBIE_BIZTERM record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<BbieBiztermRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated the bbie_bizterm record. This may be the user who is in the same group as the creator.");
+    public final TableField<BbieBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BBIE_BIZTERM record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.bbie_bizterm.creation_timestamp</code>. Timestamp
@@ -151,34 +147,26 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BBIE_BIZTERM_ASBIE_BIZTERM_ASBIE_FK);
-    }
-
-    @Override
-    public Identity<BbieBiztermRecord, ULong> getIdentity() {
-        return (Identity<BbieBiztermRecord, ULong>) super.getIdentity();
-    }
-
-    @Override
     public UniqueKey<BbieBiztermRecord> getPrimaryKey() {
         return Keys.KEY_BBIE_BIZTERM_PRIMARY;
     }
 
     @Override
     public List<ForeignKey<BbieBiztermRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_FK, Keys.BBIE_BIZTERM_BBIE_FK);
+        return Arrays.asList(Keys.BBIE_BIZTERM_BCC_BIZTERM_ID_FK, Keys.BBIE_BIZTERM_BBIE_ID_FK, Keys.BBIE_BIZTERM_CREATED_BY_FK, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
     }
 
     private transient BccBizterm _bccBizterm;
     private transient Bbie _bbie;
+    private transient AppUser _bbieBiztermCreatedByFk;
+    private transient AppUser _bbieBiztermLastUpdatedByFk;
 
     /**
      * Get the implicit join path to the <code>oagi.bcc_bizterm</code> table.
      */
     public BccBizterm bccBizterm() {
         if (_bccBizterm == null)
-            _bccBizterm = new BccBizterm(this, Keys.BBIE_BIZTERM_BCC_BIZTERM_FK);
+            _bccBizterm = new BccBizterm(this, Keys.BBIE_BIZTERM_BCC_BIZTERM_ID_FK);
 
         return _bccBizterm;
     }
@@ -188,9 +176,31 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
      */
     public Bbie bbie() {
         if (_bbie == null)
-            _bbie = new Bbie(this, Keys.BBIE_BIZTERM_BBIE_FK);
+            _bbie = new Bbie(this, Keys.BBIE_BIZTERM_BBIE_ID_FK);
 
         return _bbie;
+    }
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbie_bizterm_created_by_fk</code> key.
+     */
+    public AppUser bbieBiztermCreatedByFk() {
+        if (_bbieBiztermCreatedByFk == null)
+            _bbieBiztermCreatedByFk = new AppUser(this, Keys.BBIE_BIZTERM_CREATED_BY_FK);
+
+        return _bbieBiztermCreatedByFk;
+    }
+
+    /**
+     * Get the implicit join path to the <code>oagi.app_user</code> table, via
+     * the <code>bbie_bizterm_last_updated_by_fk</code> key.
+     */
+    public AppUser bbieBiztermLastUpdatedByFk() {
+        if (_bbieBiztermLastUpdatedByFk == null)
+            _bbieBiztermLastUpdatedByFk = new AppUser(this, Keys.BBIE_BIZTERM_LAST_UPDATED_BY_FK);
+
+        return _bbieBiztermLastUpdatedByFk;
     }
 
     @Override
@@ -237,21 +247,22 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row9<String, String, String, String, String, String, String, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function9<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super ULong, ? super ULong, ? super ULong, ? super String, ? super String, ? super ULong, ? super ULong, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function9<? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super String, ? super LocalDateTime, ? super LocalDateTime, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

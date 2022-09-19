@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function6;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BieUserExtRevisionRecord;
@@ -65,7 +63,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>.
      * Primary, internal database key.
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BieUserExtRevisionRecord, String> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bie_user_ext_revision.ext_abie_id</code>. This
@@ -76,7 +74,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * the AllExtension because there is no corresponding ABIE for the
      * AllExtension ACC.
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> EXT_ABIE_ID = createField(DSL.name("ext_abie_id"), SQLDataType.BIGINTUNSIGNED, this, "This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.");
+    public final TableField<BieUserExtRevisionRecord, String> EXT_ABIE_ID = createField(DSL.name("ext_abie_id"), SQLDataType.CHAR(36), this, "This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.");
 
     /**
      * The column <code>oagi.bie_user_ext_revision.ext_acc_id</code>. This
@@ -86,16 +84,16 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2
      * (Extension).
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> EXT_ACC_ID = createField(DSL.name("ext_acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).");
+    public final TableField<BieUserExtRevisionRecord, String> EXT_ACC_ID = createField(DSL.name("ext_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).");
 
     /**
      * The column <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This
      * column points to the specific revision of a User Extension ACC (this is
      * an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as
      * indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of
-     * the AllExtension). 
+     * the AllExtension).
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> USER_EXT_ACC_ID = createField(DSL.name("user_ext_acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension). ");
+    public final TableField<BieUserExtRevisionRecord, String> USER_EXT_ACC_ID = createField(DSL.name("user_ext_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).");
 
     /**
      * The column <code>oagi.bie_user_ext_revision.revised_indicator</code>.
@@ -111,7 +109,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * The column <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>.
      * This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BieUserExtRevisionRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BieUserExtRevisionRecord, String> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.CHAR(36).nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     private BieUserExtRevision(Name alias, Table<BieUserExtRevisionRecord> aliased) {
         this(alias, aliased, null);
@@ -149,11 +147,6 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BieUserExtRevisionRecord, ULong> getIdentity() {
-        return (Identity<BieUserExtRevisionRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -258,21 +251,22 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, Byte, ULong> fieldsRow() {
+    public Row6<String, String, String, String, Byte, String> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function6<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super ULong, ? super ULong, ? super ULong, ? super ULong, ? super Byte, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function6<? super String, ? super String, ? super String, ? super String, ? super Byte, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

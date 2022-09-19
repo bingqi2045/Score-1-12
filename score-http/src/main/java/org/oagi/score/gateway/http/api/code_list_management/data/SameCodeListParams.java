@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class SameCodeListParams {
 
-    private long releaseId;
-    private Long codeListManifestId;
+    private String releaseId;
+    private String codeListManifestId;
     private String listId;
-    private long agencyIdListValueManifestId;
+    private String agencyIdListValueManifestId;
     private String versionId;
 }

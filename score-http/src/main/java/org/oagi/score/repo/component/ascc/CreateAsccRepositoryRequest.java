@@ -3,17 +3,15 @@ package org.oagi.score.repo.component.ascc;
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.service.common.data.CcState;
 import org.oagi.score.service.log.model.LogAction;
-import org.oagi.score.service.log.model.LogUtils;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
-    private final BigInteger releaseId;
-    private final BigInteger accManifestId;
-    private final BigInteger asccpManifestId;
+    private final String releaseId;
+    private final String accManifestId;
+    private final String asccpManifestId;
     private int pos = -1;
 
     private CcState initialState = CcState.WIP;
@@ -23,9 +21,9 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     private LogAction logAction;
 
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
-                                       BigInteger releaseId,
-                                       BigInteger accManifestId,
-                                       BigInteger asccpManifestId) {
+                                       String releaseId,
+                                       String accManifestId,
+                                       String asccpManifestId) {
         super(user);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
@@ -34,24 +32,24 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
     public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
-                                       BigInteger releaseId,
-                                       BigInteger accManifestId,
-                                       BigInteger asccpManifestId) {
+                                       String releaseId,
+                                       String accManifestId,
+                                       String asccpManifestId) {
         super(user, localDateTime);
         this.releaseId = releaseId;
         this.accManifestId = accManifestId;
         this.asccpManifestId = asccpManifestId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public BigInteger getAccManifestId() {
+    public String getAccManifestId() {
         return accManifestId;
     }
 
-    public BigInteger getAsccpManifestId() {
+    public String getAsccpManifestId() {
         return asccpManifestId;
     }
 

@@ -47,12 +47,7 @@ import com.sun.xml.xsom.impl.SchemaSetImpl;
 import com.sun.xml.xsom.parser.AnnotationParserFactory;
 import com.sun.xml.xsom.parser.XMLParser;
 import com.sun.xml.xsom.parser.XSOMParser;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 
 import java.util.HashMap;
 import java.util.Iterator;

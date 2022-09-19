@@ -11,7 +11,6 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function3;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,7 +24,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxValueRecord;
@@ -58,19 +56,19 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
      * The column <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary,
      * internal database key.
      */
-    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_VALUE_ID = createField(DSL.name("biz_ctx_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BizCtxValueRecord, String> BIZ_CTX_VALUE_ID = createField(DSL.name("biz_ctx_value_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.biz_ctx_value.biz_ctx_id</code>. Foreign key to the
      * biz_ctx table.
      */
-    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the biz_ctx table.");
+    public final TableField<BizCtxValueRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the biz_ctx table.");
 
     /**
      * The column <code>oagi.biz_ctx_value.ctx_scheme_value_id</code>. Foreign
      * key to the CTX_SCHEME_VALUE table.
      */
-    public final TableField<BizCtxValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME_VALUE table.");
+    public final TableField<BizCtxValueRecord, String> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CTX_SCHEME_VALUE table.");
 
     private BizCtxValue(Name alias, Table<BizCtxValueRecord> aliased) {
         this(alias, aliased, null);
@@ -108,11 +106,6 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
-    }
-
-    @Override
-    public Identity<BizCtxValueRecord, ULong> getIdentity() {
-        return (Identity<BizCtxValueRecord, ULong>) super.getIdentity();
     }
 
     @Override
@@ -193,21 +186,22 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
+    public Row3<String, String, String> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    public <U> SelectField<U> mapping(Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(Records.mapping(from));
     }
 
     /**
-     * Convenience mapping calling {@link #convertFrom(Class, Function)}.
+     * Convenience mapping calling {@link SelectField#convertFrom(Class,
+     * Function)}.
      */
-    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super ULong, ? super ULong, ? super ULong, ? extends U> from) {
+    public <U> SelectField<U> mapping(Class<U> toType, Function3<? super String, ? super String, ? super String, ? extends U> from) {
         return convertFrom(toType, Records.mapping(from));
     }
 }

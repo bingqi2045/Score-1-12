@@ -12,15 +12,15 @@ public class CcBdtNodeDetail implements CcNodeDetail {
 
     private CcType type = CcType.DT;
 
-    private BigInteger bdtId = BigInteger.ZERO;
-    private BigInteger manifestId;
+    private String bdtId;
+    private String manifestId;
     private String guid;
     private String dataTypeTerm;
     private String representationTerm;
     private String sixDigitId;
     private String qualifier;
-    private BigInteger basedBdtId;
-    private BigInteger basedBdtManifestId;
+    private String basedBdtId;
+    private String basedBdtManifestId;
     private String basedBdtDen;
     private String contentComponentDefinition;
     private boolean commonlyUsed;
@@ -29,13 +29,13 @@ public class CcBdtNodeDetail implements CcNodeDetail {
     private String definition;
     private String definitionSource;
     private boolean hasNoSc;
-    private BigInteger namespaceId;
+    private String namespaceId;
 
     private CcState state;
     private String owner;
-    private BigInteger releaseId;
+    private String releaseId;
     private String releaseNum;
-    private BigInteger logId;
+    private String logId;
     private int revisionNum;
     private int revisionTrackingNum;
     private String spec;

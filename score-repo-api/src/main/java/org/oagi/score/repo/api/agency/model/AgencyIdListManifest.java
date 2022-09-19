@@ -1,78 +1,76 @@
 package org.oagi.score.repo.api.agency.model;
 
 import org.oagi.score.repo.api.corecomponent.CcManifest;
-import org.oagi.score.repo.api.corecomponent.model.CcState;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.io.Serializable;
 import java.math.BigInteger;
 
 public class AgencyIdListManifest implements CcManifest, Serializable {
 
-    private BigInteger agencyIdListManifestId;
+    private String agencyIdListManifestId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
-    private BigInteger agencyIdListId;
+    private String agencyIdListId;
 
-    private BigInteger basedAgencyIdListManifestId;
+    private String basedAgencyIdListManifestId;
 
-    private BigInteger logId;
+    private String logId;
 
     private boolean conflict;
 
-    private BigInteger prevAgencyIdListManifestId;
+    private String prevAgencyIdListManifestId;
 
-    private BigInteger nextAgencyIdListManifestId;
+    private String nextAgencyIdListManifestId;
 
     @Override
-    public BigInteger getManifestId() {
+    public String getManifestId() {
         return agencyIdListManifestId;
     }
 
     @Override
-    public BigInteger getBasedCcId() {
-        return basedAgencyIdListManifestId;
+    public String getBasedCcId() {
+        return getAgencyIdListId();
     }
 
-    public BigInteger getAgencyIdListManifestId() {
+    public String getAgencyIdListManifestId() {
         return agencyIdListManifestId;
     }
 
-    public void setAgencyIdListManifestId(BigInteger agencyIdListManifestId) {
+    public void setAgencyIdListManifestId(String agencyIdListManifestId) {
         this.agencyIdListManifestId = agencyIdListManifestId;
     }
 
     @Override
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
-    public BigInteger getAgencyIdListId() {
+    public String getAgencyIdListId() {
         return agencyIdListId;
     }
 
-    public void setAgencyIdListId(BigInteger agencyIdListId) {
+    public void setAgencyIdListId(String agencyIdListId) {
         this.agencyIdListId = agencyIdListId;
     }
 
-    public BigInteger getBasedAgencyIdListManifestId() {
+    public String getBasedAgencyIdListManifestId() {
         return basedAgencyIdListManifestId;
     }
 
-    public void setBasedAgencyIdListManifestId(BigInteger basedAgencyIdListManifestId) {
+    public void setBasedAgencyIdListManifestId(String basedAgencyIdListManifestId) {
         this.basedAgencyIdListManifestId = basedAgencyIdListManifestId;
     }
 
-    public BigInteger getLogId() {
+    public String getLogId() {
         return logId;
     }
 
-    public void setLogId(BigInteger logId) {
+    public void setLogId(String logId) {
         this.logId = logId;
     }
 
@@ -84,19 +82,19 @@ public class AgencyIdListManifest implements CcManifest, Serializable {
         this.conflict = conflict;
     }
 
-    public BigInteger getPrevAgencyIdListManifestId() {
+    public String getPrevAgencyIdListManifestId() {
         return prevAgencyIdListManifestId;
     }
 
-    public void setPrevAgencyIdListManifestId(BigInteger prevAgencyIdListManifestId) {
+    public void setPrevAgencyIdListManifestId(String prevAgencyIdListManifestId) {
         this.prevAgencyIdListManifestId = prevAgencyIdListManifestId;
     }
 
-    public BigInteger getNextAgencyIdListManifestId() {
+    public String getNextAgencyIdListManifestId() {
         return nextAgencyIdListManifestId;
     }
 
-    public void setNextAgencyIdListManifestId(BigInteger nextAgencyIdListManifestId) {
+    public void setNextAgencyIdListManifestId(String nextAgencyIdListManifestId) {
         this.nextAgencyIdListManifestId = nextAgencyIdListManifestId;
     }
 }

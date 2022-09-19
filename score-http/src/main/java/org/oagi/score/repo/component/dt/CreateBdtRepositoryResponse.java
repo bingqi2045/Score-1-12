@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.dt;
 
-import java.math.BigInteger;
-
 public class CreateBdtRepositoryResponse {
 
-    private final BigInteger bdtManifestId;
+    private final String bdtManifestId;
 
-    public CreateBdtRepositoryResponse(BigInteger bdtManifestId) {
+    public CreateBdtRepositoryResponse(String bdtManifestId) {
         this.bdtManifestId = bdtManifestId;
     }
 
-    public BigInteger getBdtManifestId() {
+    public String getBdtManifestId() {
         return bdtManifestId;
     }
 }

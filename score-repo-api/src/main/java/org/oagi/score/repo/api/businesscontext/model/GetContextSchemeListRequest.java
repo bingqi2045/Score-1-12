@@ -3,15 +3,14 @@ package org.oagi.score.repo.api.businesscontext.model;
 import org.oagi.score.repo.api.base.PaginationRequest;
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
 public class GetContextSchemeListRequest extends PaginationRequest<ContextScheme> {
 
-    private Collection<BigInteger> contextSchemeIdList;
-    private Collection<BigInteger> contextCategoryIdList;
+    private Collection<String> contextSchemeIdList;
+    private Collection<String> contextCategoryIdList;
     private String schemeName;
     private String description;
     private Collection<String> updaterUsernameList;
@@ -22,28 +21,28 @@ public class GetContextSchemeListRequest extends PaginationRequest<ContextScheme
         super(requester, ContextScheme.class);
     }
 
-    public Collection<BigInteger> getContextSchemeIdList() {
+    public Collection<String> getContextSchemeIdList() {
         return (contextSchemeIdList == null) ? Collections.emptyList() : contextSchemeIdList;
     }
 
-    public void setContextSchemeIdList(Collection<BigInteger> contextSchemeIdList) {
+    public void setContextSchemeIdList(Collection<String> contextSchemeIdList) {
         this.contextSchemeIdList = contextSchemeIdList;
     }
 
-    public GetContextSchemeListRequest withContextSchemeIdList(Collection<BigInteger> contextSchemeIdList) {
+    public GetContextSchemeListRequest withContextSchemeIdList(Collection<String> contextSchemeIdList) {
         this.setContextSchemeIdList(contextSchemeIdList);
         return this;
     }
 
-    public Collection<BigInteger> getContextCategoryIdList() {
+    public Collection<String> getContextCategoryIdList() {
         return (contextCategoryIdList == null) ? Collections.emptyList() : contextCategoryIdList;
     }
 
-    public void setContextCategoryIdList(Collection<BigInteger> contextCategoryIdList) {
+    public void setContextCategoryIdList(Collection<String> contextCategoryIdList) {
         this.contextCategoryIdList = contextCategoryIdList;
     }
 
-    public GetContextSchemeListRequest withContextCategoryIdList(Collection<BigInteger> contextCategoryIdList) {
+    public GetContextSchemeListRequest withContextCategoryIdList(Collection<String> contextCategoryIdList) {
         this.setContextCategoryIdList(contextCategoryIdList);
         return this;
     }

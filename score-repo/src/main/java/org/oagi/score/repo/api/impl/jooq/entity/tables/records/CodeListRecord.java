@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
-import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 
 
@@ -23,19 +22,19 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary
+     * Setter for <code>oagi.code_list.code_list_id</code>. Primary, internal
      * database key.
      */
-    public void setCodeListId(ULong value) {
+    public void setCodeListId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list.code_list_id</code>. Internal, primary
+     * Getter for <code>oagi.code_list.code_list_id</code>. Primary, internal
      * database key.
      */
-    public ULong getCodeListId() {
-        return (ULong) get(0);
+    public String getCodeListId() {
+        return (String) get(0);
     }
 
     /**
@@ -109,7 +108,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
      * which maintains the code list.
      */
-    public void setAgencyIdListValueId(ULong value) {
+    public void setAgencyIdListValueId(String value) {
         set(5, value);
     }
 
@@ -118,8 +117,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * key to the AGENCY_ID_LIST_VALUE table. It indicates the organization
      * which maintains the code list.
      */
-    public ULong getAgencyIdListValueId() {
-        return (ULong) get(5);
+    public String getAgencyIdListValueId() {
+        return (String) get(5);
     }
 
     /**
@@ -188,24 +187,18 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
     /**
      * Setter for <code>oagi.code_list.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public void setNamespaceId(ULong value) {
+    public void setNamespaceId(String value) {
         set(10, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.namespace_id</code>. Foreign key to the
-     * NAMESPACE table. This is the namespace to which the entity belongs. This
-     * namespace column is primarily used in the case the component is a user's
-     * component because there is also a namespace assigned at the release
-     * level.
+     * NAMESPACE table.
      */
-    public ULong getNamespaceId() {
-        return (ULong) get(10);
+    public String getNamespaceId() {
+        return (String) get(10);
     }
 
     /**
@@ -214,7 +207,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * on which this code list is based, if any. The derivation may be
      * restriction and/or extension.
      */
-    public void setBasedCodeListId(ULong value) {
+    public void setBasedCodeListId(String value) {
         set(11, value);
     }
 
@@ -224,8 +217,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * on which this code list is based, if any. The derivation may be
      * restriction and/or extension.
      */
-    public ULong getBasedCodeListId() {
-        return (ULong) get(11);
+    public String getBasedCodeListId() {
+        return (String) get(11);
     }
 
     /**
@@ -268,7 +261,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Setter for <code>oagi.code_list.replacement_code_list_id</code>. This
      * refers to a replacement if the record is deprecated.
      */
-    public void setReplacementCodeListId(ULong value) {
+    public void setReplacementCodeListId(String value) {
         set(14, value);
     }
 
@@ -276,15 +269,15 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Getter for <code>oagi.code_list.replacement_code_list_id</code>. This
      * refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacementCodeListId() {
-        return (ULong) get(14);
+    public String getReplacementCodeListId() {
+        return (String) get(14);
     }
 
     /**
      * Setter for <code>oagi.code_list.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created the code list.
      */
-    public void setCreatedBy(ULong value) {
+    public void setCreatedBy(String value) {
         set(15, value);
     }
 
@@ -292,8 +285,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Getter for <code>oagi.code_list.created_by</code>. Foreign key to the
      * APP_USER table. It indicates the user who created the code list.
      */
-    public ULong getCreatedBy() {
-        return (ULong) get(15);
+    public String getCreatedBy() {
+        return (String) get(15);
     }
 
     /**
@@ -304,7 +297,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setOwnerUserId(String value) {
         set(16, value);
     }
 
@@ -316,8 +309,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * The ownership can change throughout the history, but undoing shouldn't
      * rollback the ownership.
      */
-    public ULong getOwnerUserId() {
-        return (ULong) get(16);
+    public String getOwnerUserId() {
+        return (String) get(16);
     }
 
     /**
@@ -325,7 +318,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * the APP_USER table. It identifies the user who last updated the code
      * list.
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setLastUpdatedBy(String value) {
         set(17, value);
     }
 
@@ -334,8 +327,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * the APP_USER table. It identifies the user who last updated the code
      * list.
      */
-    public ULong getLastUpdatedBy() {
-        return (ULong) get(17);
+    public String getLastUpdatedBy() {
+        return (String) get(17);
     }
 
     /**
@@ -388,7 +381,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Setter for <code>oagi.code_list.prev_code_list_id</code>. A self-foreign
      * key to indicate the previous history record.
      */
-    public void setPrevCodeListId(ULong value) {
+    public void setPrevCodeListId(String value) {
         set(21, value);
     }
 
@@ -396,15 +389,15 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Getter for <code>oagi.code_list.prev_code_list_id</code>. A self-foreign
      * key to indicate the previous history record.
      */
-    public ULong getPrevCodeListId() {
-        return (ULong) get(21);
+    public String getPrevCodeListId() {
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.code_list.next_code_list_id</code>. A self-foreign
      * key to indicate the next history record.
      */
-    public void setNextCodeListId(ULong value) {
+    public void setNextCodeListId(String value) {
         set(22, value);
     }
 
@@ -412,8 +405,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
      * Getter for <code>oagi.code_list.next_code_list_id</code>. A self-foreign
      * key to indicate the next history record.
      */
-    public ULong getNextCodeListId() {
-        return (ULong) get(22);
+    public String getNextCodeListId() {
+        return (String) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -421,7 +414,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<ULong> key() {
+    public Record1<String> key() {
         return (Record1) super.key();
     }
 
@@ -439,7 +432,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     /**
      * Create a detached, initialised CodeListRecord
      */
-    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacementCodeListId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
+    public CodeListRecord(String codeListId, String guid, String enumTypeGuid, String name, String listId, String agencyIdListValueId, String versionId, String definition, String remark, String definitionSource, String namespaceId, String basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, String replacementCodeListId, String createdBy, String ownerUserId, String lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, String prevCodeListId, String nextCodeListId) {
         super(CodeList.CODE_LIST);
 
         setCodeListId(codeListId);

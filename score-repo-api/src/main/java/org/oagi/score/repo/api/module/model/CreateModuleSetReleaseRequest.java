@@ -1,15 +1,12 @@
 package org.oagi.score.repo.api.module.model;
 
 import org.oagi.score.repo.api.base.Request;
-import org.oagi.score.repo.api.user.model.ScoreUser;
-
-import java.math.BigInteger;
 
 public class CreateModuleSetReleaseRequest extends Request {
 
-    private BigInteger moduleSetId;
+    private String moduleSetId;
 
-    private BigInteger releaseId;
+    private String releaseId;
 
     private String moduleSetReleaseName;
 
@@ -17,21 +14,21 @@ public class CreateModuleSetReleaseRequest extends Request {
 
     private boolean isDefault;
 
-    private BigInteger baseModuleSetReleaseId;
+    private String baseModuleSetReleaseId;
 
-    public BigInteger getModuleSetId() {
+    public String getModuleSetId() {
         return moduleSetId;
     }
 
-    public void setModuleSetId(BigInteger moduleSetId) {
+    public void setModuleSetId(String moduleSetId) {
         this.moduleSetId = moduleSetId;
     }
 
-    public BigInteger getReleaseId() {
+    public String getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(BigInteger releaseId) {
+    public void setReleaseId(String releaseId) {
         this.releaseId = releaseId;
     }
 
@@ -63,11 +60,11 @@ public class CreateModuleSetReleaseRequest extends Request {
         super();
     }
 
-    public BigInteger getBaseModuleSetReleaseId() {
+    public String getBaseModuleSetReleaseId() {
         return baseModuleSetReleaseId;
     }
 
-    public void setBaseModuleSetReleaseId(BigInteger baseModuleSetReleaseId) {
+    public void setBaseModuleSetReleaseId(String baseModuleSetReleaseId) {
         this.baseModuleSetReleaseId = baseModuleSetReleaseId;
     }
 }

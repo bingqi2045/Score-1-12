@@ -3,17 +3,16 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class ACCRepository implements ScoreRepository<ACC> {
+public class ACCRepository implements ScoreRepository<ACC, String> {
 
     @Autowired
     private DSLContext dslContext;
@@ -60,19 +59,19 @@ public class ACCRepository implements ScoreRepository<ACC> {
     }
 
     @Override
-    public List<ACC> findAllByReleaseId(BigInteger releaseId) {
+    public List<ACC> findAllByReleaseId(String releaseId) {
         return getSelectOnConditionStep()
-                .where(Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .where(Tables.ACC_MANIFEST.RELEASE_ID.eq(releaseId))
                 .fetchInto(ACC.class);
     }
 
     @Override
-    public ACC findById(BigInteger id) {
-        if (id == null || id.longValue() <= 0L) {
+    public ACC findById(String id) {
+        if (!StringUtils.hasLength(id)) {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(id)))
+                .where(Tables.ACC.ACC_ID.eq(id))
                 .fetchOptionalInto(ACC.class).orElse(null);
     }
 }

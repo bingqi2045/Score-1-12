@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.controller;
 
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.service.CcListService;
-import org.oagi.score.gateway.http.api.module_management.data.ExportStandaloneSchemaRequest;
 import org.oagi.score.gateway.http.api.module_management.service.ModuleSetReleaseService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.service.common.data.CcState;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,7 +59,7 @@ public class CcListController {
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CcList> getCcList(
-            @RequestParam(name = "releaseId") BigInteger releaseId,
+            @RequestParam(name = "releaseId") String releaseId,
             @RequestParam(name = "den", required = false) String den,
             @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "module", required = false) String module,
@@ -136,7 +134,6 @@ public class CcListController {
 
         request.setCcTagIds(!StringUtils.hasLength(ccTagIds) ? Collections.emptyList() :
                 Arrays.asList(ccTagIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e))
-                        .map(e -> new BigInteger(e))
                         .collect(Collectors.toList()));
 
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
@@ -183,12 +180,12 @@ public class CcListController {
         return service.getTags();
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/transfer_ownership",
+    @RequestMapping(value = "/core_component/{type}/{manifestId}/transfer_ownership",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("type") String type,
-                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @PathVariable("manifestId") String manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         service.transferOwnership(user, type, manifestId, targetLoginId);
@@ -236,7 +233,7 @@ public class CcListController {
             @RequestParam(name = "asccpManifestIdList", required = true) String asccpManifestIdList) throws Exception {
 
         File output = moduleSetReleaseService.exportStandaloneSchema(sessionService.asScoreUser(user),
-                Arrays.stream(asccpManifestIdList.split(",")).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+                Arrays.stream(asccpManifestIdList.split(",")).collect(Collectors.toList()));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + output.getName() + "\"")

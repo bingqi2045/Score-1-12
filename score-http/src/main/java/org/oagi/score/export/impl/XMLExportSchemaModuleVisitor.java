@@ -59,7 +59,7 @@ public class XMLExportSchemaModuleVisitor {
     }
 
     public void setBaseDirectory(File baseDirectory) throws IOException {
-        this.baseDir = baseDirectory.getCanonicalFile();
+        this.baseDir = baseDirectory;
     }
 
     private Namespace getNamespace(SchemaModule schemaModule) {
@@ -84,7 +84,7 @@ public class XMLExportSchemaModuleVisitor {
         this.document.addContent(schemaElement);
         this.rootElement = schemaElement;
 
-        moduleFile = new File(baseDir, schemaModule.getPath() + ".xsd").getCanonicalFile();
+        moduleFile = new File(baseDir, schemaModule.getPath() + ".xsd");
     }
 
     private Document createDocument() {
