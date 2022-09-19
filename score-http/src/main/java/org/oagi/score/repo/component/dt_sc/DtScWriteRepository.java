@@ -379,6 +379,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID, bdtScPriRestriRecord.getCdtScAwdPriXpsTypeMapId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();
@@ -392,6 +393,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(bdtScPriRestriRecord.getCodeListId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.CODE_LIST_ID, bdtScPriRestriRecord.getCodeListId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();
@@ -405,6 +407,7 @@ public class DtScWriteRepository {
                         BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(bdtScPriRestriRecord.getAgencyIdListId())).fetchOne();
                 if (existRecord == null) {
                     dslContext.insertInto(BDT_SC_PRI_RESTRI)
+                            .set(BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID, UUID.randomUUID().toString())
                             .set(BDT_SC_PRI_RESTRI.BDT_SC_ID, dtSc.getDtScId())
                             .set(BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID, bdtScPriRestriRecord.getAgencyIdListId())
                             .set(BDT_SC_PRI_RESTRI.IS_DEFAULT, bdtScPriRestriRecord.getIsDefault()).execute();

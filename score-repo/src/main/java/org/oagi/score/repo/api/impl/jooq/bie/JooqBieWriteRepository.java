@@ -107,6 +107,7 @@ public class JooqBieWriteRepository
                                         String bizCtxId) {
 
         BizCtxAssignmentRecord bizCtxAssignmentRecord = new BizCtxAssignmentRecord();
+        bizCtxAssignmentRecord.setBizCtxAssignmentId(UUID.randomUUID().toString());
         bizCtxAssignmentRecord.setTopLevelAsbiepId(topLevelAsbiepRecord.getTopLevelAsbiepId());
         bizCtxAssignmentRecord.setBizCtxId(bizCtxId);
 

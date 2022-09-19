@@ -1162,7 +1162,7 @@ public class DtWriteRepository {
         return new CancelRevisionDtRepositoryResponse(request.getDtManifestId());
     }
 
-    private void createDtScForDerived(String dtManifestId,DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
+    private void createDtScForDerived(String dtManifestId, DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
 
         DtManifestRecord ownerDtManifest = dslContext.selectFrom(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId)).fetchOne();
@@ -1170,26 +1170,30 @@ public class DtWriteRepository {
         DtRecord targetDtRecord = dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(ownerDtManifest.getDtId())).fetchOne();
 
-        dtScRecord.setBasedDtScId(dtScRecord.getDtScId());
-        dtScRecord.setDtScId(UUID.randomUUID().toString());
-        dtScRecord.setGuid(ScoreGuid.randomGuid());
-        dtScRecord.setOwnerDtId(targetDtRecord.getDtId());
+        DtScRecord newDtScRecord = dtScRecord.copy();
+        newDtScRecord.setDtScId(UUID.randomUUID().toString());
+        newDtScRecord.setBasedDtScId(dtScRecord.getDtScId());
+        newDtScRecord.setDtScId(UUID.randomUUID().toString());
+        newDtScRecord.setGuid(ScoreGuid.randomGuid());
+        newDtScRecord.setOwnerDtId(targetDtRecord.getDtId());
 
         dslContext.insertInto(DT_SC)
-                .set(dtScRecord)
+                .set(newDtScRecord)
                 .execute();
 
-        dtScManifestRecord.setDtScId(dtScRecord.getDtScId());
-        dtScManifestRecord.setBasedDtScManifestId(dtScManifestRecord.getDtScManifestId());
-        dtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
-        dtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
+        DtScManifestRecord newDtScManifestRecord = dtScManifestRecord.copy();
+        newDtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
+        newDtScManifestRecord.setDtScId(dtScRecord.getDtScId());
+        newDtScManifestRecord.setBasedDtScManifestId(dtScManifestRecord.getDtScManifestId());
+        newDtScManifestRecord.setOwnerDtManifestId(ownerDtManifest.getDtManifestId());
+        newDtScManifestRecord.setDtScManifestId(UUID.randomUUID().toString());
 
         dslContext.insertInto(DT_SC_MANIFEST)
-                .set(dtScManifestRecord)
+                .set(newDtScManifestRecord)
                 .execute();
 
         dslContext.selectFrom(DT_MANIFEST).where(DT_MANIFEST.BASED_DT_MANIFEST_ID.eq(dtManifestId))
-                .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), dtScManifestRecord, dtScRecord));
+                .fetchStream().forEach(record -> createDtScForDerived(record.getDtManifestId(), newDtScManifestRecord, newDtScRecord));
     }
 
     private void insertBdtScPriRestriByRepresentationTerm(String bdtScId, String representationTerm) {
@@ -1388,6 +1392,7 @@ public class DtWriteRepository {
                     .set(cdtAwdPriXpsTypeMapRecord).execute();
 
             BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+            bdtPriRestriRecord.setBdtPriRestriId(UUID.randomUUID().toString());
             bdtPriRestriRecord.setCdtAwdPriXpsTypeMapId(cdtAwdPriXpsTypeMapRecord.getCdtAwdPriXpsTypeMapId());
             bdtPriRestriRecord.setBdtId(dtManifestRecord.getDtId());
 
@@ -1420,6 +1425,7 @@ public class DtWriteRepository {
                 .fetch();
 
         BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+        bdtPriRestriRecord.setBdtPriRestriId(UUID.randomUUID().toString());
 
         if (bdtPriRestriRecords.size() == 0) {
             bdtPriRestriRecord.setIsDefault((byte) 1);
@@ -1455,6 +1461,7 @@ public class DtWriteRepository {
                 .fetch();
 
         BdtPriRestriRecord bdtPriRestriRecord = new BdtPriRestriRecord();
+        bdtPriRestriRecord.setBdtPriRestriId(UUID.randomUUID().toString());
 
         if (bdtPriRestriRecords.size() == 0) {
             bdtPriRestriRecord.setIsDefault((byte) 1);
