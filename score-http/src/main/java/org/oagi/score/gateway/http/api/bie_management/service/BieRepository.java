@@ -502,6 +502,7 @@ public class BieRepository {
     public void createBizCtxAssignments(String topLevelAsbiepId, List<String> bizCtxIds) {
         bizCtxIds.stream().forEach(bizCtxId -> {
             dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID, UUID.randomUUID().toString())
                     .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, topLevelAsbiepId)
                     .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId)
                     .execute();
