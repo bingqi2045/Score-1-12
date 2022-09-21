@@ -372,8 +372,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                                 TopLevelAsbiep topLevelAsbiep,
                                 GenerationContext generationContext) {
 
-        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
-        ASBIEP asbiep = generationContext.receiveASBIEP(abie);
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 
         fillProperties(parent, schemas, asbiep, typeAbie, false, generationContext);

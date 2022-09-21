@@ -139,8 +139,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                                 GenerationContext generationContext,
                                 boolean isArray) {
 
-        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
-        ASBIEP asbiep = generationContext.receiveASBIEP(abie);
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 
         fillProperties(parent, definitions, asbiep, typeAbie, generationContext, isArray);
