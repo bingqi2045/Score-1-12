@@ -271,8 +271,12 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
         int templateTableCellIndex = 0;
         for (RowRecord rowRecord : rowRecords) {
             TableRowImpl templateTableRow0 = templateTable.getRow(0);
-            TableCell templateTableRow0Cell = templateTableRow0.getOrCreateCell(templateTableCellIndex++);
+            TableCell templateTableRow0Cell = templateTableRow0.getOrCreateCell(templateTableCellIndex);
             templateTableRow0Cell.setStringValue(rowRecord.columnName);
+
+            TableRowImpl templateTableRow1 = templateTable.getRow(1);
+            TableCell templateTableRow1Cell = templateTableRow1.getOrCreateCell(templateTableCellIndex++);
+            templateTableRow1Cell.setStringValue(rowRecord.example);
         }
 
         Table specificationTable = odsDocument.addTable("Specification");
@@ -334,9 +338,13 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
         Sheet templateSheet = workbook.createSheet("Template");
         int templateSheetCellIndex = 0;
         Row templateSheetRow0 = templateSheet.createRow(0);
+        Row templateSheetRow1 = templateSheet.createRow(1);
         for (RowRecord rowRecord : rowRecords) {
-            Cell templateSheetRow0Cell = templateSheetRow0.createCell(templateSheetCellIndex++);
+            Cell templateSheetRow0Cell = templateSheetRow0.createCell(templateSheetCellIndex);
             templateSheetRow0Cell.setCellValue(rowRecord.columnName);
+
+            Cell templateSheetRow1Cell = templateSheetRow1.createCell(templateSheetCellIndex++);
+            templateSheetRow1Cell.setCellValue(rowRecord.example);
         }
         // autoSizeColumn
         templateSheet.getRow(0).cellIterator().forEachRemaining(cell -> {
@@ -586,13 +594,20 @@ public class BieODFSpreadsheetGenerationExpression implements BieGenerateExpress
 
         public void fillRowRecords(List<RowRecord> rowRecords) {
             // Template Table
-            Element templateTableRow = new Element("table-row", tableNs);
-            templateTableRow.setAttribute("style-name", "ro1", tableNs);
-            templateTable.addContent(templateTableRow);
+            Element templateTableNameRow = new Element("table-row", tableNs);
+            templateTableNameRow.setAttribute("style-name", "ro1", tableNs);
+            templateTable.addContent(templateTableNameRow);
+
+            Element templateTableExampleRow = new Element("table-row", tableNs);
+            templateTableExampleRow.setAttribute("style-name", "ro1", tableNs);
+            templateTable.addContent(templateTableExampleRow);
 
             for (RowRecord rowRecord : rowRecords) {
-                Element templateTableCell = tableCellAsString(rowRecord.columnName);
-                templateTableRow.addContent(templateTableCell);
+                Element templateTableNameCell = tableCellAsString(rowRecord.columnName);
+                templateTableNameRow.addContent(templateTableNameCell);
+
+                Element templateTableExampleCell = tableCellAsString(rowRecord.example);
+                templateTableExampleRow.addContent(templateTableExampleCell);
             }
 
             // Specification Table
