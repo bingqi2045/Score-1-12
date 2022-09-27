@@ -645,6 +645,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
     private void copyDtScManifestRecordsFromWorking(String releaseId, String workingReleaseId,
                                                     List<String> dtManifestIds) {
         dslContext.insertInto(DT_SC_MANIFEST,
+                DT_SC_MANIFEST.DT_SC_MANIFEST_ID,
                 DT_SC_MANIFEST.RELEASE_ID,
                 DT_SC_MANIFEST.DT_SC_ID,
                 DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
@@ -652,6 +653,7 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                 DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                 DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
                 .select(dslContext.select(
+                        uuidV4s(),
                         inline(releaseId),
                         DT_SC_MANIFEST.DT_SC_ID,
                         DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
