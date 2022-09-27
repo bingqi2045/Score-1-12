@@ -183,7 +183,8 @@ public class BbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedBbieList(String topLevelAsbiepId) {
-        return dslContext.select(BBIE.BBIE_ID, BBIE.BASED_BCC_MANIFEST_ID, BBIE.HASH_PATH, BBIE.OWNER_TOP_LEVEL_ASBIEP_ID)
+        return dslContext.select(BBIE.BBIE_ID, BBIE.BASED_BCC_MANIFEST_ID, BBIE.HASH_PATH, BBIE.OWNER_TOP_LEVEL_ASBIEP_ID,
+                        BBIE.CARDINALITY_MIN, BBIE.CARDINALITY_MAX)
                 .from(BBIE)
                 .join(BBIEP).on(and(
                         BBIE.TO_BBIEP_ID.eq(BBIEP.BBIEP_ID),
@@ -200,6 +201,8 @@ public class BbieReadRepository {
                     bieEditUsed.setManifestId(record.get(BBIE.BASED_BCC_MANIFEST_ID));
                     bieEditUsed.setHashPath(record.get(BBIE.HASH_PATH));
                     bieEditUsed.setOwnerTopLevelAsbiepId(record.get(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID));
+                    bieEditUsed.setCardinalityMin(record.get(BBIE.CARDINALITY_MIN));
+                    bieEditUsed.setCardinalityMax(record.get(BBIE.CARDINALITY_MAX));
                     return bieEditUsed;
                 })
                 .collect(Collectors.toList());

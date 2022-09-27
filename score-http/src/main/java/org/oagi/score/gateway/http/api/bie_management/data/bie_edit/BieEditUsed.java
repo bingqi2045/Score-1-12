@@ -10,5 +10,7 @@ public class BieEditUsed {
     private String manifestId;
     private String type;
     private String ownerTopLevelAsbiepId;
+    private int cardinalityMin;
+    private int cardinalityMax;
 
 }
