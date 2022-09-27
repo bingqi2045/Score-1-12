@@ -662,7 +662,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         complexType.addContent(simpleContent);
         simpleContent.addContent(extNode);
 
-        extNode.setAttribute("base", Helper.getCodeListTypeName(codeList));
+        AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+        String codeListTypeName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
+        extNode.setAttribute("base", codeListTypeName);
         eNode.addContent(complexType);
         return eNode;
     }
@@ -1056,7 +1058,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 generateCodeList(codeList, bdt);
 
                 if (bbieScList.isEmpty()) {
-                    eNode.setAttribute("type", Helper.getCodeListTypeName(codeList));
+                    AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+                    eNode.setAttribute("type", Helper.getCodeListTypeName(codeList, agencyIdListValue));
                 } else {
                     eNode = generateBDT(bbie, eNode, codeList);
                     eNode = generateSCs(bbie, eNode, bbieScList);
@@ -1108,16 +1111,20 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 generateCodeList(codeList, bdt);
 
                 if (bbieScList.isEmpty()) {
-                    if (Helper.getCodeListTypeName(codeList) != null) {
-                        eNode.setAttribute("type", Helper.getCodeListTypeName(codeList));
+                    AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+                    String codeListTypeName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
+                    if (StringUtils.hasLength(codeListTypeName)) {
+                        eNode.setAttribute("type", codeListTypeName);
                     }
                     return eNode;
                 } else {
                     if (bbie.getBdtPriRestriId() == null) {
                         eNode = setBBIE_Attr_Type(bdt, eNode);
                     } else {
-                        if (Helper.getCodeListTypeName(codeList) != null) {
-                            eNode.setAttribute("type", Helper.getCodeListTypeName(codeList));
+                        AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+                        String codeListTypeName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
+                        if (StringUtils.hasLength(codeListTypeName)) {
+                            eNode.setAttribute("type", codeListTypeName);
                         }
                     }
                 }
@@ -1183,7 +1190,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         Element stNode = newElement("simpleType");
 
-        stNode.setAttribute("name", Helper.getCodeListTypeName(codeList));
+        AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+        stNode.setAttribute("name", Helper.getCodeListTypeName(codeList, agencyIdListValue));
         if (option.isBieGuid()) {
             stNode.setAttribute("id", getGuidWithPrefix(codeList.getGuid()));
         }
@@ -1350,8 +1358,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
                 generateCodeList(codeList, dtSc);
 
-                if (Helper.getCodeListTypeName(codeList) != null) {
-                    aNode.setAttribute("type", Helper.getCodeListTypeName(codeList));
+                AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+                String codeListTypeName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
+                if (StringUtils.hasLength(codeListTypeName)) {
+                    aNode.setAttribute("type", codeListTypeName);
                 }
             }
 

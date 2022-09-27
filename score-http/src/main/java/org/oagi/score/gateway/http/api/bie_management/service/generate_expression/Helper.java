@@ -64,11 +64,15 @@ class Helper {
         return xbt;
     }
 
-    static String getCodeListTypeName(CodeList codeList) {
+    static String getCodeListTypeName(CodeList codeList, AgencyIdListValue agencyIdListValue) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(CODE_LIST_NAME_PREFIX);
-        sb.append(codeList.getAgencyId()).append('_');
+        if (agencyIdListValue != null) {
+            sb.append(agencyIdListValue.getValue()).append('_');
+        } else {
+            sb.append('_');
+        }
         sb.append(codeList.getVersionId()).append('_');
         String name = codeList.getName();
         if (StringUtils.hasLength(name)) {

@@ -596,7 +596,8 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                                Map<String, Object> schemas,
                                CodeList codeList) {
 
-        String codeListName = Helper.getCodeListTypeName(codeList);
+        AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+        String codeListName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
         /*
          * Issue #589
          */

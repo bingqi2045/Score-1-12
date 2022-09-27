@@ -370,7 +370,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                                    Map<String, Object> definitions,
                                    CodeList codeList) {
 
-        String codeListName = Helper.getCodeListTypeName(codeList);
+        AgencyIdListValue agencyIdListValue = generationContext.findAgencyIdListValue(codeList.getAgencyIdListValueId());
+        String codeListName = Helper.getCodeListTypeName(codeList, agencyIdListValue);
         /*
          * Issue #589
          */

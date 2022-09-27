@@ -13,7 +13,7 @@ public class CodeList {
     private String enumTypeGuid;
     private String name;
     private String listId;
-    private String agencyId;
+    private String agencyIdListValueId;
     private String versionId;
     private String definition;
     private String remark;
