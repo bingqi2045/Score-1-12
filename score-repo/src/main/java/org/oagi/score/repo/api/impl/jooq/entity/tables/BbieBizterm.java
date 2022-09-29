@@ -12,6 +12,7 @@ import java.util.function.Function;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Function9;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Records;
@@ -25,6 +26,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieBiztermRecord;
@@ -53,16 +55,16 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * The column <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
+     * primary database key of an bbie_bizterm record.
      */
-    public final TableField<BbieBiztermRecord, String> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
+    public final TableField<BbieBiztermRecord, String> BBIE_BIZTERM_ID = createField(DSL.name("bbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal, primary database key of an bbie_bizterm record.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bcc_business_term record.
+     * of the bbie_bizterm record.
      */
-    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the bcc_business_term record.");
+    public final TableField<BbieBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the bbie_bizterm record.");
 
     /**
      * The column <code>oagi.bbie_bizterm.bbie_id</code>. An internal ID of the
@@ -84,17 +86,17 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
 
     /**
      * The column <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the BBIE_BIZTERM record. The creator of
-     * the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the bbie_bizterm record. The creator of
+     * the asbie_bizterm is also its owner by default.
      */
-    public final TableField<BbieBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.");
+    public final TableField<BbieBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the bbie_bizterm record. The creator of the asbie_bizterm is also its owner by default.");
 
     /**
      * The column <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIE_BIZTERM record. This
+     * referring to the last user who has updated the bbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<BbieBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BBIE_BIZTERM record. This may be the user who is in the same group as the creator.");
+    public final TableField<BbieBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the bbie_bizterm record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.bbie_bizterm.creation_timestamp</code>. Timestamp
@@ -144,6 +146,11 @@ public class BbieBizterm extends TableImpl<BbieBiztermRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Oagi.OAGI;
+    }
+
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.BBIE_BIZTERM_BBIE_BIZTERM_ASBIE_ID_FK);
     }
 
     @Override

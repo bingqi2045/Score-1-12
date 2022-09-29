@@ -57,10 +57,9 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     public final TableField<CodeListManifestRecord, String> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.code_list_manifest.release_id</code>. Foreign key
-     * to the RELEASE table.
+     * The column <code>oagi.code_list_manifest.release_id</code>.
      */
-    public final TableField<CodeListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<CodeListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.code_list_manifest.code_list_id</code>.

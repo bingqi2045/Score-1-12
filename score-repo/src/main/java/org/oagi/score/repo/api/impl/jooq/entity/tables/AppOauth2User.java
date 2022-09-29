@@ -62,7 +62,7 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
      * the record in `app_user`. If it is not set, this is treated as a pending
      * record.
      */
-    public final TableField<AppOauth2UserRecord, String> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.CHAR(36).nullable(false), this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
+    public final TableField<AppOauth2UserRecord, String> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.CHAR(36), this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
 
     /**
      * The column <code>oagi.app_oauth2_user.oauth2_app_id</code>. A reference

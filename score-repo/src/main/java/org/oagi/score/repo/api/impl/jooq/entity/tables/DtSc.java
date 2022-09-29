@@ -99,11 +99,11 @@ public class DtSc extends TableImpl<DtScRecord> {
     public final TableField<DtScRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(200), this, "This is typically a URL identifying the source of the DEFINITION column.");
 
     /**
-     * The column <code>oagi.dt_sc.owner_dt_id</code>. Foreign key to the DT
+     * The column <code>oagi.dt_sc.owner_dt_id</code>. Foreigned key to the DT
      * table indicating the data type, to which this supplementary component
      * belongs.
      */
-    public final TableField<DtScRecord, String> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table indicating the data type, to which this supplementary component belongs.");
+    public final TableField<DtScRecord, String> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.CHAR(36), this, "Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.");
 
     /**
      * The column <code>oagi.dt_sc.cardinality_min</code>. The minimum
@@ -156,9 +156,9 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     /**
      * The column <code>oagi.dt_sc.created_by</code>. Foreign key to the
-     * APP_USER table. It indicates the user who created the DT_SC.
+     * APP_USER table. It indicates the user who created the code list.
      */
-    public final TableField<DtScRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the DT_SC.");
+    public final TableField<DtScRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
 
     /**
      * The column <code>oagi.dt_sc.owner_user_id</code>. Foreign key to the
@@ -172,9 +172,9 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     /**
      * The column <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the
-     * APP_USER table. It identifies the user who last updated the DT_SC.
+     * APP_USER table. It identifies the user who last updated the code list.
      */
-    public final TableField<DtScRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the DT_SC.");
+    public final TableField<DtScRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
 
     /**
      * The column <code>oagi.dt_sc.creation_timestamp</code>. Timestamp when the

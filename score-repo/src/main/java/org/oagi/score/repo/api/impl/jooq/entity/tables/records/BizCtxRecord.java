@@ -73,7 +73,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
 
     /**
      * Setter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity.
+     * APP_USER table referring to the user who creates the entity. 
      */
     public void setCreatedBy(String value) {
         set(3, value);
@@ -81,7 +81,7 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
 
     /**
      * Getter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity.
+     * APP_USER table referring to the user who creates the entity. 
      */
     public String getCreatedBy() {
         return (String) get(3);

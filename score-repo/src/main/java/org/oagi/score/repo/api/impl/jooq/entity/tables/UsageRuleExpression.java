@@ -77,9 +77,10 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     /**
      * The column
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
+     * usage rule which the expression represents
      */
-    public final TableField<UsageRuleExpressionRecord, String> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "");
+    public final TableField<UsageRuleExpressionRecord, String> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "The usage rule which the expression represents");
 
     private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased) {
         this(alias, aliased, null);

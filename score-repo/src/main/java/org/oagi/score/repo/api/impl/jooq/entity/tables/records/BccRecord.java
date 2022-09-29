@@ -90,7 +90,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.
+     * BCCP_ID of the current record of a BCCP.',
      */
     public void setToBccpId(String value) {
         set(4, value);
@@ -102,7 +102,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.
+     * BCCP_ID of the current record of a BCCP.',
      */
     public String getToBccpId() {
         return (String) get(4);

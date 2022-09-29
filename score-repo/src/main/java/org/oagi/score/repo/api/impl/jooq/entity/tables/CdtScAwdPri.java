@@ -65,10 +65,11 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     public final TableField<CdtScAwdPriRecord, String> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
 
     /**
-     * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
-     * the CDT_PRI table.
+     * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
+     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
+     * the suppliement component identified in the CDT_SC_ID column.
      */
-    public final TableField<CdtScAwdPriRecord, String> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CDT_PRI table.");
+    public final TableField<CdtScAwdPriRecord, String> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the CDT_Pri table. It represents a CDT primitive allowed for the suppliement component identified in the CDT_SC_ID column.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.is_default</code>. Indicating

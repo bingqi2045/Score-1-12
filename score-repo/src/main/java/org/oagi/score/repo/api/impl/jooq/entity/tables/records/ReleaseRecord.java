@@ -104,7 +104,11 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
 
     /**
      * Setter for <code>oagi.release.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. It identifies the namespace used with the release. It is
+     * particularly useful for a library that uses a single namespace such like
+     * the OAGIS 10.x. A library that uses multiple namespace but has a main
+     * namespace may also use this column as a specific namespace can be
+     * override at the module level.
      */
     public void setNamespaceId(String value) {
         set(5, value);
@@ -112,7 +116,11 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
 
     /**
      * Getter for <code>oagi.release.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. It identifies the namespace used with the release. It is
+     * particularly useful for a library that uses a single namespace such like
+     * the OAGIS 10.x. A library that uses multiple namespace but has a main
+     * namespace may also use this column as a specific namespace can be
+     * override at the module level.
      */
     public String getNamespaceId() {
         return (String) get(5);

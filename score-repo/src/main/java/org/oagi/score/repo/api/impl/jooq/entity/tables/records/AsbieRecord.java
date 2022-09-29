@@ -270,7 +270,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(String value) {
         set(13, value);
@@ -278,7 +278,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     /**
      * Getter for <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
     public String getLastUpdatedBy() {
         return (String) get(13);

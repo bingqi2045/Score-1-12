@@ -88,14 +88,10 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
-     * The column <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
-     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
-     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
-     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
-     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
-     * in the BASED_BCC_ID.
+     * The column <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
+     * based on the FROM_ACC_ID in the BASED_BCC_ID.
      */
-    public final TableField<BbieRecord, String> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.");
+    public final TableField<BbieRecord, String> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), SQLDataType.CHAR(36).nullable(false), this, "FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.");
 
     /**
      * The column <code>oagi.bbie.to_bbiep_id</code>. TO_BBIEP_ID is a foreign
@@ -228,9 +224,9 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     /**
      * The column <code>oagi.bbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the BBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
-    public final TableField<BbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the BBIE record.");
+    public final TableField<BbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record. ");
 
     /**
      * The column <code>oagi.bbie.creation_timestamp</code>. Timestamp when the

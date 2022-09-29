@@ -177,48 +177,42 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     /**
-     * Setter for <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
-     * table identifying user who created the xbt.
+     * Setter for <code>oagi.xbt.created_by</code>.
      */
     public void setCreatedBy(String value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
-     * table identifying user who created the xbt.
+     * Getter for <code>oagi.xbt.created_by</code>.
      */
     public String getCreatedBy() {
         return (String) get(10);
     }
 
     /**
-     * Setter for <code>oagi.xbt.owner_user_id</code>. Foreign key to the
-     * APP_USER table identifying the user who can update or delete the record.
+     * Setter for <code>oagi.xbt.owner_user_id</code>.
      */
     public void setOwnerUserId(String value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.owner_user_id</code>. Foreign key to the
-     * APP_USER table identifying the user who can update or delete the record.
+     * Getter for <code>oagi.xbt.owner_user_id</code>.
      */
     public String getOwnerUserId() {
         return (String) get(11);
     }
 
     /**
-     * Setter for <code>oagi.xbt.last_updated_by</code>. Foreign key to the
-     * APP_USER table identifying the user who last updated the record.
+     * Setter for <code>oagi.xbt.last_updated_by</code>.
      */
     public void setLastUpdatedBy(String value) {
         set(12, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.last_updated_by</code>. Foreign key to the
-     * APP_USER table identifying the user who last updated the record.
+     * Getter for <code>oagi.xbt.last_updated_by</code>.
      */
     public String getLastUpdatedBy() {
         return (String) get(12);

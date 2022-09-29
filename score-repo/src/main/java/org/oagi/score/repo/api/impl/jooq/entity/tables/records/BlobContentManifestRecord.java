@@ -53,16 +53,14 @@ public class BlobContentManifestRecord extends UpdatableRecordImpl<BlobContentMa
     }
 
     /**
-     * Setter for <code>oagi.blob_content_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * Setter for <code>oagi.blob_content_manifest.release_id</code>.
      */
     public void setReleaseId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.blob_content_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * Getter for <code>oagi.blob_content_manifest.release_id</code>.
      */
     public String getReleaseId() {
         return (String) get(2);

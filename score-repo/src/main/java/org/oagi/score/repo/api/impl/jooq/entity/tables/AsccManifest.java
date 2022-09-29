@@ -57,10 +57,9 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     public final TableField<AsccManifestRecord, String> ASCC_MANIFEST_ID = createField(DSL.name("ascc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.ascc_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * The column <code>oagi.ascc_manifest.release_id</code>.
      */
-    public final TableField<AsccManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36), this, "Foreign key to the RELEASE table.");
+    public final TableField<AsccManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.ascc_manifest.ascc_id</code>.

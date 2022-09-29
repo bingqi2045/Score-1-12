@@ -79,9 +79,9 @@ public class Bcc extends TableImpl<BccRecord> {
      * of the FROM_ACC_ID. 
      * 
      * Note that for the BCC history records, this column always points to the
-     * BCCP_ID of the current record of a BCCP.
+     * BCCP_ID of the current record of a BCCP.',
      */
-    public final TableField<BccRecord, String> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.");
+    public final TableField<BccRecord, String> TO_BCCP_ID = createField(DSL.name("to_bccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_BCCP_ID is a foreign key to an BCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. \n\nNote that for the BCC history records, this column always points to the BCCP_ID of the current record of a BCCP.',");
 
     /**
      * The column <code>oagi.bcc.from_acc_id</code>. FROM_ACC_ID is a foreign

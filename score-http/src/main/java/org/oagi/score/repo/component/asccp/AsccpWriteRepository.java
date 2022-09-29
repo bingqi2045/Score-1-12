@@ -110,33 +110,7 @@ public class AsccpWriteRepository {
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccpManifest.getAsccpManifestId()))
                 .execute();
 
-        if (!request.getTags().isEmpty()) {
-            for (String tag : request.getTags()) {
-                upsertTag(asccpManifest.getAsccpManifestId(), tag);
-            }
-        }
-
         return new CreateAsccpRepositoryResponse(asccpManifest.getAsccpManifestId());
-    }
-
-    private void upsertTag(String asccpManifestId, String tag) {
-        CcTagRecord ccTag = dslContext.selectFrom(CC_TAG)
-                .where(CC_TAG.TAG_NAME.eq(tag))
-                .fetchOptional().orElse(null);
-        String ccTagId;
-        if (ccTag == null) {
-            ccTagId = UUID.randomUUID().toString();
-            dslContext.insertInto(CC_TAG)
-                    .set(CC_TAG.CC_TAG_ID, ccTagId)
-                    .set(CC_TAG.TAG_NAME, tag)
-                    .execute();
-        } else {
-            ccTagId = ccTag.getCcTagId();
-        }
-        dslContext.insertInto(ASCCP_MANIFEST_TAG)
-                .set(ASCCP_MANIFEST_TAG.ASCCP_MANIFEST_ID, asccpManifestId)
-                .set(ASCCP_MANIFEST_TAG.CC_TAG_ID, ccTagId)
-                .execute();
     }
 
     public ReviseAsccpRepositoryResponse reviseAsccp(ReviseAsccpRepositoryRequest request) {

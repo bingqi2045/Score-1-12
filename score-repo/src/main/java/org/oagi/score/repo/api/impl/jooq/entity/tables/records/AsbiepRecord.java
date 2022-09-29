@@ -217,7 +217,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     /**
      * Setter for <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record.
+     * referring to the last user who has updated the ASBIEP record. 
      */
     public void setLastUpdatedBy(String value) {
         set(10, value);
@@ -225,7 +225,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     /**
      * Getter for <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record.
+     * referring to the last user who has updated the ASBIEP record. 
      */
     public String getLastUpdatedBy() {
         return (String) get(10);

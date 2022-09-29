@@ -132,7 +132,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     /**
      * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID.
+     * element of the FROM_ACC_ID. 
      */
     public void setToAsccpId(String value) {
         set(6, value);
@@ -141,7 +141,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     /**
      * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID.
+     * element of the FROM_ACC_ID. 
      */
     public String getToAsccpId() {
         return (String) get(6);
@@ -273,7 +273,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
     public void setOwnerUserId(String value) {
         set(13, value);
@@ -285,7 +285,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
     public String getOwnerUserId() {
         return (String) get(13);

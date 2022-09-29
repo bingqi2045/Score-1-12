@@ -187,7 +187,10 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
     /**
      * Setter for <code>oagi.code_list.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public void setNamespaceId(String value) {
         set(10, value);
@@ -195,7 +198,10 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
     /**
      * Getter for <code>oagi.code_list.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public String getNamespaceId() {
         return (String) get(10);

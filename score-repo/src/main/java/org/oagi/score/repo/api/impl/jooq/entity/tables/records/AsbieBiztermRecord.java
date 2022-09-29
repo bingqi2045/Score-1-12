@@ -24,16 +24,16 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * Setter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. An internal,
+     * primary database key of an asbie_bizterm record.
      */
     public void setAsbieBiztermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * Getter for <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. An internal,
+     * primary database key of an asbie_bizterm record.
      */
     public String getAsbieBiztermId() {
         return (String) get(0);
@@ -105,8 +105,8 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
 
     /**
      * Setter for <code>oagi.asbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASBIE_BIZTERM record. The creator
-     * of the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the asbie_bizterm record. The creator
+     * of the asbie_bizterm is also its owner by default.
      */
     public void setCreatedBy(String value) {
         set(5, value);
@@ -114,8 +114,8 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
 
     /**
      * Getter for <code>oagi.asbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASBIE_BIZTERM record. The creator
-     * of the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the asbie_bizterm record. The creator
+     * of the asbie_bizterm is also its owner by default.
      */
     public String getCreatedBy() {
         return (String) get(5);
@@ -123,7 +123,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
 
     /**
      * Setter for <code>oagi.asbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIE_BIZTERM record. This
+     * referring to the last user who has updated the asbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public void setLastUpdatedBy(String value) {
@@ -132,7 +132,7 @@ public class AsbieBiztermRecord extends UpdatableRecordImpl<AsbieBiztermRecord> 
 
     /**
      * Getter for <code>oagi.asbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIE_BIZTERM record. This
+     * referring to the last user who has updated the asbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public String getLastUpdatedBy() {

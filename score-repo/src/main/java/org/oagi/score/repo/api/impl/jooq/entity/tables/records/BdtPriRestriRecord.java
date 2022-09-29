@@ -60,7 +60,9 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
 
     /**
      * Setter for <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
+     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
+     * for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
     public void setCdtAwdPriXpsTypeMapId(String value) {
         set(2, value);
@@ -68,7 +70,9 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
 
     /**
      * Getter for <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
+     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
+     * for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
     public String getCdtAwdPriXpsTypeMapId() {
         return (String) get(2);

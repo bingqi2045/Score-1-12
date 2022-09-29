@@ -58,10 +58,9 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     public final TableField<AgencyIdListManifestRecord, String> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.agency_id_list_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * The column <code>oagi.agency_id_list_manifest.release_id</code>.
      */
-    public final TableField<AgencyIdListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<AgencyIdListManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_manifest.agency_id_list_id</code>.

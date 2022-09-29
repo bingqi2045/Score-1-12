@@ -61,7 +61,8 @@ public class CdtScAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtScAwdPri
 
     /**
      * Setter for <code>oagi.cdt_sc_awd_pri_xps_type_map.xbt_id</code>. Foreign
-     * key to the XBT table.
+     * key to the Xbt table. It identifies an XML schema built-in type that maps
+     * to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.
      */
     public void setXbtId(String value) {
         set(2, value);
@@ -69,7 +70,8 @@ public class CdtScAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtScAwdPri
 
     /**
      * Getter for <code>oagi.cdt_sc_awd_pri_xps_type_map.xbt_id</code>. Foreign
-     * key to the XBT table.
+     * key to the Xbt table. It identifies an XML schema built-in type that maps
+     * to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.
      */
     public String getXbtId() {
         return (String) get(2);

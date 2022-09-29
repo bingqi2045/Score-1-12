@@ -112,22 +112,19 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>oagi.xbt.created_by</code>. Foreign key to the APP_USER
-     * table identifying user who created the xbt.
+     * The column <code>oagi.xbt.created_by</code>.
      */
-    public final TableField<XbtRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying user who created the xbt.");
+    public final TableField<XbtRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>oagi.xbt.owner_user_id</code>. Foreign key to the
-     * APP_USER table identifying the user who can update or delete the record.
+     * The column <code>oagi.xbt.owner_user_id</code>.
      */
-    public final TableField<XbtRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
+    public final TableField<XbtRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>oagi.xbt.last_updated_by</code>. Foreign key to the
-     * APP_USER table identifying the user who last updated the record.
+     * The column <code>oagi.xbt.last_updated_by</code>.
      */
-    public final TableField<XbtRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
+    public final TableField<XbtRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.creation_timestamp</code>.

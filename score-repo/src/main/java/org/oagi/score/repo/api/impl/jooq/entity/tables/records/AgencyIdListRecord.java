@@ -219,7 +219,10 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
 
     /**
      * Setter for <code>oagi.agency_id_list.namespace_id</code>. Foreign key to
-     * the NAMESPACE table.
+     * the NAMESPACE table. This is the namespace to which the entity belongs.
+     * This namespace column is primarily used in the case the component is a
+     * user's component because there is also a namespace assigned at the
+     * release level.
      */
     public void setNamespaceId(String value) {
         set(11, value);
@@ -227,7 +230,10 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
 
     /**
      * Getter for <code>oagi.agency_id_list.namespace_id</code>. Foreign key to
-     * the NAMESPACE table.
+     * the NAMESPACE table. This is the namespace to which the entity belongs.
+     * This namespace column is primarily used in the case the component is a
+     * user's component because there is also a namespace assigned at the
+     * release level.
      */
     public String getNamespaceId() {
         return (String) get(11);

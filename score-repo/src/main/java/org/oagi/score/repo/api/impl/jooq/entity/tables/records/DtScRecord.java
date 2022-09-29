@@ -138,7 +138,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.dt_sc.owner_dt_id</code>. Foreign key to the DT
+     * Setter for <code>oagi.dt_sc.owner_dt_id</code>. Foreigned key to the DT
      * table indicating the data type, to which this supplementary component
      * belongs.
      */
@@ -147,7 +147,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     /**
-     * Getter for <code>oagi.dt_sc.owner_dt_id</code>. Foreign key to the DT
+     * Getter for <code>oagi.dt_sc.owner_dt_id</code>. Foreigned key to the DT
      * table indicating the data type, to which this supplementary component
      * belongs.
      */
@@ -283,7 +283,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     /**
      * Setter for <code>oagi.dt_sc.created_by</code>. Foreign key to the
-     * APP_USER table. It indicates the user who created the DT_SC.
+     * APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(String value) {
         set(15, value);
@@ -291,7 +291,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     /**
      * Getter for <code>oagi.dt_sc.created_by</code>. Foreign key to the
-     * APP_USER table. It indicates the user who created the DT_SC.
+     * APP_USER table. It indicates the user who created the code list.
      */
     public String getCreatedBy() {
         return (String) get(15);
@@ -323,7 +323,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     /**
      * Setter for <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the
-     * APP_USER table. It identifies the user who last updated the DT_SC.
+     * APP_USER table. It identifies the user who last updated the code list.
      */
     public void setLastUpdatedBy(String value) {
         set(17, value);
@@ -331,7 +331,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     /**
      * Getter for <code>oagi.dt_sc.last_updated_by</code>. Foreign key to the
-     * APP_USER table. It identifies the user who last updated the DT_SC.
+     * APP_USER table. It identifies the user who last updated the code list.
      */
     public String getLastUpdatedBy() {
         return (String) get(17);

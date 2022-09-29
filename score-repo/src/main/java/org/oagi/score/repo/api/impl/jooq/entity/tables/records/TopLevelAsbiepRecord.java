@@ -57,18 +57,14 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     }
 
     /**
-     * Setter for <code>oagi.top_level_asbiep.owner_user_id</code>. Foreign key
-     * to the APP_USER table identifying the user who can update or delete the
-     * record.
+     * Setter for <code>oagi.top_level_asbiep.owner_user_id</code>.
      */
     public void setOwnerUserId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.top_level_asbiep.owner_user_id</code>. Foreign key
-     * to the APP_USER table identifying the user who can update or delete the
-     * record.
+     * Getter for <code>oagi.top_level_asbiep.owner_user_id</code>.
      */
     public String getOwnerUserId() {
         return (String) get(2);
@@ -108,7 +104,8 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
 
     /**
      * Setter for <code>oagi.top_level_asbiep.release_id</code>. Foreign key to
-     * the RELEASE table.
+     * the RELEASE table. It identifies the release, for which this module is
+     * associated.
      */
     public void setReleaseId(String value) {
         set(5, value);
@@ -116,7 +113,8 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
 
     /**
      * Getter for <code>oagi.top_level_asbiep.release_id</code>. Foreign key to
-     * the RELEASE table.
+     * the RELEASE table. It identifies the release, for which this module is
+     * associated.
      */
     public String getReleaseId() {
         return (String) get(5);

@@ -70,9 +70,11 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
 
     /**
      * The column <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.
+     * This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows
+     * for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
-    public final TableField<BdtPriRestriRecord, String> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "Foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.");
+    public final TableField<BdtPriRestriRecord, String> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows for a primitive restriction based on a built-in type of schema expressions.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.code_list_id</code>. Foreign key to

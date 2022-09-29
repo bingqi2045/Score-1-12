@@ -121,10 +121,9 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
     /**
      * The column <code>oagi.agency_id_list_value.created_by</code>. Foreign key
-     * to the APP_USER table. It indicates the user who created the agency ID
-     * list value.
+     * to the APP_USER table. It indicates the user who created the code list.
      */
-    public final TableField<AgencyIdListValueRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the agency ID list value.");
+    public final TableField<AgencyIdListValueRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
 
     /**
      * The column <code>oagi.agency_id_list_value.owner_user_id</code>. Foreign
@@ -140,9 +139,9 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     /**
      * The column <code>oagi.agency_id_list_value.last_updated_by</code>.
      * Foreign key to the APP_USER table. It identifies the user who last
-     * updated the agency ID list value.
+     * updated the code list.
      */
-    public final TableField<AgencyIdListValueRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list value.");
+    public final TableField<AgencyIdListValueRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
 
     /**
      * The column <code>oagi.agency_id_list_value.creation_timestamp</code>.

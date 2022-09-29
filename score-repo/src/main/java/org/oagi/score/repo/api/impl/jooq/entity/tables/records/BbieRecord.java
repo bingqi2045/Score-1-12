@@ -110,24 +110,16 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
-     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
-     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
-     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
-     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
-     * in the BASED_BCC_ID.
+     * Setter for <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
+     * based on the FROM_ACC_ID in the BASED_BCC_ID.
      */
     public void setFromAbieId(String value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.from_abie_id</code>. A foreign key pointing to
-     * the ABIE table. FROM_ABIE_ID is basically  a parent data element (type)
-     * of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the
-     * BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC
-     * or USER_EXTENSION_GROUP ACC.FROM_ABIE_ID must be based on the FROM_ACC_ID
-     * in the BASED_BCC_ID.
+     * Getter for <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be
+     * based on the FROM_ACC_ID in the BASED_BCC_ID.
      */
     public String getFromAbieId() {
         return (String) get(5);
@@ -461,7 +453,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
     /**
      * Setter for <code>oagi.bbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the BBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(String value) {
         set(23, value);
@@ -469,7 +461,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
     /**
      * Getter for <code>oagi.bbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the BBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
     public String getLastUpdatedBy() {
         return (String) get(23);

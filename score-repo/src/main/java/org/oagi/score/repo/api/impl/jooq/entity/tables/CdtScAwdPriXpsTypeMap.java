@@ -69,9 +69,10 @@ public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri_xps_type_map.xbt_id</code>. Foreign
-     * key to the XBT table.
+     * key to the Xbt table. It identifies an XML schema built-in type that maps
+     * to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.
      */
-    public final TableField<CdtScAwdPriXpsTypeMapRecord, String> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.CHAR(36), this, "Foreign key to the XBT table.");
+    public final TableField<CdtScAwdPriXpsTypeMapRecord, String> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the Xbt table. It identifies an XML schema built-in type that maps to the CDT SC Allowed Primitive identified in the CDT_SC_AWD_PRI column.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri_xps_type_map.is_default</code>.

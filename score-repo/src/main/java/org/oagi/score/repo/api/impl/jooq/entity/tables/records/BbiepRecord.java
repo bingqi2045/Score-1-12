@@ -57,7 +57,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     /**
      * Setter for <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key
-     * pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP
+     * pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP
      * contextualizes.
      */
     public void setBasedBccpManifestId(String value) {
@@ -66,7 +66,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     /**
      * Getter for <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key
-     * pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP
+     * pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP
      * contextualizes.
      */
     public String getBasedBccpManifestId() {
@@ -193,7 +193,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     /**
      * Setter for <code>oagi.bbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIEP record.
+     * referring to the last user who has updated the BBIEP record. 
      */
     public void setLastUpdatedBy(String value) {
         set(9, value);
@@ -201,7 +201,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     /**
      * Getter for <code>oagi.bbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIEP record.
+     * referring to the last user who has updated the BBIEP record. 
      */
     public String getLastUpdatedBy() {
         return (String) get(9);

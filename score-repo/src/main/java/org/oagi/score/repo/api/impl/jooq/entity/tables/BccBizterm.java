@@ -53,16 +53,16 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.bcc_bizterm.bcc_bizterm_id</code>. Primary,
-     * internal database key.
+     * The column <code>oagi.bcc_bizterm.bcc_bizterm_id</code>. An internal,
+     * primary database key of an bcc_bizterm record.
      */
-    public final TableField<BccBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
+    public final TableField<BccBiztermRecord, String> BCC_BIZTERM_ID = createField(DSL.name("bcc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal, primary database key of an bcc_bizterm record.");
 
     /**
      * The column <code>oagi.bcc_bizterm.business_term_id</code>. An internal ID
-     * of the associated business term.
+     * of the associated business term
      */
-    public final TableField<BccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated business term.");
+    public final TableField<BccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated business term");
 
     /**
      * The column <code>oagi.bcc_bizterm.bcc_id</code>. An internal ID of the
@@ -72,17 +72,17 @@ public class BccBizterm extends TableImpl<BccBiztermRecord> {
 
     /**
      * The column <code>oagi.bcc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the BCC_BIZTERM record. The creator of
-     * the BCC_BIZTERM is also its owner by default.
+     * referring to the user who creates the bcc_bizterm record. The creator of
+     * the bcc_bizterm is also its owner by default.
      */
-    public final TableField<BccBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the BCC_BIZTERM record. The creator of the BCC_BIZTERM is also its owner by default.");
+    public final TableField<BccBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the bcc_bizterm record. The creator of the bcc_bizterm is also its owner by default.");
 
     /**
      * The column <code>oagi.bcc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BCC_BIZTERM record. This
+     * referring to the last user who has updated the bcc_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<BccBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BCC_BIZTERM record. This may be the user who is in the same group as the creator.");
+    public final TableField<BccBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the bcc_bizterm record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.bcc_bizterm.creation_timestamp</code>. Timestamp

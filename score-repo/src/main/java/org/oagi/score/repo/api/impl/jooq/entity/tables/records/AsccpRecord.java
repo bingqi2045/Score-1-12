@@ -182,7 +182,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
     public void setOwnerUserId(String value) {
         set(9, value);
@@ -194,7 +194,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
     public String getOwnerUserId() {
         return (String) get(9);
@@ -292,7 +292,10 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * Namespace table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public void setNamespaceId(String value) {
         set(14, value);
@@ -300,7 +303,10 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Getter for <code>oagi.asccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * Namespace table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public String getNamespaceId() {
         return (String) get(14);

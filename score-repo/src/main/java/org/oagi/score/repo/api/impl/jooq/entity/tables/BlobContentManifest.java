@@ -63,10 +63,9 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     public final TableField<BlobContentManifestRecord, String> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>oagi.blob_content_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * The column <code>oagi.blob_content_manifest.release_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<BlobContentManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.conflict</code>. This

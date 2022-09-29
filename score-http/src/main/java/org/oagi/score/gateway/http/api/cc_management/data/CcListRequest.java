@@ -21,8 +21,7 @@ public class CcListRequest {
     private String den;
     private String definition;
     private String module;
-    private List<OagisComponentType> componentTypes = Collections.emptyList();
-    private List<String> ccTagIds = Collections.emptyList();
+    private String componentTypes;
     private List<String> excludes = Collections.emptyList();
     private Boolean isBIEUsable;
     private Boolean commonlyUsed;
@@ -38,12 +37,5 @@ public class CcListRequest {
             return dtTypes;
         }
         return Collections.emptyList();
-    }
-
-    public List<String> getCcTagIds() {
-        if (this.ccTagIds == null || this.ccTagIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return new ArrayList(new HashSet(this.ccTagIds));
     }
 }

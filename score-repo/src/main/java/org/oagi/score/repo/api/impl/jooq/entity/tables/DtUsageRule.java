@@ -63,22 +63,22 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     /**
      * The column <code>oagi.dt_usage_rule.assigned_usage_rule_id</code>.
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
-     * a BIE.
+     * the DT content component or DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
+    public final TableField<DtUsageRuleRecord, String> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
+     * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
-    public final TableField<DtUsageRuleRecord, String> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.CHAR(36), this, "Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
 
     /**
-     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
+     * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, String> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.CHAR(36), this, "Foreign key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
+    public final TableField<DtUsageRuleRecord, String> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.CHAR(36), this, "Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
 
     private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased) {
         this(alias, aliased, null);

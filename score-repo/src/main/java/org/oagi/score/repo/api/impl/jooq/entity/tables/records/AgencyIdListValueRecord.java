@@ -200,8 +200,7 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
 
     /**
      * Setter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key
-     * to the APP_USER table. It indicates the user who created the agency ID
-     * list value.
+     * to the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(String value) {
         set(10, value);
@@ -209,8 +208,7 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
 
     /**
      * Getter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key
-     * to the APP_USER table. It indicates the user who created the agency ID
-     * list value.
+     * to the APP_USER table. It indicates the user who created the code list.
      */
     public String getCreatedBy() {
         return (String) get(10);
@@ -245,7 +243,7 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
     /**
      * Setter for <code>oagi.agency_id_list_value.last_updated_by</code>.
      * Foreign key to the APP_USER table. It identifies the user who last
-     * updated the agency ID list value.
+     * updated the code list.
      */
     public void setLastUpdatedBy(String value) {
         set(12, value);
@@ -254,7 +252,7 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
     /**
      * Getter for <code>oagi.agency_id_list_value.last_updated_by</code>.
      * Foreign key to the APP_USER table. It identifies the user who last
-     * updated the agency ID list value.
+     * updated the code list.
      */
     public String getLastUpdatedBy() {
         return (String) get(12);

@@ -90,10 +90,12 @@ public class Module extends TableImpl<ModuleRecord> {
     public final TableField<ModuleRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.");
 
     /**
-     * The column <code>oagi.module.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * The column <code>oagi.module.namespace_id</code>. Note that a release
+     * record has a namespace associated. The NAMESPACE_ID, if specified here,
+     * overrides the release's namespace. However, the NAMESPACE_ID associated
+     * with the component takes the highest precedence.
      */
-    public final TableField<ModuleRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
+    public final TableField<ModuleRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Note that a release record has a namespace associated. The NAMESPACE_ID, if specified here, overrides the release's namespace. However, the NAMESPACE_ID associated with the component takes the highest precedence.");
 
     /**
      * The column <code>oagi.module.version_num</code>. This is the version

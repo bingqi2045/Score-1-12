@@ -37,16 +37,14 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
     }
 
     /**
-     * Setter for <code>oagi.biz_ctx_assignment.biz_ctx_id</code>. Foreign key
-     * to the biz_ctx table.
+     * Setter for <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
      */
     public void setBizCtxId(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.biz_ctx_assignment.biz_ctx_id</code>. Foreign key
-     * to the biz_ctx table.
+     * Getter for <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
      */
     public String getBizCtxId() {
         return (String) get(1);

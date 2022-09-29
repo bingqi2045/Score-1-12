@@ -57,10 +57,9 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>. Foreign key
-     * to the biz_ctx table.
+     * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
      */
-    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the biz_ctx table.");
+    public final TableField<BizCtxAssignmentRecord, String> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This
@@ -113,15 +112,26 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     @Override
     public List<UniqueKey<BizCtxAssignmentRecord>> getUniqueKeys() {
-        return Arrays.asList(Keys.KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK);
+        return Arrays.asList(Keys.KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK1);
     }
 
     @Override
     public List<ForeignKey<BizCtxAssignmentRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
+        return Arrays.asList(Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
+    private transient BizCtx _bizCtx;
     private transient TopLevelAsbiep _topLevelAsbiep;
+
+    /**
+     * Get the implicit join path to the <code>oagi.biz_ctx</code> table.
+     */
+    public BizCtx bizCtx() {
+        if (_bizCtx == null)
+            _bizCtx = new BizCtx(this, Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK);
+
+        return _bizCtx;
+    }
 
     /**
      * Get the implicit join path to the <code>oagi.top_level_asbiep</code>

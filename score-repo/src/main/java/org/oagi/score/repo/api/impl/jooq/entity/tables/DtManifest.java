@@ -57,10 +57,9 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     public final TableField<DtManifestRecord, String> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.dt_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * The column <code>oagi.dt_manifest.release_id</code>.
      */
-    public final TableField<DtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<DtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_manifest.dt_id</code>.

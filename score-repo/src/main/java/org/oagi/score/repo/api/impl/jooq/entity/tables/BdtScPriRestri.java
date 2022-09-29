@@ -72,29 +72,33 @@ public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.bdt_sc_id</code>. Foreign key to
-     * the DT table. It shall point to only DT that is a BDT (not a CDT).
+     * the DT_SC table. This column should only refers to a DT_SC that belongs
+     * to a BDT (not CDT).
      */
-    public final TableField<BdtScPriRestriRecord, String> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
+    public final TableField<BdtScPriRestriRecord, String> BDT_SC_ID = createField(DSL.name("bdt_sc_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the DT_SC table. This column should only refers to a DT_SC that belongs to a BDT (not CDT).");
 
     /**
      * The column
-     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.
+     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>. This
+     * column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It
+     * allows for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
-    public final TableField<BdtScPriRestriRecord, String> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.");
+    public final TableField<BdtScPriRestriRecord, String> CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_sc_awd_pri_xps_type_map_id"), SQLDataType.CHAR(36), this, "This column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It allows for a primitive restriction based on a built-in type of schema expressions.");
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.code_list_id</code>. Foreign key
-     * to the CODE_LIST table.
+     * to identify a code list. It allows for a primitive restriction based on a
+     * code list.
      */
-    public final TableField<BdtScPriRestriRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to the CODE_LIST table.");
+    public final TableField<BdtScPriRestriRecord, String> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.CHAR(36), this, "Foreign key to identify a code list. It allows for a primitive restriction based on a code list.");
 
     /**
-     * The column <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. This is
-     * a foreign key to the AGENCY_ID_LIST table. It is used in the case that
-     * the BDT content can be restricted to an agency identification.
+     * The column <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. Foreign
+     * key to identify an agency identification list. It allows for a primitive
+     * restriction based on such list of values.
      */
-    public final TableField<BdtScPriRestriRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
+    public final TableField<BdtScPriRestriRecord, String> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.CHAR(36), this, "Foreign key to identify an agency identification list. It allows for a primitive restriction based on such list of values.");
 
     /**
      * The column <code>oagi.bdt_sc_pri_restri.is_default</code>. This column

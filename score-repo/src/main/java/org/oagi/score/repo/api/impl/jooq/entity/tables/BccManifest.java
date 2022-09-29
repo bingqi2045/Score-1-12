@@ -57,10 +57,9 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     public final TableField<BccManifestRecord, String> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.bcc_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * The column <code>oagi.bcc_manifest.release_id</code>.
      */
-    public final TableField<BccManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36), this, "Foreign key to the RELEASE table.");
+    public final TableField<BccManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36), this, "");
 
     /**
      * The column <code>oagi.bcc_manifest.bcc_id</code>.

@@ -126,10 +126,9 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     /**
      * The column <code>oagi.code_list_value.created_by</code>. Foreign key to
-     * the APP_USER table. It indicates the user who created the code list
-     * value.
+     * the APP_USER table. It indicates the user who created the code list.
      */
-    public final TableField<CodeListValueRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list value.");
+    public final TableField<CodeListValueRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
 
     /**
      * The column <code>oagi.code_list_value.owner_user_id</code>. Foreign key
@@ -144,9 +143,9 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     /**
      * The column <code>oagi.code_list_value.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the code
-     * list value.
+     * list.
      */
-    public final TableField<CodeListValueRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list value.");
+    public final TableField<CodeListValueRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
 
     /**
      * The column <code>oagi.code_list_value.creation_timestamp</code>.

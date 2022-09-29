@@ -15,6 +15,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
@@ -49,6 +50,7 @@ public class Indexes {
     public static final Index ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("ascc_last_update_timestamp_desc_idx"), Ascc.ASCC, new OrderField[] { Ascc.ASCC.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index ASCCP_ASCCP_GUID_IDX = Internal.createIndex(DSL.name("asccp_guid_idx"), Asccp.ASCCP, new OrderField[] { Asccp.ASCCP.GUID }, false);
     public static final Index ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("asccp_last_update_timestamp_desc_idx"), Asccp.ASCCP, new OrderField[] { Asccp.ASCCP.LAST_UPDATE_TIMESTAMP }, false);
+    public static final Index BBIE_BIZTERM_BBIE_BIZTERM_ASBIE_ID_FK = Internal.createIndex(DSL.name("bbie_bizterm_asbie_id_fk"), BbieBizterm.BBIE_BIZTERM, new OrderField[] { BbieBizterm.BBIE_BIZTERM.BBIE_ID }, false);
     public static final Index BBIE_BBIE_HASH_PATH_K = Internal.createIndex(DSL.name("bbie_hash_path_k"), Bbie.BBIE, new OrderField[] { Bbie.BBIE.HASH_PATH }, false);
     public static final Index BBIE_BBIE_PATH_K = Internal.createIndex(DSL.name("bbie_path_k"), Bbie.BBIE, new OrderField[] { Bbie.BBIE.PATH }, false);
     public static final Index BBIE_SC_BBIE_SC_HASH_PATH_K = Internal.createIndex(DSL.name("bbie_sc_hash_path_k"), BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.HASH_PATH }, false);

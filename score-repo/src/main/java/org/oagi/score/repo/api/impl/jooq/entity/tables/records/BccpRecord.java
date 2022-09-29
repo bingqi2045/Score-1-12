@@ -157,7 +157,10 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Setter for <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public void setNamespaceId(String value) {
         set(8, value);
@@ -165,7 +168,10 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Getter for <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public String getNamespaceId() {
         return (String) get(8);
@@ -207,10 +213,11 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Setter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity.
+     * table referring to the user who creates the entity. 
      * 
-     * This column never change between the history and the current record. The
-     * history record should have the same value as that of its current record.
+     * This column never change between the history and the current record for a
+     * given revision. The history record should have the same value as that of
+     * its current record.
      */
     public void setCreatedBy(String value) {
         set(11, value);
@@ -218,10 +225,11 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
 
     /**
      * Getter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity.
+     * table referring to the user who creates the entity. 
      * 
-     * This column never change between the history and the current record. The
-     * history record should have the same value as that of its current record.
+     * This column never change between the history and the current record for a
+     * given revision. The history record should have the same value as that of
+     * its current record.
      */
     public String getCreatedBy() {
         return (String) get(11);

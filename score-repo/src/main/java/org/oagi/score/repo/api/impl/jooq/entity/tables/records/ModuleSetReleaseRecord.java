@@ -55,16 +55,16 @@ public class ModuleSetReleaseRecord extends UpdatableRecordImpl<ModuleSetRelease
     }
 
     /**
-     * Setter for <code>oagi.module_set_release.release_id</code>. Foreign key
-     * to the RELEASE table.
+     * Setter for <code>oagi.module_set_release.release_id</code>. A foreign key
+     * of the release.
      */
     public void setReleaseId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.module_set_release.release_id</code>. Foreign key
-     * to the RELEASE table.
+     * Getter for <code>oagi.module_set_release.release_id</code>. A foreign key
+     * of the release.
      */
     public String getReleaseId() {
         return (String) get(2);

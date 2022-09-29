@@ -68,10 +68,10 @@ public class Bbiep extends TableImpl<BbiepRecord> {
 
     /**
      * The column <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key
-     * pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP
+     * pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP
      * contextualizes.
      */
-    public final TableField<BbiepRecord, String> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, on which the BBIEP contextualizes.");
+    public final TableField<BbiepRecord, String> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.");
 
     /**
      * The column <code>oagi.bbiep.path</code>.
@@ -122,9 +122,9 @@ public class Bbiep extends TableImpl<BbiepRecord> {
 
     /**
      * The column <code>oagi.bbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIEP record.
+     * referring to the last user who has updated the BBIEP record. 
      */
-    public final TableField<BbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BBIEP record.");
+    public final TableField<BbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the BBIEP record. ");
 
     /**
      * The column <code>oagi.bbiep.creation_timestamp</code>. Timestamp when the

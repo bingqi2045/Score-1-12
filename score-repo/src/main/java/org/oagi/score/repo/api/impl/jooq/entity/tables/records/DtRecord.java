@@ -200,7 +200,10 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
     /**
      * Setter for <code>oagi.dt.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public void setNamespaceId(String value) {
         set(10, value);
@@ -208,7 +211,10 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
     /**
      * Getter for <code>oagi.dt.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public String getNamespaceId() {
         return (String) get(10);
@@ -311,10 +317,9 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     /**
      * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.
-     * 
-     * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * the entity, and who can transfer the ownership to another user.\n\nThe
+     * ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership. 
      */
     public void setOwnerUserId(String value) {
         set(16, value);
@@ -323,10 +328,9 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     /**
      * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.
-     * 
-     * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * the entity, and who can transfer the ownership to another user.\n\nThe
+     * ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership. 
      */
     public String getOwnerUserId() {
         return (String) get(16);

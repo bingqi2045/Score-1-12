@@ -59,9 +59,8 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.release_id</code>.
-     * Foreign key to the RELEASE table.
      */
-    public final TableField<AgencyIdListValueManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<AgencyIdListValueManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column

@@ -53,16 +53,16 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. Primary,
-     * internal database key.
+     * The column <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. An internal,
+     * primary database key of an Business term.
      */
-    public final TableField<AsccBiztermRecord, String> ASCC_BIZTERM_ID = createField(DSL.name("ascc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
+    public final TableField<AsccBiztermRecord, String> ASCC_BIZTERM_ID = createField(DSL.name("ascc_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal, primary database key of an Business term.");
 
     /**
      * The column <code>oagi.ascc_bizterm.business_term_id</code>. An internal
-     * ID of the associated business term.
+     * ID of the associated business term
      */
-    public final TableField<AsccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated business term.");
+    public final TableField<AsccBiztermRecord, String> BUSINESS_TERM_ID = createField(DSL.name("business_term_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal ID of the associated business term");
 
     /**
      * The column <code>oagi.ascc_bizterm.ascc_id</code>. An internal ID of the
@@ -72,17 +72,17 @@ public class AsccBizterm extends TableImpl<AsccBiztermRecord> {
 
     /**
      * The column <code>oagi.ascc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASCC_BIZTERM record. The creator of
-     * the ASCC_BIZTERM is also its owner by default.
+     * referring to the user who creates the ascc_bizterm record. The creator of
+     * the ascc_bizterm is also its owner by default.
      */
-    public final TableField<AsccBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ASCC_BIZTERM record. The creator of the ASCC_BIZTERM is also its owner by default.");
+    public final TableField<AsccBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ascc_bizterm record. The creator of the ascc_bizterm is also its owner by default.");
 
     /**
      * The column <code>oagi.ascc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASCC_BIZTERM record. This
+     * referring to the last user who has updated the ascc_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<AsccBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASCC_BIZTERM record. This may be the user who is in the same group as the creator.");
+    public final TableField<AsccBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ascc_bizterm record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.ascc_bizterm.creation_timestamp</code>. Timestamp

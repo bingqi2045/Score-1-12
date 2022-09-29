@@ -82,7 +82,8 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
 
     /**
      * Setter for
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
+     * usage rule which the expression represents
      */
     public void setRepresentedUsageRuleId(String value) {
         set(3, value);
@@ -90,7 +91,8 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
 
     /**
      * Getter for
-     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>.
+     * <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The
+     * usage rule which the expression represents
      */
     public String getRepresentedUsageRuleId() {
         return (String) get(3);

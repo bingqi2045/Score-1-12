@@ -106,9 +106,12 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     /**
      * The column <code>oagi.bccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
-    public final TableField<BccpRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
+    public final TableField<BccpRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
 
     /**
      * The column <code>oagi.bccp.is_deprecated</code>. Indicates whether the CC
@@ -125,12 +128,13 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     /**
      * The column <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity.
+     * table referring to the user who creates the entity. 
      * 
-     * This column never change between the history and the current record. The
-     * history record should have the same value as that of its current record.
+     * This column never change between the history and the current record for a
+     * given revision. The history record should have the same value as that of
+     * its current record.
      */
-    public final TableField<BccpRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record. The history record should have the same value as that of its current record.");
+    public final TableField<BccpRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.bccp.owner_user_id</code>. Foreign key to the

@@ -24,16 +24,16 @@ public class BusinessTermRecord extends UpdatableRecordImpl<BusinessTermRecord> 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.business_term.business_term_id</code>. Primary,
-     * internal database key.
+     * Setter for <code>oagi.business_term.business_term_id</code>. A internal,
+     * primary database key of an Business term.
      */
     public void setBusinessTermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.business_term.business_term_id</code>. Primary,
-     * internal database key.
+     * Getter for <code>oagi.business_term.business_term_id</code>. A internal,
+     * primary database key of an Business term.
      */
     public String getBusinessTermId() {
         return (String) get(0);

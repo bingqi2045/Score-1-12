@@ -98,9 +98,9 @@ public class Ascc extends TableImpl<AsccRecord> {
     /**
      * The column <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign
      * key to an ASCCP table record. It is basically pointing to a child data
-     * element of the FROM_ACC_ID.
+     * element of the FROM_ACC_ID. 
      */
-    public final TableField<AsccRecord, String> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.");
+    public final TableField<AsccRecord, String> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), SQLDataType.CHAR(36).nullable(false), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. ");
 
     /**
      * The column <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the
@@ -156,9 +156,9 @@ public class Ascc extends TableImpl<AsccRecord> {
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
-    public final TableField<AsccRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<AsccRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
 
     /**
      * The column <code>oagi.ascc.last_updated_by</code>. A foreign key to the

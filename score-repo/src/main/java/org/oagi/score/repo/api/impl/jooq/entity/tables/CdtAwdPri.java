@@ -65,10 +65,11 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
     public final TableField<CdtAwdPriRecord, String> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
 
     /**
-     * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key to the
-     * CDT_PRI table.
+     * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the
+     * CDT_PRI table. It indicates the primative allowed for the CDT identified
+     * in the CDT_ID column. 
      */
-    public final TableField<CdtAwdPriRecord, String> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the CDT_PRI table.");
+    public final TableField<CdtAwdPriRecord, String> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. ");
 
     /**
      * The column <code>oagi.cdt_awd_pri.is_default</code>. Indicating a default

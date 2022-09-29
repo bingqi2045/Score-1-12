@@ -24,16 +24,16 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. Primary,
-     * internal database key.
+     * Setter for <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. An internal,
+     * primary database key of an Business term.
      */
     public void setAsccBiztermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. Primary,
-     * internal database key.
+     * Getter for <code>oagi.ascc_bizterm.ascc_bizterm_id</code>. An internal,
+     * primary database key of an Business term.
      */
     public String getAsccBiztermId() {
         return (String) get(0);
@@ -41,7 +41,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Setter for <code>oagi.ascc_bizterm.business_term_id</code>. An internal
-     * ID of the associated business term.
+     * ID of the associated business term
      */
     public void setBusinessTermId(String value) {
         set(1, value);
@@ -49,7 +49,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Getter for <code>oagi.ascc_bizterm.business_term_id</code>. An internal
-     * ID of the associated business term.
+     * ID of the associated business term
      */
     public String getBusinessTermId() {
         return (String) get(1);
@@ -73,8 +73,8 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Setter for <code>oagi.ascc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASCC_BIZTERM record. The creator of
-     * the ASCC_BIZTERM is also its owner by default.
+     * referring to the user who creates the ascc_bizterm record. The creator of
+     * the ascc_bizterm is also its owner by default.
      */
     public void setCreatedBy(String value) {
         set(3, value);
@@ -82,8 +82,8 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Getter for <code>oagi.ascc_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASCC_BIZTERM record. The creator of
-     * the ASCC_BIZTERM is also its owner by default.
+     * referring to the user who creates the ascc_bizterm record. The creator of
+     * the ascc_bizterm is also its owner by default.
      */
     public String getCreatedBy() {
         return (String) get(3);
@@ -91,7 +91,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Setter for <code>oagi.ascc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASCC_BIZTERM record. This
+     * referring to the last user who has updated the ascc_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public void setLastUpdatedBy(String value) {
@@ -100,7 +100,7 @@ public class AsccBiztermRecord extends UpdatableRecordImpl<AsccBiztermRecord> im
 
     /**
      * Getter for <code>oagi.ascc_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASCC_BIZTERM record. This
+     * referring to the last user who has updated the ascc_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public String getLastUpdatedBy() {

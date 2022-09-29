@@ -57,16 +57,14 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     public final TableField<XbtManifestRecord, String> XBT_MANIFEST_ID = createField(DSL.name("xbt_manifest_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.xbt_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * The column <code>oagi.xbt_manifest.release_id</code>.
      */
-    public final TableField<XbtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<XbtManifestRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
-     * The column <code>oagi.xbt_manifest.xbt_id</code>. Foreign key to the XBT
-     * table.
+     * The column <code>oagi.xbt_manifest.xbt_id</code>.
      */
-    public final TableField<XbtManifestRecord, String> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the XBT table.");
+    public final TableField<XbtManifestRecord, String> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.CHAR(36).nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt_manifest.conflict</code>. This indicates that

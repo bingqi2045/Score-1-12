@@ -64,10 +64,10 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     public final TableField<ModuleSetReleaseRecord, String> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the module set.");
 
     /**
-     * The column <code>oagi.module_set_release.release_id</code>. Foreign key
-     * to the RELEASE table.
+     * The column <code>oagi.module_set_release.release_id</code>. A foreign key
+     * of the release.
      */
-    public final TableField<ModuleSetReleaseRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the RELEASE table.");
+    public final TableField<ModuleSetReleaseRecord, String> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key of the release.");
 
     /**
      * The column <code>oagi.module_set_release.name</code>. This is the name of

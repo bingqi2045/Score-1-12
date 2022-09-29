@@ -52,7 +52,8 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Setter for <code>oagi.bdt_sc_pri_restri.bdt_sc_id</code>. Foreign key to
-     * the DT table. It shall point to only DT that is a BDT (not a CDT).
+     * the DT_SC table. This column should only refers to a DT_SC that belongs
+     * to a BDT (not CDT).
      */
     public void setBdtScId(String value) {
         set(1, value);
@@ -60,7 +61,8 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Getter for <code>oagi.bdt_sc_pri_restri.bdt_sc_id</code>. Foreign key to
-     * the DT table. It shall point to only DT that is a BDT (not a CDT).
+     * the DT_SC table. This column should only refers to a DT_SC that belongs
+     * to a BDT (not CDT).
      */
     public String getBdtScId() {
         return (String) get(1);
@@ -68,8 +70,10 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Setter for
-     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.
+     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>. This
+     * column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It
+     * allows for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
     public void setCdtScAwdPriXpsTypeMapId(String value) {
         set(2, value);
@@ -77,8 +81,10 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Getter for
-     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>.
-     * Foreign key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table.
+     * <code>oagi.bdt_sc_pri_restri.cdt_sc_awd_pri_xps_type_map_id</code>. This
+     * column is a forieng key to the CDT_SC_AWD_PRI_XPS_TYPE_MAP table. It
+     * allows for a primitive restriction based on a built-in type of schema
+     * expressions.
      */
     public String getCdtScAwdPriXpsTypeMapId() {
         return (String) get(2);
@@ -86,7 +92,8 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Setter for <code>oagi.bdt_sc_pri_restri.code_list_id</code>. Foreign key
-     * to the CODE_LIST table.
+     * to identify a code list. It allows for a primitive restriction based on a
+     * code list.
      */
     public void setCodeListId(String value) {
         set(3, value);
@@ -94,25 +101,26 @@ public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriReco
 
     /**
      * Getter for <code>oagi.bdt_sc_pri_restri.code_list_id</code>. Foreign key
-     * to the CODE_LIST table.
+     * to identify a code list. It allows for a primitive restriction based on a
+     * code list.
      */
     public String getCodeListId() {
         return (String) get(3);
     }
 
     /**
-     * Setter for <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. This is
-     * a foreign key to the AGENCY_ID_LIST table. It is used in the case that
-     * the BDT content can be restricted to an agency identification.
+     * Setter for <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. Foreign
+     * key to identify an agency identification list. It allows for a primitive
+     * restriction based on such list of values.
      */
     public void setAgencyIdListId(String value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. This is
-     * a foreign key to the AGENCY_ID_LIST table. It is used in the case that
-     * the BDT content can be restricted to an agency identification.
+     * Getter for <code>oagi.bdt_sc_pri_restri.agency_id_list_id</code>. Foreign
+     * key to identify an agency identification list. It allows for a primitive
+     * restriction based on such list of values.
      */
     public String getAgencyIdListId() {
         return (String) get(4);

@@ -53,10 +53,10 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
     }
 
     /**
-     * The column <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * The column <code>oagi.asbie_bizterm.asbie_bizterm_id</code>. An internal,
+     * primary database key of an asbie_bizterm record.
      */
-    public final TableField<AsbieBiztermRecord, String> ASBIE_BIZTERM_ID = createField(DSL.name("asbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "Primary, internal database key.");
+    public final TableField<AsbieBiztermRecord, String> ASBIE_BIZTERM_ID = createField(DSL.name("asbie_bizterm_id"), SQLDataType.CHAR(36).nullable(false), this, "An internal, primary database key of an asbie_bizterm record.");
 
     /**
      * The column <code>oagi.asbie_bizterm.ascc_bizterm_id</code>. An internal
@@ -84,17 +84,17 @@ public class AsbieBizterm extends TableImpl<AsbieBiztermRecord> {
 
     /**
      * The column <code>oagi.asbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the ASBIE_BIZTERM record. The creator
-     * of the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the asbie_bizterm record. The creator
+     * of the asbie_bizterm is also its owner by default.
      */
-    public final TableField<AsbieBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the ASBIE_BIZTERM record. The creator of the ASBIE_BIZTERM is also its owner by default.");
+    public final TableField<AsbieBiztermRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who creates the asbie_bizterm record. The creator of the asbie_bizterm is also its owner by default.");
 
     /**
      * The column <code>oagi.asbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIE_BIZTERM record. This
+     * referring to the last user who has updated the asbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
-    public final TableField<AsbieBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASBIE_BIZTERM record. This may be the user who is in the same group as the creator.");
+    public final TableField<AsbieBiztermRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the asbie_bizterm record. This may be the user who is in the same group as the creator.");
 
     /**
      * The column <code>oagi.asbie_bizterm.creation_timestamp</code>. Timestamp

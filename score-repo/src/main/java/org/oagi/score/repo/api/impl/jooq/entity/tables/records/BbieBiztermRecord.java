@@ -24,16 +24,16 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * Setter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
+     * primary database key of an bbie_bizterm record.
      */
     public void setBbieBiztermId(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. Primary,
-     * internal database key.
+     * Getter for <code>oagi.bbie_bizterm.bbie_bizterm_id</code>. An internal,
+     * primary database key of an bbie_bizterm record.
      */
     public String getBbieBiztermId() {
         return (String) get(0);
@@ -41,7 +41,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Setter for <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bcc_business_term record.
+     * of the bbie_bizterm record.
      */
     public void setBccBiztermId(String value) {
         set(1, value);
@@ -49,7 +49,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Getter for <code>oagi.bbie_bizterm.bcc_bizterm_id</code>. An internal ID
-     * of the bcc_business_term record.
+     * of the bbie_bizterm record.
      */
     public String getBccBiztermId() {
         return (String) get(1);
@@ -105,8 +105,8 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Setter for <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the BBIE_BIZTERM record. The creator of
-     * the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the bbie_bizterm record. The creator of
+     * the asbie_bizterm is also its owner by default.
      */
     public void setCreatedBy(String value) {
         set(5, value);
@@ -114,8 +114,8 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Getter for <code>oagi.bbie_bizterm.created_by</code>. A foreign key
-     * referring to the user who creates the BBIE_BIZTERM record. The creator of
-     * the ASBIE_BIZTERM is also its owner by default.
+     * referring to the user who creates the bbie_bizterm record. The creator of
+     * the asbie_bizterm is also its owner by default.
      */
     public String getCreatedBy() {
         return (String) get(5);
@@ -123,7 +123,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Setter for <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIE_BIZTERM record. This
+     * referring to the last user who has updated the bbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public void setLastUpdatedBy(String value) {
@@ -132,7 +132,7 @@ public class BbieBiztermRecord extends UpdatableRecordImpl<BbieBiztermRecord> im
 
     /**
      * Getter for <code>oagi.bbie_bizterm.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the BBIE_BIZTERM record. This
+     * referring to the last user who has updated the bbie_bizterm record. This
      * may be the user who is in the same group as the creator.
      */
     public String getLastUpdatedBy() {

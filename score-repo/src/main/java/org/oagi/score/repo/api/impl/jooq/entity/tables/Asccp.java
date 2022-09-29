@@ -94,7 +94,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.role_of_acc_id</code>. The ACC from which
      * this ASCCP is created (ASCCP applies role to the ACC).
      */
-    public final TableField<AsccpRecord, String> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.CHAR(36).nullable(false), this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
+    public final TableField<AsccpRecord, String> ROLE_OF_ACC_ID = createField(DSL.name("role_of_acc_id"), SQLDataType.CHAR(36), this, "The ACC from which this ASCCP is created (ASCCP applies role to the ACC).");
 
     /**
      * The column <code>oagi.asccp.den</code>. The dictionary entry name of the
@@ -118,9 +118,9 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * the entity, and who can transfer the ownership to another user.
      * 
      * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * rollback the ownership. 
      */
-    public final TableField<AsccpRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+    public final TableField<AsccpRecord, String> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
 
     /**
      * The column <code>oagi.asccp.last_updated_by</code>. Foreign key to the
@@ -161,9 +161,12 @@ public class Asccp extends TableImpl<AsccpRecord> {
 
     /**
      * The column <code>oagi.asccp.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * Namespace table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
-    public final TableField<AsccpRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
+    public final TableField<AsccpRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the Namespace table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
 
     /**
      * The column <code>oagi.asccp.reusable_indicator</code>. This indicates

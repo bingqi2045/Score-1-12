@@ -39,16 +39,14 @@ public class CodeListValueManifestRecord extends UpdatableRecordImpl<CodeListVal
     }
 
     /**
-     * Setter for <code>oagi.code_list_value_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * Setter for <code>oagi.code_list_value_manifest.release_id</code>.
      */
     public void setReleaseId(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value_manifest.release_id</code>. Foreign
-     * key to the RELEASE table.
+     * Getter for <code>oagi.code_list_value_manifest.release_id</code>.
      */
     public String getReleaseId() {
         return (String) get(1);

@@ -72,9 +72,9 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
 
     /**
      * The column <code>oagi.biz_ctx.created_by</code>. Foreign key to the
-     * APP_USER table referring to the user who creates the entity.
+     * APP_USER table referring to the user who creates the entity. 
      */
-    public final TableField<BizCtxRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity.");
+    public final TableField<BizCtxRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. ");
 
     /**
      * The column <code>oagi.biz_ctx.last_updated_by</code>. Foreign key to the

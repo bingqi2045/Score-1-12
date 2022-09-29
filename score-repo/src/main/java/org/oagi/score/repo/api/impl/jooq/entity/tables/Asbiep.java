@@ -132,9 +132,9 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
 
     /**
      * The column <code>oagi.asbiep.last_updated_by</code>. A foreign key
-     * referring to the last user who has updated the ASBIEP record.
+     * referring to the last user who has updated the ASBIEP record. 
      */
-    public final TableField<AsbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record.");
+    public final TableField<AsbiepRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the last user who has updated the ASBIEP record. ");
 
     /**
      * The column <code>oagi.asbiep.creation_timestamp</code>. Timestamp when

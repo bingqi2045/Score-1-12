@@ -71,7 +71,6 @@ public class CcListController {
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
-            @RequestParam(name = "ccTagIds", required = false) String ccTagIds,
             @RequestParam(name = "dtTypes", required = false) String dtTypes,
             @RequestParam(name = "asccpTypes", required = false) String asccpTypes,
             @RequestParam(name = "excludes", required = false) String excludes,
@@ -119,23 +118,7 @@ public class CcListController {
         request.setDen(den);
         request.setDefinition(definition);
         request.setModule(module);
-
-        if (StringUtils.hasLength(componentTypes)) {
-            List<OagisComponentType> oagisComponentTypes = Arrays.asList(componentTypes.split(","))
-                    .stream()
-                    .map(e -> OagisComponentType.valueOf(Integer.parseInt(e)))
-                    .collect(Collectors.toList());
-
-            request.setComponentTypes(
-                    oagisComponentTypes.stream().filter(e -> !Arrays.asList(BOD, Noun, Verb).contains(e))
-                            .collect(Collectors.toList())
-            );
-        }
-
-        request.setCcTagIds(!StringUtils.hasLength(ccTagIds) ? Collections.emptyList() :
-                Arrays.asList(ccTagIds.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e))
-                        .collect(Collectors.toList()));
-
+        request.setComponentTypes(componentTypes);
         request.setDtTypes(!StringUtils.hasLength(dtTypes) ? Collections.emptyList() :
                 Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         if ((request.getTypes().isCdt() || request.getTypes().isBdt()) && request.getDtTypes().isEmpty()) {
@@ -148,7 +131,6 @@ public class CcListController {
             }
             request.setDtTypes(dtTypeList);
         }
-
         request.setAsccpTypes(!StringUtils.hasLength(asccpTypes) ? Collections.emptyList() :
                 Arrays.asList(asccpTypes.split(",")).stream().map(e -> e.trim()).filter(e -> StringUtils.hasLength(e)).collect(Collectors.toList()));
         request.setExcludes(!StringUtils.hasLength(excludes) ? Collections.emptyList() :
@@ -172,12 +154,6 @@ public class CcListController {
         request.setPageRequest(pageRequest);
 
         return service.getCcList(request);
-    }
-
-    @RequestMapping(value = "/core_component/tags", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CcTag> getTags() {
-        return service.getTags();
     }
 
     @RequestMapping(value = "/core_component/{type}/{manifestId}/transfer_ownership",

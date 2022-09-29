@@ -129,9 +129,12 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
     /**
      * The column <code>oagi.agency_id_list.namespace_id</code>. Foreign key to
-     * the NAMESPACE table.
+     * the NAMESPACE table. This is the namespace to which the entity belongs.
+     * This namespace column is primarily used in the case the component is a
+     * user's component because there is also a namespace assigned at the
+     * release level.
      */
-    public final TableField<AgencyIdListRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
+    public final TableField<AgencyIdListRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
 
     /**
      * The column <code>oagi.agency_id_list.created_by</code>. Foreign key to

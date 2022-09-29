@@ -153,9 +153,9 @@ public class Asbie extends TableImpl<AsbieRecord> {
 
     /**
      * The column <code>oagi.asbie.last_updated_by</code>. A foreign key
-     * referring to the user who has last updated the ASBIE record.
+     * referring to the user who has last updated the ASBIE record. 
      */
-    public final TableField<AsbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record.");
+    public final TableField<AsbieRecord, String> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.CHAR(36).nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record. ");
 
     /**
      * The column <code>oagi.asbie.creation_timestamp</code>. Timestamp when the

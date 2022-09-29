@@ -43,7 +43,7 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     /**
      * Setter for <code>oagi.dt_usage_rule.assigned_usage_rule_id</code>.
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
-     * a BIE.
+     * the DT content component or DT_SC.
      */
     public void setAssignedUsageRuleId(String value) {
         set(1, value);
@@ -52,14 +52,14 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     /**
      * Getter for <code>oagi.dt_usage_rule.assigned_usage_rule_id</code>.
      * Foreign key to the USAGE_RULE table indicating the usage rule assigned to
-     * a BIE.
+     * the DT content component or DT_SC.
      */
     public String getAssignedUsageRuleId() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
+     * Setter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
@@ -68,7 +68,7 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     /**
-     * Getter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreign key to
+     * Getter for <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to
      * the DT_ID for assigning a usage rule to the corresponding DT content
      * component.
      */
@@ -77,7 +77,7 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     /**
-     * Setter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
+     * Setter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
     public void setTargetDtScId(String value) {
@@ -85,7 +85,7 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     }
 
     /**
-     * Getter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreign key
+     * Getter for <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key
      * to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
     public String getTargetDtScId() {

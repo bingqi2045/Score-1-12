@@ -83,9 +83,13 @@ public class Release extends TableImpl<ReleaseRecord> {
 
     /**
      * The column <code>oagi.release.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. It identifies the namespace used with the release. It is
+     * particularly useful for a library that uses a single namespace such like
+     * the OAGIS 10.x. A library that uses multiple namespace but has a main
+     * namespace may also use this column as a specific namespace can be
+     * override at the module level.
      */
-    public final TableField<ReleaseRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table.");
+    public final TableField<ReleaseRecord, String> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.CHAR(36), this, "Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.");
 
     /**
      * The column <code>oagi.release.created_by</code>. Foreign key to the

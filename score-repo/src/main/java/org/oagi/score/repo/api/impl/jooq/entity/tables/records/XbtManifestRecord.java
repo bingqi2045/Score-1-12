@@ -37,32 +37,28 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
     }
 
     /**
-     * Setter for <code>oagi.xbt_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * Setter for <code>oagi.xbt_manifest.release_id</code>.
      */
     public void setReleaseId(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt_manifest.release_id</code>. Foreign key to the
-     * RELEASE table.
+     * Getter for <code>oagi.xbt_manifest.release_id</code>.
      */
     public String getReleaseId() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>oagi.xbt_manifest.xbt_id</code>. Foreign key to the XBT
-     * table.
+     * Setter for <code>oagi.xbt_manifest.xbt_id</code>.
      */
     public void setXbtId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt_manifest.xbt_id</code>. Foreign key to the XBT
-     * table.
+     * Getter for <code>oagi.xbt_manifest.xbt_id</code>.
      */
     public String getXbtId() {
         return (String) get(2);

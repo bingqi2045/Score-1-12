@@ -304,16 +304,6 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         .where(and(ACC_MANIFEST.RELEASE_ID.eq(workingReleaseId),
                                 (or(ACC_MANIFEST.PREV_ACC_MANIFEST_ID.isNotNull(),
                                         ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
-
-        dslContext.insertInto(ACC_MANIFEST_TAG,
-                        ACC_MANIFEST_TAG.ACC_MANIFEST_ID,
-                        ACC_MANIFEST_TAG.CC_TAG_ID)
-                .select(dslContext.select(
-                                ACC_MANIFEST.ACC_MANIFEST_ID,
-                                ACC_MANIFEST_TAG.CC_TAG_ID)
-                        .from(ACC_MANIFEST)
-                        .join(ACC_MANIFEST_TAG).on(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID.eq(ACC_MANIFEST_TAG.ACC_MANIFEST_ID))
-                        .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId))).execute();
     }
 
     private void copyDtManifestRecordsFromWorking(String releaseId, String workingReleaseId,
@@ -341,16 +331,6 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         .where(and(DT_MANIFEST.RELEASE_ID.eq(workingReleaseId),
                                 (or(DT_MANIFEST.PREV_DT_MANIFEST_ID.isNotNull(),
                                         DT_MANIFEST.DT_MANIFEST_ID.in(dtManifestIds)))))).execute();
-
-        dslContext.insertInto(DT_MANIFEST_TAG,
-                        DT_MANIFEST_TAG.DT_MANIFEST_ID,
-                        DT_MANIFEST_TAG.CC_TAG_ID)
-                .select(dslContext.select(
-                                DT_MANIFEST.DT_MANIFEST_ID,
-                                DT_MANIFEST_TAG.CC_TAG_ID)
-                        .from(DT_MANIFEST)
-                        .join(DT_MANIFEST_TAG).on(DT_MANIFEST.NEXT_DT_MANIFEST_ID.eq(DT_MANIFEST_TAG.DT_MANIFEST_ID))
-                        .where(DT_MANIFEST.RELEASE_ID.eq(releaseId))).execute();
     }
 
     private void copyAsccpManifestRecordsFromWorking(String releaseId, String workingReleaseId,
@@ -378,16 +358,6 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         .where(and(ASCCP_MANIFEST.RELEASE_ID.eq(workingReleaseId),
                                 (or(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID.isNotNull(),
                                         ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)))))).execute();
-
-        dslContext.insertInto(ASCCP_MANIFEST_TAG,
-                        ASCCP_MANIFEST_TAG.ASCCP_MANIFEST_ID,
-                        ASCCP_MANIFEST_TAG.CC_TAG_ID)
-                .select(dslContext.select(
-                                ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
-                                ASCCP_MANIFEST_TAG.CC_TAG_ID)
-                        .from(ASCCP_MANIFEST)
-                        .join(ASCCP_MANIFEST_TAG).on(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST_TAG.ASCCP_MANIFEST_ID))
-                        .where(ASCCP_MANIFEST.RELEASE_ID.eq(releaseId))).execute();
     }
 
     private void copyBccpManifestRecordsFromWorking(String releaseId, String workingReleaseId,
@@ -415,16 +385,6 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                         .where(and(BCCP_MANIFEST.RELEASE_ID.eq(workingReleaseId),
                                 (or(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID.isNotNull(),
                                         BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds)))))).execute();
-
-        dslContext.insertInto(BCCP_MANIFEST_TAG,
-                        BCCP_MANIFEST_TAG.BCCP_MANIFEST_ID,
-                        BCCP_MANIFEST_TAG.CC_TAG_ID)
-                .select(dslContext.select(
-                                BCCP_MANIFEST.BCCP_MANIFEST_ID,
-                                BCCP_MANIFEST_TAG.CC_TAG_ID)
-                        .from(BCCP_MANIFEST)
-                        .join(BCCP_MANIFEST_TAG).on(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST_TAG.BCCP_MANIFEST_ID))
-                        .where(BCCP_MANIFEST.RELEASE_ID.eq(releaseId))).execute();
     }
 
     private void copyAsccManifestRecordsFromWorking(String releaseId, String workingReleaseId,
@@ -1491,20 +1451,6 @@ public class ReleaseRepository implements ScoreRepository<Release, String> {
                     dslContext.deleteFrom(MODULE_XBT_MANIFEST).where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
                     dslContext.deleteFrom(MODULE_BLOB_CONTENT_MANIFEST).where(MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID.in(moduleSetReleases)).execute();
                 }
-
-                // Delete all tags
-                dslContext.query("delete {0} from {1} where {2}", ACC_MANIFEST_TAG,
-                        ACC_MANIFEST_TAG.join(ACC_MANIFEST).on(ACC_MANIFEST_TAG.ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)),
-                        ACC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId())).execute();
-                dslContext.query("delete {0} from {1} where {2}", ASCCP_MANIFEST_TAG,
-                        ASCCP_MANIFEST_TAG.join(ASCCP_MANIFEST).on(ASCCP_MANIFEST_TAG.ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)),
-                        ASCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId())).execute();
-                dslContext.query("delete {0} from {1} where {2}", BCCP_MANIFEST_TAG,
-                        BCCP_MANIFEST_TAG.join(BCCP_MANIFEST).on(BCCP_MANIFEST_TAG.BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID)),
-                        BCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId())).execute();
-                dslContext.query("delete {0} from {1} where {2}", DT_MANIFEST_TAG,
-                        DT_MANIFEST_TAG.join(DT_MANIFEST).on(DT_MANIFEST_TAG.DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID)),
-                        DT_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId())).execute();
 
                 dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.SEQ_KEY_ID)
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))

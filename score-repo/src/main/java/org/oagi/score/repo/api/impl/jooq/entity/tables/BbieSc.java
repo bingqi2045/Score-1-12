@@ -295,9 +295,10 @@ public class BbieSc extends TableImpl<BbieScRecord> {
 
     @Override
     public List<ForeignKey<BbieScRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_CREATED_BY_FK, Keys.BBIE_SC_LAST_UPDATED_BY_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
+        return Arrays.asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_CREATED_BY_FK, Keys.BBIE_SC_LAST_UPDATED_BY_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
+    private transient DtScManifest _dtScManifest;
     private transient Bbie _bbie;
     private transient BdtScPriRestri _bdtScPriRestri;
     private transient CodeList _codeList;
@@ -305,6 +306,16 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     private transient AppUser _bbieScCreatedByFk;
     private transient AppUser _bbieScLastUpdatedByFk;
     private transient TopLevelAsbiep _topLevelAsbiep;
+
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc_manifest</code> table.
+     */
+    public DtScManifest dtScManifest() {
+        if (_dtScManifest == null)
+            _dtScManifest = new DtScManifest(this, Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK);
+
+        return _dtScManifest;
+    }
 
     /**
      * Get the implicit join path to the <code>oagi.bbie</code> table.

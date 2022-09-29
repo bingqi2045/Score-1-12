@@ -81,7 +81,7 @@ public class Exception extends TableImpl<ExceptionRecord> {
      * APP_USER table. It indicates the user who is working on when the
      * exception occurs.
      */
-    public final TableField<ExceptionRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36).nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
+    public final TableField<ExceptionRecord, String> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.CHAR(36), this, "Foreign key to the APP_USER table. It indicates the user who is working on when the exception occurs.");
 
     /**
      * The column <code>oagi.exception.creation_timestamp</code>. Timestamp when

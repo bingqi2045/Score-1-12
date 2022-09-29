@@ -122,16 +122,20 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.module.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * Setter for <code>oagi.module.namespace_id</code>. Note that a release
+     * record has a namespace associated. The NAMESPACE_ID, if specified here,
+     * overrides the release's namespace. However, the NAMESPACE_ID associated
+     * with the component takes the highest precedence.
      */
     public void setNamespaceId(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.module.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * Getter for <code>oagi.module.namespace_id</code>. Note that a release
+     * record has a namespace associated. The NAMESPACE_ID, if specified here,
+     * overrides the release's namespace. However, the NAMESPACE_ID associated
+     * with the component takes the highest precedence.
      */
     public String getNamespaceId() {
         return (String) get(6);

@@ -217,7 +217,10 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Setter for <code>oagi.acc.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public void setNamespaceId(String value) {
         set(10, value);
@@ -225,7 +228,10 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Getter for <code>oagi.acc.namespace_id</code>. Foreign key to the
-     * NAMESPACE table.
+     * NAMESPACE table. This is the namespace to which the entity belongs. This
+     * namespace column is primarily used in the case the component is a user's
+     * component because there is also a namespace assigned at the release
+     * level.
      */
     public String getNamespaceId() {
         return (String) get(10);
@@ -233,11 +239,10 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Setter for <code>oagi.acc.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity.
-     * 
-     * This column never change between the history and the current record for a
-     * given revision. The history record should have the same value as that of
-     * its current record.
+     * table referring to the user who creates the entity.\n\nThis column never
+     * change between the history and the current record for a given revision.
+     * The history record should have the same value as that of its current
+     * record.
      */
     public void setCreatedBy(String value) {
         set(11, value);
@@ -245,11 +250,10 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Getter for <code>oagi.acc.created_by</code>. Foreign key to the APP_USER
-     * table referring to the user who creates the entity.
-     * 
-     * This column never change between the history and the current record for a
-     * given revision. The history record should have the same value as that of
-     * its current record.
+     * table referring to the user who creates the entity.\n\nThis column never
+     * change between the history and the current record for a given revision.
+     * The history record should have the same value as that of its current
+     * record.
      */
     public String getCreatedBy() {
         return (String) get(11);
@@ -258,10 +262,9 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     /**
      * Setter for <code>oagi.acc.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.
-     * 
-     * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * the entity, and who can transfer the ownership to another user.\n\nThe
+     * ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership. 
      */
     public void setOwnerUserId(String value) {
         set(12, value);
@@ -270,10 +273,9 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     /**
      * Getter for <code>oagi.acc.owner_user_id</code>. Foreign key to the
      * APP_USER table. This is the user who owns the entity, is allowed to edit
-     * the entity, and who can transfer the ownership to another user.
-     * 
-     * The ownership can change throughout the history, but undoing shouldn't
-     * rollback the ownership.
+     * the entity, and who can transfer the ownership to another user.\n\nThe
+     * ownership can change throughout the history, but undoing shouldn't
+     * rollback the ownership. 
      */
     public String getOwnerUserId() {
         return (String) get(12);
@@ -281,9 +283,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Setter for <code>oagi.acc.last_updated_by</code>. Foreign key to the
-     * APP_USER table referring to the last user who updated the record. 
-     * 
-     * In the history record, this should always be the user who is editing the
+     * APP_USER table referring to the last user who updated the record. \n\nIn
+     * the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(String value) {
@@ -292,9 +293,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Getter for <code>oagi.acc.last_updated_by</code>. Foreign key to the
-     * APP_USER table referring to the last user who updated the record. 
-     * 
-     * In the history record, this should always be the user who is editing the
+     * APP_USER table referring to the last user who updated the record. \n\nIn
+     * the history record, this should always be the user who is editing the
      * entity (perhaps except when the ownership has just been changed).
      */
     public String getLastUpdatedBy() {

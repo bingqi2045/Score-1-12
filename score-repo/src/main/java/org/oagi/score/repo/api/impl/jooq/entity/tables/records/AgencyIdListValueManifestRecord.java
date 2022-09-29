@@ -40,7 +40,6 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     /**
      * Setter for <code>oagi.agency_id_list_value_manifest.release_id</code>.
-     * Foreign key to the RELEASE table.
      */
     public void setReleaseId(String value) {
         set(1, value);
@@ -48,7 +47,6 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     /**
      * Getter for <code>oagi.agency_id_list_value_manifest.release_id</code>.
-     * Foreign key to the RELEASE table.
      */
     public String getReleaseId() {
         return (String) get(1);

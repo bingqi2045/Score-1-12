@@ -204,8 +204,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Setter for <code>oagi.code_list_value.created_by</code>. Foreign key to
-     * the APP_USER table. It indicates the user who created the code list
-     * value.
+     * the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(String value) {
         set(10, value);
@@ -213,8 +212,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Getter for <code>oagi.code_list_value.created_by</code>. Foreign key to
-     * the APP_USER table. It indicates the user who created the code list
-     * value.
+     * the APP_USER table. It indicates the user who created the code list.
      */
     public String getCreatedBy() {
         return (String) get(10);
@@ -247,7 +245,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     /**
      * Setter for <code>oagi.code_list_value.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the code
-     * list value.
+     * list.
      */
     public void setLastUpdatedBy(String value) {
         set(12, value);
@@ -256,7 +254,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     /**
      * Getter for <code>oagi.code_list_value.last_updated_by</code>. Foreign key
      * to the APP_USER table. It identifies the user who last updated the code
-     * list value.
+     * list.
      */
     public String getLastUpdatedBy() {
         return (String) get(12);

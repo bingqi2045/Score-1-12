@@ -55,16 +55,18 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     }
 
     /**
-     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
-     * the CDT_PRI table.
+     * Setter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
+     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
+     * the suppliement component identified in the CDT_SC_ID column.
      */
     public void setCdtPriId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. Foreign key to
-     * the CDT_PRI table.
+     * Getter for <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key
+     * pointing to the CDT_Pri table. It represents a CDT primitive allowed for
+     * the suppliement component identified in the CDT_SC_ID column.
      */
     public String getCdtPriId() {
         return (String) get(2);
