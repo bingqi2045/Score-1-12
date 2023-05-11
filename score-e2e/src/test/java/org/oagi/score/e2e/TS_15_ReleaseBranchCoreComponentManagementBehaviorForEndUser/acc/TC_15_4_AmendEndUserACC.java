@@ -287,8 +287,6 @@ public class TC_15_4_AmendEndUserACC extends BaseTest {
 
         accPanel.setObjectClassTerm(randomPropertyTerm);
         accViewEditPage.hitUpdateButton();
-        viewEditCoreComponentPage.openPage();
-        accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc.getAccManifestId());
         accNode = accViewEditPage.getNodeByPath("/" + randomPropertyTerm + ". Details");
         accPanel = accViewEditPage.getACCPanel(accNode);
         assertEquals(randomPropertyTerm, getText(accPanel.getObjectClassTermField()));

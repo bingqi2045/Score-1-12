@@ -219,7 +219,6 @@ public class TC_15_6_DeletingEndUserACC extends BaseTest {
         accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc_association.getAccManifestId());
         accViewEditPage.hitRestoreButton();
 
-        viewEditCoreComponentPage.openPage();
         accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc.getAccManifestId());
         accNode = accViewEditPage.getNodeByPath("/" + acc.getDen() + "/" + asccp.getPropertyTerm());
 
