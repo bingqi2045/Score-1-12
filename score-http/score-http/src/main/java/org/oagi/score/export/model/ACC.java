@@ -11,6 +11,7 @@ import org.oagi.score.repository.provider.ModuleProvider;
 
 public abstract class ACC implements Component {
 
+    private AccManifestRecord accManifest;
     private AccRecord acc;
     private ACC basedAcc;
 
@@ -19,14 +20,15 @@ public abstract class ACC implements Component {
 
     private ModuleCCID moduleCCID;
 
-    ACC(AccRecord acc, ACC basedAcc,
-        DataProvider dataProvider) {
+    ACC(AccManifestRecord accManifest, AccRecord acc,
+        ACC basedAcc, DataProvider dataProvider) {
+        this.accManifest = accManifest;
         this.acc = acc;
         this.basedAcc = basedAcc;
         this.dataProvider = dataProvider;
         this.oagisComponentType = acc.getOagisComponentType();
         if (dataProvider instanceof ModuleProvider) {
-            this.moduleCCID = ((ModuleProvider) this.dataProvider).findModuleAcc(this.acc.getAccId());
+            this.moduleCCID = ((ModuleProvider) this.dataProvider).findModuleAcc(this.accManifest.getAccManifestId());
         }
     }
 
@@ -49,9 +51,9 @@ public abstract class ACC implements Component {
                     AccRecord basedAcc = dataProvider.findACC(basedAccManifest.getAccId());
                     basedACC = newInstance(basedAcc, basedAccManifest, dataProvider);
                 }
-                return new ACCComplexType(acc, basedACC, accManifest, dataProvider);
+                return new ACCComplexType(accManifest, acc, basedACC, dataProvider);
             case 4: // UEG
-                return new ACCGroup(acc, null, dataProvider);
+                return new ACCGroup(accManifest, acc, null, dataProvider);
             default:
                 throw new IllegalStateException();
         }
@@ -70,7 +72,7 @@ public abstract class ACC implements Component {
     }
 
     public String getGuid() {
-        return GUID_PREFIX + acc.getGuid();
+        return acc.getGuid();
     }
 
     public String getTypeName() {
@@ -83,6 +85,10 @@ public abstract class ACC implements Component {
 
     public ULong getNamespaceId() {
         return acc.getNamespaceId();
+    }
+
+    public ULong getTypeNamespaceId() {
+        return this.getNamespaceId();
     }
 
     public boolean isGroup() {
@@ -108,5 +114,9 @@ public abstract class ACC implements Component {
 
     public void setModuleCCID(ModuleCCID moduleCCID) {
         this.moduleCCID = moduleCCID;
+    }
+
+    public AccManifestRecord getAccManifest() {
+        return accManifest;
     }
 }

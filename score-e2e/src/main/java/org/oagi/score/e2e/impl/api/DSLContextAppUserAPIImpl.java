@@ -136,6 +136,7 @@ public class DSLContextAppUserAPIImpl implements AppUserAPI {
             deleteBusinessInformationEntityByAppUserId(txContext, appUserId);
             deleteCoreComponentByAppUserId(txContext, appUserId);
             deleteCodeListByAppUserId(txContext, appUserId);
+            deleteAgencyIDListListByAppUserId(txContext, appUserId);
             deleteBusinessContextByAppUserId(txContext, appUserId);
             deleteContextSchemeByAppUserId(txContext, appUserId);
             deleteContextCategoryByAppUserId(txContext, appUserId);
@@ -234,6 +235,37 @@ public class DSLContextAppUserAPIImpl implements AppUserAPI {
                 .execute();
     }
 
+    private void deleteDTSCByAppUserId(DSLContext dslContext, ULong appUserId) {
+        List<ULong> dtScIdList = dslContext.select(DT_SC.DT_SC_ID)
+                .from(DT_SC)
+                .where(or(
+                        DT_SC.OWNER_USER_ID.eq(appUserId),
+                        DT_SC.CREATED_BY.eq(appUserId),
+                        DT_SC.LAST_UPDATED_BY.eq(appUserId)
+                ))
+                .fetchInto(ULong.class);
+        if (dtScIdList.isEmpty()) {
+            return;
+        }
+
+        List<ULong> dtScManifestIdList = dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
+                .from(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.DT_SC_ID.in(dtScIdList))
+                .fetchInto(ULong.class);
+        if (!dtScManifestIdList.isEmpty()) {
+            dslContext.deleteFrom(BDT_SC_PRI_RESTRI)
+                    .where(BDT_SC_PRI_RESTRI.BDT_SC_MANIFEST_ID.in(dtScManifestIdList))
+                    .execute();
+        }
+
+        dslContext.deleteFrom(DT_SC_MANIFEST)
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(dtScManifestIdList))
+                .execute();
+        dslContext.deleteFrom(DT_SC)
+                .where(DT_SC.DT_SC_ID.in(dtScIdList))
+                .execute();
+    }
+
     private void deleteDTByAppUserId(DSLContext dslContext, ULong appUserId) {
         List<ULong> dtIdList = dslContext.select(DT.DT_ID)
                 .from(DT)
@@ -251,6 +283,11 @@ public class DSLContextAppUserAPIImpl implements AppUserAPI {
                 .from(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_ID.in(dtIdList))
                 .fetchInto(ULong.class);
+        if (!dtManifestIdList.isEmpty()) {
+            dslContext.deleteFrom(BDT_PRI_RESTRI)
+                    .where(BDT_PRI_RESTRI.BDT_MANIFEST_ID.in(dtManifestIdList))
+                    .execute();
+        }
 
         List<String> dtGuidList = dslContext.selectDistinct(DT.GUID)
                 .from(DT)
@@ -476,6 +513,7 @@ public class DSLContextAppUserAPIImpl implements AppUserAPI {
     }
 
     private void deleteCoreComponentByAppUserId(DSLContext dslContext, ULong appUserId) {
+        deleteDTSCByAppUserId(dslContext, appUserId);
         deleteDTByAppUserId(dslContext, appUserId);
         deleteBCCPByAppUserId(dslContext, appUserId);
         deleteASCCPByAppUserId(dslContext, appUserId);
@@ -525,6 +563,49 @@ public class DSLContextAppUserAPIImpl implements AppUserAPI {
                 .execute();
         dslContext.deleteFrom(CODE_LIST)
                 .where(CODE_LIST.CODE_LIST_ID.in(codeListIdList))
+                .execute();
+    }
+
+    private void deleteAgencyIDListListByAppUserId(DSLContext dslContext, ULong appUserId) {
+        List<ULong> agencyIDListIdList = dslContext.select(AGENCY_ID_LIST.AGENCY_ID_LIST_ID)
+                .from(AGENCY_ID_LIST)
+                .where(or(
+                        AGENCY_ID_LIST.CREATED_BY.eq(appUserId),
+                        AGENCY_ID_LIST.LAST_UPDATED_BY.eq(appUserId)
+                ))
+                .fetchInto(ULong.class);
+        if (agencyIDListIdList.isEmpty()) {
+            return;
+        }
+
+        List<String> agencyIDListListGuidList = dslContext.select(AGENCY_ID_LIST.GUID)
+                .from(AGENCY_ID_LIST)
+                .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.in(agencyIDListIdList))
+                .fetchInto(String.class);
+
+        List<ULong> agencyIDListListManifestIdList = dslContext.select(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                .from(AGENCY_ID_LIST_MANIFEST)
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.in(agencyIDListIdList))
+                .fetchInto(ULong.class);
+
+        dslContext.update(AGENCY_ID_LIST_MANIFEST)
+                .setNull(AGENCY_ID_LIST_MANIFEST.LOG_ID)
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID.in(agencyIDListListManifestIdList))
+                .execute();
+        dslContext.deleteFrom(LOG)
+                .where(LOG.REFERENCE.in(agencyIDListListGuidList))
+                .execute();
+        dslContext.deleteFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIDListListManifestIdList))
+                .execute();
+        dslContext.deleteFrom(AGENCY_ID_LIST_MANIFEST)
+                .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIDListListManifestIdList))
+                .execute();
+        dslContext.deleteFrom(AGENCY_ID_LIST_VALUE)
+                .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.in(agencyIDListIdList))
+                .execute();
+        dslContext.deleteFrom(AGENCY_ID_LIST)
+                .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.in(agencyIDListIdList))
                 .execute();
     }
 

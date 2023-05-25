@@ -286,7 +286,7 @@ public class BCCPCreateDialogImpl implements BCCPCreateDialog {
         });
 
         click(getCreateButton());
-        waitFor(ofMillis(1000L));
+        waitFor(ofMillis(2000L));
 
         String url = getDriver().getCurrentUrl();
         BigInteger bccpManifestId = new BigInteger(url.substring(url.lastIndexOf("/") + 1));
@@ -295,5 +295,37 @@ public class BCCPCreateDialogImpl implements BCCPCreateDialog {
         BCCPViewEditPage bccpViewEditPage = new BCCPViewEditPageImpl(parent, bccp);
         assert bccpViewEditPage.isOpened();
         return bccpViewEditPage;
+    }
+
+    @Override
+    public void selectDataTypeByDEN(String dataType) {
+        sendKeys(getDENField(), dataType);
+        click(getSearchButton());
+        retry(() -> {
+            WebElement td;
+            WebElement tr;
+            try {
+                tr = getTableRecordAtIndex(1);
+                td = getColumnByName(tr, "den");
+            } catch (TimeoutException e) {
+                throw new NoSuchElementException("Cannot locate a Data Type using " + dataType, e);
+            }
+            if (!dataType.equals(getDENFieldFromTheTable(td))) {
+                throw new NoSuchElementException("Cannot locate a Data Type using " + dataType);
+            }
+            click(tr);
+        });
+    }
+    private String getDENFieldFromTheTable(WebElement tableData) {
+        return getText(tableData.findElement(By.cssSelector("div.den > a > span")));
+    }
+
+    @Override
+    public void hitCreateButton() {
+        retry(() -> {
+            click(getCreateButton());
+            waitFor(ofMillis(1000L));
+        });
+        invisibilityOfLoadingContainerElement(getDriver());
     }
 }

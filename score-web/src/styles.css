@@ -279,7 +279,7 @@ div.mat-form-field-wrapper div.mat-form-field-infix mat-icon.datepicker-cancel {
   cursor: pointer;
 }
 
-span.cc-state, span.bie-state {
+span.cc-type, span.cc-state, span.bie-state {
   font-size: 13px;
   padding: .30em 4px;
   border-radius: 4px;
@@ -914,4 +914,11 @@ span.context-menu-item.disabled, span.context-menu-item[disabled] {
 
 .flex-11-auto {
   flex: 1 1 auto;
+}
+
+.mat-snack-bar-container {
+  color: #333;
+  background-color: #fff;
+  border-color: #333;
+  border: 1px solid;
 }

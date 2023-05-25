@@ -1,5 +1,7 @@
 package org.oagi.score.e2e.page.code_list;
 
+import org.oagi.score.e2e.obj.AgencyIDListObject;
+import org.oagi.score.e2e.obj.AgencyIDListValueObject;
 import org.oagi.score.e2e.obj.NamespaceObject;
 import org.oagi.score.e2e.page.Page;
 import org.openqa.selenium.WebElement;
@@ -21,7 +23,7 @@ public interface EditCodeListPage extends Page {
 
     WebElement getAddCodeListValueButton();
 
-    AddCodeListCommentDialog hitAddCommentButton();
+    AddCommentDialog hitAddCommentButton();
 
     WebElement getAddCommentButton();
 
@@ -70,4 +72,62 @@ public interface EditCodeListPage extends Page {
     void setNamespace(NamespaceObject namespace);
 
     EditCodeListValueDialog editCodeListValue(String value);
+
+    WebElement getStateField();
+
+    WebElement getGuidField();
+
+    WebElement getListIDField();
+
+    void hitCancelButton();
+
+    WebElement getCancelButton();
+
+    void valueExists(String value);
+
+    WebElement getOwnerField();
+
+    void moveToDraft();
+
+    WebElement getMoveToDraftButton();
+
+    void backToWIP();
+
+    void moveToCandidate();
+
+    WebElement getBackToWIPButton();
+
+    WebElement getMoveToCandidateButton();
+
+    void hitDeleteButton();
+
+    WebElement getDeleteButton();
+
+    void hitRestoreButton();
+
+    WebElement getRestoreButton();
+
+    WebElement getRemarkField();
+
+    WebElement getAgencyIDListValueField();
+
+    void setAgencyIDList(AgencyIDListObject agencyIDList);
+
+    void setAgencyIDListValue(AgencyIDListValueObject agencyIDListValue);
+
+    void hitAmendButton();
+
+    WebElement getAmendButton();
+
+    void toggleDeprecated();
+
+    void setRemark(String remark);
+
+    void moveToQA();
+
+    WebElement getMoveToQAButton();
+
+    void moveToProduction();
+
+    WebElement getMoveToProductionButton();
 }

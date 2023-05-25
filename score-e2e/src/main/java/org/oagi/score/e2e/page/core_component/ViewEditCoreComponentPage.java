@@ -1,5 +1,6 @@
 package org.oagi.score.e2e.page.core_component;
 
+import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.page.Page;
 import org.openqa.selenium.WebElement;
 
@@ -33,11 +34,23 @@ public interface ViewEditCoreComponentPage extends Page {
     WebElement getTypeSelectField();
 
     /**
+     * Set the UI element of the 'Type' select field with the given type.
+     * @param type
+     */
+    void setTypeSelect(String type);
+
+    /**
      * Return the UI element of the 'State' select field.
      *
      * @return the UI element of the 'State' select field
      */
     WebElement getStateSelectField();
+
+    /**
+     * Set the UI element of the 'State' select field with the given type.
+     * @param state
+     */
+    void setState(String state);
 
     /**
      * Return the UI element of the 'Updated Start Date' field.
@@ -326,4 +339,61 @@ public interface ViewEditCoreComponentPage extends Page {
      */
     void setItemsPerPage(int items);
 
+    void selectAllComponentTypes();
+
+    DTViewEditPage createDT(String den, String branch);
+
+    BCCPViewEditPage createBCCP(String dataType, String branch, AppUserObject user);
+
+    /**
+     * Return the UI element of the 'Move to QA' button.
+     *
+     * @return the UI element of the 'Move to QA' button
+     */
+    WebElement getMoveToQAButton();
+
+    /**
+     * hit the UI element of the 'Move to QA' button
+     */
+    void hitMoveToQAButton();
+
+    /**
+     * Return the UI element of the 'Move to Production' button.
+     *
+     * @return the UI element of the 'Move to Production' button
+     */
+    WebElement getMoveToProductionButton();
+
+    /**
+     * hit the UI element of the 'Move to Production' button
+     */
+    void hitMoveToProductionButton();
+
+    /**
+     * Return the UI element of the 'Back to WIP' button.
+     *
+     * @return the UI element of the 'Back to WIP' button
+     */
+    WebElement getBackToWIPButton();
+
+    /**
+     * hit the UI element of the 'Back to WIP' button
+     */
+    void hitBackToWIPButton();
+
+    void hitMoveToDraftButton();
+
+    WebElement getMoveToDraftButton();
+
+    void hitMoveToCandidateButton();
+
+    WebElement getMoveToCandidateButton();
+
+    TransferCCOwnershipDialog hitTransferOwnershipButton();
+
+    WebElement getTransferOwnershipButton();
+
+    void hitDeleteButton();
+
+    WebElement getDeleteButton();
 }

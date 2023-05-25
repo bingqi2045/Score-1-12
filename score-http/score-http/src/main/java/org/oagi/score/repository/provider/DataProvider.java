@@ -15,7 +15,9 @@ public interface DataProvider {
 
     AgencyIdListRecord findAgencyIdList(ULong agencyIdListId);
 
-    List<AgencyIdListValueRecord> findAgencyIdListValueByOwnerListId(ULong ownerListId);
+    List<AgencyIdListValueManifestRecord> findAgencyIdListValueManifestByAgencyIdListManifestId(ULong agencyIdListManifestId);
+
+    AgencyIdListValueRecord findAgencyIdListValue(ULong agencyIdListValueId);
 
     CodeListManifestRecord findCodeListManifest(ULong codeListManifestId);
 
@@ -23,7 +25,9 @@ public interface DataProvider {
 
     CodeListRecord findCodeList(ULong codeListId);
 
-    List<CodeListValueRecord> findCodeListValueByCodeListId(ULong codeListId);
+    CodeListValueRecord findCodeListValue(ULong codeListValueId);
+
+    List<CodeListValueManifestRecord> findCodeListValueManifestByCodeListManifestId(ULong codeListManifestId);
 
     List<DtManifestRecord> findDtManifest();
 
@@ -36,8 +40,6 @@ public interface DataProvider {
     List<DtScManifestRecord> findDtScManifestByOwnerDtManifestId(ULong ownerDtManifestId);
 
     DtScRecord findDtSc(ULong dtScId);
-
-    List<DtScRecord> findDtScByOwnerDtId(ULong ownerDtId);
 
     List<BdtPriRestriRecord> findBdtPriRestriListByDtManifestId(ULong dtManifestId);
 
@@ -93,11 +95,11 @@ public interface DataProvider {
 
     BccRecord findBCC(ULong bccId);
 
-    AsccManifestRecord findASCCManifest(ULong asccId);
+    AsccManifestRecord findASCCManifest(ULong asccManifestId);
 
     List<AsccManifestRecord> findASCCManifestByFromAccManifestId(ULong fromAccManifestId);
 
-    BccManifestRecord findBCCManifest(ULong bccId);
+    BccManifestRecord findBCCManifest(ULong bccManifestId);
 
     List<BccManifestRecord> findBCCManifestByFromAccManifestId(ULong fromAccManifestId);
 

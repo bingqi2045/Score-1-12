@@ -2,13 +2,19 @@ package org.oagi.score.e2e.impl.page.core_component;
 
 import org.oagi.score.e2e.impl.PageHelper;
 import org.oagi.score.e2e.impl.page.BasePageImpl;
+import org.oagi.score.e2e.impl.page.code_list.AddCommentDialogImpl;
+import org.oagi.score.e2e.obj.ACCObject;
 import org.oagi.score.e2e.obj.ASCCPObject;
 import org.oagi.score.e2e.page.BasePage;
+import org.oagi.score.e2e.page.code_list.AddCommentDialog;
+import org.oagi.score.e2e.page.core_component.ACCViewEditPage;
+import org.oagi.score.e2e.page.core_component.ASCCPChangeACCDialog;
 import org.oagi.score.e2e.page.core_component.ASCCPViewEditPage;
 import org.oagi.score.e2e.page.core_component.SelectAssociationDialog;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 
+import java.math.BigInteger;
 import java.time.Duration;
 
 import static java.time.Duration.ofMillis;
@@ -54,9 +60,20 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
             By.xpath("//span[contains(text(), \"Move to Candidate\")]//ancestor::button[1]");
     private static final By DEPRECATED_CHECKBOX_LOCATOR =
             By.xpath("//*[contains(text(), \"Deprecated\")]//ancestor::mat-checkbox");
-
+    private static final By OPEN_IN_NEW_TAB_OPTION_LOCATOR =
+            By.xpath("//span[contains(text(), \"Open in new tab\")]");
     private static final By CHANGE_ACC_OPTION_LOCATOR =
             By.xpath("//span[contains(text(), \"Change ACC\")]");
+    private static final By COMMENTS_OPTION_LOCATOR =
+            By.xpath("//span[contains(text(), \"Comments\")]");
+    private static final By PROPERTY_TERM_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"Property Term\")]//ancestor::mat-form-field//input");
+    private static final By DEFINITION_SOURCE_FIELD_LOCATOR =
+            By.xpath("//span[contains(text(), \"Definition Source\")]//ancestor::mat-form-field//input");
+    private static final By DEFINITION_FIELD_LOCATOR =
+            By.xpath("//span[contains(text(), \"Definition\")]//ancestor::mat-form-field//textarea");
+    private static final By DEN_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"DEN\")]//ancestor::mat-form-field//input");
 
     private final ASCCPObject asccp;
     public ASCCPViewEditPageImpl(BasePage parent, ASCCPObject asccp) {
@@ -75,14 +92,14 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
         getDriver().get(url);
         invisibilityOfLoadingContainerElement(getDriver());
         assert "ASCCP".equals(getText(getASCCPPanel().getCoreComponentField()));
-        assert getText(getTitle()).equals(asccp.getDen());
+        assert getText(getTitle()).startsWith(asccp.getPropertyTerm());
     }
 
     @Override
     public WebElement getTitle() {
         invisibilityOfLoadingContainerElement(getDriver());
         return visibilityOfElementLocated(PageHelper.wait(getDriver(), Duration.ofSeconds(10L), ofMillis(100L)),
-                By.cssSelector("div.mat-tab-list div.mat-tab-label"));
+                By.cssSelector("div.mat-tab-list div.mat-tab-label-content"));
     }
 
     @Override
@@ -128,8 +145,11 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
 
     @Override
     public void hitDeleteButton() {
-        click(getDeleteButton());
-        click(elementToBeClickable(getDriver(), CONFIRM_DELETE_IN_DIALOG_LOCATOR));
+        retry(() -> {
+            click(getDeleteButton());
+            click(elementToBeClickable(getDriver(), By.xpath(
+                    "//score-confirm-dialog//span[contains(text(), \"Delete anyway\")]//ancestor::button[1]")));
+        });
         invisibilityOfLoadingContainerElement(getDriver());
         assert "Deleted".equals(getSnackBarMessage(getDriver()));
     }
@@ -162,8 +182,12 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
 
     @Override
     public void hitUpdateButton() {
-        retry(() -> click(getUpdateButton(true)));
+        retry(() -> {
+            click(getUpdateButton(true));
+            waitFor(ofMillis(1000L));
+        });
         invisibilityOfLoadingContainerElement(getDriver());
+        waitFor(ofMillis(500L));
         assert "Updated".equals(getSnackBarMessage(getDriver()));
     }
 
@@ -277,6 +301,46 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
     }
 
     @Override
+    public ACCViewEditPage openACCInNewTab(WebElement accNode) {
+        try {
+            click(visibilityOfElementLocated(getDriver(), OPEN_IN_NEW_TAB_OPTION_LOCATOR));
+        } catch (TimeoutException e) {
+            click(accNode);
+            new Actions(getDriver()).sendKeys("O").perform();
+            click(visibilityOfElementLocated(getDriver(), OPEN_IN_NEW_TAB_OPTION_LOCATOR));
+        }
+
+        switchToNextTab(getDriver());
+        String url = getDriver().getCurrentUrl();
+        int idx = url.lastIndexOf("/");
+
+        BigInteger manifestId = new BigInteger(url.substring(idx + 1));
+        ACCObject acc = getAPIFactory().getCoreComponentAPI().getACCByManifestId(manifestId);
+        ACCViewEditPage accViewEditPage = new ACCViewEditPageImpl(this, acc);
+        assert accViewEditPage.isOpened();
+        return accViewEditPage;
+    }
+
+    @Override
+    public ASCCPChangeACCDialog openChangeACCDialog(String path) {
+        return retry(() -> {
+            WebElement node = clickOnDropDownMenuByPath(path);
+            try {
+                click(visibilityOfElementLocated(getDriver(), CHANGE_ACC_OPTION_LOCATOR));
+            } catch (TimeoutException e) {
+                click(node);
+                new Actions(getDriver()).sendKeys("O").perform();
+                click(visibilityOfElementLocated(getDriver(), CHANGE_ACC_OPTION_LOCATOR));
+            }
+            waitFor(ofMillis(500L));
+            ASCCPChangeACCDialog asccpChangeACCDialog =
+                    new ASCCPChangeACCDialogImpl(this);
+            assert asccpChangeACCDialog.isOpened();
+            return asccpChangeACCDialog;
+        });
+    }
+
+    @Override
     public WebElement getNodeByPath(String path) {
         goToNode(path);
         String[] nodes = path.split("/");
@@ -385,6 +449,40 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
                 }
             };
         });
+    }
+    @Override
+    public WebElement getDefinitionField() {
+        return visibilityOfElementLocated(getDriver(), DEFINITION_FIELD_LOCATOR);
+    }
+
+    @Override
+    public WebElement getDefinitionSourceField() {
+        return visibilityOfElementLocated(getDriver(), DEFINITION_SOURCE_FIELD_LOCATOR);
+    }
+
+    @Override
+    public WebElement getDENField() {
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
+    }
+
+    @Override
+    public WebElement getPropertyTermField() {
+        return visibilityOfElementLocated(getDriver(), PROPERTY_TERM_FIELD_LOCATOR);
+    }
+
+    @Override
+    public AddCommentDialog openCommentsDialog(String path) {
+        WebElement node = clickOnDropDownMenuByPath(path);
+        try {
+            click(visibilityOfElementLocated(getDriver(), COMMENTS_OPTION_LOCATOR));
+        } catch (TimeoutException e) {
+            click(node);
+            new Actions(getDriver()).sendKeys("C").perform();
+        }
+
+        AddCommentDialog addCodeListCommentDialog = new AddCommentDialogImpl(this);
+        assert addCodeListCommentDialog.isOpened();
+        return addCodeListCommentDialog;
     }
 
     @Override
@@ -645,6 +743,11 @@ public class ASCCPViewEditPageImpl extends BasePageImpl implements ASCCPViewEdit
         @Override
         public WebElement getReusableCheckbox() {
             return getCheckboxByName(baseXPath, "Reusable");
+        }
+
+        @Override
+        public void toggleReusable() {
+            click(getReusableCheckbox());
         }
 
         @Override

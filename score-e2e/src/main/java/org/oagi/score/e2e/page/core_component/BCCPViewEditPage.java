@@ -1,6 +1,7 @@
 package org.oagi.score.e2e.page.core_component;
 
 import org.oagi.score.e2e.page.Page;
+import org.oagi.score.e2e.page.code_list.AddCommentDialog;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -241,6 +242,28 @@ public interface BCCPViewEditPage extends Page {
      * @return the BCC panel container
      */
     BCCPanelContainer getBCCPanelContainer(WebElement bccNode);
+
+    AddCommentDialog openCommentsDialog(String path);
+
+    WebElement getDefinitionSourceField();
+
+    WebElement getDENField();
+
+    WebElement getPropertyTermField();
+
+    void setPropertyTerm(String propertyTerm);
+
+    void setNamespace(String namespace);
+
+    WebElement getNamespaceSelectField();
+
+    void hitUpdateAnywayButton();
+
+    WebElement getUpdateAnywayButton();
+
+    WebElement getDefinitionField();
+
+    void setDefinition(String definition);
 
     /**
      * An interface of the ACC panel
@@ -833,6 +856,11 @@ public interface BCCPViewEditPage extends Page {
          * @return the UI element of the 'Deprecated' checkbox
          */
         WebElement getDeprecatedCheckbox();
+
+        /**
+         * Toggle the 'Deprecated' checkbox
+         */
+        void toggleDeprecated();
 
         /**
          * Return the UI element of the 'Namespace' select field.

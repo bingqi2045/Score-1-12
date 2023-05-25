@@ -1,11 +1,17 @@
 package org.oagi.score.e2e.impl.api;
 
 import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.score.e2e.api.NamespaceAPI;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.obj.NamespaceObject;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.oagi.score.e2e.impl.api.jooq.entity.Tables.NAMESPACE;
 
@@ -92,4 +98,24 @@ public class DSLContextNamespaceAPIImpl implements NamespaceAPI {
         return namespace;
     }
 
+    @Override
+    public ArrayList<NamespaceObject> getStandardNamespacesURIs() {
+        List<NamespaceRecord> standardNamespaces = dslContext.selectFrom(NAMESPACE)
+                .where(NAMESPACE.IS_STD_NMSP.eq((byte) 1))
+                .fetchInto(NamespaceRecord.class);
+        ArrayList<NamespaceObject> namespaceObjectsList = new ArrayList<>();
+        for (NamespaceRecord record: standardNamespaces){
+            NamespaceObject namespace = mapper(record);
+            namespaceObjectsList.add(namespace);
+        }
+        return namespaceObjectsList;
+    }
+
+    @Override
+    public NamespaceObject getNamespaceById(BigInteger namespaceId) {
+        NamespaceRecord namespaceRecord = dslContext.selectFrom(NAMESPACE)
+                .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
+                .fetchOne();
+        return mapper(namespaceRecord);
+    }
 }

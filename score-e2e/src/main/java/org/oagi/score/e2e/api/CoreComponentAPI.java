@@ -3,7 +3,6 @@ package org.oagi.score.e2e.api;
 import org.oagi.score.e2e.obj.*;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -183,5 +182,9 @@ public interface CoreComponentAPI {
 
     ACCObject createRandomACCSemanticGroupType(AppUserObject creator, ReleaseObject release,
                                                NamespaceObject namespace, String state);
+
+    DTObject getLatestDTCreated(String den, String branch);
+
+    BCCPObject getLatestBCCPCreatedByUser(AppUserObject user, String branch);
 
 }

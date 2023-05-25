@@ -54,6 +54,7 @@ public class ViewEditCodeListPageImpl extends BasePageImpl implements ViewEditCo
         setBranch(branch);
         openCodeListByName(name);
         CodeListObject codeList = getAPIFactory().getCodeListAPI().getCodeListByNameAndReleaseNum(name, branch);
+        waitFor(ofMillis(500L));
         EditCodeListPage editCodeListPage = new EditCodeListPageImpl(this, codeList);
         assert editCodeListPage.isOpened();
         return editCodeListPage;
@@ -95,7 +96,7 @@ public class ViewEditCodeListPageImpl extends BasePageImpl implements ViewEditCo
     }
 
     private String getNameFieldFromTheTable(WebElement tableData) {
-        return getText(tableData.findElement(By.cssSelector("div.den")));
+        return getText(tableData.findElement(By.cssSelector("div.den > a > span")));
     }
 
     @Override

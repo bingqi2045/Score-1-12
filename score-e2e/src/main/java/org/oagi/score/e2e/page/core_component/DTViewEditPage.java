@@ -1,6 +1,8 @@
 package org.oagi.score.e2e.page.core_component;
 
+import org.oagi.score.e2e.obj.NamespaceObject;
 import org.oagi.score.e2e.page.Page;
+import org.oagi.score.e2e.page.code_list.AddCommentDialog;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -190,4 +192,74 @@ public interface DTViewEditPage extends Page {
      */
     String getDefinitionFieldValue();
 
+    void showValueDomain();
+
+    WebElement getShowValueDomain();
+
+    WebElement getAddValueDomainButton();
+
+    void addCodeListValueDomain(String name);
+
+    WebElement getTheLastTableRecord();
+
+    WebElement getColumnByName(WebElement tableRecord, String columnName);
+
+    void hitUpdateButton();
+
+    void hitUpdateAnywayButton();
+
+    WebElement getUpdateAnywayButton();
+
+    WebElement getUpdateButton(boolean enabled);
+
+    void setQualifier(String qualifier);
+
+    WebElement getQualifierField();
+
+    void codeListIdMarkedAsDeleted(String name);
+
+    void changeCodeListValueDomain(String codeListName);
+
+    void setDefaultValueDomain(String name);
+
+    WebElement getDefaultValueDomainField();
+
+    void setNamespace(NamespaceObject namespace);
+
+    AddCommentDialog hitAddCommentButton(String path);
+
+    WebElement clickOnDropDownMenuByPath(String path);
+
+    WebElement getSearchField();
+
+    WebElement getContextMenuIconByNodeName(String nodeName);
+
+    WebElement getReviseButton();
+
+    void hitRestoreButton();
+
+    WebElement getRestoreButton();
+
+    String getBasedDataTypeFieldValue();
+
+    WebElement getBasedDataTypeField();
+
+    String getQualifierFieldValue();
+
+    WebElement getSixHexadecimalIdentifierField();
+
+    String getContentComponentDefinitionFieldValue();
+
+    WebElement getContentComponentDefinitionField();
+
+    void setDefinition(String definition);
+
+    void setDefinitionSource(String definitionSource);
+
+    void setContentComponentDefinition(String contentComponentDefinition);
+
+    WebElement getValueDomainByTypeNameAndXSDExpression(String valueDomainType, String valueDomainName, String XSDExpression);
+
+
+    WebElement getCheckboxForValueDomainByTypeAndName(String valueDomainType, String valueDomainName);
 }

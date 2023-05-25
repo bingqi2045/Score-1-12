@@ -46,12 +46,18 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.RELEASE;
+import static org.oagi.score.repo.api.user.model.ScoreRole.ADMINISTRATOR;
 
 @Service
 @Transactional(readOnly = true)
@@ -356,11 +362,17 @@ public class ReleaseService implements InitializingBean {
     public void transitState(AuthenticatedPrincipal user,
                              TransitStateRequest request) {
 
+        ScoreUser scoreUser = sessionService.asScoreUser(user);
+        ReleaseState requestState = ReleaseState.valueOf(request.getState());
+        if (requestState == Published && !scoreUser.hasRole(ADMINISTRATOR)) {
+            throw new IllegalArgumentException("Only administrators can publish the release.");
+        }
+
         repository.transitState(user, request);
-        if (Published == ReleaseState.valueOf(request.getState())) {
+        if (Published == requestState) {
             // fire the create release draft event.
             ReleaseCleanupEvent releaseCleanupEvent = new ReleaseCleanupEvent(
-                    sessionService.userId(user), request.getReleaseId());
+                    scoreUser.getUserId(), request.getReleaseId());
 
             /*
              * Message Publishing
@@ -462,7 +474,8 @@ public class ReleaseService implements InitializingBean {
         }
         try {
             logger.debug("Received ReleaseCleanupEvent: " + releaseCleanupEvent);
-            repository.cleanUp(releaseCleanupEvent.getReleaseId());
+            ScoreUser requester = sessionService.getScoreUserByUserId(releaseCleanupEvent.getUserId());
+            repository.cleanUp(requester, releaseCleanupEvent.getReleaseId());
             repository.updateState(releaseCleanupEvent.getUserId(),
                     releaseCleanupEvent.getReleaseId(), ReleaseState.Published);
         } finally {
@@ -492,19 +505,15 @@ public class ReleaseService implements InitializingBean {
 
         try {
             List<File> files = new ArrayList<>();
-            Map<BigInteger, ReleaseDataProvider> dataProviderMap = new ConcurrentHashMap<>();
+
+            Map<BigInteger, BigInteger> releaseIdMap = releaseRepository.getReleaseIdMapByAsccpManifestIdList(asccpManifestIdList);
+            Map<BigInteger, ReleaseDataProvider> dataProviderMap = releaseIdMap.values().stream().distinct()
+                    .collect(Collectors.toMap(Function.identity(), e -> new ReleaseDataProvider(coreComponentRepositoryForRelease, e)));
             Map<String, Integer> pathCounter = new ConcurrentHashMap<>();
             List<Exception> exceptions = new ArrayList<>();
             asccpManifestIdList.parallelStream().forEach(asccpManifestId -> {
                 try {
-                    BigInteger releaseId = releaseRepository.getReleaseIdByAsccpManifestId(ULong.valueOf(asccpManifestId));
-                    ReleaseDataProvider dataProvider;
-                    synchronized (dataProviderMap) {
-                        if (!dataProviderMap.containsKey(releaseId)) {
-                            dataProviderMap.put(releaseId, new ReleaseDataProvider(coreComponentRepositoryForRelease, releaseId));
-                        }
-                        dataProvider = dataProviderMap.get(releaseId);
-                    }
+                    ReleaseDataProvider dataProvider = dataProviderMap.get(releaseIdMap.get(asccpManifestId));
 
                     XMLExportSchemaModuleVisitor visitor = new XMLExportSchemaModuleVisitor(coreComponentService, dataProvider);
                     visitor.setBaseDirectory(baseDir);
@@ -513,11 +522,12 @@ public class ReleaseService implements InitializingBean {
                             new StandaloneExportContextBuilder(dataProvider, coreComponentService, pathCounter);
                     ExportContext exportContext = builder.build(asccpManifestId);
 
-                    SchemaModule schemaModule = exportContext.getSchemaModules().iterator().next();
-                    schemaModule.visit(visitor);
-                    File file = schemaModule.getModuleFile();
-                    if (file != null) {
-                        files.add(file);
+                    for (SchemaModule schemaModule : exportContext.getSchemaModules()) {
+                        schemaModule.visit(visitor);
+                        File file = schemaModule.getModuleFile();
+                        if (file != null) {
+                            files.add(file);
+                        }
                     }
                 } catch (Exception e) {
                     logger.warn("Unexpected error occurs while it generates a stand-alone schema for 'asccp_manifest_id' [" + asccpManifestId + "]", e);
