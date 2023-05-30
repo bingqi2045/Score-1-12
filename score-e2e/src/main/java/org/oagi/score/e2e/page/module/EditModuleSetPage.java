@@ -7,6 +7,7 @@ public interface EditModuleSetPage extends Page {
     WebElement getNameField();
 
     void setName(String name);
+
     WebElement getDescriptionField();
 
     void setDescription(String description);
