@@ -269,7 +269,7 @@ public class MigrationScriptGenerator {
 
         if (resultQuerySupplier == null) {
             resultQuerySupplier = () -> dslContext.resultQuery("SELECT `" + tableName + "`.* FROM `" + tableName +
-                    "` WHERE `" + tableName + "_id` < " + delta);
+                    "` WHERE `" + tableName + "_id` < " + BigInteger.valueOf(200000000L));
         }
 
         if (includeTableStructure) {
